@@ -14,6 +14,15 @@ $RECYCLE.BIN/
 *.msm
 *.msp
 
+# Compiled source #
+###################
+build/
+nbproject/
+dist/
+build.xml
+manifest.mf
+
+
 # Windows shortcuts
 *.lnk
 
@@ -41,3 +50,11 @@ $RECYCLE.BIN/
 Network Trash Folder
 Temporary Items
 .apdisk
+configs/slaViolLogE.txt
+configs/slaViolLogI.txt
+configs/slaViolLogH.txt
+configs/out_W.txt
+out_W.txt
+slaViolLogE.txt
+slaViolLogH.txt
+slaViolLogI.txt

@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<layout>
+    <Rack>
+        <Rack_ID>0</Rack_ID>
+        <NumberOfChassis>5</NumberOfChassis>
+        <ChassisType>basic_1</ChassisType>
+    </Rack>
+    <Rack>
+        <Rack_ID>1</Rack_ID>
+        <NumberOfChassis>5</NumberOfChassis>
+        <ChassisType>basic_1</ChassisType>
+    </Rack>
+    <Rack>
+        <Rack_ID>2</Rack_ID>
+        <NumberOfChassis>5</NumberOfChassis>
+        <ChassisType>basic_1</ChassisType>
+    </Rack>
+    <Rack>
+        <Rack_ID>3</Rack_ID>
+        <NumberOfChassis>5</NumberOfChassis>
+        <ChassisType>basic_1</ChassisType>
+    </Rack>
+    <Rack>
+        <Rack_ID>4</Rack_ID>
+        <NumberOfChassis>5</NumberOfChassis>
+        <ChassisType>basic_1</ChassisType>
+    </Rack>
+    <Rack>
+        <Rack_ID>5</Rack_ID>
+        <NumberOfChassis>5</NumberOfChassis>
+        <ChassisType>basic_1</ChassisType>
+    </Rack>
+    <Rack>
+        <Rack_ID>6</Rack_ID>
+        <NumberOfChassis>5</NumberOfChassis>
+        <ChassisType>basic_1</ChassisType>
+    </Rack>
+    <Rack>
+        <Rack_ID>7</Rack_ID>
+        <NumberOfChassis>5</NumberOfChassis>
+        <ChassisType>basic_1</ChassisType>
+    </Rack>
+    <Rack>
+        <Rack_ID>8</Rack_ID>
+        <NumberOfChassis>5</NumberOfChassis>
+        <ChassisType>basic_1</ChassisType>
+    </Rack>
+    <Rack>
+        <Rack_ID>9</Rack_ID>
+        <NumberOfChassis>5</NumberOfChassis>
+        <ChassisType>basic_1</ChassisType>
+    </Rack>
+    <Chassis>
+        <ChassisType>basic_1</ChassisType>
+        <numberOfBladeServer>1</numberOfBladeServer>
+        <BladeType>HP Proliant DL3</BladeType>
+    </Chassis>
+    <BladeServer>
+        <BladeType>HP Proliant DL3</BladeType>
+        <MIPS>1 1.04 1.4</MIPS>
+        <FullyLoaded>300 336 448</FullyLoaded>
+        <Idle>100 100 128</Idle>
+        <Standby>5</Standby>
+    </BladeServer>
+    <ThermalModel>D15.txt</ThermalModel>
+    <RedTemperature>30</RedTemperature>
+</layout>

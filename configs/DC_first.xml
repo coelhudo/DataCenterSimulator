@@ -1,0 +1,505 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<DC>
+         <Chassis>
+                <chassisID> 0</chassisID>
+                <bladeServer>
+                    <ID> 0 </ID>
+                    <freq> 1 2 2.7 </freq>
+                    <PowerBusy>  200 280 340</PowerBusy>
+                    <PowerIdle>  100 110 117</PowerIdle>
+                    <idleConsumption> 18 </idleConsumption>
+                </bladeServer>
+        </Chassis>
+        <Chassis>
+                <chassisID> 1</chassisID>
+                <bladeServer>
+                    <ID> 0 </ID>
+                    <freq> 1 2 2.7 </freq>
+                    <PowerBusy>  200 280 340</PowerBusy>
+                    <PowerIdle>  100 110 117</PowerIdle>
+                    <idleConsumption> 18 </idleConsumption>
+                </bladeServer>
+        </Chassis>
+        <Chassis>
+                <chassisID> 2 </chassisID>
+                <bladeServer>
+                    <ID> 0 </ID>
+                    <freq> 1 2 2.7 </freq>
+                    <PowerBusy>  200 280 340</PowerBusy>
+                    <PowerIdle>  100 110 117</PowerIdle>
+                    <idleConsumption> 18 </idleConsumption>
+                </bladeServer>
+        </Chassis>
+        <Chassis>
+                <chassisID> 3 </chassisID>
+                <bladeServer>
+                    <ID> 0 </ID>
+                    <freq> 1 2 2.7 </freq>
+                    <PowerBusy>  200 280 340</PowerBusy>
+                    <PowerIdle>  100 110 117</PowerIdle>
+                    <idleConsumption> 18 </idleConsumption>
+                </bladeServer>
+        </Chassis>
+        <Chassis>
+                <chassisID> 4 </chassisID>
+                <bladeServer>
+                    <ID> 0 </ID>
+                    <freq> 1 2 2.7 </freq>
+                    <PowerBusy>  200 280 340</PowerBusy>
+                    <PowerIdle>  100 110 117</PowerIdle>
+                    <idleConsumption> 18 </idleConsumption>
+                </bladeServer>
+        </Chassis>
+        <Chassis>
+                <chassisID> 5 </chassisID>
+                <bladeServer>
+                    <ID> 0 </ID>
+                    <freq> 1 2 2.7 </freq>
+                    <PowerBusy>  200 280 340</PowerBusy>
+                    <PowerIdle>  100 110 117</PowerIdle>
+                    <idleConsumption> 18 </idleConsumption>
+                </bladeServer>
+        </Chassis>
+        <Chassis>
+                <chassisID> 6 </chassisID>
+                <bladeServer>
+                    <ID> 0 </ID>
+                    <freq> 1 2 2.7 </freq>
+                    <PowerBusy>  200 280 340</PowerBusy>
+                    <PowerIdle>  100 110 117</PowerIdle>
+                    <idleConsumption> 18 </idleConsumption>
+                </bladeServer>
+        </Chassis>
+        <Chassis>
+                <chassisID> 7 </chassisID>
+                <bladeServer>
+                    <ID> 0 </ID>
+                    <freq> 1 2 2.7 </freq>
+                    <PowerBusy>  200 280 340</PowerBusy>
+                    <PowerIdle>  100 110 117</PowerIdle>
+                    <idleConsumption> 18 </idleConsumption>
+                </bladeServer>
+        </Chassis>
+        <Chassis>
+                <chassisID> 8 </chassisID>
+                <bladeServer>
+                    <ID> 0 </ID>
+                    <freq> 1 2 2.7 </freq>
+                    <PowerBusy>  200 280 340</PowerBusy>
+                    <PowerIdle>  100 110 117</PowerIdle>
+                    <idleConsumption> 18 </idleConsumption>
+                </bladeServer>
+        </Chassis>
+        <Chassis>
+                <chassisID> 9</chassisID>
+                <bladeServer>
+                    <ID> 0 </ID>
+                    <freq> 1 2 2.7 </freq>
+                    <PowerBusy>  200 280 340</PowerBusy>
+                    <PowerIdle>  100 110 117</PowerIdle>
+                    <idleConsumption> 18 </idleConsumption>
+                </bladeServer>
+        </Chassis>
+        <Chassis>
+                <chassisID> 10</chassisID>
+                <bladeServer>
+                    <ID> 0 </ID>
+                    <freq> 1 2 2.7 </freq>
+                    <PowerBusy>  200 280 340</PowerBusy>
+                    <PowerIdle>  100 110 117</PowerIdle>
+                    <idleConsumption> 18 </idleConsumption>
+                </bladeServer>
+        </Chassis>
+        <Chassis>
+                <chassisID> 11</chassisID>
+                <bladeServer>
+                    <ID> 0 </ID>
+                    <freq> 1 2 2.7 </freq>
+                    <PowerBusy>  200 280 340</PowerBusy>
+                    <PowerIdle>  100 110 117</PowerIdle>
+                    <idleConsumption> 18 </idleConsumption>
+                </bladeServer>
+        </Chassis>
+        <Chassis>
+                <chassisID> 12</chassisID>
+                <bladeServer>
+                    <ID> 0 </ID>
+                    <freq> 1 2 2.7 </freq>
+                    <PowerBusy>  200 280 340</PowerBusy>
+                    <PowerIdle>  100 110 117</PowerIdle>
+                    <idleConsumption> 18 </idleConsumption>
+                </bladeServer>
+        </Chassis>
+        <Chassis>
+                <chassisID> 13</chassisID>
+                <bladeServer>
+                    <ID> 0 </ID>
+                    <freq> 1 2 2.7 </freq>
+                    <PowerBusy>  200 280 340</PowerBusy>
+                    <PowerIdle>  100 110 117</PowerIdle>
+                    <idleConsumption> 18 </idleConsumption>
+                </bladeServer>
+        </Chassis>
+        <Chassis>
+                <chassisID> 14</chassisID>
+                <bladeServer>
+                    <ID> 0 </ID>
+                    <freq> 1 2 2.7 </freq>
+                    <PowerBusy>  200 280 340</PowerBusy>
+                    <PowerIdle>  100 110 117</PowerIdle>
+                    <idleConsumption> 18 </idleConsumption>
+                </bladeServer>
+        </Chassis>
+        <Chassis>
+                <chassisID> 15</chassisID>
+                <bladeServer>
+                    <ID> 0 </ID>
+                    <freq> 1 2 2.7 </freq>
+                    <PowerBusy>  200 280 340</PowerBusy>
+                    <PowerIdle>  100 110 117</PowerIdle>
+                    <idleConsumption> 18 </idleConsumption>
+                </bladeServer>
+        </Chassis>
+        <Chassis>
+                <chassisID> 16</chassisID>
+                <bladeServer>
+                    <ID> 0 </ID>
+                    <freq> 1 2 2.7 </freq>
+                    <PowerBusy>  200 280 340</PowerBusy>
+                    <PowerIdle>  100 110 117</PowerIdle>
+                    <idleConsumption> 18 </idleConsumption>
+                </bladeServer>
+        </Chassis>
+        <Chassis>
+                <chassisID> 17</chassisID>
+                <bladeServer>
+                    <ID> 0 </ID>
+                    <freq> 1 2 2.7 </freq>
+                    <PowerBusy>  200 280 340</PowerBusy>
+                    <PowerIdle>  100 110 117</PowerIdle>
+                    <idleConsumption> 18 </idleConsumption>
+                </bladeServer>
+        </Chassis>
+        <Chassis>
+                <chassisID> 18</chassisID>
+                <bladeServer>
+                    <ID> 0 </ID>
+                    <freq> 1 2 2.7 </freq>
+                    <PowerBusy>  200 280 340</PowerBusy>
+                    <PowerIdle>  100 110 117</PowerIdle>
+                    <idleConsumption> 18 </idleConsumption>
+                </bladeServer>
+        </Chassis>
+        <Chassis>
+                <chassisID> 19</chassisID>
+                <bladeServer>
+                    <ID> 0 </ID>
+                    <freq> 1 2 2.7 </freq>
+                    <PowerBusy>  200 280 340</PowerBusy>
+                    <PowerIdle>  100 110 117</PowerIdle>
+                    <idleConsumption> 18 </idleConsumption>
+                </bladeServer>
+        </Chassis>
+        <Chassis>
+                <chassisID> 20</chassisID>
+                <bladeServer>
+                    <ID> 0 </ID>
+                    <freq> 1 2 2.7 </freq>
+                    <PowerBusy>  200 280 340</PowerBusy>
+                    <PowerIdle>  100 110 117</PowerIdle>
+                    <idleConsumption> 18 </idleConsumption>
+                </bladeServer>
+        </Chassis>
+        <Chassis>
+                <chassisID> 21</chassisID>
+                <bladeServer>
+                    <ID> 0 </ID>
+                    <freq> 1 2 2.7 </freq>
+                    <PowerBusy>  200 280 340</PowerBusy>
+                    <PowerIdle>  100 110 117</PowerIdle>
+                    <idleConsumption> 18 </idleConsumption>
+                </bladeServer>
+        </Chassis>
+        <Chassis>
+                <chassisID> 22</chassisID>
+                <bladeServer>
+                    <ID> 0 </ID>
+                    <freq> 1 2 2.7 </freq>
+                    <PowerBusy>  200 280 340</PowerBusy>
+                    <PowerIdle>  100 110 117</PowerIdle>
+                    <idleConsumption> 18 </idleConsumption>
+                </bladeServer>
+        </Chassis>
+        <Chassis>
+                <chassisID> 23</chassisID>
+                <bladeServer>
+                    <ID> 0 </ID>
+                    <freq> 1 2 2.7 </freq>
+                    <PowerBusy>  200 280 340</PowerBusy>
+                    <PowerIdle>  100 110 117</PowerIdle>
+                    <idleConsumption> 18 </idleConsumption>
+                </bladeServer>
+        </Chassis>
+        <Chassis>
+                <chassisID> 24</chassisID>
+                <bladeServer>
+                    <ID> 0 </ID>
+                    <freq> 1 2 2.7 </freq>
+                    <PowerBusy>  200 280 340</PowerBusy>
+                    <PowerIdle>  100 110 117</PowerIdle>
+                    <idleConsumption> 18 </idleConsumption>
+                </bladeServer>
+        </Chassis>
+        <Chassis>
+                <chassisID> 25</chassisID>
+                <bladeServer>
+                    <ID> 0 </ID>
+                    <freq> 1 2 2.7 </freq>
+                    <PowerBusy>  200 280 340</PowerBusy>
+                    <PowerIdle>  100 110 117</PowerIdle>
+                    <idleConsumption> 18 </idleConsumption>
+                </bladeServer>
+        </Chassis>
+        <Chassis>
+                <chassisID> 26</chassisID>
+                <bladeServer>
+                    <ID> 0 </ID>
+                    <freq> 1 2 2.7 </freq>
+                    <PowerBusy>  200 280 340</PowerBusy>
+                    <PowerIdle>  100 110 117</PowerIdle>
+                    <idleConsumption> 18 </idleConsumption>
+                </bladeServer>
+        </Chassis>
+        <Chassis>
+                <chassisID> 27</chassisID>
+                <bladeServer>
+                    <ID> 0 </ID>
+                    <freq> 1 2 2.7 </freq>
+                    <PowerBusy>  200 280 340</PowerBusy>
+                    <PowerIdle>  100 110 117</PowerIdle>
+                    <idleConsumption> 18 </idleConsumption>
+                </bladeServer>
+        </Chassis>
+        <Chassis>
+                <chassisID> 28</chassisID>
+                <bladeServer>
+                    <ID> 0 </ID>
+                    <freq> 1 2 2.7 </freq>
+                    <PowerBusy>  200 280 340</PowerBusy>
+                    <PowerIdle>  100 110 117</PowerIdle>
+                    <idleConsumption> 18 </idleConsumption>
+                </bladeServer>
+        </Chassis>
+        <Chassis>
+                <chassisID> 29</chassisID>
+                <bladeServer>
+                    <ID> 0 </ID>
+                    <freq> 1 2 2.7 </freq>
+                    <PowerBusy>  200 280 340</PowerBusy>
+                    <PowerIdle>  100 110 117</PowerIdle>
+                    <idleConsumption> 18 </idleConsumption>
+                </bladeServer>
+        </Chassis>
+        <Chassis>
+                <chassisID> 30 </chassisID>
+                <bladeServer>
+                    <ID> 0 </ID>
+                    <freq> 1 2 2.7 </freq>
+                    <PowerBusy>  200 280 340</PowerBusy>
+                    <PowerIdle>  100 110 117</PowerIdle>
+                    <idleConsumption> 18 </idleConsumption>
+                </bladeServer>
+        </Chassis>
+        <Chassis>
+                <chassisID> 31</chassisID>
+                <bladeServer>
+                    <ID> 0 </ID>
+                    <freq> 1 2 2.7 </freq>
+                    <PowerBusy>  200 280 340</PowerBusy>
+                    <PowerIdle>  100 110 117</PowerIdle>
+                    <idleConsumption> 18 </idleConsumption>
+                </bladeServer>
+        </Chassis>
+        <Chassis>
+                <chassisID> 32</chassisID>
+                <bladeServer>
+                    <ID> 0 </ID>
+                    <freq> 1 2 2.7 </freq>
+                    <PowerBusy>  200 280 340</PowerBusy>
+                    <PowerIdle>  100 110 117</PowerIdle>
+                    <idleConsumption> 18 </idleConsumption>
+                </bladeServer>
+        </Chassis>
+        <Chassis>
+                <chassisID> 33</chassisID>
+                <bladeServer>
+                    <ID> 0 </ID>
+                    <freq> 1 2 2.7 </freq>
+                    <PowerBusy>  200 280 340</PowerBusy>
+                    <PowerIdle>  100 110 117</PowerIdle>
+                    <idleConsumption> 18 </idleConsumption>
+                </bladeServer>
+        </Chassis>
+        <Chassis>
+                <chassisID> 34</chassisID>
+                <bladeServer>
+                    <ID> 0 </ID>
+                    <freq> 1 2 2.7 </freq>
+                    <PowerBusy>  200 280 340</PowerBusy>
+                    <PowerIdle>  100 110 117</PowerIdle>
+                    <idleConsumption> 18 </idleConsumption>
+                </bladeServer>
+        </Chassis>
+        <Chassis>
+                <chassisID> 35</chassisID>
+                <bladeServer>
+                    <ID> 0 </ID>
+                    <freq> 1 2 2.7 </freq>
+                    <PowerBusy>  200 280 340</PowerBusy>
+                    <PowerIdle>  100 110 117</PowerIdle>
+                    <idleConsumption> 18 </idleConsumption>
+                </bladeServer>
+        </Chassis>
+        <Chassis>
+                <chassisID> 36</chassisID>
+                <bladeServer>
+                    <ID> 0 </ID>
+                    <freq> 1 2 2.7 </freq>
+                    <PowerBusy>  200 280 340</PowerBusy>
+                    <PowerIdle>  100 110 117</PowerIdle>
+                    <idleConsumption> 18 </idleConsumption>
+                </bladeServer>
+        </Chassis>
+        <Chassis>
+                <chassisID> 37</chassisID>
+                <bladeServer>
+                    <ID> 0 </ID>
+                    <freq> 1 2 2.7 </freq>
+                    <PowerBusy>  200 280 340</PowerBusy>
+                    <PowerIdle>  100 110 117</PowerIdle>
+                    <idleConsumption> 18 </idleConsumption>
+                </bladeServer>
+        </Chassis>
+        <Chassis>
+                <chassisID> 38</chassisID>
+                <bladeServer>
+                    <ID> 0 </ID>
+                    <freq> 1 2 2.7 </freq>
+                    <PowerBusy>  200 280 340</PowerBusy>
+                    <PowerIdle>  100 110 117</PowerIdle>
+                    <idleConsumption> 18 </idleConsumption>
+                </bladeServer>
+        </Chassis>
+        <Chassis>
+                <chassisID> 39</chassisID>
+                <bladeServer>
+                    <ID> 0 </ID>
+                    <freq> 1 2 2.7 </freq>
+                    <PowerBusy>  200 280 340</PowerBusy>
+                    <PowerIdle>  100 110 117</PowerIdle>
+                    <idleConsumption> 18 </idleConsumption>
+                </bladeServer>
+        </Chassis>
+        <Chassis>
+                <chassisID> 40</chassisID>
+                <bladeServer>
+                    <ID> 0 </ID>
+                    <freq> 1 2 2.7 </freq>
+                    <PowerBusy>  200 280 340</PowerBusy>
+                    <PowerIdle>  100 110 117</PowerIdle>
+                    <idleConsumption> 18 </idleConsumption>
+                </bladeServer>
+        </Chassis>
+        <Chassis>
+                <chassisID> 41</chassisID>
+                <bladeServer>
+                    <ID> 0 </ID>
+                    <freq> 1 2 2.7 </freq>
+                    <PowerBusy>  200 280 340</PowerBusy>
+                    <PowerIdle>  100 110 117</PowerIdle>
+                    <idleConsumption> 18 </idleConsumption>
+                </bladeServer>
+        </Chassis>
+        <Chassis>
+                <chassisID> 42</chassisID>
+                <bladeServer>
+                    <ID> 0 </ID>
+                    <freq> 1 2 2.7 </freq>
+                    <PowerBusy>  200 280 340</PowerBusy>
+                    <PowerIdle>  100 110 117</PowerIdle>
+                    <idleConsumption> 18 </idleConsumption>
+                </bladeServer>
+        </Chassis>
+        <Chassis>
+                <chassisID> 43</chassisID>
+                <bladeServer>
+                    <ID> 0 </ID>
+                    <freq> 1 2 2.7 </freq>
+                    <PowerBusy>  200 280 340</PowerBusy>
+                    <PowerIdle>  100 110 117</PowerIdle>
+                    <idleConsumption> 18 </idleConsumption>
+                </bladeServer>
+        </Chassis>
+        <Chassis>
+                <chassisID> 44</chassisID>
+                <bladeServer>
+                    <ID> 0 </ID>
+                    <freq> 1 2 2.7 </freq>
+                    <PowerBusy>  200 280 340</PowerBusy>
+                    <PowerIdle>  100 110 117</PowerIdle>
+                    <idleConsumption> 18 </idleConsumption>
+                </bladeServer>
+        </Chassis>
+        <Chassis>
+                <chassisID> 45</chassisID>
+                <bladeServer>
+                    <ID> 0 </ID>
+                    <freq> 1 2 2.7 </freq>
+                    <PowerBusy>  200 280 340</PowerBusy>
+                    <PowerIdle>  100 110 117</PowerIdle>
+                    <idleConsumption> 18 </idleConsumption>
+                </bladeServer>
+        </Chassis>
+        <Chassis>
+                <chassisID> 46</chassisID>
+                <bladeServer>
+                    <ID> 0 </ID>
+                    <freq> 1 2 2.7 </freq>
+                    <PowerBusy>  200 280 340</PowerBusy>
+                    <PowerIdle>  100 110 117</PowerIdle>
+                    <idleConsumption> 18 </idleConsumption>
+                </bladeServer>
+        </Chassis>
+        <Chassis>
+                <chassisID> 47</chassisID>
+                <bladeServer>
+                    <ID> 0 </ID>
+                    <freq> 1 2 2.7 </freq>
+                    <PowerBusy>  200 280 340</PowerBusy>
+                    <PowerIdle>  100 110 117</PowerIdle>
+                    <idleConsumption> 18 </idleConsumption>
+                </bladeServer>
+        </Chassis>
+        <Chassis>
+                <chassisID> 48</chassisID>
+                <bladeServer>
+                    <ID> 0 </ID>
+                    <freq> 1 2 2.7 </freq>
+                    <PowerBusy>  200 280 340</PowerBusy>
+                    <PowerIdle>  100 110 117</PowerIdle>
+                    <idleConsumption> 18 </idleConsumption>
+                </bladeServer>
+        </Chassis>
+        <Chassis>
+                <chassisID> 49</chassisID>
+                <bladeServer>
+                    <ID> 0 </ID>
+                    <freq> 1 2 2.7 </freq>
+                    <PowerBusy>  200 280 340</PowerBusy>
+                    <PowerIdle>  100 110 117</PowerIdle>
+                    <idleConsumption> 18 </idleConsumption>
+                </bladeServer>
+        </Chassis>
+        <DMatrix> D15.txt </DMatrix>
+        <RedTemperature> 26 </RedTemperature>
+</DC>

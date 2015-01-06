@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>   
+<!--<Enterprise>
+    <ComputeNode> 8</ComputeNode>
+    <Rack>0 </Rack>
+    <ResourceAllocationAlg> Minimum-Heat-Recirculation </ResourceAllocationAlg>
+    <Scheduler> FCFS </Scheduler>
+    <Application>
+        <id> 20 </id>
+        <MaxNumberOfRequest> 500</MaxNumberOfRequest>
+        <NumberofBasicNode> 1 </NumberofBasicNode>
+        <minProcessor>2</minProcessor>
+        <maxProcessor> 8</maxProcessor>
+        <WorkLoad> 18HourLog.txt</WorkLoad>
+        <WorkLoad> testEnt.txt</WorkLoad>
+        <timeTreshold> 2 </timeTreshold>
+        <Percentage> 90  </Percentage>
+    </Application>
+</Enterprise>-->
+<Enterprise>
+    <ComputeNode> 8</ComputeNode>
+    <Rack>0,1 </Rack>
+    <ResourceAllocationAlg> Minimum-Heat-Recirculation </ResourceAllocationAlg>
+    <Scheduler> FCFS </Scheduler>
+    <EnterpriseApplication>
+        <id> 1 </id>
+        <MaxNumberOfRequest> 500</MaxNumberOfRequest>
+        <NumberofBasicNode> 1 </NumberofBasicNode>
+        <minProcessor>2</minProcessor>
+        <maxProcessor> 8</maxProcessor>
+        <EnterpriseApplicationWorkLoad > 18HourLog.txt</EnterpriseApplicationWorkLoad >
+        <timeTreshold> 1 </timeTreshold>
+        <Percentage> 90  </Percentage>
+    </EnterpriseApplication>
+  </Enterprise>

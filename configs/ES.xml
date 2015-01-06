@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>   
+<!--<Enterprise>
+    <ComputeNode> 250</ComputeNode>
+    <Rack>2,7,4,5,8 </Rack>
+    <ResourceAllocationAlg> Minimum-Heat-Recirculation </ResourceAllocationAlg>
+    <Scheduler> FCFS </Scheduler>
+    <Application>
+        <id> 10 </id>
+        <MaxNumberOfRequest> 1000</MaxNumberOfRequest>
+        <NumberofBasicNode> 1 </NumberofBasicNode>
+        <minProcessor>20</minProcessor>
+        <maxProcessor> 100</maxProcessor>
+       <WorkLoad> 18HourLog.txt</WorkLoad>
+        <WorkLoad> testEnt.txt</WorkLoad>
+        <timeTreshold> 2 </timeTreshold>
+        <Percentage> 92  </Percentage>
+    </Application>
+    <Application>
+        <id> 11 </id>
+        <MaxNumberOfRequest> 1000</MaxNumberOfRequest>
+        <NumberofBasicNode> 2 </NumberofBasicNode>
+        <minProcessor>20</minProcessor>
+        <maxProcessor> 100</maxProcessor>
+        <WorkLoad> 18HourLog.txt</WorkLoad>
+        <WorkLoad> testEnt.txt</WorkLoad>
+        <timeTreshold> 2 </timeTreshold>
+        <Percentage> 90 </Percentage>
+    </Application>
+    <Application>
+        <id> 12 </id>
+        <MaxNumberOfRequest> 1000</MaxNumberOfRequest>
+        <NumberofBasicNode> 3 </NumberofBasicNode>
+        <minProcessor>30</minProcessor>
+        <maxProcessor> 150</maxProcessor>
+        <WorkLoad> testEnt.txt</WorkLoad>
+        <WorkLoad> Day82by15.txt</WorkLoad>
+        <timeTreshold> 2 </timeTreshold>
+        <Percentage> 85  </Percentage>
+    </Application>
+  </Enterprise>-->
+  <Enterprise> 
+    <ComputeNode> 8</ComputeNode>
+    <Rack>2,3 </Rack>
+    <ResourceAllocationAlg> Minimum-Heat-Recirculation </ResourceAllocationAlg>
+    <Scheduler> FCFS </Scheduler>
+    <EnterpriseApplication>
+        <id> 1 </id>
+        <MaxNumberOfRequest> 1000</MaxNumberOfRequest>
+        <NumberofBasicNode> 1 </NumberofBasicNode>
+        <minProcessor>3</minProcessor>
+        <maxProcessor> 5</maxProcessor>
+        <EnterpriseApplicationWorkLoad> 18HourLog.txt</EnterpriseApplicationWorkLoad >
+        <timeTreshold> 2 </timeTreshold>
+        <Percentage> 90  </Percentage>
+    </EnterpriseApplication >
+    <EnterpriseApplication>
+        <id> 2 </id>
+        <MaxNumberOfRequest> 500</MaxNumberOfRequest>
+        <NumberofBasicNode> 1 </NumberofBasicNode>
+        <minProcessor>2</minProcessor>
+        <maxProcessor> 8</maxProcessor>
+        <EnterpriseApplicationWorkLoad > 18HourLog.txt</EnterpriseApplicationWorkLoad >
+        <timeTreshold> 2 </timeTreshold>
+        <Percentage> 90  </Percentage>
+    </EnterpriseApplication>
+ </Enterprise>

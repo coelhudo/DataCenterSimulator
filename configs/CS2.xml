@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>   
+<!-- <HPC>
+    <ComputeNode> 1</ComputeNode>
+    <Rack>1 </Rack>
+    <ResourceAllocationAlg> Minimum-Heat-Recirculation </ResourceAllocationAlg>
+    <Scheduler> FCFS</Scheduler>
+    <Workload>hpcLogTest.txt</Workload>
+</HPC>
+    -->
+    <HPC>
+    <Priority>1</Priority>
+    <ComputeNode> 20</ComputeNode>
+    <Rack>0,1,2,6 </Rack>
+    <ResourceAllocationAlg> Minimum-Heat-Recirculation </ResourceAllocationAlg>
+    <Scheduler> FCFS</Scheduler>
+    <Workload>100in40.txt</Workload>
+    </HPC>
