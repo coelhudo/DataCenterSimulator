@@ -98,8 +98,8 @@ public class InteractiveUser {
     void resetReadyFlag() {
         int i;
         for (i = 0; i < getComputeNodeList().size(); i++) {
-            getComputeNodeList().get(i).currentCPU = 0;
-            getComputeNodeList().get(i).ready = 1;
+            getComputeNodeList().get(i).setCurrentCPU(0);
+            getComputeNodeList().get(i).setReady(1);
         }
     }
 
@@ -136,8 +136,8 @@ public class InteractiveUser {
         double beenRunJobs = 0;  //number of jobs have been run so far
         int i = 0;
         for (i = 0; i < getComputeNodeList().size(); i++) {
-            if (getComputeNodeList().get(i).ready == 1) {
-                CPUpercentage = (100.0 - getComputeNodeList().get(i).currentCPU) * getComputeNodeList().get(i).Mips + CPUpercentage;
+            if (getComputeNodeList().get(i).getReady() == 1) {
+                CPUpercentage = (100.0 - getComputeNodeList().get(i).getCurrentCPU()) * getComputeNodeList().get(i).getMips() + CPUpercentage;
                 numberofReadyNodes++;
             }
         }
@@ -201,8 +201,8 @@ public class InteractiveUser {
         if (capacityOfNode_COPY == beenRunJobs)// we're done all our capacity
         {
             for (int k = 0; k < getComputeNodeList().size(); k++) {
-                getComputeNodeList().get(k).currentCPU = 100;
-                getComputeNodeList().get(k).ready = 0;
+                getComputeNodeList().get(k).setCurrentCPU(100);
+                getComputeNodeList().get(k).setReady(0);
             }
             usedNode = usedNode + getComputeNodeList().size();
         } else if (beenRunJobs < 0) {
@@ -215,18 +215,18 @@ public class InteractiveUser {
                     System.out.println("enterPrise BoN : servID =-2\t " + k + "\t" + numberofReadyNodes);
                     break;
                 }
-                double CPUspace = (100 - getComputeNodeList().get(serID).currentCPU) * getComputeNodeList().get(serID).Mips;
+                double CPUspace = (100 - getComputeNodeList().get(serID).getCurrentCPU()) * getComputeNodeList().get(serID).getMips();
                 double reqSpace = (int) Math.ceil(CPUspace * getMaxNumberOfRequest() / (getNumberofBasicNode() * 100.0));
-                getComputeNodeList().get(serID).currentCPU = 100;
-                getComputeNodeList().get(serID).ready = 0;
+                getComputeNodeList().get(serID).setCurrentCPU(100);
+                getComputeNodeList().get(serID).setReady(0);
                 beenRunJobs = beenRunJobs - reqSpace;
                 if (beenRunJobs == 0) {
                     k++;
                     break;
                 }
                 if (beenRunJobs < 0) {
-                    getComputeNodeList().get(serID).currentCPU = (int) Math.ceil((reqSpace + beenRunJobs) * 100 / reqSpace);
-                    getComputeNodeList().get(serID).ready = 1;
+                    getComputeNodeList().get(serID).setCurrentCPU((int) Math.ceil((reqSpace + beenRunJobs) * 100 / reqSpace));
+                    getComputeNodeList().get(serID).setReady(1);
                     k++;
                     break;
                 }
@@ -256,14 +256,14 @@ public class InteractiveUser {
 
     void setReadyFlag() {
         for (int i = 0; i < getComputeNodeList().size(); i++) {
-            if (getComputeNodeList().get(i).ready != -1) //-1 : means this server is idle not so as to compute its idle power
+            if (getComputeNodeList().get(i).getReady() != -1) //-1 : means this server is idle not so as to compute its idle power
             {
-                if (getComputeNodeList().get(i).WebBasedList.isEmpty()) {
-                    getComputeNodeList().get(i).ready = 1;
-                    getComputeNodeList().get(i).currentCPU = 0;
+                if (getComputeNodeList().get(i).getWebBasedList().isEmpty()) {
+                    getComputeNodeList().get(i).setReady(1);
+                    getComputeNodeList().get(i).setCurrentCPU(0);
                 }// bahs
                 else {
-                    getComputeNodeList().get(i).ready = 0;
+                    getComputeNodeList().get(i).setReady(0);
                     //System.out.println("queulength in SetReady FLag: "+ComputeNodeList.get(i).queueLength);
                 }
             }
@@ -285,7 +285,7 @@ public class InteractiveUser {
     public int numberofRunningNode() {
         int cnt = 0;
         for (int i = 0; i < getComputeNodeList().size(); i++) {
-            if (getComputeNodeList().get(i).ready > -1) {
+            if (getComputeNodeList().get(i).getReady() > -1) {
                 cnt++;
             }
         }
@@ -295,7 +295,7 @@ public class InteractiveUser {
     public int numberofIdleNode() {
         int cnt = 0;
         for (int i = 0; i < getComputeNodeList().size(); i++) {
-            if (getComputeNodeList().get(i).ready == -1) {
+            if (getComputeNodeList().get(i).getReady() == -1) {
                 cnt++;
             }
         }
@@ -304,7 +304,7 @@ public class InteractiveUser {
 
     public int myFirstIdleNode() {
         for (int i = 0; i < getComputeNodeList().size(); i++) {
-            if (getComputeNodeList().get(i).ready == -1) {
+            if (getComputeNodeList().get(i).getReady() == -1) {
                 return i;
             }
         }
@@ -317,13 +317,13 @@ public class InteractiveUser {
     public void activeOneNode() {
         int i = 0;
         for (i = 0; i < getComputeNodeList().size(); i++) {
-            if (getComputeNodeList().get(i).ready == -1) {
+            if (getComputeNodeList().get(i).getReady() == -1) {
                 getComputeNodeList().get(i).restart();
-                getComputeNodeList().get(i).ready = 1;
+                getComputeNodeList().get(i).setReady(1);
                 break;
             }
         }
-        System.out.println("MIIIIPPPSSS    " + getComputeNodeList().get(i).Mips);
+        System.out.println("MIIIIPPPSSS    " + getComputeNodeList().get(i).getMips());
     }
 
     public double numberOfWaitingJobs() {
@@ -341,7 +341,7 @@ public class InteractiveUser {
         int i = 0;
         double cpu = 0;
         for (i = 0; i < getComputeNodeList().size(); i++) {
-            cpu = cpu + getComputeNodeList().get(i).currentCPU;
+            cpu = cpu + getComputeNodeList().get(i).getCurrentCPU();
         }
         cpu = cpu / i;
         return cpu;

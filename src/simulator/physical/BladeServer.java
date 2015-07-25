@@ -6,6 +6,8 @@ import simulator.jobs.BatchJob;
 import simulator.jobs.EnterpriseJob;
 import simulator.jobs.InteractiveJob;
 import java.util.ArrayList;
+import java.util.List;
+
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import simulator.Simulator;
@@ -13,96 +15,106 @@ import simulator.ResponseTime;
 
 public class BladeServer {
 
-    public ArrayList<ResponseTime> responseList;
-    public ArrayList<ResponseTime> responseListWeb;
-    public int dependency = 0;
-    public double[] frequencyLevel;
-    public double[] powerBusy;
-    public double[] powerIdle;
-    public double Mips, idleConsumption;
+    private List<ResponseTime> responseList;
+    private List<ResponseTime> responseListWeb;
+    private int dependency = 0;
+    private double[] frequencyLevel;
+    private double[] powerBusy;
+    private double[] powerIdle;
+    private double Mips;
+	private double idleConsumption;
     String bladeType;
-    public double respTime = 0, resTimeEpoch = 0, currentCPU = 0, queueLength, totalJob = 0, totalJobEpoch = 0;
-    public int ready, backUpReady;
-    public ArrayList<BatchJob> activeBatchList, blockedBatchList;
-    public ArrayList<EnterpriseJob> EnterprizList;
-    public ArrayList<InteractiveJob> WebBasedList;
-    public int chassisID, totalFinishedJob = 0;
-    public int serverID, rackId;
+    private double respTime = 0;
+	private double resTimeEpoch = 0;
+	private double currentCPU = 0;
+	private double queueLength;
+	private double totalJob = 0;
+	private double totalJobEpoch = 0;
+    private int ready;
+	private int backUpReady;
+    private List<BatchJob> activeBatchList;
+	private List<BatchJob> blockedBatchList;
+    private List<EnterpriseJob> EnterprizList;
+    private List<InteractiveJob> WebBasedList;
+    private int chassisID;
+	private int totalFinishedJob = 0;
+    private int serverID;
+	private int rackId;
     //SLA Parameters
     //Application Bundle
-    public int timeTreshold = 0;
-    public int SLAPercentage;
+    private int timeTreshold = 0;
+    private int SLAPercentage;
     //WorkLoad Bundle
-    public int maxExpectedRes = 0;
-    public boolean SLAviolation;
+    private int maxExpectedRes = 0;
+    private boolean SLAviolation;
     ////////////////
 
     public BladeServer(int chasID) {
-        respTime = 0;
+        setRespTime(0);
         //if it is -1 means that it is not put in the proper position yet ID should be set
-        chassisID = chasID;
+        setChassisID(chasID);
         bladeType = new String();
-        currentCPU = 0;
-        activeBatchList = new ArrayList<BatchJob>();
-        blockedBatchList = new ArrayList<BatchJob>();
-        EnterprizList = new ArrayList<EnterpriseJob>();
-        WebBasedList = new ArrayList<InteractiveJob>();
-        responseList = new ArrayList<ResponseTime>();
-        responseListWeb = new ArrayList<ResponseTime>();
-        queueLength = 0;
+        setCurrentCPU(0);
+        setActiveBatchList(new ArrayList<BatchJob>());
+        setBlockedBatchList(new ArrayList<BatchJob>());
+        setEnterprizList(new ArrayList<EnterpriseJob>());
+        setWebBasedList(new ArrayList<InteractiveJob>());
+        setResponseList(new ArrayList<ResponseTime>());
+        setResponseListWeb(new ArrayList<ResponseTime>());
+        setQueueLength(0);
         //-3 means it is not assigned to any system yet
         //-2: it is in a system but is not assigned to an application
         //-1 idle
         //0 or 1 is ready or not just the matter of CPU utilization over 100% or not
-        ready = -3;
-        totalFinishedJob = 0;
-        SLAviolation = false;
-        Mips = 1.4;
+        setReady(-3);
+        setTotalFinishedJob(0);
+        setSLAviolation(false);
+        setMips(1.4);
     }
     //Transaction system
 
     public void configSLAparameter(int time, int percentage) {
-        timeTreshold = time;
-        SLAPercentage = percentage;
+        setTimeTreshold(time);
+        setSLAPercentage(percentage);
     }
     //Interactive System
 
     public void configSLAparameter(int time) {
-        maxExpectedRes = time;
+        setMaxExpectedRes(time);
     }
 
     public double[] getPwrParam() {
         double[] ret = new double[3];
         int i = getCurrentFreqLevel();
-        ret[0] = powerBusy[i];
-        ret[1] = powerIdle[i];
-        ret[2] = idleConsumption;
+        ret[0] = getPowerBusy()[i];
+        ret[1] = getPowerIdle()[i];
+        ret[2] = getIdleConsumption();
         return ret;
     }
 
     public double getPower() {
         double pw = 0, w = 0, a = 0, cpu = 0, mips = 0;
         int j;
-        cpu = currentCPU;
+        cpu = getCurrentCPU();
         // if(cpu!=0)
         // System.out.println(cpu +" \ttime ="+Main.localTime +" \t  chassi id="+chassisID );
         //if(servers.get(i).currentCPU==100) System.out.println(chassisID);
-        mips = Mips;
+        mips = getMips();
         if (mips == 0) {
-            pw = pw + idleConsumption;
+            pw = pw + getIdleConsumption();
             System.out.println("MIPS Zero!!!!");
         } else {
             for (j = 0; j < 3; j++) {
-                if (frequencyLevel[j] == mips) {
+                if (getFrequencyLevel()[j] == mips) {
                     break;
                 }
             }
-            w = powerIdle[j];
-            a = powerBusy[j] - w;
-            if (ready == -1 | ready == -2 | ready == -3) //if the server is in idle state
+            w = getPowerIdle()[j];
+            a = getPowerBusy()[j] - w;
+            if (getReady() == -1 | getReady() == -2 | getReady() == -3) //if the server is in idle state
             {
                 a = 0;
-                w = idleConsumption;
+                w = getIdleConsumption();
                 //System.out.println(Main.localTime);
             }
             pw = pw + a * cpu / 100 + w;
@@ -112,64 +124,64 @@ public class BladeServer {
     }
 
     public void restart() {
-        respTime = 0;
-        currentCPU = 0;
-        activeBatchList = new ArrayList<BatchJob>();
-        blockedBatchList = new ArrayList<BatchJob>();
-        EnterprizList = new ArrayList<EnterpriseJob>();
-        WebBasedList = new ArrayList<InteractiveJob>();
-        queueLength = 0;
+        setRespTime(0);
+        setCurrentCPU(0);
+        setActiveBatchList(new ArrayList<BatchJob>());
+        setBlockedBatchList(new ArrayList<BatchJob>());
+        setEnterprizList(new ArrayList<EnterpriseJob>());
+        setWebBasedList(new ArrayList<InteractiveJob>());
+        setQueueLength(0);
         /////check
-        ready = -1;
-        totalFinishedJob = 0;
-        Mips = 1.4;
-        resTimeEpoch = 0;
-        totalJob = 0;
-        totalJobEpoch = 0;
-        SLAviolation = false;
+        setReady(-1);
+        setTotalFinishedJob(0);
+        setMips(1.4);
+        setResTimeEpoch(0);
+        setTotalJob(0);
+        setTotalJobEpoch(0);
+        setSLAviolation(false);
     }
     //if it blongs to Enterprise system
 
     public void makeItIdle(EnterpriseJob jj) {
         //System.out.print("\tIdle\t\t\t\t\t@:"+Main.localTime);
-        ready = -1;
-        Mips = frequencyLevel[0];
+        setReady(-1);
+        setMips(getFrequencyLevel()[0]);
     }
 
     public void feedWork(InteractiveJob j) {
         double nums = j.getNumberOfJob();
         int time = j.getArrivalTimeOfJob();
-        queueLength = queueLength + nums;
+        setQueueLength(getQueueLength() + nums);
         InteractiveJob wJob = new InteractiveJob();
         wJob.setArrivalTimeOfJob(time);
         wJob.setNumberOfJob(nums);
-        WebBasedList.add(wJob);
-        totalJob = totalJob + nums;
+        getWebBasedList().add(wJob);
+        setTotalJob(getTotalJob() + nums);
     }
     //feeding batch type Job to blade server
 
     public void feedWork(BatchJob job) {
-        activeBatchList.add(job);
+        getActiveBatchList().add(job);
         setReady();
         setDependency();
-        totalJob++;
+        setTotalJob(getTotalJob() + 1);
     }
     //feeding webbased type Job to blade server
 
     public void feedWork(EnterpriseJob j) {
         double nums = j.getNumberOfJob();
         int time = j.getArrivalTimeOfJob();
-        queueLength = queueLength + nums;
+        setQueueLength(getQueueLength() + nums);
         EnterpriseJob wJob = new EnterpriseJob();
         wJob.setArrivalTimeOfJob(time);
         wJob.setNumberOfJob(nums);
-        EnterprizList.add(wJob);
-        totalJob = nums + totalJob;
+        getEnterprizList().add(wJob);
+        setTotalJob(nums + getTotalJob());
     }
 
     public int getCurrentFreqLevel() {
-        for (int i = 0; i < frequencyLevel.length; i++) {
-            if (Mips == frequencyLevel[i]) {
+        for (int i = 0; i < getFrequencyLevel().length; i++) {
+            if (getMips() == getFrequencyLevel()[i]) {
                 return i; //statrs from 1 not zero!
             }
         }
@@ -182,10 +194,10 @@ public class BladeServer {
         if (getCurrentFreqLevel() == 2) {
             return 0;
         } else {
-            Mips = frequencyLevel[getCurrentFreqLevel() + 1]; //getCurrentFrequency already increased the freq level
+            setMips(getFrequencyLevel()[getCurrentFreqLevel() + 1]); //getCurrentFrequency already increased the freq level
             Simulator.getInstance().mesg++;
         }
-        if (Mips == 0) {
+        if (getMips() == 0) {
             System.out.println("Mipss sefr shoodd!!!");
         }
         return 1;
@@ -196,10 +208,10 @@ public class BladeServer {
         if (getCurrentFreqLevel() == 0) {//System.out.println("Minimum Frequency Level ~~~ ");
             return 0;
         } else {
-            Mips = frequencyLevel[getCurrentFreqLevel() - 1];
+            setMips(getFrequencyLevel()[getCurrentFreqLevel() - 1]);
             Simulator.getInstance().mesg++;
         }
-        if (Mips == 0) {
+        if (getMips() == 0) {
             System.out.println("Mipss sefr shoodd!!!");
         }
         return 1;
@@ -208,34 +220,34 @@ public class BladeServer {
 
     public int run(BatchJob j) {
         double tempCpu = 0;
-        double num = activeBatchList.size(), index = 0, index_1 = 0, rmpart = 0;
+        double num = getActiveBatchList().size(), index = 0, index_1 = 0, rmpart = 0;
         int i = 0;
         double share = 0, share_t = 0, extraShare = 0;
         if (num == 0) {
-            ready = 1;
+            setReady(1);
             setDependency();
-            currentCPU = 0;
+            setCurrentCPU(0);
             return 0;
         }
-        share = Mips / num;//second freqcuency level!
+        share = getMips() / num;//second freqcuency level!
         // System.out.println("Share   "+share);
         share_t = share;
         int ret_done = 0;
         while (index < num) {   //index<activeBatchList.size()
             index_1 = index;
-            for (i = 0; i < activeBatchList.size(); i++) {
-                if (activeBatchList.get(i).getUtilization() <= share & activeBatchList.get(i).getIsChangedThisTime() == 0) {
-                    extraShare = extraShare + share - activeBatchList.get(i).getUtilization();
+            for (i = 0; i < getActiveBatchList().size(); i++) {
+                if (getActiveBatchList().get(i).getUtilization() <= share & getActiveBatchList().get(i).getIsChangedThisTime() == 0) {
+                    extraShare = extraShare + share - getActiveBatchList().get(i).getUtilization();
                     index++;
-                    activeBatchList.get(i).setIsChangedThisTime(1);
-                    tempCpu = activeBatchList.get(i).getUtilization() + tempCpu;
+                    getActiveBatchList().get(i).setIsChangedThisTime(1);
+                    tempCpu = getActiveBatchList().get(i).getUtilization() + tempCpu;
                     ret_done = done(i, share_t);
                     i = i - ret_done;
                     //i=i-done(i,activeBatchList.get(i).utilization);
                 }
             }
-            for (i = 0; i < activeBatchList.size(); i++) {
-                if (activeBatchList.get(i).getIsChangedThisTime() == 0) {
+            for (i = 0; i < getActiveBatchList().size(); i++) {
+                if (getActiveBatchList().get(i).getIsChangedThisTime() == 0) {
                     rmpart++;
                 }
             }
@@ -248,23 +260,23 @@ public class BladeServer {
                 break;
             }
         }
-        for (i = 0; i < activeBatchList.size(); i++) {
-            if (activeBatchList.get(i).getIsChangedThisTime() == 0) {
+        for (i = 0; i < getActiveBatchList().size(); i++) {
+            if (getActiveBatchList().get(i).getIsChangedThisTime() == 0) {
                 //ret_done=done(i,share/activeBatchList.get(i).utilization);
-                if ((share / activeBatchList.get(i).getUtilization()) > 1) {
-                    System.out.println("share more than one!\t" + share_t + "\t" + share + "\t" + activeBatchList.get(i).getUtilization() + "\t" + Simulator.getInstance().localTime);
+                if ((share / getActiveBatchList().get(i).getUtilization()) > 1) {
+                    System.out.println("share more than one!\t" + share_t + "\t" + share + "\t" + getActiveBatchList().get(i).getUtilization() + "\t" + Simulator.getInstance().localTime);
                 }
-                activeBatchList.get(i).setIsChangedThisTime(1);
-                ret_done = done(i, share / activeBatchList.get(i).getUtilization());
+                getActiveBatchList().get(i).setIsChangedThisTime(1);
+                ret_done = done(i, share / getActiveBatchList().get(i).getUtilization());
                 tempCpu = tempCpu + share;
                 i = i - ret_done; //if a job has been removed (finished) in DONE function
             }
         }
-        for (i = 0; i < activeBatchList.size(); i++) {
-            activeBatchList.get(i).setIsChangedThisTime(0);
+        for (i = 0; i < getActiveBatchList().size(); i++) {
+            getActiveBatchList().get(i).setIsChangedThisTime(0);
         }
         //Inja be nazaram /MIPS ham mikhad ke sad beshe fek konam MIPS ro dar nazar nagereftam!
-        currentCPU = 100.0 * tempCpu / Mips;
+        setCurrentCPU(100.0 * tempCpu / getMips());
         //System.out.println("CPU=     " + currentCPU +"num=     "+num);
         setReady();
         setDependency();
@@ -273,15 +285,15 @@ public class BladeServer {
 
     public int done(int tmp, double share) {
         //return 1 means: a job has been finished
-        BatchJob job = activeBatchList.get(tmp);
+        BatchJob job = getActiveBatchList().get(tmp);
         int ki;
         //int serverIndex=chassisID*DataCenter.theDataCenter.chassisSet.get(0).servers.size()+serverID; //getting this server ID
-        int serverIndex = serverID;
+        int serverIndex = getServerID();
         ki = job.getThisNodeIndex(serverIndex);
         if (share == 0) {
             System.out.println("In DONE share== zero00000000000000000000000000000000000000oo,revise the code  need some work!");
             job.setExitTime(Simulator.getInstance().localTime);
-            activeBatchList.remove(tmp--);
+            getActiveBatchList().remove(tmp--);
             //totalFinishedJob++;
             return 1;
         }
@@ -291,15 +303,15 @@ public class BladeServer {
         //setRemainAllNodes(tmp, share);
         job.getRemain()[ki] = job.getRemain()[ki] - share;
         if (job.getRemain()[ki] <= 0) {
-            blockedBatchList.add(job);
-            activeBatchList.get(tmp).setIsChangedThisTime(0);
-            activeBatchList.remove(job);//still exsits in other nodes
+            getBlockedBatchList().add(job);
+            getActiveBatchList().get(tmp).setIsChangedThisTime(0);
+            getActiveBatchList().remove(job);//still exsits in other nodes
             if (job.allDone()) {
 
                 job.jobFinished();
 
                 setDependency();
-                totalFinishedJob++;
+                setTotalFinishedJob(getTotalFinishedJob() + 1);
                 return 1;
             }
         }
@@ -307,7 +319,7 @@ public class BladeServer {
     }
 
     void setDependency() {
-        if (!blockedBatchList.isEmpty()) {
+        if (!getBlockedBatchList().isEmpty()) {
             dependency = 1;
             return;
         }
@@ -317,9 +329,9 @@ public class BladeServer {
     public void setReady() {
         double tmp = 0, treshold = 1;
         int num = 0, i;
-        num = activeBatchList.size();
+        num = getActiveBatchList().size();
         for (i = 0; i < num; i++) {
-            tmp = tmp + activeBatchList.get(i).getUtilization();
+            tmp = tmp + getActiveBatchList().get(i).getUtilization();
         }
         if (tmp >= treshold) {
             ready = 0;
@@ -342,29 +354,29 @@ public class BladeServer {
                 if (childNodes.item(i).getNodeName().equalsIgnoreCase("MIPS")) {
                     String str = childNodes.item(i).getChildNodes().item(0).getNodeValue().trim();
                     String[] split = str.split(" ");
-                    frequencyLevel = new double[split.length];
+                    setFrequencyLevel(new double[split.length]);
                     for (int j = 0; j < split.length; j++) {
-                        frequencyLevel[j] = Double.parseDouble(split[j]);
+                        getFrequencyLevel()[j] = Double.parseDouble(split[j]);
                     }
                 }
                 if (childNodes.item(i).getNodeName().equalsIgnoreCase("FullyLoaded")) {
                     String str = childNodes.item(i).getChildNodes().item(0).getNodeValue().trim();
                     String[] split = str.split(" ");
-                    powerBusy = new double[split.length];
+                    setPowerBusy(new double[split.length]);
                     for (int j = 0; j < split.length; j++) {
-                        powerBusy[j] = Double.parseDouble(split[j]);
+                        getPowerBusy()[j] = Double.parseDouble(split[j]);
                     }
                 }
                 if (childNodes.item(i).getNodeName().equalsIgnoreCase("Idle")) {
                     String str = childNodes.item(i).getChildNodes().item(0).getNodeValue().trim();
                     String[] split = str.split(" ");
-                    powerIdle = new double[split.length];
+                    setPowerIdle(new double[split.length]);
                     for (int j = 0; j < split.length; j++) {
-                        powerIdle[j] = Double.parseDouble(split[j]);
+                        getPowerIdle()[j] = Double.parseDouble(split[j]);
                     }
                 }
                 if (childNodes.item(i).getNodeName().equalsIgnoreCase("Standby")) {
-                    idleConsumption = Double.parseDouble(childNodes.item(i).getChildNodes().item(0).getNodeValue().trim());
+                    setIdleConsumption(Double.parseDouble(childNodes.item(i).getChildNodes().item(0).getNodeValue().trim()));
 
                 }
             }
@@ -394,6 +406,230 @@ public class BladeServer {
 //        {
 //            return i/DataCenter.theDataCenter.chassisSet.get(0).servers.size();
 //        }
+
+	public List<ResponseTime> getResponseList() {
+		return responseList;
+	}
+
+	public void setResponseList(List<ResponseTime> responseList) {
+		this.responseList = responseList;
+	}
+
+	public List<ResponseTime> getResponseListWeb() {
+		return responseListWeb;
+	}
+
+	public void setResponseListWeb(List<ResponseTime> responseListWeb) {
+		this.responseListWeb = responseListWeb;
+	}
+
+	public int getDependency() {
+		return dependency;
+	}
+
+	public void setDependency(int dependency) {
+		this.dependency = dependency;
+	}
+
+	public double[] getFrequencyLevel() {
+		return frequencyLevel;
+	}
+
+	public void setFrequencyLevel(double[] frequencyLevel) {
+		this.frequencyLevel = frequencyLevel;
+	}
+
+	public double[] getPowerBusy() {
+		return powerBusy;
+	}
+
+	public void setPowerBusy(double[] powerBusy) {
+		this.powerBusy = powerBusy;
+	}
+
+	public double[] getPowerIdle() {
+		return powerIdle;
+	}
+
+	public void setPowerIdle(double[] powerIdle) {
+		this.powerIdle = powerIdle;
+	}
+
+	public double getIdleConsumption() {
+		return idleConsumption;
+	}
+
+	public void setIdleConsumption(double idleConsumption) {
+		this.idleConsumption = idleConsumption;
+	}
+
+	public double getMips() {
+		return Mips;
+	}
+
+	public void setMips(double mips) {
+		Mips = mips;
+	}
+
+	public double getRespTime() {
+		return respTime;
+	}
+
+	public void setRespTime(double respTime) {
+		this.respTime = respTime;
+	}
+
+	public double getResTimeEpoch() {
+		return resTimeEpoch;
+	}
+
+	public void setResTimeEpoch(double resTimeEpoch) {
+		this.resTimeEpoch = resTimeEpoch;
+	}
+
+	public double getCurrentCPU() {
+		return currentCPU;
+	}
+
+	public void setCurrentCPU(double currentCPU) {
+		this.currentCPU = currentCPU;
+	}
+
+	public double getQueueLength() {
+		return queueLength;
+	}
+
+	public void setQueueLength(double queueLength) {
+		this.queueLength = queueLength;
+	}
+
+	public double getTotalJob() {
+		return totalJob;
+	}
+
+	public void setTotalJob(double totalJob) {
+		this.totalJob = totalJob;
+	}
+
+	public double getTotalJobEpoch() {
+		return totalJobEpoch;
+	}
+
+	public void setTotalJobEpoch(double totalJobEpoch) {
+		this.totalJobEpoch = totalJobEpoch;
+	}
+
+	public int getReady() {
+		return ready;
+	}
+
+	public void setReady(int ready) {
+		this.ready = ready;
+	}
+
+	public int getBackUpReady() {
+		return backUpReady;
+	}
+
+	public void setBackUpReady(int backUpReady) {
+		this.backUpReady = backUpReady;
+	}
+
+	public List<BatchJob> getActiveBatchList() {
+		return activeBatchList;
+	}
+
+	public void setActiveBatchList(List<BatchJob> activeBatchList) {
+		this.activeBatchList = activeBatchList;
+	}
+
+	public List<BatchJob> getBlockedBatchList() {
+		return blockedBatchList;
+	}
+
+	public void setBlockedBatchList(List<BatchJob> blockedBatchList) {
+		this.blockedBatchList = blockedBatchList;
+	}
+
+	public List<EnterpriseJob> getEnterprizList() {
+		return EnterprizList;
+	}
+
+	public void setEnterprizList(List<EnterpriseJob> enterprizList) {
+		EnterprizList = enterprizList;
+	}
+
+	public List<InteractiveJob> getWebBasedList() {
+		return WebBasedList;
+	}
+
+	public void setWebBasedList(List<InteractiveJob> webBasedList) {
+		WebBasedList = webBasedList;
+	}
+
+	public int getTotalFinishedJob() {
+		return totalFinishedJob;
+	}
+
+	public void setTotalFinishedJob(int totalFinishedJob) {
+		this.totalFinishedJob = totalFinishedJob;
+	}
+
+	public int getChassisID() {
+		return chassisID;
+	}
+
+	public void setChassisID(int chassisID) {
+		this.chassisID = chassisID;
+	}
+
+	public int getServerID() {
+		return serverID;
+	}
+
+	public void setServerID(int serverID) {
+		this.serverID = serverID;
+	}
+
+	public int getRackId() {
+		return rackId;
+	}
+
+	public void setRackId(int rackId) {
+		this.rackId = rackId;
+	}
+
+	public int getTimeTreshold() {
+		return timeTreshold;
+	}
+
+	public void setTimeTreshold(int timeTreshold) {
+		this.timeTreshold = timeTreshold;
+	}
+
+	public int getSLAPercentage() {
+		return SLAPercentage;
+	}
+
+	public void setSLAPercentage(int sLAPercentage) {
+		SLAPercentage = sLAPercentage;
+	}
+
+	public int getMaxExpectedRes() {
+		return maxExpectedRes;
+	}
+
+	public void setMaxExpectedRes(int maxExpectedRes) {
+		this.maxExpectedRes = maxExpectedRes;
+	}
+
+	public boolean isSLAviolation() {
+		return SLAviolation;
+	}
+
+	public void setSLAviolation(boolean sLAviolation) {
+		SLAviolation = sLAviolation;
+	}
 }
 
 /* double getMeanResTimeLastEpoch()

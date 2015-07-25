@@ -37,7 +37,7 @@ public class InteractiveSystem extends GeneralSystem {
     public int numberofAvailableNodetoAlocate() {
         int n = 0;
         for (int i = 0; i < getComputeNodeList().size(); i++) {
-            if (getComputeNodeList().get(i).ready == -2) {
+            if (getComputeNodeList().get(i).getReady() == -2) {
                 n++;
             }
         }

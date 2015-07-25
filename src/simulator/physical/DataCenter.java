@@ -129,16 +129,16 @@ public final class DataCenter {
             if (i == BSTemp.size()) {
                 System.out.println("DataCenter.java");
             }
-            ch.servers.get(j).frequencyLevel = new double[BSTemp.get(i).frequencyLevel.length];
-            ch.servers.get(j).powerBusy = new double[BSTemp.get(i).powerBusy.length];
-            ch.servers.get(j).powerIdle = new double[BSTemp.get(i).powerIdle.length];
-            for (int p = 0; p < BSTemp.get(i).frequencyLevel.length; p++) {
-                ch.servers.get(j).frequencyLevel[p] = BSTemp.get(i).frequencyLevel[p];
-                ch.servers.get(j).powerBusy[p] = BSTemp.get(i).powerBusy[p];
-                ch.servers.get(j).powerIdle[p] = BSTemp.get(i).powerIdle[p];
+            ch.servers.get(j).setFrequencyLevel(new double[BSTemp.get(i).getFrequencyLevel().length]);
+            ch.servers.get(j).setPowerBusy(new double[BSTemp.get(i).getPowerBusy().length]);
+            ch.servers.get(j).setPowerIdle(new double[BSTemp.get(i).getPowerIdle().length]);
+            for (int p = 0; p < BSTemp.get(i).getFrequencyLevel().length; p++) {
+                ch.servers.get(j).getFrequencyLevel()[p] = BSTemp.get(i).getFrequencyLevel()[p];
+                ch.servers.get(j).getPowerBusy()[p] = BSTemp.get(i).getPowerBusy()[p];
+                ch.servers.get(j).getPowerIdle()[p] = BSTemp.get(i).getPowerIdle()[p];
             }
-            ch.servers.get(j).idleConsumption = BSTemp.get(i).idleConsumption;
-            ch.servers.get(j).serverID = j;
+            ch.servers.get(j).setIdleConsumption(BSTemp.get(i).getIdleConsumption());
+            ch.servers.get(j).setServerID(j);
             ch.servers.get(j).bladeType = BSTemp.get(i).bladeType;
         }
 
@@ -188,8 +188,8 @@ public final class DataCenter {
                 cloneChassis(ch1, CHSTemp.get(k));
                 ch1.rackId = rackID;
                 for (int inx = 0; inx < ch1.servers.size(); inx++) {
-                    ch1.servers.get(inx).chassisID = numbOfSofarChassis + kk;
-                    ch1.servers.get(inx).rackId = rackID;
+                    ch1.servers.get(inx).setChassisID(numbOfSofarChassis + kk);
+                    ch1.servers.get(inx).setRackId(rackID);
                 }
                 chassisSet.add(ch1);
             }
@@ -202,21 +202,21 @@ public final class DataCenter {
         for (int i = 0; i < B.servers.size(); i++) {
             BladeServer a = new BladeServer(i);
             //
-            a.frequencyLevel = new double[B.servers.get(i).frequencyLevel.length];
-            a.powerBusy = new double[B.servers.get(i).powerBusy.length];
-            a.powerIdle = new double[B.servers.get(i).powerIdle.length];
-            int numberOfMIPSlevels = B.servers.get(i).frequencyLevel.length;
+            a.setFrequencyLevel(new double[B.servers.get(i).getFrequencyLevel().length]);
+            a.setPowerBusy(new double[B.servers.get(i).getPowerBusy().length]);
+            a.setPowerIdle(new double[B.servers.get(i).getPowerIdle().length]);
+            int numberOfMIPSlevels = B.servers.get(i).getFrequencyLevel().length;
             //
             A.servers.add(a);
 
             for (int p = 0; p < numberOfMIPSlevels; p++) {
-                A.servers.get(i).frequencyLevel[p] = B.servers.get(i).frequencyLevel[p];
-                A.servers.get(i).powerBusy[p] = B.servers.get(i).powerBusy[p];
-                A.servers.get(i).powerIdle[p] = B.servers.get(i).powerIdle[p];
+                A.servers.get(i).getFrequencyLevel()[p] = B.servers.get(i).getFrequencyLevel()[p];
+                A.servers.get(i).getPowerBusy()[p] = B.servers.get(i).getPowerBusy()[p];
+                A.servers.get(i).getPowerIdle()[p] = B.servers.get(i).getPowerIdle()[p];
             }
-            A.servers.get(i).idleConsumption = B.servers.get(i).idleConsumption;
+            A.servers.get(i).setIdleConsumption(B.servers.get(i).getIdleConsumption());
             A.servers.get(i).bladeType = B.servers.get(i).bladeType;
-            A.servers.get(i).serverID = numOfServerSoFar;
+            A.servers.get(i).setServerID(numOfServerSoFar);
             numOfServerSoFar++;
         }
     }

@@ -62,7 +62,7 @@ public class ComputeSystem extends GeneralSystem {
                 getComputeNodeList().get(temp).run(new BatchJob());
             }
             for (int temp = 0; temp < getComputeNodeList().size(); temp++) {
-                numberOfFinishedJob = getComputeNodeList().get(temp).totalFinishedJob + numberOfFinishedJob;
+                numberOfFinishedJob = getComputeNodeList().get(temp).getTotalFinishedJob() + numberOfFinishedJob;
             }
             // System.out.println("total "+totalJob+ "\t finished Job= "+numberOfFinishedJob+"\t LocalTime="+Main.localTime);
         }
@@ -87,7 +87,7 @@ public class ComputeSystem extends GeneralSystem {
 
     boolean allNodesAreBlocked() {
         for (int temp = 0; temp < getComputeNodeList().size(); temp++) {
-            if (getComputeNodeList().get(temp).ready != -1) {
+            if (getComputeNodeList().get(temp).getReady() != -1) {
                 return false;
             }
         }
@@ -96,15 +96,15 @@ public class ComputeSystem extends GeneralSystem {
 
     void makeSystemaBlocked() {
         for (int temp = 0; temp < getComputeNodeList().size(); temp++) {
-            getComputeNodeList().get(temp).backUpReady = getComputeNodeList().get(temp).ready;
-            getComputeNodeList().get(temp).ready = -1;
+            getComputeNodeList().get(temp).setBackUpReady(getComputeNodeList().get(temp).getReady());
+            getComputeNodeList().get(temp).setReady(-1);
 
         }
     }
 
     public void makeSystemaUnBlocked() {
         for (int temp = 0; temp < getComputeNodeList().size(); temp++) {
-            getComputeNodeList().get(temp).ready = getComputeNodeList().get(temp).backUpReady;
+            getComputeNodeList().get(temp).setReady(getComputeNodeList().get(temp).getBackUpReady());
         }
     }
 
@@ -128,9 +128,9 @@ public class ComputeSystem extends GeneralSystem {
                 job.setListOfServer(listServer);
                 getComputeNodeList().get(indexes[i]).feedWork(job);// feed also takes care of setting ready :)
                 if (indexes.length > 1) {
-                    getComputeNodeList().get(indexes[i]).dependency = 1; //means: this server has a process which is dependent on others
+                    getComputeNodeList().get(indexes[i]).setDependency(1); //means: this server has a process which is dependent on others
                 } else {
-                    getComputeNodeList().get(indexes[i]).dependency = 0;
+                    getComputeNodeList().get(indexes[i]).setDependency(0);
                 }
             }
             //Check if dealine is missed
@@ -153,7 +153,7 @@ public class ComputeSystem extends GeneralSystem {
         //int NumOfSerInChas=DataCenter.theDataCenter.chassisSet.get(0).servers.size();
         //map the index in CS compute node list to physical index(chassID , ServerID)
         for (int i = 0; i < list.length; i++) {
-            retList[i] = getComputeNodeList().get(list[i]).serverID;//chassisID*NumOfSerInChas+ComputeNodeList.get(list[i]).serverID;
+            retList[i] = getComputeNodeList().get(list[i]).getServerID();//chassisID*NumOfSerInChas+ComputeNodeList.get(list[i]).serverID;
         }
         return retList;
     }
@@ -244,7 +244,7 @@ public class ComputeSystem extends GeneralSystem {
     public int numberofRunningNode() {
         int cnt = 0;
         for (int i = 0; i < getComputeNodeList().size(); i++) {
-            if (getComputeNodeList().get(i).ready > -1) {
+            if (getComputeNodeList().get(i).getReady() > -1) {
                 cnt++;
             }
         }
@@ -254,7 +254,7 @@ public class ComputeSystem extends GeneralSystem {
     public int numberofIdleNode() {
         int cnt = 0;
         for (int i = 0; i < getComputeNodeList().size(); i++) {
-            if (getComputeNodeList().get(i).ready == -1) {
+            if (getComputeNodeList().get(i).getReady() == -1) {
                 cnt++;
             }
         }
@@ -264,13 +264,13 @@ public class ComputeSystem extends GeneralSystem {
     public void activeOneNode() {
         int i = 0;
         for (i = 0; i < getComputeNodeList().size(); i++) {
-            if (getComputeNodeList().get(i).ready == -1) {
+            if (getComputeNodeList().get(i).getReady() == -1) {
                 getComputeNodeList().get(i).restart();
-                getComputeNodeList().get(i).ready = 1;
+                getComputeNodeList().get(i).setReady(1);
                 break;
             }
         }
-        System.out.println("activeone node in compuet system MIIIIPPPSSS    " + getComputeNodeList().get(i).Mips);
+        System.out.println("activeone node in compuet system MIIIIPPPSSS    " + getComputeNodeList().get(i).getMips());
     }
 
     double finalized() {
@@ -281,7 +281,7 @@ public class ComputeSystem extends GeneralSystem {
         }
         double totalResponsetime = 0;
         for (int i = 0; i < getComputeNodeList().size(); i++) {
-            totalResponsetime = totalResponsetime + getComputeNodeList().get(i).respTime;
+            totalResponsetime = totalResponsetime + getComputeNodeList().get(i).getRespTime();
 
         }
         return totalResponsetime;

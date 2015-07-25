@@ -7,6 +7,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.xml.parsers.DocumentBuilder;
@@ -72,10 +73,10 @@ public class Simulator {
 	public int localTime = 1;
 	public int mesg = 0, mesg2 = 0;
 	public int epochApp = 60, epochSys = 120, epochSideApp = 120;
-	public ArrayList<ResponseTime> responseArray;
-	public ArrayList<InteractiveSystem> IS = new ArrayList<InteractiveSystem>();
-	public ArrayList<EnterpriseSystem> ES = new ArrayList<EnterpriseSystem>();
-	public ArrayList<ComputeSystem> CS = new ArrayList<ComputeSystem>();
+	public List<ResponseTime> responseArray;
+	public List<InteractiveSystem> IS = new ArrayList<InteractiveSystem>();
+	public List<EnterpriseSystem> ES = new ArrayList<EnterpriseSystem>();
+	public List<ComputeSystem> CS = new ArrayList<ComputeSystem>();
 	public double[] peakEstimate;
 	private OutputStreamWriter SLALogE = null;
 	private OutputStreamWriter SLALogI = null;
@@ -264,9 +265,9 @@ public class Simulator {
 
 	public void GetStat() {
 		for (int i = 0; i < 50; i++) {
-			datacenter.chassisSet.get(i).servers.get(0).ready = -1;
-			datacenter.chassisSet.get(i).servers.get(0).Mips = 1;// 1.04 1.4;
-			datacenter.chassisSet.get(i).servers.get(0).currentCPU = 100;
+			datacenter.chassisSet.get(i).servers.get(0).setReady(-1);
+			datacenter.chassisSet.get(i).servers.get(0).setMips(1);// 1.04 1.4;
+			datacenter.chassisSet.get(i).servers.get(0).setCurrentCPU(100);
 		}
 		datacenter.calculatePower();
 	}

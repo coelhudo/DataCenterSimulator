@@ -49,8 +49,8 @@ public abstract class ResourceAllocation {
         int difference = currentInvolved - predicdetNumber;
         //System.out.println("in releaseing resource    "+difference);
         for (int j = 0; j < difference; j++) {
-            int indexServer = ES.applicationList.get(0).getComputeNodeList().get(difference - j).serverID;
-            int indexChassis = ES.applicationList.get(0).getComputeNodeList().get(difference - j).chassisID;
+            int indexServer = ES.applicationList.get(0).getComputeNodeList().get(difference - j).getServerID();
+            int indexChassis = ES.applicationList.get(0).getComputeNodeList().get(difference - j).getChassisID();
             ES.applicationList.get(0).removeCompNodeFromBundle(dc.getServer(indexChassis, findServerInChasis(indexChassis, indexServer)));
 //                ES.applicationList.get(0).ComputeNodeIndex.remove(difference-j);/////// not exactly correct
             ES.setNumberofIdleNode(ES.getNumberofIdleNode() + 1);
@@ -67,13 +67,13 @@ public abstract class ResourceAllocation {
                         System.out.println("kkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkk");
                         return;
                     }
-                    int indexServer = ES.applicationList.get(i).getComputeNodeList().get(indexi).serverID;
-                    int indexChassis = ES.applicationList.get(i).getComputeNodeList().get(indexi).chassisID;
+                    int indexServer = ES.applicationList.get(i).getComputeNodeList().get(indexi).getServerID();
+                    int indexChassis = ES.applicationList.get(i).getComputeNodeList().get(indexi).getChassisID();
                     ES.applicationList.get(i).getComputeNodeList().remove(indexi);
                     final BladeServer server = dc.getServer(indexChassis, findServerInChasis(indexChassis, indexServer));
-                    server.ready = -2;
-                    server.SLAPercentage = 0;
-                    server.timeTreshold = 0;
+                    server.setReady(-2);
+                    server.setSLAPercentage(0);
+                    server.setTimeTreshold(0);
                     /////
                     if (ES.applicationList.get(i).numberofRunningNode() == 0) {
                         ES.applicationList.get(i).activeOneNode();
@@ -95,15 +95,15 @@ public abstract class ResourceAllocation {
                         //       ES.applicationList.get(0).queueApp.size()+"\t1->"+ES.applicationList.get(1).queueApp.size());
                         ES.getAM().getRecForCoop()[i] = 1;
                     } else {
-                        int indexServer = ES.getComputeNodeList().get(indexInComputeList).serverID;
-                        int indexChassis = ES.getComputeNodeList().get(indexInComputeList).chassisID;
+                        int indexServer = ES.getComputeNodeList().get(indexInComputeList).getServerID();
+                        int indexChassis = ES.getComputeNodeList().get(indexInComputeList).getChassisID();
                         final BladeServer server = dc.getServer(indexChassis, findServerInChasis(indexChassis, indexServer));
                         ES.applicationList.get(i).addCompNodetoBundle(server);
                         //                            ES.applicationList.get(i).ComputeNodeIndex.add(indexChassis); //need to think about that!
                         //now the node is assinged to a application and is ready!
-                        server.ready = 1;
-                        server.SLAPercentage = ES.applicationList.get(i).getSLAPercentage();
-                        server.timeTreshold = ES.applicationList.get(i).getTimeTreshold();
+                        server.setReady(1);
+                        server.setSLAPercentage(ES.applicationList.get(i).getSLAPercentage());
+                        server.setTimeTreshold(ES.applicationList.get(i).getTimeTreshold());
                         System.out.println("Alloc: to app:" + i + "\t#of comp Node=" + ES.applicationList.get(i).getComputeNodeList().size() + "\tsys Rdy to aloc=" + ES.numberofAvailableNodetoAlocate()
                                 + "\t@:" + Simulator.getInstance().localTime + "\tsys Number of running = " + ES.applicationList.get(i).numberofRunningNode());
                         Simulator.getInstance().mesg++;
@@ -130,19 +130,19 @@ public abstract class ResourceAllocation {
             int difference = predicdetNumber - currentInvolved;
             for (int i = 0; i < difference; i++) {
                 for (int j = 0; j < ES.getComputeNodeList().size(); j++) {
-                    if (ES.getComputeNodeList().get(j).ready == -2 // is in System but not assigned to application
-                            | ES.getComputeNodeList().get(j).ready == -1) //is idle
+                    if (ES.getComputeNodeList().get(j).getReady() == -2 // is in System but not assigned to application
+                            | ES.getComputeNodeList().get(j).getReady() == -1) //is idle
                     {
-                        int indexServer = ES.getComputeNodeList().get(j).serverID;
-                        int indexChassis = ES.getComputeNodeList().get(j).chassisID;
+                        int indexServer = ES.getComputeNodeList().get(j).getServerID();
+                        int indexChassis = ES.getComputeNodeList().get(j).getChassisID();
                         BladeServer server = dc.getServer(indexChassis, findServerInChasis(indexChassis, indexServer));
                         ES.applicationList.get(0).addCompNodetoBundle(server);
 //                            ES.applicationList.get(0).ComputeNodeIndex.add(indexChassis); //need to think about that!
                         //now the node is assinged to a application and is ready!
 
-                        server.ready = 1;
-                        server.SLAPercentage = ES.applicationList.get(0).getSLAPercentage();
-                        server.timeTreshold = ES.applicationList.get(0).getTimeTreshold();
+                        server.setReady(1);
+                        server.setSLAPercentage(ES.applicationList.get(0).getSLAPercentage());
+                        server.setTimeTreshold(ES.applicationList.get(0).getTimeTreshold());
                         ES.setNumberofIdleNode(ES.getNumberofIdleNode() - 1);
                         // here means we increased number of running nodes, needs to inform underneath AM
                         Simulator.getInstance().communicationAM = 1;
@@ -174,7 +174,7 @@ public abstract class ResourceAllocation {
             CS.addComputeNodeToSys(server);
             //this node is in this CS nodelist but it is not assigned to any job yet!
             //in Allocation module ready flag will be changed to 1
-            server.ready = 1;
+            server.setReady(1);
             CS.getComputeNodeIndex().add(serverIndex[1]);
             System.out.println("HPC System: ChassisID=" + indexChassis + "  & Server id = " + indexServer);
         }
@@ -195,7 +195,7 @@ public abstract class ResourceAllocation {
         CS.addComputeNodeToSys(server);
         //this node is in this CS nodelist but it is not assigned to any job yet!
         //in Allocation module ready flag will be changed to 1
-        server.ready = 1;
+        server.setReady(1);
         CS.getComputeNodeIndex().add(serverIndex[1]);
         System.out.println("HPC System: ChassisID=" + indexChassis + "  & Server id = " + indexServer);
     }
@@ -219,7 +219,7 @@ public abstract class ResourceAllocation {
             ES.addComputeNodeToSys(server);
             //this node is in this ES nodelist but it is not assigned to any application yet!
             //in Allocation module ready flag will be changed to 1
-            server.ready = -2;
+            server.setReady(-2);
             ES.getComputeNodeIndex().add(serverIndex[1]);
             System.out.println("Enterprise System: ChassisID=" + indexChassis + "  & Server id = " + indexServer);
         }
@@ -230,15 +230,15 @@ public abstract class ResourceAllocation {
         for (int i = 0; i < ES.applicationList.size(); i++) {
             neededProc = ES.applicationList.get(i).getMinProc();
             for (int index = 0; index < neededProc; index++) {
-                int indexServer = ES.getComputeNodeList().get(indexInComputeList).serverID;
-                int indexChassis = ES.getComputeNodeList().get(indexInComputeList++).chassisID;
+                int indexServer = ES.getComputeNodeList().get(indexInComputeList).getServerID();
+                int indexChassis = ES.getComputeNodeList().get(indexInComputeList++).getChassisID();
                 final BladeServer server = dc.getServer(indexChassis, findServerInChasis(indexChassis, indexServer));
                 ES.applicationList.get(i).addCompNodetoBundle(server);
 //                        ES.applicationList.get(i).ComputeNodeIndex.add(indexChassis); //need to think about that!
                 //now the node is assinged to a application and is ready!
-                server.ready = 1;
-                server.SLAPercentage = ES.applicationList.get(i).getSLAPercentage();
-                server.timeTreshold = ES.applicationList.get(i).getTimeTreshold();
+                server.setReady(1);
+                server.setSLAPercentage(ES.applicationList.get(i).getSLAPercentage());
+                server.setTimeTreshold(ES.applicationList.get(i).getTimeTreshold());
                 //System.out.println("Allocating compute node to the Enterprise BoN : Chassis#\t"+ indexChassis );
             }
         }
@@ -253,7 +253,7 @@ public abstract class ResourceAllocation {
 
     int findServerInChasis(int chassis, int servID) {
         for (int i = 0; i < dc.chassisSet.get(chassis).servers.size(); i++) {
-            if (dc.chassisSet.get(chassis).servers.get(i).serverID == servID) {
+            if (dc.chassisSet.get(chassis).servers.get(i).getServerID() == servID) {
                 return i;
             }
         }
@@ -278,7 +278,7 @@ public abstract class ResourceAllocation {
             WS.addComputeNodeToSys(server);
             //this node is in this WS nodelist but it is not assigned to any workload yet!
             //in Allocation module ready flag will be changed to 1
-            server.ready = -2;
+            server.setReady(-2);
             WS.getComputeNodeIndex().add(serverIndex[1]);
         }
     }
@@ -295,7 +295,7 @@ public abstract class ResourceAllocation {
         j = test.getMinProc();
         while (j-- > 0) {
             for (i = 0; i < WS.getComputeNodeList().size(); i++) {
-                if (WS.getComputeNodeList().get(i).ready == -2) //this node is not assigned yet!
+                if (WS.getComputeNodeList().get(i).getReady() == -2) //this node is not assigned yet!
                 {
                     break;
                 }
@@ -304,13 +304,13 @@ public abstract class ResourceAllocation {
             {
                 return -1;
             }
-            int serverId = WS.getComputeNodeList().get(i).serverID;
-            int indexChassis = WS.getComputeNodeList().get(i).chassisID;
+            int serverId = WS.getComputeNodeList().get(i).getServerID();
+            int indexChassis = WS.getComputeNodeList().get(i).getChassisID();
             serverId = findServerInChasis(indexChassis, serverId);
             final BladeServer server = dc.getServer(indexChassis, serverId);
             test.addCompNodetoBundle(server);
             test.getComputeNodeIndex().add(serverId);
-            server.ready = 1;
+            server.setReady(1);
             server.configSLAparameter(test.getMaxExpectedResTime());
             WS.setNumberofIdleNode(WS.getNumberofIdleNode() - 1);
             System.out.println("Allocating compute node to Inter. User: Chassis#" + indexChassis
@@ -332,7 +332,7 @@ public abstract class ResourceAllocation {
             for (; j < dc.chassisSet.size(); j++) {
                 if (dc.chassisSet.get(j).rackId == myRackID[i]) {
                     for (int k = 0; k < dc.chassisSet.get(j).servers.size(); k++) {
-                        myServerId[index++] = dc.chassisSet.get(j).servers.get(k).serverID;
+                        myServerId[index++] = dc.chassisSet.get(j).servers.get(k).getServerID();
                     }
                 }
             }
@@ -365,13 +365,13 @@ public abstract class ResourceAllocation {
                         System.out.println("kkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkk");
                         return;
                     }
-                    int indexServer = IS.getUserList().get(i).getComputeNodeList().get(indexi).serverID;
-                    int indexChassis = IS.getUserList().get(i).getComputeNodeList().get(indexi).chassisID;
+                    int indexServer = IS.getUserList().get(i).getComputeNodeList().get(indexi).getServerID();
+                    int indexChassis = IS.getUserList().get(i).getComputeNodeList().get(indexi).getChassisID();
                     IS.getUserList().get(i).getComputeNodeList().remove(indexi);
                     final BladeServer server = dc.getServer(indexChassis, findServerInChasis(indexChassis, indexServer));
-                    server.ready = -2;
-                    server.SLAPercentage = 0;
-                    server.timeTreshold = 0;
+                    server.setReady(-2);
+                    server.setSLAPercentage(0);
+                    server.setTimeTreshold(0);
                     /////
                     if (IS.getUserList().get(i).numberofRunningNode() == 0) {
                         IS.getUserList().get(i).activeOneNode();
@@ -393,14 +393,14 @@ public abstract class ResourceAllocation {
                                 + IS.getUserList().get(2).getQueueWL().size());
                         IS.getAM().getRecForCoop()[i] = 1;
                     } else {
-                        int indexServer = IS.getComputeNodeList().get(indexInComputeList).serverID;
-                        int indexChassis = IS.getComputeNodeList().get(indexInComputeList).chassisID;
+                        int indexServer = IS.getComputeNodeList().get(indexInComputeList).getServerID();
+                        int indexChassis = IS.getComputeNodeList().get(indexInComputeList).getChassisID();
                         final BladeServer server = dc.getServer(indexChassis, findServerInChasis(indexChassis, indexServer));
                         IS.getUserList().get(i).addCompNodetoBundle(server);
                         //                            ES.applicationList.get(i).ComputeNodeIndex.add(indexChassis); //need to think about that!
                         //now the node is assinged to a application and is ready!
-                        server.ready = 1;
-                        server.timeTreshold = IS.getUserList().get(i).getMaxExpectedResTime();
+                        server.setReady(1);
+                        server.setTimeTreshold(IS.getUserList().get(i).getMaxExpectedResTime());
                         System.out.println("Alloc: to User:" + i + "\t#of comp Node=" + IS.getUserList().get(i).getComputeNodeList().size() + "\tsys Rdy to aloc=" + IS.numberofAvailableNodetoAlocate()
                                 + "\t@:" + Simulator.getInstance().localTime + "\tsys Number of running = " + IS.getUserList().get(i).numberofRunningNode());
                     }

@@ -60,10 +60,10 @@ public class BatchJob extends Job {
 		}
 
 		BladeServer server = Simulator.getInstance().getDatacenter().getServer(getListOfServer()[0]);
-		server.respTime = waitTime + server.respTime;
+		server.setRespTime(waitTime + server.getRespTime());
 		for (int i = 0; i < getNumOfNode(); i++) {
 			server = Simulator.getInstance().getDatacenter().getServer(getListOfServer()[i]);
-			server.blockedBatchList.remove(this);
+			server.getBlockedBatchList().remove(this);
 		}
 
 		return;

@@ -53,7 +53,7 @@ public class ApplicationAM extends GeneralAM {
         int[] levels = {0, 0, 0};
         int index = 0;
         for (int j = 0; j < app.getComputeNodeList().size(); j++) {
-            if (app.getComputeNodeList().get(j).ready != -1) //it is idle
+            if (app.getComputeNodeList().get(j).getReady() != -1) //it is idle
             {
                 index = app.getComputeNodeList().get(j).getCurrentFreqLevel();
                 levels[index]++;
@@ -66,8 +66,8 @@ public class ApplicationAM extends GeneralAM {
 
     public void SLAcal() {
         app.setSLAviolation(0);
-        int percentage = app.getComputeNodeList().get(0).SLAPercentage;
-        int treshold = app.getComputeNodeList().get(0).timeTreshold;
+        int percentage = app.getComputeNodeList().get(0).getSLAPercentage();
+        int treshold = app.getComputeNodeList().get(0).getTimeTreshold();
         double tmp = 0;
         double totalJob = 0;
         for (int j = 0; j < app.getResponseList().size(); j++) {
@@ -109,7 +109,7 @@ public class ApplicationAM extends GeneralAM {
 
         if (violationInEpoch > 0) {
             for (int j = 0; j < app.getComputeNodeList().size(); j++) {
-                if (app.getComputeNodeList().get(j).ready != -1) //except idle nodes
+                if (app.getComputeNodeList().get(j).getReady() != -1) //except idle nodes
                 {
                     app.getComputeNodeList().get(j).increaseFrequency();
                 }
@@ -117,10 +117,10 @@ public class ApplicationAM extends GeneralAM {
             int tedad = app.getComputeNodeList().size();
             //Policy 4: if SLA violation then unshrink active server
             for (int j = 0; j < app.getComputeNodeList().size() && tedad > 0; j++) {
-                if (app.getComputeNodeList().get(j).ready == -1) {
+                if (app.getComputeNodeList().get(j).getReady() == -1) {
                     //System.out.println("Application:SLA" +app.id +"\tActive one Server!\t\t "+"Number of runinng:  "+app.numberofRunningNode());
-                    app.getComputeNodeList().get(j).ready = 1;
-                    app.getComputeNodeList().get(j).Mips = 1.4;
+                    app.getComputeNodeList().get(j).setReady(1);
+                    app.getComputeNodeList().get(j).setMips(1.4);
                     tedad--;
                     Simulator.getInstance().mesg++;
                 }
@@ -139,14 +139,14 @@ public class ApplicationAM extends GeneralAM {
         //Policy 1: if no SLA violation then decrease frequency
         if (violationInEpoch == 0) {
             for (int j = 0; j < app.getComputeNodeList().size(); j++) {
-                if (app.getComputeNodeList().get(j).ready != -1) {
+                if (app.getComputeNodeList().get(j).getReady() != -1) {
                     app.getComputeNodeList().get(j).decreaseFrequency();
                 }
             }
             //Policy 3: if no SLA violation then Shrink active server
 
             for (int j = 0; j < app.getComputeNodeList().size() & app.numberofRunningNode() > (app.getMinProc() + 1); j++) {
-                if (app.getComputeNodeList().get(j).ready == 1 && app.getComputeNodeList().get(j).currentCPU == 0) {
+                if (app.getComputeNodeList().get(j).getReady() == 1 && app.getComputeNodeList().get(j).getCurrentCPU() == 0) {
                     //System.out.print("App:GR  " +app.id);
                     app.getComputeNodeList().get(j).makeItIdle(new EnterpriseJob());
                     //System.out.println("\tIdle\t\t\t\t\t@:"+Main.localTime+"\tNumber of running==  "+app.numberofRunningNode());
@@ -157,17 +157,17 @@ public class ApplicationAM extends GeneralAM {
         //Policy 2: If SLA is violated then increase frequency  of the nodes
         if (violationInEpoch > 0) {
             for (int j = 0; j < app.getComputeNodeList().size(); j++) {
-                if (app.getComputeNodeList().get(j).ready == 0) {
+                if (app.getComputeNodeList().get(j).getReady() == 0) {
                     app.getComputeNodeList().get(j).increaseFrequency();
                 }
             }
             //Policy 4: if SLA violation then unshrink active server half of sleep nodes will wake up!
             int tedad = app.numberofIdleNode() / 2;
             for (int j = 0; j < app.getComputeNodeList().size() && tedad > 0; j++) {
-                if (app.getComputeNodeList().get(j).ready == -1) {
+                if (app.getComputeNodeList().get(j).getReady() == -1) {
                     System.out.println("App GR: " + app.getID() + "\tactive a Server!\t\t @" + Simulator.getInstance().localTime + "\tNumber of runinng:  " + app.numberofRunningNode());
-                    app.getComputeNodeList().get(j).ready = 1;
-                    app.getComputeNodeList().get(j).Mips = 1.4;
+                    app.getComputeNodeList().get(j).setReady(1);
+                    app.getComputeNodeList().get(j).setMips(1.4);
                     tedad--;
                     Simulator.getInstance().mesg++;
                 }
@@ -228,10 +228,10 @@ public class ApplicationAM extends GeneralAM {
 //        }
         BladeServer temp = new BladeServer(0);
         temp = app.getComputeNodeList().get(index);
-        temp.SLAPercentage = sys.applicationList.get(targetApp).getSLAPercentage();
-        temp.timeTreshold = sys.applicationList.get(targetApp).getTimeTreshold();
-        temp.Mips = 1.4;
-        temp.ready = 1;
+        temp.setSLAPercentage(sys.applicationList.get(targetApp).getSLAPercentage());
+        temp.setTimeTreshold(sys.applicationList.get(targetApp).getTimeTreshold());
+        temp.setMips(1.4);
+        temp.setReady(1);
         sys.applicationList.get(targetApp).getComputeNodeList().add(temp);
         app.getComputeNodeList().remove(index);
         System.out.println("app:\t" + app.getID() + " ----------> :\t\t " + targetApp + "\t\t@:" + Simulator.getInstance().localTime + "\tRunning target node= " + sys.applicationList.get(targetApp).numberofRunningNode() + "\tRunning this node= " + app.numberofRunningNode() + "\tstrtgy= " + StrategyWsitch);

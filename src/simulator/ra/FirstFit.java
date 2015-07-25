@@ -19,7 +19,7 @@ public class FirstFit extends ResourceAllocation {
     @Override
     public int nextServer(List<BladeServer> bs) {
         for (int j = 0; j < bs.size(); j++) {
-            if (bs.get(j).ready == 1) {
+            if (bs.get(j).getReady() == 1) {
                 return j;
             }
         }
@@ -37,7 +37,7 @@ public class FirstFit extends ResourceAllocation {
         ////////////////////////
         for (int l = 0; l < chassisList.size(); l++) {
             for (int k = 0; k < dc.chassisSet.get(chassisList.get(l)).servers.size(); k++) {
-                if (dc.chassisSet.get(chassisList.get(l)).servers.get(k).ready == -3) {
+                if (dc.chassisSet.get(chassisList.get(l)).servers.get(k).getReady() == -3) {
                     retValue[0] = chassisList.get(l);  // chassis id
                     retValue[1] = k;  //Server ID
                     return retValue;
@@ -55,7 +55,7 @@ public class FirstFit extends ResourceAllocation {
             list[i] = -2;
         }
         for (int k = 0; k < ComputeNodeList.size(); k++) {
-            if (ComputeNodeList.get(k).ready == 1) {
+            if (ComputeNodeList.get(k).getReady() == 1) {
                 totalReadyNodes++;
             }
         }
@@ -65,7 +65,7 @@ public class FirstFit extends ResourceAllocation {
         i = 0;
         for (j = 0; j < list.length; j++) {
             for (; i < ComputeNodeList.size(); i++) {
-                if (ComputeNodeList.get(i).ready == 1)//& ComputeNodeList.get(i).activeBatchList.size()==0)
+                if (ComputeNodeList.get(i).getReady() == 1)//& ComputeNodeList.get(i).activeBatchList.size()==0)
                 {
                     list[j] = i++;
                     break;

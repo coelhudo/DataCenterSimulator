@@ -23,7 +23,7 @@ public class Chassis {
     public boolean isReady() {
         int RDY = 0;
         for (int i = 0; i < servers.size(); i++) {
-            RDY = RDY + servers.get(i).ready;
+            RDY = RDY + servers.get(i).getReady();
         }
         if (RDY == 0) {
             return false;
