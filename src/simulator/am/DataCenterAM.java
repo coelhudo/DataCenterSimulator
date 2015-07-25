@@ -11,13 +11,13 @@ public class DataCenterAM extends GeneralAM {
     int[] SLAVioES;
     int[] SLAVioIS;
     int[] SLAVioCS;
-    public int blockTimer = 0;
-    public boolean SlowDownFromCooler = false;
+    private int blockTimer = 0;
+    private boolean SlowDownFromCooler = false;
 
     @Override
     public void monitor() {
-        if (blockTimer > 0) {
-            blockTimer--;
+        if (getBlockTimer() > 0) {
+            setBlockTimer(getBlockTimer() - 1);
         }
         SoSCS = new int[Simulator.getInstance().CS.size()];
         SoSES = new int[Simulator.getInstance().ES.size()];
@@ -26,7 +26,7 @@ public class DataCenterAM extends GeneralAM {
         SLAVioES = new int[Simulator.getInstance().ES.size()];
         SLAVioIS = new int[Simulator.getInstance().IS.size()];
         for (int i = 0; i < Simulator.getInstance().CS.size(); i++) {
-            SLAVioCS[i] = Simulator.getInstance().CS.get(i).am.SLAViolationGen;
+            SLAVioCS[i] = Simulator.getInstance().CS.get(i).getAM().SLAViolationGen;
         }
     }
 
@@ -49,13 +49,13 @@ public class DataCenterAM extends GeneralAM {
         end 
          */
         for (int i = 0; i < SLAVioCS.length; i++) {
-            if (SLAVioCS[i] > 0 && Simulator.getInstance().CS.get(i).am.strategy == Simulator.StrategyEnum.Green) {
-                Simulator.getInstance().CS.get(i).am.strategy = Simulator.StrategyEnum.SLA;
+            if (SLAVioCS[i] > 0 && Simulator.getInstance().CS.get(i).getAM().strategy == Simulator.StrategyEnum.Green) {
+                Simulator.getInstance().CS.get(i).getAM().strategy = Simulator.StrategyEnum.SLA;
                 System.out.println("AM in DC Switch HPC system: " + i + " to SLA  @  " + Simulator.getInstance().localTime);
             }
-            if (SLAVioCS[i] == 0 && Simulator.getInstance().CS.get(i).am.strategy == Simulator.StrategyEnum.SLA) {
+            if (SLAVioCS[i] == 0 && Simulator.getInstance().CS.get(i).getAM().strategy == Simulator.StrategyEnum.SLA) {
                 System.out.println("AM in DC Switch HPC system: " + i + "  to Green @  " + Simulator.getInstance().localTime);
-                Simulator.getInstance().CS.get(i).am.strategy = Simulator.StrategyEnum.Green;
+                Simulator.getInstance().CS.get(i).getAM().strategy = Simulator.StrategyEnum.Green;
             }
         }
         /* if Slowdown from cooler        begin 
@@ -64,19 +64,19 @@ public class DataCenterAM extends GeneralAM {
         end
         if available nodes in system allocate one node to the SOS sender
          */
-        if (blockTimer == 0 && Simulator.getInstance().CS.get(0).blocked) //time to unblock hpc system
+        if (getBlockTimer() == 0 && Simulator.getInstance().CS.get(0).blocked) //time to unblock hpc system
         {
             Simulator.getInstance().CS.get(0).blocked = false;
             Simulator.getInstance().CS.get(0).makeSystemaUnBlocked();
             System.out.println("unblocked a system@ time : \t" + Simulator.getInstance().localTime);
         }
-        if (SlowDownFromCooler) {
+        if (isSlowDownFromCooler()) {
             if (!Simulator.getInstance().CS.get(0).blocked) {
                 Simulator.getInstance().CS.get(0).blocked = true;
-                blockTimer = 120;
+                setBlockTimer(120);
                 System.out.println("A system is blocked and we have this # of systems:  " + Simulator.getInstance().CS.size() + "@ time= \t" + Simulator.getInstance().localTime);
                 //Every system should work in Greeeen
-                Simulator.getInstance().CS.get(1).am.strategy = Simulator.StrategyEnum.Green;
+                Simulator.getInstance().CS.get(1).getAM().strategy = Simulator.StrategyEnum.Green;
             } else {
                 System.out.println("AM in data center level : HPC system is already blocked nothing can do here @: " + Simulator.getInstance().localTime);
             }
@@ -99,6 +99,22 @@ public class DataCenterAM extends GeneralAM {
     }
 
     public void resetBlockTimer() {
-        blockTimer = 0;
+        setBlockTimer(0);
     }
+
+	public int getBlockTimer() {
+		return blockTimer;
+	}
+
+	public void setBlockTimer(int blockTimer) {
+		this.blockTimer = blockTimer;
+	}
+
+	public boolean isSlowDownFromCooler() {
+		return SlowDownFromCooler;
+	}
+
+	public void setSlowDownFromCooler(boolean slowDownFromCooler) {
+		SlowDownFromCooler = slowDownFromCooler;
+	}
 }

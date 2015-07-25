@@ -27,8 +27,8 @@ public class IteractiveUserAM extends GeneralAM {
         //localUtilCal();
         getPercentageOfComputingPwr();
         ///Check if its neighborhood are not happy to see if it can help or not!
-        for (int i = 0; i < sys.UserList.size(); i++) {
-            if (sys.am.getRecForCoop()[i] == 1) {
+        for (int i = 0; i < sys.getUserList().size(); i++) {
+            if (sys.getAM().getRecForCoop()[i] == 1) {
                 //TODO
             }
         }
@@ -39,7 +39,7 @@ public class IteractiveUserAM extends GeneralAM {
         double[] pwr = User.getAveragePwrParam();
         double x = CPU * (pwr[0] - pwr[1]) / 100 + User.numberofIdleNode() * pwr[2] + User.numberofRunningNode() * pwr[1];
         //U= a x+ b y a=b=1
-        util = x + User.SLAviolation;
+        util = x + User.getSLAviolation();
         //util=sigmoid(util);
         //System.out.println(util);
     }
@@ -47,15 +47,15 @@ public class IteractiveUserAM extends GeneralAM {
     public double getPercentageOfComputingPwr() {
         int[] levels = {0, 0, 0};
         int index = 0;
-        for (int j = 0; j < User.ComputeNodeList.size(); j++) {
-            if (User.ComputeNodeList.get(j).ready != -1) //it is idle
+        for (int j = 0; j < User.getComputeNodeList().size(); j++) {
+            if (User.getComputeNodeList().get(j).ready != -1) //it is idle
             {
-                index = User.ComputeNodeList.get(j).getCurrentFreqLevel();
+                index = User.getComputeNodeList().get(j).getCurrentFreqLevel();
                 levels[index]++;
             }
         }
         percnt = percnt + levels[0] + 2 * levels[1] + 3 * levels[2];
-        sys.am.getCompPwrApps()[User.id] = sys.am.getCompPwrApps()[User.id] + levels[0] + 2 * levels[1] + 3 * levels[2];
+        sys.getAM().getCompPwrApps()[User.getID()] = sys.getAM().getCompPwrApps()[User.getID()] + levels[0] + 2 * levels[1] + 3 * levels[2];
         return percnt;
     }
 
@@ -76,19 +76,19 @@ public class IteractiveUserAM extends GeneralAM {
         }
 
         if (violationInEpoch > 0) {
-            for (int j = 0; j < User.ComputeNodeList.size(); j++) {
-                if (User.ComputeNodeList.get(j).ready != -1) //except idle nodes
+            for (int j = 0; j < User.getComputeNodeList().size(); j++) {
+                if (User.getComputeNodeList().get(j).ready != -1) //except idle nodes
                 {
-                    User.ComputeNodeList.get(j).increaseFrequency();
+                    User.getComputeNodeList().get(j).increaseFrequency();
                 }
             }
-            int tedad = User.ComputeNodeList.size();
+            int tedad = User.getComputeNodeList().size();
             //Policy 4: if SLA violation then unshrink active server
-            for (int j = 0; j < User.ComputeNodeList.size() && tedad > 0; j++) {
-                if (User.ComputeNodeList.get(j).ready == -1) {
+            for (int j = 0; j < User.getComputeNodeList().size() && tedad > 0; j++) {
+                if (User.getComputeNodeList().get(j).ready == -1) {
                     //System.out.println("Application:SLA" +app.id +"\tActive one Server!\t\t "+"Number of runinng:  "+app.numberofRunningNode());
-                    User.ComputeNodeList.get(j).ready = 1;
-                    User.ComputeNodeList.get(j).Mips = 1.4;
+                    User.getComputeNodeList().get(j).ready = 1;
+                    User.getComputeNodeList().get(j).Mips = 1.4;
                     tedad--;
                 }
             }
@@ -105,36 +105,36 @@ public class IteractiveUserAM extends GeneralAM {
         }
         //Policy 1: if no SLA violation then decrease frequency
         if (violationInEpoch == 0) {
-            for (int j = 0; j < User.ComputeNodeList.size(); j++) {
-                if (User.ComputeNodeList.get(j).ready != -1) {
-                    User.ComputeNodeList.get(j).decreaseFrequency();
+            for (int j = 0; j < User.getComputeNodeList().size(); j++) {
+                if (User.getComputeNodeList().get(j).ready != -1) {
+                    User.getComputeNodeList().get(j).decreaseFrequency();
                 }
             }
             //Policy 3: if no SLA violation then Shrink active server
 
-            for (int j = 0; j < User.ComputeNodeList.size() & User.numberofRunningNode() > (User.minProc + 1); j++) {
-                if (User.ComputeNodeList.get(j).ready == 1 && User.ComputeNodeList.get(j).currentCPU == 0) {
+            for (int j = 0; j < User.getComputeNodeList().size() & User.numberofRunningNode() > (User.getMinProc() + 1); j++) {
+                if (User.getComputeNodeList().get(j).ready == 1 && User.getComputeNodeList().get(j).currentCPU == 0) {
                     //System.out.print("App:GR  " +app.id);
-                    User.ComputeNodeList.get(j).makeItIdle(new EnterpriseJob());
+                    User.getComputeNodeList().get(j).makeItIdle(new EnterpriseJob());
                     //System.out.println("\tIdle\t\t\t\t\t@:"+Main.localTime+"\tNumber of running==  "+app.numberofRunningNode());
                 }
             }
         }
         //Policy 2: If SLA is violated then increase frequency  of the nodes
         if (violationInEpoch > 0) {
-            for (int j = 0; j < User.ComputeNodeList.size(); j++) {
-                if (User.ComputeNodeList.get(j).ready == 0) {
-                    User.ComputeNodeList.get(j).increaseFrequency();
+            for (int j = 0; j < User.getComputeNodeList().size(); j++) {
+                if (User.getComputeNodeList().get(j).ready == 0) {
+                    User.getComputeNodeList().get(j).increaseFrequency();
                 }
             }
             //Policy 4: if SLA violation then unshrink active server half of sleep nodes will wake up!
             int tedad = User.numberofIdleNode() / 2;
-            for (int j = 0; j < User.ComputeNodeList.size() && tedad > 0; j++) {
-                if (User.ComputeNodeList.get(j).ready == -1) {
-                    System.out.println("USer GR: " + User.id + "\tactive a Server!\t\t @" + Simulator.getInstance().localTime
+            for (int j = 0; j < User.getComputeNodeList().size() && tedad > 0; j++) {
+                if (User.getComputeNodeList().get(j).ready == -1) {
+                    System.out.println("USer GR: " + User.getID() + "\tactive a Server!\t\t @" + Simulator.getInstance().localTime
                             + "\tNumber of runinng:  " + User.numberofRunningNode());
-                    User.ComputeNodeList.get(j).ready = 1;
-                    User.ComputeNodeList.get(j).Mips = 1.4;
+                    User.getComputeNodeList().get(j).ready = 1;
+                    User.getComputeNodeList().get(j).Mips = 1.4;
                     tedad--;
                 }
             }
@@ -182,7 +182,7 @@ public class IteractiveUserAM extends GeneralAM {
         if (index == -2) {
             return false;
         }
-        if (User.ComputeNodeList.size() == 1)///*app.minProc*/ || sys.applicationList.get(targetApp).ComputeNodeList.size()==sys.applicationList.get(targetApp).maxProc)
+        if (User.getComputeNodeList().size() == 1)///*app.minProc*/ || sys.applicationList.get(targetApp).ComputeNodeList.size()==sys.applicationList.get(targetApp).maxProc)
         {
             return false;
         }
@@ -193,13 +193,13 @@ public class IteractiveUserAM extends GeneralAM {
 //            return;
 //        }
         BladeServer temp = new BladeServer(0);
-        temp = User.ComputeNodeList.get(index);
-        temp.maxExpectedRes = sys.UserList.get(targetUsr).maxExpectedResTime;
+        temp = User.getComputeNodeList().get(index);
+        temp.maxExpectedRes = sys.getUserList().get(targetUsr).getMaxExpectedResTime();
         temp.Mips = 1.4;
         temp.ready = 1;
-        sys.UserList.get(targetUsr).ComputeNodeList.add(temp);
-        User.ComputeNodeList.remove(index);
-        System.out.println("User :\t" + User.id + " ----------> :\t\t " + targetUsr + "\t\t@:" + Simulator.getInstance().localTime + "\tRunning target node= " + sys.UserList.get(targetUsr).numberofRunningNode() + "\tRunning this node= " + User.numberofRunningNode() + "\tstrtgy= " + StrategyWsitch);
+        sys.getUserList().get(targetUsr).getComputeNodeList().add(temp);
+        User.getComputeNodeList().remove(index);
+        System.out.println("User :\t" + User.getID() + " ----------> :\t\t " + targetUsr + "\t\t@:" + Simulator.getInstance().localTime + "\tRunning target node= " + sys.getUserList().get(targetUsr).numberofRunningNode() + "\tRunning this node= " + User.numberofRunningNode() + "\tstrtgy= " + StrategyWsitch);
         StrategyWsitch = Simulator.StrategyEnum.SLA;
         return true;
     }

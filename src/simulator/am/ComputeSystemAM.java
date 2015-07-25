@@ -20,10 +20,10 @@ public class ComputeSystemAM extends GeneralAM {
         double percnt = 0;
         int[] levels = {0, 0, 0};
         int index = 0;
-        for (int j = 0; j < CS.ComputeNodeList.size(); j++) {
-            if (CS.ComputeNodeList.get(j).ready != -1) //it is idle
+        for (int j = 0; j < CS.getComputeNodeList().size(); j++) {
+            if (CS.getComputeNodeList().get(j).ready != -1) //it is idle
             {
-                index = CS.ComputeNodeList.get(j).getCurrentFreqLevel();
+                index = CS.getComputeNodeList().get(j).getCurrentFreqLevel();
                 levels[index]++;
             }
         }
@@ -42,19 +42,19 @@ public class ComputeSystemAM extends GeneralAM {
         if(all nodes are busy and this system is not blocked)
         send(SOS, theParent)
          */ {
-            for (int i = 0; i < CS.ComputeNodeList.size(); i++) {
-                if (CS.ComputeNodeList.get(i).ready == 0) {
-                    CS.ComputeNodeList.get(i).increaseFrequency();
+            for (int i = 0; i < CS.getComputeNodeList().size(); i++) {
+                if (CS.getComputeNodeList().get(i).ready == 0) {
+                    CS.getComputeNodeList().get(i).increaseFrequency();
                 }
             }
             // Activate just half of sleep nodes
             int hlfNumofSlept = CS.numberofIdleNode() / 2;
             int tedad = 0;
-            for (int i = 0; i < CS.ComputeNodeList.size(); i++) {
-                if (CS.ComputeNodeList.get(i).ready == -1) {
+            for (int i = 0; i < CS.getComputeNodeList().size(); i++) {
+                if (CS.getComputeNodeList().get(i).ready == -1) {
                     System.out.println("CSys GR: " + "\tactive a Server!\t\t @" + Simulator.getInstance().localTime + "\tNumber of runinng:  " + CS.numberofRunningNode());
-                    CS.ComputeNodeList.get(i).ready = 1;
-                    CS.ComputeNodeList.get(i).Mips = 1.4;
+                    CS.getComputeNodeList().get(i).ready = 1;
+                    CS.getComputeNodeList().get(i).Mips = 1.4;
                     Simulator.getInstance().mesg2++;
                     tedad++;
                 }
@@ -71,17 +71,17 @@ public class ComputeSystemAM extends GeneralAM {
         If node is ready and is not used make it sleep
          */ {
             //Decrease freq. of all nodes
-            for (int i = 0; i < CS.ComputeNodeList.size(); i++) {
-                if (CS.ComputeNodeList.get(i).ready > -1) {
-                    CS.ComputeNodeList.get(i).decreaseFrequency();
+            for (int i = 0; i < CS.getComputeNodeList().size(); i++) {
+                if (CS.getComputeNodeList().get(i).ready > -1) {
+                    CS.getComputeNodeList().get(i).decreaseFrequency();
 
                 }
             }
             // If node is ready and is not used make it sleep
-            for (int i = 0; i < CS.ComputeNodeList.size(); i++) {
-                if (CS.ComputeNodeList.get(i).activeBatchList.isEmpty() && CS.ComputeNodeList.get(i).blockedBatchList.isEmpty() && CS.ComputeNodeList.get(i).ready > -1) {
+            for (int i = 0; i < CS.getComputeNodeList().size(); i++) {
+                if (CS.getComputeNodeList().get(i).activeBatchList.isEmpty() && CS.getComputeNodeList().get(i).blockedBatchList.isEmpty() && CS.getComputeNodeList().get(i).ready > -1) {
                     Simulator.getInstance().mesg2++;
-                    CS.ComputeNodeList.get(i).ready = -1;
+                    CS.getComputeNodeList().get(i).ready = -1;
                 }
             }
         }
@@ -96,13 +96,13 @@ public class ComputeSystemAM extends GeneralAM {
          */
         if (SLAViolationGen > 0) {
 
-            for (int i = 0; i < CS.ComputeNodeList.size(); i++) {
-                if (CS.ComputeNodeList.get(i).ready == 0) {
-                    CS.ComputeNodeList.get(i).increaseFrequency();
+            for (int i = 0; i < CS.getComputeNodeList().size(); i++) {
+                if (CS.getComputeNodeList().get(i).ready == 0) {
+                    CS.getComputeNodeList().get(i).increaseFrequency();
                 }
-                if (CS.ComputeNodeList.get(i).ready == -1) {
+                if (CS.getComputeNodeList().get(i).ready == -1) {
                     Simulator.getInstance().mesg2++;
-                    CS.ComputeNodeList.get(i).ready = 1;
+                    CS.getComputeNodeList().get(i).ready = 1;
                 }
             }
             //if(all nodes are busy and this system is not blocked)       send(SOS, theParent)
@@ -126,7 +126,7 @@ public class ComputeSystemAM extends GeneralAM {
             return;
         }
         Simulator.getInstance().mesg++; // one message for monitoring the variables from compute node in the compute system.
-        SLAViolationGen = CS.SLAviolation;///Main.epochApp;
+        SLAViolationGen = CS.getSLAviolation();///Main.epochApp;
 //        if(strtg==Main.strategyEnum.Green)
         analysisGreen();
 //        if(strtg==Main.strategyEnum.SLA)

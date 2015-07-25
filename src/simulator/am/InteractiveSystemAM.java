@@ -7,7 +7,7 @@ public class InteractiveSystemAM extends GeneralAM {
 
     InteractiveSystem IS;
     double[] percentCompPwr;
-    public int[] allocationVector;
+    private int[] allocationVector;
     double wlkIntens = 0;
     int[] accuSLA;
     double[] queueLengthUsr;
@@ -15,7 +15,7 @@ public class InteractiveSystemAM extends GeneralAM {
 
     public InteractiveSystemAM(InteractiveSystem is) {
         this.IS = is;
-        setRecForCoop(new int[IS.UserList.size()]);
+        setRecForCoop(new int[IS.getUserList().size()]);
     }
 
     @Override
@@ -45,44 +45,44 @@ public class InteractiveSystemAM extends GeneralAM {
 
     @Override
     public void execution() {
-        IS.rc.resourceProvision(IS, allocationVector);
+        IS.getResourceAllocation().resourceProvision(IS, getAllocationVector());
     }
 
     void workloadIntensity() {
         double avg = 0.0;
-        for (int i = 0; i < IS.UserList.size(); i++) {
-            avg = avg + (double) IS.UserList.get(i).NumberofBasicNode / IS.UserList.get(i).MaxNumberOfRequest;
+        for (int i = 0; i < IS.getUserList().size(); i++) {
+            avg = avg + (double) IS.getUserList().get(i).getNumberofBasicNode() / IS.getUserList().get(i).getMaxNumberOfRequest();
         }
-        wlkIntens = (double) avg / IS.UserList.size();
+        wlkIntens = (double) avg / IS.getUserList().size();
     }
 
     @Override
     public void monitor() {
-        percentCompPwr = new double[IS.UserList.size()];
-        allocationVector = new int[IS.UserList.size()];
-        accuSLA = new int[IS.UserList.size()];
-        queueLengthUsr = new double[IS.UserList.size()];
+        percentCompPwr = new double[IS.getUserList().size()];
+        setAllocationVector(new int[IS.getUserList().size()]);
+        accuSLA = new int[IS.getUserList().size()];
+        queueLengthUsr = new double[IS.getUserList().size()];
         workloadIntensity();
-        for (int i = 0; i < IS.UserList.size(); i++) {
+        for (int i = 0; i < IS.getUserList().size(); i++) {
             // assume epoch system 2 time epoch application 
-            percentCompPwr[i] = IS.UserList.get(i).AM.percnt / ((Simulator.getInstance().localTime - lastTime) * 3 * IS.UserList.get(i).ComputeNodeList.size());//(Main.epochSys*/*3*ES.applicationList.get(i).ComputeNodeList.size());
-            IS.UserList.get(i).AM.percnt = 0;
-            accuSLA[i] = IS.UserList.get(i).AM.accumulativeSLA / (Simulator.getInstance().localTime - lastTime);//Main.epochSys;
-            IS.UserList.get(i).AM.accumulativeSLA = 0;
+            percentCompPwr[i] = IS.getUserList().get(i).getAM().percnt / ((Simulator.getInstance().localTime - lastTime) * 3 * IS.getUserList().get(i).getComputeNodeList().size());//(Main.epochSys*/*3*ES.applicationList.get(i).ComputeNodeList.size());
+            IS.getUserList().get(i).getAM().percnt = 0;
+            accuSLA[i] = IS.getUserList().get(i).getAM().accumulativeSLA / (Simulator.getInstance().localTime - lastTime);//Main.epochSys;
+            IS.getUserList().get(i).getAM().accumulativeSLA = 0;
             //for fair allocate/release node needs to know how many jobs are already in each application queue
-            queueLengthUsr[i] = IS.UserList.get(i).numberOfWaitingJobs();
+            queueLengthUsr[i] = IS.getUserList().get(i).numberOfWaitingJobs();
         }
         calcSysUtility();
         lastTime = Simulator.getInstance().localTime;
-        SLAViolationGen = IS.SLAviolation;
+        SLAViolationGen = IS.getSLAviolation();
     }
 
     public void calcSysUtility() {
         int localUtil = 0, globalUtil;
-        for (int i = 0; i < IS.UserList.size(); i++) {
-            localUtil += IS.UserList.get(i).AM.util;
+        for (int i = 0; i < IS.getUserList().size(); i++) {
+            localUtil += IS.getUserList().get(i).getAM().util;
         }
-        localUtil = localUtil / IS.UserList.size();
+        localUtil = localUtil / IS.getUserList().size();
 
 //        if(ES.applicationList.isEmpty())
 //        { super.utility=-1;
@@ -96,12 +96,12 @@ public class InteractiveSystemAM extends GeneralAM {
     }
 
     void iterativeAlg() {
-        for (int i = 0; i < IS.UserList.size(); i++) {
-            IS.UserList.get(i).AM.StrategyWsitch = Simulator.StrategyEnum.Green; //Green Strategy
+        for (int i = 0; i < IS.getUserList().size(); i++) {
+            IS.getUserList().get(i).getAM().StrategyWsitch = Simulator.StrategyEnum.Green; //Green Strategy
             double wkIntensApp;
-            wkIntensApp = (double) IS.UserList.get(i).NumberofBasicNode / IS.UserList.get(i).MaxNumberOfRequest;
+            wkIntensApp = (double) IS.getUserList().get(i).getNumberofBasicNode() / IS.getUserList().get(i).getMaxNumberOfRequest();
             //if cpmPwr > 50% & violation then allocate a server 
-            allocationVector[i] = 0;
+            getAllocationVector()[i] = 0;
             if (percentCompPwr[i] > 0.5 && accuSLA[i] > 0) {
 
                 //considering wl intensity of apps for node allocation
@@ -112,34 +112,34 @@ public class InteractiveSystemAM extends GeneralAM {
                 } else {
                     bishtar = 0;
                 }
-                allocationVector[i] = 1 + bishtar;//+(int)Math.abs((Math.floor((wlkIntens-wkIntensApp)/wlkIntens)));
+                getAllocationVector()[i] = 1 + bishtar;//+(int)Math.abs((Math.floor((wlkIntens-wkIntensApp)/wlkIntens)));
                 //System.out.println("Switching Strategy in Application   =" +i +" to SLA ");
-                IS.UserList.get(i).AM.StrategyWsitch = Simulator.StrategyEnum.SLA;//SLA strategy
+                IS.getUserList().get(i).getAM().StrategyWsitch = Simulator.StrategyEnum.SLA;//SLA strategy
             }
             //if cpmPwr < 50% & violation is less then release a server 
             if (percentCompPwr[i] <= 0.5 && accuSLA[i] == 0) {
-                allocationVector[i] = -1;
+                getAllocationVector()[i] = -1;
                 //System.out.println("Releasing a Server");
             }
             //if cpmPwr < 50% & violation is ziyad then nothing no server exchange 
             if (percentCompPwr[i] < 0.5 && accuSLA[i] > 0) {
-                allocationVector[i] = 1;
+                getAllocationVector()[i] = 1;
                 //System.out.println("Switching Strategy in Application   =" +i +" to SLA ");
-                IS.UserList.get(i).AM.StrategyWsitch = Simulator.StrategyEnum.SLA;   //SLA strategy
+                IS.getUserList().get(i).getAM().StrategyWsitch = Simulator.StrategyEnum.SLA;   //SLA strategy
             }
         }
         int requestedNd = 0;
-        for (int i = 0; i < allocationVector.length; i++) {
-            int valNode = IS.UserList.get(i).ComputeNodeList.size() + allocationVector[i];
-            if (IS.UserList.get(i).minProc > valNode
-                    || IS.UserList.get(i).maxProc < valNode) {
+        for (int i = 0; i < getAllocationVector().length; i++) {
+            int valNode = IS.getUserList().get(i).getComputeNodeList().size() + getAllocationVector()[i];
+            if (IS.getUserList().get(i).getMinProc() > valNode
+                    || IS.getUserList().get(i).getMaxProc() < valNode) {
 //                if(ES.applicationList.get(i).minProc> ES.applicationList.get(i).ComputeNodeList.size()+allocationVector[i])
 //                        System.out.println("error requested less than min in AM system ");
 //                if(ES.applicationList.get(i).maxProc< ES.applicationList.get(i).ComputeNodeList.size()+allocationVector[i])
 //                        System.out.println("error requested more than maxxxx in AM system ");
-                allocationVector[i] = 0;
+                getAllocationVector()[i] = 0;
             }
-            requestedNd = requestedNd + allocationVector[i];
+            requestedNd = requestedNd + getAllocationVector()[i];
         }
 //        if(requestedNd>ES.numberofIdleNode) 
 //            System.out.println("IN AM system can not provide server reqested= "+requestedNd);
@@ -147,30 +147,30 @@ public class InteractiveSystemAM extends GeneralAM {
     //determining aloc/release vector and active strategy
 
     void averageWeight() {
-        double[] cofficient = new double[IS.UserList.size()];
-        int[] sugestForAlo = new int[IS.UserList.size()];
+        double[] cofficient = new double[IS.getUserList().size()];
+        int[] sugestForAlo = new int[IS.getUserList().size()];
         double sumCoff = 0;
         //in each app calculate the expected Coefficient which is multiplication SLA violation and queue Length
-        for (int i = 0; i < IS.UserList.size(); i++) {
+        for (int i = 0; i < IS.getUserList().size(); i++) {
             cofficient[i] = queueLengthUsr[i] * accuSLA[i] + accuSLA[i] + queueLengthUsr[i];
             sumCoff = sumCoff + cofficient[i];
         }
-        int totalNode = IS.ComputeNodeList.size();
-        for (int i = 0; i < IS.UserList.size(); i++) {
+        int totalNode = IS.getComputeNodeList().size();
+        for (int i = 0; i < IS.getUserList().size(); i++) {
             sugestForAlo[i] = (int) (cofficient[i] * totalNode / sumCoff);
-            if (sugestForAlo[i] < IS.UserList.get(i).minProc) {
-                sugestForAlo[i] = IS.UserList.get(i).minProc;
+            if (sugestForAlo[i] < IS.getUserList().get(i).getMinProc()) {
+                sugestForAlo[i] = IS.getUserList().get(i).getMinProc();
             }
-            if (sugestForAlo[i] > IS.UserList.get(i).maxProc) {
-                sugestForAlo[i] = IS.UserList.get(i).maxProc;
+            if (sugestForAlo[i] > IS.getUserList().get(i).getMaxProc()) {
+                sugestForAlo[i] = IS.getUserList().get(i).getMaxProc();
             }
-            allocationVector[i] = sugestForAlo[i] - IS.UserList.get(i).ComputeNodeList.size();
+            getAllocationVector()[i] = sugestForAlo[i] - IS.getUserList().get(i).getComputeNodeList().size();
         }
-        for (int i = 0; i < IS.UserList.size(); i++) {
-            IS.UserList.get(i).AM.StrategyWsitch = Simulator.StrategyEnum.Green; //Green Strategy
+        for (int i = 0; i < IS.getUserList().size(); i++) {
+            IS.getUserList().get(i).getAM().StrategyWsitch = Simulator.StrategyEnum.Green; //Green Strategy
             if (accuSLA[i] > 0) {
                 //System.out.println("Switching Strategy in Application   =" +i +" to SLA ");
-                IS.UserList.get(i).AM.StrategyWsitch = Simulator.StrategyEnum.SLA;//SLA strategy
+                IS.getUserList().get(i).getAM().StrategyWsitch = Simulator.StrategyEnum.SLA;//SLA strategy
             }
         }
     }
@@ -184,4 +184,12 @@ public class InteractiveSystemAM extends GeneralAM {
 //            System.out.println("In ES : is gonna alocate this number of servers: "+(ES.numberOfActiveServ-ES.numberofNode));
 //        }
 //    }    
+
+	public int[] getAllocationVector() {
+		return allocationVector;
+	}
+
+	public void setAllocationVector(int[] allocationVector) {
+		this.allocationVector = allocationVector;
+	}
 }

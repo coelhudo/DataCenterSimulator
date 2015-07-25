@@ -24,32 +24,33 @@ import org.xml.sax.SAXException;
  */
 public class GeneralSystem {
 
-    public String name;
-    public ResourceAllocation rc;
-    public Scheduler schdler;
-    public int numberofIdleNode = 0, numberofNode; // idle is change in allocation function
-    public ArrayList<Integer> rackId = new ArrayList<Integer>();
-    public ArrayList<BladeServer> ComputeNodeList;
-    public ArrayList<Integer> ComputeNodeIndex;
-    public BufferedReader bis = null;
-    public int SLAviolation;
-    public boolean sysIsDone = false;
-    public double pwr = 0;
-    public GeneralAM am;
-    public int accumolatedViolation = 0;
-    public int numberOfActiveServ = 0;
+    private String name;
+    private ResourceAllocation resourceAllocation;
+    private Scheduler scheduler;
+    private int numberofIdleNode = 0; // idle is change in allocation function
+	private int numberofNode;
+    private ArrayList<Integer> rackId = new ArrayList<Integer>();
+    private ArrayList<BladeServer> ComputeNodeList;
+    private ArrayList<Integer> ComputeNodeIndex;
+    private BufferedReader bis = null;
+    protected int SLAviolation;
+    private boolean sysIsDone = false;
+    private double power = 0;
+    private GeneralAM am;
+    private int accumolatedViolation = 0;
+    private int numberOfActiveServ = 0;
 
     public void addComputeNodeToSys(BladeServer b) {
         b.restart();
-        ComputeNodeList.add(b);
+        getComputeNodeList().add(b);
     }
 
     void readFromNode(Node node, String path) {
     }
 
     void calculatePwr() {
-        for (int i = 0; i < ComputeNodeList.size(); i++) {
-            pwr = pwr + ComputeNodeList.get(i).getPower();
+        for (int i = 0; i < getComputeNodeList().size(); i++) {
+            setPower(getPower() + getComputeNodeList().get(i).getPower());
         }
 
     }
@@ -72,4 +73,124 @@ public class GeneralSystem {
             Logger.getLogger(DataCenter.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
+
+	public String getName() {
+		return name;
+	}
+
+	public void setName(String name) {
+		this.name = name;
+	}
+
+	public ResourceAllocation getResourceAllocation() {
+		return resourceAllocation;
+	}
+
+	public void setResourceAllocation(ResourceAllocation resourceAllocation) {
+		this.resourceAllocation = resourceAllocation;
+	}
+
+	public Scheduler getScheduler() {
+		return scheduler;
+	}
+
+	public void setScheduler(Scheduler scheduler) {
+		this.scheduler = scheduler;
+	}
+
+	public int getNumberofIdleNode() {
+		return numberofIdleNode;
+	}
+
+	public void setNumberofIdleNode(int numberofIdleNode) {
+		this.numberofIdleNode = numberofIdleNode;
+	}
+
+	public int getNumberofNode() {
+		return numberofNode;
+	}
+
+	public void setNumberofNode(int numberofNode) {
+		this.numberofNode = numberofNode;
+	}
+
+	public ArrayList<Integer> getRackId() {
+		return rackId;
+	}
+
+	public void setRackId(ArrayList<Integer> rackId) {
+		this.rackId = rackId;
+	}
+
+	public ArrayList<BladeServer> getComputeNodeList() {
+		return ComputeNodeList;
+	}
+
+	public void setComputeNodeList(ArrayList<BladeServer> computeNodeList) {
+		ComputeNodeList = computeNodeList;
+	}
+
+	public ArrayList<Integer> getComputeNodeIndex() {
+		return ComputeNodeIndex;
+	}
+
+	public void setComputeNodeIndex(ArrayList<Integer> computeNodeIndex) {
+		ComputeNodeIndex = computeNodeIndex;
+	}
+
+	public BufferedReader getBis() {
+		return bis;
+	}
+
+	public void setBis(BufferedReader bis) {
+		this.bis = bis;
+	}
+
+	public int getSLAviolation() {
+		return SLAviolation;
+	}
+
+	public void setSLAviolation(int sLAviolation) {
+		SLAviolation = sLAviolation;
+	}
+
+	public boolean isSysIsDone() {
+		return sysIsDone;
+	}
+
+	public void setSysIsDone(boolean sysIsDone) {
+		this.sysIsDone = sysIsDone;
+	}
+
+	public double getPower() {
+		return power;
+	}
+
+	public void setPower(double power) {
+		this.power = power;
+	}
+
+	public GeneralAM getAM() {
+		return am;
+	}
+
+	public void setAM(GeneralAM am) {
+		this.am = am;
+	}
+
+	public int getAccumolatedViolation() {
+		return accumolatedViolation;
+	}
+
+	public void setAccumolatedViolation(int accumolatedViolation) {
+		this.accumolatedViolation = accumolatedViolation;
+	}
+
+	public int getNumberOfActiveServ() {
+		return numberOfActiveServ;
+	}
+
+	public void setNumberOfActiveServ(int numberOfActiveServ) {
+		this.numberOfActiveServ = numberOfActiveServ;
+	}
 }

@@ -17,26 +17,27 @@ import org.w3c.dom.*;
 
 public class InteractiveSystem extends GeneralSystem {
 
-    public ArrayList<InteractiveUser> UserList, waitingQueueWL;
+    private ArrayList<InteractiveUser> UserList;
+	private ArrayList<InteractiveUser> waitingQueueWL;
     File logFile;
 
     public InteractiveSystem(String config) {
-        ComputeNodeList = new ArrayList<BladeServer>();
-        ComputeNodeIndex = new ArrayList<Integer>();
-        UserList = new ArrayList<InteractiveUser>();
-        waitingQueueWL = new ArrayList<InteractiveUser>();
-        rc = new MHR();
-        schdler = new FifoScheduler();
+        setComputeNodeList(new ArrayList<BladeServer>());
+        setComputeNodeIndex(new ArrayList<Integer>());
+        setUserList(new ArrayList<InteractiveUser>());
+        setWaitingQueueWL(new ArrayList<InteractiveUser>());
+        setResourceAllocation(new MHR());
+        setScheduler(new FifoScheduler());
         parseXmlConfig(config);
-        rc.initialResourceAlocator(this);
-        SLAviolation = 0;
-        am = new InteractiveSystemAM(this);
+        getResourceAllocation().initialResourceAlocator(this);
+        setSLAviolation(0);
+        setAM(new InteractiveSystemAM(this));
     }
 
     public int numberofAvailableNodetoAlocate() {
         int n = 0;
-        for (int i = 0; i < ComputeNodeList.size(); i++) {
-            if (ComputeNodeList.get(i).ready == -2) {
+        for (int i = 0; i < getComputeNodeList().size(); i++) {
+            if (getComputeNodeList().get(i).ready == -2) {
                 n++;
             }
         }
@@ -44,8 +45,8 @@ public class InteractiveSystem extends GeneralSystem {
     }
 
     public boolean checkForViolation() {
-        for (int i = 0; i < UserList.size(); i++) {
-            if (UserList.get(i).SLAviolation > 0) {
+        for (int i = 0; i < getUserList().size(); i++) {
+            if (getUserList().get(i).getSLAviolation() > 0) {
                 return true;
             }
         }
@@ -54,7 +55,7 @@ public class InteractiveSystem extends GeneralSystem {
     //Return False means everything is finished!
 
     boolean runAcycle() throws IOException {
-        if (UserList.size() > 0 & checkForViolation())//& Main.localTime%Main.epochSys==0)
+        if (getUserList().size() > 0 & checkForViolation())//& Main.localTime%Main.epochSys==0)
         {
 //            AM.monitor();
 //            AM.analysis(SLAviolation);
@@ -63,23 +64,23 @@ public class InteractiveSystem extends GeneralSystem {
         }
         int readingResult = forwardingJob();
         int finishedBundle = 0;
-        for (int i = 0; i < UserList.size(); i++) {
+        for (int i = 0; i < getUserList().size(); i++) {
             //TODO: if each bundle needs some help should ask and here resourceallocation should run
-            if (UserList.get(i).runAcycle() == false) //return false if bundle set jobs are done, we need to re-resourcealocation
+            if (getUserList().get(i).runAcycle() == false) //return false if bundle set jobs are done, we need to re-resourcealocation
             {
                 finishedBundle++;
-                numberofIdleNode = UserList.get(i).ComputeNodeList.size() + numberofIdleNode;
-                UserList.get(i).destroyWLBundle();//restart its servers
-                UserList.remove(i);
+                setNumberofIdleNode(getUserList().get(i).getComputeNodeList().size() + getNumberofIdleNode());
+                getUserList().get(i).destroyWLBundle();//restart its servers
+                getUserList().remove(i);
             }
         }
         violationCheckandSet();
         ///TODO : some decisiones needed based on SLAviolation
         if (finishedBundle > 0) {
-            rc.resourceAloc(this);
+            getResourceAllocation().resourceAloc(this);
         }
-        if (UserList.isEmpty() && waitingQueueWL.isEmpty()) {
-            sysIsDone = true;
+        if (getUserList().isEmpty() && getWaitingQueueWL().isEmpty()) {
+            setSysIsDone(true);
             return true;
         } else {
             return false;
@@ -91,7 +92,7 @@ public class InteractiveSystem extends GeneralSystem {
         int readingResult = readWL();
         int index;
         while (readingResult == 1) {
-            index = rc.initialResourceAloc(this);
+            index = getResourceAllocation().initialResourceAloc(this);
             if (index == -1) {
                 return index;
             }
@@ -102,8 +103,8 @@ public class InteractiveSystem extends GeneralSystem {
 
     int readWL() {
         int retReadLogfile = readingLogFile();
-        if (waitingQueueWL.size() > 0) {
-            if (waitingQueueWL.get(0).arrivalTime == Simulator.getInstance().localTime | waitingQueueWL.get(0).arrivalTime < Simulator.getInstance().localTime) {
+        if (getWaitingQueueWL().size() > 0) {
+            if (getWaitingQueueWL().get(0).arrivalTime == Simulator.getInstance().localTime | getWaitingQueueWL().get(0).arrivalTime < Simulator.getInstance().localTime) {
                 return 1;
             } else {
                 return 0;
@@ -115,7 +116,7 @@ public class InteractiveSystem extends GeneralSystem {
 
     int readingLogFile() {
         try {
-            String line = bis.readLine();
+            String line = getBis().readLine();
             if (line == null) {
                 return -2;
             }
@@ -127,15 +128,15 @@ public class InteractiveSystem extends GeneralSystem {
             }
             InteractiveUser test = new InteractiveUser(this);
             test.arrivalTime = Integer.parseInt(numbers[0]);
-            test.minProc = Integer.parseInt(numbers[1]);
-            test.maxProc = Integer.parseInt(numbers[2]);
+            test.setMinProc(Integer.parseInt(numbers[1]));
+            test.setMaxProc(Integer.parseInt(numbers[2]));
             test.duration = Double.parseDouble(numbers[3]);
             test.remain = test.duration; //for now I've not used that!
             test.logFileName = numbers[4];
-            test.maxExpectedResTime = Integer.parseInt(numbers[5]);
-            test.MaxNumberOfRequest = Integer.parseInt(numbers[6]);
-            test.NumberofBasicNode = Integer.parseInt(numbers[7]);
-            waitingQueueWL.add(test);
+            test.setMaxExpectedResTime(Integer.parseInt(numbers[5]));
+            test.setMaxNumberOfRequest(Integer.parseInt(numbers[6]));
+            test.setNumberofBasicNode(Integer.parseInt(numbers[7]));
+            getWaitingQueueWL().add(test);
             return 1;
             //System.out.println("Readed inputTime= " + inputTime + " Job Reqested Time=" + j.startTime+" Total job so far="+ total);
         } catch (IOException ex) {
@@ -146,14 +147,14 @@ public class InteractiveSystem extends GeneralSystem {
     }
 
     void violationCheckandSet() throws IOException {
-        SLAviolation = 0;
-        for (int i = 0; i < UserList.size(); i++) {
-            SLAviolation = +UserList.get(i).SLAviolation;
+        setSLAviolation(0);
+        for (int i = 0; i < getUserList().size(); i++) {
+            setSLAviolation(+getUserList().get(i).getSLAviolation());
         }
-        if (SLAviolation > 0) {
-            Simulator.getInstance().logInteractiveViolation(name, SLAviolation);
+        if (getSLAviolation() > 0) {
+            Simulator.getInstance().logInteractiveViolation(getName(), getSLAviolation());
 
-            accumolatedViolation++;
+            setAccumolatedViolation(getAccumolatedViolation() + 1);
         }
     }
 //   void addComputeNodeToSys(BladeServer b){
@@ -179,19 +180,19 @@ public class InteractiveSystem extends GeneralSystem {
 //    }
     @Override
     void readFromNode(Node node, String path) {
-        ComputeNodeList.clear();
+        getComputeNodeList().clear();
         NodeList childNodes = node.getChildNodes();
         for (int i = 0; i < childNodes.getLength(); i++) {
             if (childNodes.item(i).getNodeType() == Node.ELEMENT_NODE) {
                 if (childNodes.item(i).getNodeName().equalsIgnoreCase("ComputeNode")) {
-                    numberofNode = Integer.parseInt(childNodes.item(i).getChildNodes().item(0).getNodeValue().trim());
-                    numberofIdleNode = numberofNode;
+                    setNumberofNode(Integer.parseInt(childNodes.item(i).getChildNodes().item(0).getNodeValue().trim()));
+                    setNumberofIdleNode(getNumberofNode());
                 }
                 if (childNodes.item(i).getNodeName().equalsIgnoreCase("Rack")) {
                     String str = childNodes.item(i).getChildNodes().item(0).getNodeValue().trim();
                     String[] split = str.split(",");
                     for (int j = 0; j < split.length; j++) {
-                        rackId.add(Integer.parseInt(split[j]));
+                        getRackId().add(Integer.parseInt(split[j]));
                     }
                 }
                 if (childNodes.item(i).getNodeName().equalsIgnoreCase("ResourceAllocationAlg"));
@@ -200,7 +201,7 @@ public class InteractiveSystem extends GeneralSystem {
                     String fileName = path + "/" +  childNodes.item(i).getChildNodes().item(0).getNodeValue().trim();
                     try {
                         logFile = new File(fileName);
-                        bis = new BufferedReader(new InputStreamReader(new FileInputStream(logFile)));
+                        setBis(new BufferedReader(new InputStreamReader(new FileInputStream(logFile))));
                     } catch (IOException e) {
                         System.out.println("Uh oh, got an IOException error!" + e.getMessage());
                     } finally {
@@ -209,4 +210,20 @@ public class InteractiveSystem extends GeneralSystem {
             }
         }
     }
+
+	public ArrayList<InteractiveUser> getUserList() {
+		return UserList;
+	}
+
+	public void setUserList(ArrayList<InteractiveUser> userList) {
+		UserList = userList;
+	}
+
+	public ArrayList<InteractiveUser> getWaitingQueueWL() {
+		return waitingQueueWL;
+	}
+
+	public void setWaitingQueueWL(ArrayList<InteractiveUser> waitingQueueWL) {
+		this.waitingQueueWL = waitingQueueWL;
+	}
 }

@@ -16,40 +16,42 @@ import java.util.logging.Logger;
 public class InteractiveUser {
 
     int arrivalTime;
-    public int maxProc = 0, minProc = 0, maxExpectedResTime = 0;
+    private int maxProc = 0;
+	private int minProc = 0;
+	private int maxExpectedResTime = 0;
     double duration;
     double remain;
-    public int id = 0;
+    private int id = 0;
     String logFileName;
     File logFile = null;
-    public ArrayList<BladeServer> ComputeNodeList;
-    public ArrayList<Integer> ComputeNodeIndex;
-    public ArrayList<InteractiveJob> queueWL;
-    public ArrayList<ResponseTime> responseList;
+    private ArrayList<BladeServer> ComputeNodeList;
+    private ArrayList<Integer> ComputeNodeIndex;
+    private ArrayList<InteractiveJob> queueWL;
+    private ArrayList<ResponseTime> responseList;
     //jobPlacement placement;
     BufferedReader bis = null;
     //SLA
-    public int SLAviolation = 0;
-    public IteractiveUserAM AM;
+    private int SLAviolation = 0;
+    private IteractiveUserAM AM;
     int usedNode = 0;
-    public int MaxNumberOfRequest = 0; //# of Request can be handled by number of basic node which for 100% CPU utilization
-    public int NumberofBasicNode = 0;
+    private int MaxNumberOfRequest = 0; //# of Request can be handled by number of basic node which for 100% CPU utilization
+    private int NumberofBasicNode = 0;
     GeneralSystem parent;
 
     public InteractiveUser(GeneralSystem parent) {
-        ComputeNodeList = new ArrayList<BladeServer>();
-        ComputeNodeIndex = new ArrayList<Integer>();
-        queueWL = new ArrayList<InteractiveJob>();
-        responseList = new ArrayList<ResponseTime>();
+        setComputeNodeList(new ArrayList<BladeServer>());
+        setComputeNodeIndex(new ArrayList<Integer>());
+        setQueueWL(new ArrayList<InteractiveJob>());
+        setResponseList(new ArrayList<ResponseTime>());
         logFileName = new String();
         // placement=new jobPlacement(ComputeNodeList);
-        AM = new IteractiveUserAM((InteractiveSystem) parent, this);
+        setAM(new IteractiveUserAM((InteractiveSystem) parent, this));
         this.parent = parent;
     }
 
     public void addCompNodetoBundle(BladeServer b) {
         b.restart();
-        ComputeNodeList.add(b);
+        getComputeNodeList().add(b);
     }
     /*
     Return Values:
@@ -82,7 +84,7 @@ public class InteractiveUser {
             InteractiveJob j = new InteractiveJob();
             j.setArrivalTimeOfJob(Integer.parseInt(numbers[0]));
             j.setNumberOfJob(Double.parseDouble(numbers[1]) * 50);
-            queueWL.add(j);
+            getQueueWL().add(j);
             return 1;
             //System.out.println("Readed inputTime= " + inputTime + " Job Reqested Time=" + j.startTime+" Total job so far="+ total);
         } catch (IOException ex) {
@@ -95,16 +97,16 @@ public class InteractiveUser {
 
     void resetReadyFlag() {
         int i;
-        for (i = 0; i < ComputeNodeList.size(); i++) {
-            ComputeNodeList.get(i).currentCPU = 0;
-            ComputeNodeList.get(i).ready = 1;
+        for (i = 0; i < getComputeNodeList().size(); i++) {
+            getComputeNodeList().get(i).currentCPU = 0;
+            getComputeNodeList().get(i).ready = 1;
         }
     }
 
     int readWebJob() {
         int retReadLogfile = readingLogFile();
-        if (queueWL.size() > 0) {
-            if (queueWL.get(0).getArrivalTimeOfJob() == Simulator.getInstance().localTime | queueWL.get(0).getArrivalTimeOfJob() < Simulator.getInstance().localTime) {
+        if (getQueueWL().size() > 0) {
+            if (getQueueWL().get(0).getArrivalTimeOfJob() == Simulator.getInstance().localTime | getQueueWL().get(0).getArrivalTimeOfJob() < Simulator.getInstance().localTime) {
                 return 1;
             } else {
                 return 0;
@@ -116,7 +118,7 @@ public class InteractiveUser {
     }
 
     boolean runAcycle() {
-        SLAviolation = 0;
+        setSLAviolation(0);
         int readingResult = readWebJob();
         ////////RESET READY FLAGS for all nodes
         resetReadyFlag();
@@ -125,7 +127,7 @@ public class InteractiveUser {
         {
             return true;
         }
-        if (readingResult == -2 & queueWL.isEmpty()) // no jobs are in the queue and in logfile
+        if (readingResult == -2 & getQueueWL().isEmpty()) // no jobs are in the queue and in logfile
         {
             return false;
         }
@@ -133,24 +135,24 @@ public class InteractiveUser {
         int numberofReadyNodes = 0;
         double beenRunJobs = 0;  //number of jobs have been run so far
         int i = 0;
-        for (i = 0; i < ComputeNodeList.size(); i++) {
-            if (ComputeNodeList.get(i).ready == 1) {
-                CPUpercentage = (100.0 - ComputeNodeList.get(i).currentCPU) * ComputeNodeList.get(i).Mips + CPUpercentage;
+        for (i = 0; i < getComputeNodeList().size(); i++) {
+            if (getComputeNodeList().get(i).ready == 1) {
+                CPUpercentage = (100.0 - getComputeNodeList().get(i).currentCPU) * getComputeNodeList().get(i).Mips + CPUpercentage;
                 numberofReadyNodes++;
             }
         }
-        double capacityOfNode = (int) Math.ceil((MaxNumberOfRequest * CPUpercentage) / (NumberofBasicNode * 100.0));
+        double capacityOfNode = (int) Math.ceil((getMaxNumberOfRequest() * CPUpercentage) / (getNumberofBasicNode() * 100.0));
         double capacityOfNode_COPY = capacityOfNode;
         InteractiveJob jj = new InteractiveJob();
         //jj=queueWL.get(0);
-        jj = (InteractiveJob) parent.schdler.nextJob(queueWL);
+        jj = (InteractiveJob) parent.getScheduler().nextJob(getQueueWL());
         while (capacityOfNode > 0) {
             capacityOfNode = capacityOfNode - jj.getNumberOfJob();
             if (capacityOfNode == 0) {
                 addToresponseArray(jj.getNumberOfJob(), (Simulator.getInstance().localTime - jj.getArrivalTimeOfJob() + 1));
                 //System.out.println((Main.localTime-wJob.arrivalTimeOfJob+1)*(wJob.numberOfJob) +"\t"+wJob.numberOfJob+"\t q len="+queueLength);
                 beenRunJobs = beenRunJobs + jj.getNumberOfJob();
-                queueWL.remove(jj);
+                getQueueWL().remove(jj);
                 break;
             }
             if (capacityOfNode < 0) // there are more jobs than capacity
@@ -165,17 +167,17 @@ public class InteractiveUser {
             {
                 addToresponseArray(jj.getNumberOfJob(), (Simulator.getInstance().localTime - jj.getArrivalTimeOfJob() + 1));
                 beenRunJobs = beenRunJobs + jj.getNumberOfJob();
-                queueWL.remove(jj);
-                while (queueWL.size() > 0) {
+                getQueueWL().remove(jj);
+                while (getQueueWL().size() > 0) {
                     //jj=queueWL.get(0);
-                    jj = (InteractiveJob) parent.schdler.nextJob(queueWL);
+                    jj = (InteractiveJob) parent.getScheduler().nextJob(getQueueWL());
                     double copyTedat = capacityOfNode;
                     capacityOfNode = capacityOfNode - jj.getNumberOfJob();
                     if (capacityOfNode == 0) {
                         addToresponseArray(jj.getNumberOfJob(), (Simulator.getInstance().localTime - jj.getArrivalTimeOfJob() + 1));
                         //System.out.println(wJob.numberOfJob);
                         beenRunJobs = beenRunJobs + jj.getNumberOfJob();
-                        queueWL.remove(0);
+                        getQueueWL().remove(0);
                         break;
                     }
                     if (capacityOfNode < 0) //there are more jobs than 1000.0*MIPS
@@ -190,7 +192,7 @@ public class InteractiveUser {
                         addToresponseArray(jj.getNumberOfJob(), (Simulator.getInstance().localTime - jj.getArrivalTimeOfJob() + 1));
                         //System.out.println(wJob.numberOfJob);
                         beenRunJobs = beenRunJobs + jj.getNumberOfJob();
-                        queueWL.remove(0);
+                        getQueueWL().remove(0);
                     }
                 } //end while
                 break;
@@ -198,33 +200,33 @@ public class InteractiveUser {
         }
         if (capacityOfNode_COPY == beenRunJobs)// we're done all our capacity
         {
-            for (int k = 0; k < ComputeNodeList.size(); k++) {
-                ComputeNodeList.get(k).currentCPU = 100;
-                ComputeNodeList.get(k).ready = 0;
+            for (int k = 0; k < getComputeNodeList().size(); k++) {
+                getComputeNodeList().get(k).currentCPU = 100;
+                getComputeNodeList().get(k).ready = 0;
             }
-            usedNode = usedNode + ComputeNodeList.size();
+            usedNode = usedNode + getComputeNodeList().size();
         } else if (beenRunJobs < 0) {
             System.out.println("it is impossible!!!!  webbased BoN");
         } else if (beenRunJobs > 0) {
             int k = 0;
             for (k = 0; k < numberofReadyNodes; k++) {
-                int serID = parent.rc.nextServer(ComputeNodeList);
+                int serID = parent.getResourceAllocation().nextServer(getComputeNodeList());
                 if (serID == -2) {
                     System.out.println("enterPrise BoN : servID =-2\t " + k + "\t" + numberofReadyNodes);
                     break;
                 }
-                double CPUspace = (100 - ComputeNodeList.get(serID).currentCPU) * ComputeNodeList.get(serID).Mips;
-                double reqSpace = (int) Math.ceil(CPUspace * MaxNumberOfRequest / (NumberofBasicNode * 100.0));
-                ComputeNodeList.get(serID).currentCPU = 100;
-                ComputeNodeList.get(serID).ready = 0;
+                double CPUspace = (100 - getComputeNodeList().get(serID).currentCPU) * getComputeNodeList().get(serID).Mips;
+                double reqSpace = (int) Math.ceil(CPUspace * getMaxNumberOfRequest() / (getNumberofBasicNode() * 100.0));
+                getComputeNodeList().get(serID).currentCPU = 100;
+                getComputeNodeList().get(serID).ready = 0;
                 beenRunJobs = beenRunJobs - reqSpace;
                 if (beenRunJobs == 0) {
                     k++;
                     break;
                 }
                 if (beenRunJobs < 0) {
-                    ComputeNodeList.get(serID).currentCPU = (int) Math.ceil((reqSpace + beenRunJobs) * 100 / reqSpace);
-                    ComputeNodeList.get(serID).ready = 1;
+                    getComputeNodeList().get(serID).currentCPU = (int) Math.ceil((reqSpace + beenRunJobs) * 100 / reqSpace);
+                    getComputeNodeList().get(serID).ready = 1;
                     k++;
                     break;
                 }
@@ -232,10 +234,10 @@ public class InteractiveUser {
             //System.out.println(k +"\t Running node= "+numberofReadyNodes);
             usedNode = usedNode + k;
         }
-        AM.monitor();
-        AM.analysis(SLAviolation);
+        getAM().monitor();
+        getAM().analysis(getSLAviolation());
         //AM.planning();
-        if (queueWL.isEmpty() && readingResult == -2) {
+        if (getQueueWL().isEmpty() && readingResult == -2) {
             return false;
         } else {
             return true;
@@ -243,25 +245,25 @@ public class InteractiveUser {
     }
 
     void addToresponseArray(double num, int time) {
-        if (time > maxExpectedResTime) {
-            SLAviolation++;
+        if (time > getMaxExpectedResTime()) {
+            setSLAviolation(getSLAviolation() + 1);
         }
         ResponseTime resTime = new ResponseTime();
         resTime.setNumberOfJob(num);
         resTime.setResponseTime(time);
-        responseList.add(resTime);
+        getResponseList().add(resTime);
     }
 
     void setReadyFlag() {
-        for (int i = 0; i < ComputeNodeList.size(); i++) {
-            if (ComputeNodeList.get(i).ready != -1) //-1 : means this server is idle not so as to compute its idle power
+        for (int i = 0; i < getComputeNodeList().size(); i++) {
+            if (getComputeNodeList().get(i).ready != -1) //-1 : means this server is idle not so as to compute its idle power
             {
-                if (ComputeNodeList.get(i).WebBasedList.isEmpty()) {
-                    ComputeNodeList.get(i).ready = 1;
-                    ComputeNodeList.get(i).currentCPU = 0;
+                if (getComputeNodeList().get(i).WebBasedList.isEmpty()) {
+                    getComputeNodeList().get(i).ready = 1;
+                    getComputeNodeList().get(i).currentCPU = 0;
                 }// bahs
                 else {
-                    ComputeNodeList.get(i).ready = 0;
+                    getComputeNodeList().get(i).ready = 0;
                     //System.out.println("queulength in SetReady FLag: "+ComputeNodeList.get(i).queueLength);
                 }
             }
@@ -269,12 +271,12 @@ public class InteractiveUser {
     }
 
     ArrayList getindexSet() {
-        return ComputeNodeIndex;
+        return getComputeNodeIndex();
     }
 
     void destroyWLBundle() throws IOException {
-        for (int i = 0; i < ComputeNodeList.size(); i++) {
-            ComputeNodeList.get(i).restart();
+        for (int i = 0; i < getComputeNodeList().size(); i++) {
+            getComputeNodeList().get(i).restart();
         }
 
         bis.close();
@@ -282,8 +284,8 @@ public class InteractiveUser {
 
     public int numberofRunningNode() {
         int cnt = 0;
-        for (int i = 0; i < ComputeNodeList.size(); i++) {
-            if (ComputeNodeList.get(i).ready > -1) {
+        for (int i = 0; i < getComputeNodeList().size(); i++) {
+            if (getComputeNodeList().get(i).ready > -1) {
                 cnt++;
             }
         }
@@ -292,8 +294,8 @@ public class InteractiveUser {
 
     public int numberofIdleNode() {
         int cnt = 0;
-        for (int i = 0; i < ComputeNodeList.size(); i++) {
-            if (ComputeNodeList.get(i).ready == -1) {
+        for (int i = 0; i < getComputeNodeList().size(); i++) {
+            if (getComputeNodeList().get(i).ready == -1) {
                 cnt++;
             }
         }
@@ -301,12 +303,12 @@ public class InteractiveUser {
     }
 
     public int myFirstIdleNode() {
-        for (int i = 0; i < ComputeNodeList.size(); i++) {
-            if (ComputeNodeList.get(i).ready == -1) {
+        for (int i = 0; i < getComputeNodeList().size(); i++) {
+            if (getComputeNodeList().get(i).ready == -1) {
                 return i;
             }
         }
-        if (ComputeNodeList.size() > 1) {
+        if (getComputeNodeList().size() > 1) {
             return 0;
         }
         return -2;
@@ -314,21 +316,21 @@ public class InteractiveUser {
 
     public void activeOneNode() {
         int i = 0;
-        for (i = 0; i < ComputeNodeList.size(); i++) {
-            if (ComputeNodeList.get(i).ready == -1) {
-                ComputeNodeList.get(i).restart();
-                ComputeNodeList.get(i).ready = 1;
+        for (i = 0; i < getComputeNodeList().size(); i++) {
+            if (getComputeNodeList().get(i).ready == -1) {
+                getComputeNodeList().get(i).restart();
+                getComputeNodeList().get(i).ready = 1;
                 break;
             }
         }
-        System.out.println("MIIIIPPPSSS    " + ComputeNodeList.get(i).Mips);
+        System.out.println("MIIIIPPPSSS    " + getComputeNodeList().get(i).Mips);
     }
 
     public double numberOfWaitingJobs() {
         double lenJob = 0;
-        for (int i = 0; i < queueWL.size(); i++) {
-            if (queueWL.get(i).getArrivalTimeOfJob() <= Simulator.getInstance().localTime) {
-                lenJob = +queueWL.get(i).getNumberOfJob();
+        for (int i = 0; i < getQueueWL().size(); i++) {
+            if (getQueueWL().get(i).getArrivalTimeOfJob() <= Simulator.getInstance().localTime) {
+                lenJob = +getQueueWL().get(i).getNumberOfJob();
             }
         }
 
@@ -338,8 +340,8 @@ public class InteractiveUser {
     public double getAverageCPUutil() {
         int i = 0;
         double cpu = 0;
-        for (i = 0; i < ComputeNodeList.size(); i++) {
-            cpu = cpu + ComputeNodeList.get(i).currentCPU;
+        for (i = 0; i < getComputeNodeList().size(); i++) {
+            cpu = cpu + getComputeNodeList().get(i).currentCPU;
         }
         cpu = cpu / i;
         return cpu;
@@ -347,14 +349,110 @@ public class InteractiveUser {
 
     public double[] getAveragePwrParam() {
         double[] ret = new double[3];
-        for (int i = 0; i < ComputeNodeList.size(); i++) {
-            ret[0] = ret[0] + ComputeNodeList.get(i).getPwrParam()[0];
-            ret[1] = ret[1] + ComputeNodeList.get(i).getPwrParam()[1];
-            ret[2] = ret[2] + ComputeNodeList.get(i).getPwrParam()[2];
+        for (int i = 0; i < getComputeNodeList().size(); i++) {
+            ret[0] = ret[0] + getComputeNodeList().get(i).getPwrParam()[0];
+            ret[1] = ret[1] + getComputeNodeList().get(i).getPwrParam()[1];
+            ret[2] = ret[2] + getComputeNodeList().get(i).getPwrParam()[2];
         }
-        ret[0] = ret[0] / ComputeNodeList.size();
-        ret[1] = ret[1] / ComputeNodeList.size();
-        ret[2] = ret[2] / ComputeNodeList.size();
+        ret[0] = ret[0] / getComputeNodeList().size();
+        ret[1] = ret[1] / getComputeNodeList().size();
+        ret[2] = ret[2] / getComputeNodeList().size();
         return ret;
     }
+
+	public int getMaxProc() {
+		return maxProc;
+	}
+
+	public void setMaxProc(int maxProc) {
+		this.maxProc = maxProc;
+	}
+
+	public int getMinProc() {
+		return minProc;
+	}
+
+	public void setMinProc(int minProc) {
+		this.minProc = minProc;
+	}
+
+	public int getMaxExpectedResTime() {
+		return maxExpectedResTime;
+	}
+
+	public void setMaxExpectedResTime(int maxExpectedResTime) {
+		this.maxExpectedResTime = maxExpectedResTime;
+	}
+
+	public int getID() {
+		return id;
+	}
+
+	public void setID(int id) {
+		this.id = id;
+	}
+
+	public ArrayList<BladeServer> getComputeNodeList() {
+		return ComputeNodeList;
+	}
+
+	public void setComputeNodeList(ArrayList<BladeServer> computeNodeList) {
+		ComputeNodeList = computeNodeList;
+	}
+
+	public ArrayList<Integer> getComputeNodeIndex() {
+		return ComputeNodeIndex;
+	}
+
+	public void setComputeNodeIndex(ArrayList<Integer> computeNodeIndex) {
+		ComputeNodeIndex = computeNodeIndex;
+	}
+
+	public ArrayList<InteractiveJob> getQueueWL() {
+		return queueWL;
+	}
+
+	public void setQueueWL(ArrayList<InteractiveJob> queueWL) {
+		this.queueWL = queueWL;
+	}
+
+	public ArrayList<ResponseTime> getResponseList() {
+		return responseList;
+	}
+
+	public void setResponseList(ArrayList<ResponseTime> responseList) {
+		this.responseList = responseList;
+	}
+
+	public int getSLAviolation() {
+		return SLAviolation;
+	}
+
+	public void setSLAviolation(int sLAviolation) {
+		SLAviolation = sLAviolation;
+	}
+
+	public IteractiveUserAM getAM() {
+		return AM;
+	}
+
+	public void setAM(IteractiveUserAM aM) {
+		AM = aM;
+	}
+
+	public int getMaxNumberOfRequest() {
+		return MaxNumberOfRequest;
+	}
+
+	public void setMaxNumberOfRequest(int maxNumberOfRequest) {
+		MaxNumberOfRequest = maxNumberOfRequest;
+	}
+
+	public int getNumberofBasicNode() {
+		return NumberofBasicNode;
+	}
+
+	public void setNumberofBasicNode(int numberofBasicNode) {
+		NumberofBasicNode = numberofBasicNode;
+	}
 }

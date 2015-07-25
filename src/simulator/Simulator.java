@@ -126,17 +126,17 @@ public class Simulator {
 
 	public boolean anySysetm() {
 		for (int i = 0; i < ES.size(); i++) {
-			if (!ES.get(i).sysIsDone) {
+			if (!ES.get(i).isSysIsDone()) {
 				return false;
 			}
 		}
 		for (int i = 0; i < IS.size(); i++) {
-			if (!IS.get(i).sysIsDone) {
+			if (!IS.get(i).isSysIsDone()) {
 				return false;
 			}
 		}
 		for (int i = 0; i < CS.size(); i++) {
-			if (!CS.get(i).sysIsDone) {
+			if (!CS.get(i).isSysIsDone()) {
 				return false; // still we have work to do
 			}
 		}
@@ -204,7 +204,7 @@ public class Simulator {
 						System.out.println("------------------------------------------");
 						System.out.println("Initialization of Enterprise System Name=" + name);
 						EnterpriseSystem ES1 = new EnterpriseSystem(fileName);
-						ES1.name = name;
+						ES1.setName(name);
 						ES.add(ES1);
 						whichSystem = -1;
 						break;
@@ -212,7 +212,7 @@ public class Simulator {
 						System.out.println("------------------------------------------");
 						System.out.println("Initialization of Interactive System Name=" + name);
 						InteractiveSystem wb1 = new InteractiveSystem(fileName);
-						wb1.name = name;
+						wb1.setName(name);
 						IS.add(wb1);
 						whichSystem = -1;
 						break;
@@ -220,7 +220,7 @@ public class Simulator {
 						System.out.println("------------------------------------------");
 						System.out.println("Initialization of HPC System Name=" + name);
 						ComputeSystem CP = new ComputeSystem(fileName);
-						CP.name = name;
+						CP.setName(name);
 						CS.add(CP);
 						whichSystem = -1;
 						break;
@@ -232,17 +232,17 @@ public class Simulator {
 
 	public void allSystemRunACycle() throws IOException {
 		for (int i = 0; i < ES.size(); i++) {
-			if (!ES.get(i).sysIsDone) {
+			if (!ES.get(i).isSysIsDone()) {
 				ES.get(i).runAcycle();
 			}
 		}
 		for (int i = 0; i < CS.size(); i++) {
-			if (!CS.get(i).sysIsDone) {
+			if (!CS.get(i).isSysIsDone()) {
 				CS.get(i).runAcycle();
 			}
 		}
 		for (int i = 0; i < IS.size(); i++) {
-			if (!IS.get(i).sysIsDone) {
+			if (!IS.get(i).isSysIsDone()) {
 				IS.get(i).runAcycle();
 			}
 		}
@@ -308,12 +308,12 @@ public class Simulator {
 	public boolean anySystem() {
 		boolean retValue = true;
 		for (int i = 0; i < ES.size(); i++) {
-			if (ES.get(i).sysIsDone == false) {
+			if (ES.get(i).isSysIsDone() == false) {
 				retValue = false;
 			} else {
 				System.out.println("--------------------------------------");
-				System.out.println("finishing Time EnterSys: " + ES.get(i).name + " at time: " + localTime);
-				System.out.println("Computing Power Consumed by  " + ES.get(i).name + " is: " + ES.get(i).pwr);
+				System.out.println("finishing Time EnterSys: " + ES.get(i).getName() + " at time: " + localTime);
+				System.out.println("Computing Power Consumed by  " + ES.get(i).getName() + " is: " + ES.get(i).getPower());
 				// System.out.println("Number of violation:
 				// "+ES.get(i).accumolatedViolation);
 
@@ -322,13 +322,13 @@ public class Simulator {
 			}
 		}
 		for (int i = 0; i < IS.size(); i++) {
-			if (IS.get(i).sysIsDone == false) {
+			if (IS.get(i).isSysIsDone() == false) {
 				retValue = false;
 			} else {
 				System.out.println("--------------------------------------");
-				System.out.println("finishing Time Interactive sys:  " + IS.get(i).name + " at time: " + localTime);
-				System.out.println("Interactive sys: Number of violation: " + IS.get(i).accumolatedViolation);
-				System.out.println("Computing Power Consumed by  " + IS.get(i).name + " is: " + IS.get(i).pwr);
+				System.out.println("finishing Time Interactive sys:  " + IS.get(i).getName() + " at time: " + localTime);
+				System.out.println("Interactive sys: Number of violation: " + IS.get(i).getAccumolatedViolation());
+				System.out.println("Computing Power Consumed by  " + IS.get(i).getName() + " is: " + IS.get(i).getPower());
 				IS.remove(i);
 				i--;
 
@@ -337,14 +337,14 @@ public class Simulator {
 			}
 		}
 		for (int i = 0; i < CS.size(); i++) {
-			if (CS.get(i).sysIsDone == false) {
+			if (CS.get(i).isSysIsDone() == false) {
 				retValue = false; // means still we have work to do
 			} else {
 				System.out.println("--------------------------------------");
-				System.out.println("finishing Time HPC_Sys:  " + CS.get(i).name + " at time: " + localTime);
+				System.out.println("finishing Time HPC_Sys:  " + CS.get(i).getName() + " at time: " + localTime);
 				System.out.println("Total Response Time= " + CS.get(i).finalized());
-				System.out.println("Number of violation HPC : " + CS.get(i).accumolatedViolation);
-				System.out.println("Computing Power Consumed by  " + CS.get(i).name + " is: " + CS.get(i).pwr);
+				System.out.println("Number of violation HPC : " + CS.get(i).getAccumolatedViolation());
+				System.out.println("Computing Power Consumed by  " + CS.get(i).getName() + " is: " + CS.get(i).getPower());
 				CS.remove(i);
 				i--;
 			}

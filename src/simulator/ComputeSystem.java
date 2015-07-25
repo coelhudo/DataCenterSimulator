@@ -30,20 +30,20 @@ public class ComputeSystem extends GeneralSystem {
 
     ////////////////////////////////////
     public ComputeSystem(String config) {
-        ComputeNodeList = new ArrayList<BladeServer>();
+        setComputeNodeList(new ArrayList<BladeServer>());
         waitingList = new ArrayList<BatchJob>();
-        ComputeNodeIndex = new ArrayList<Integer>();
+        setComputeNodeIndex(new ArrayList<Integer>());
         parseXmlConfig(config);
-        schdler = new LeastRemainFirst();
+        setScheduler(new LeastRemainFirst());
         //placement=new jobPlacement(ComputeNodeList);
-        rc = new MHR();
+        setResourceAllocation(new MHR());
         totalJob = 0;
-        rc.initialResourceAloc(this);
-        am = new ComputeSystemAM(this);
+        getResourceAllocation().initialResourceAloc(this);
+        setAM(new ComputeSystemAM(this));
     }
 
     boolean runAcycle() {
-        SLAviolation = 0;
+        setSLAviolation(0);
         int numberOfFinishedJob = 0;
         // if(Main.localTime%1200==0 |Main.localTime%1200==2 )
         //         ASP();
@@ -58,11 +58,11 @@ public class ComputeSystem extends GeneralSystem {
         if (!blocked) {
             //feeds jobs from waiting list to servers as much as possible
             getFromWaitinglist();
-            for (int temp = 0; temp < ComputeNodeList.size(); temp++) {
-                ComputeNodeList.get(temp).run(new BatchJob());
+            for (int temp = 0; temp < getComputeNodeList().size(); temp++) {
+                getComputeNodeList().get(temp).run(new BatchJob());
             }
-            for (int temp = 0; temp < ComputeNodeList.size(); temp++) {
-                numberOfFinishedJob = ComputeNodeList.get(temp).totalFinishedJob + numberOfFinishedJob;
+            for (int temp = 0; temp < getComputeNodeList().size(); temp++) {
+                numberOfFinishedJob = getComputeNodeList().get(temp).totalFinishedJob + numberOfFinishedJob;
             }
             // System.out.println("total "+totalJob+ "\t finished Job= "+numberOfFinishedJob+"\t LocalTime="+Main.localTime);
         }
@@ -72,12 +72,12 @@ public class ComputeSystem extends GeneralSystem {
         }
 
         if (!blocked) {
-            am.monitor();
-            am.analysis(0);
+            getAM().monitor();
+            getAM().analysis(0);
         }
         //System.out.println(Main.localTime +"\t"+totalJob+ "\t"+numberOfFinishedJob);
         if (numberOfFinishedJob == totalJob) {
-            sysIsDone = true;
+            setSysIsDone(true);
             return true;
         } else {
             return false;
@@ -86,8 +86,8 @@ public class ComputeSystem extends GeneralSystem {
     ///returns true if all nodes are blocked
 
     boolean allNodesAreBlocked() {
-        for (int temp = 0; temp < ComputeNodeList.size(); temp++) {
-            if (ComputeNodeList.get(temp).ready != -1) {
+        for (int temp = 0; temp < getComputeNodeList().size(); temp++) {
+            if (getComputeNodeList().get(temp).ready != -1) {
                 return false;
             }
         }
@@ -95,16 +95,16 @@ public class ComputeSystem extends GeneralSystem {
     }
 
     void makeSystemaBlocked() {
-        for (int temp = 0; temp < ComputeNodeList.size(); temp++) {
-            ComputeNodeList.get(temp).backUpReady = ComputeNodeList.get(temp).ready;
-            ComputeNodeList.get(temp).ready = -1;
+        for (int temp = 0; temp < getComputeNodeList().size(); temp++) {
+            getComputeNodeList().get(temp).backUpReady = getComputeNodeList().get(temp).ready;
+            getComputeNodeList().get(temp).ready = -1;
 
         }
     }
 
     public void makeSystemaUnBlocked() {
-        for (int temp = 0; temp < ComputeNodeList.size(); temp++) {
-            ComputeNodeList.get(temp).ready = ComputeNodeList.get(temp).backUpReady;
+        for (int temp = 0; temp < getComputeNodeList().size(); temp++) {
+            getComputeNodeList().get(temp).ready = getComputeNodeList().get(temp).backUpReady;
         }
     }
 
@@ -113,11 +113,11 @@ public class ComputeSystem extends GeneralSystem {
         if (waitingList.isEmpty()) {
             return 0;
         }
-        BatchJob job = (BatchJob) (schdler.nextJob(waitingList));
+        BatchJob job = (BatchJob) (getScheduler().nextJob(waitingList));
         while (job.getStartTime() <= Simulator.getInstance().localTime) {
             int[] indexes = new int[job.getNumOfNode()]; //number of node the last job wants
             int[] listServer = new int[job.getNumOfNode()];
-            if (rc.allocateSystemLevelServer(ComputeNodeList, indexes)[0] == -2) {
+            if (getResourceAllocation().allocateSystemLevelServer(getComputeNodeList(), indexes)[0] == -2) {
                 setSLAviolation(Violation.COMPUTE_NODE_SHORTAGE);
                 //  System.out.println("COMPUTE NODE SHORTAGE in getFromWaitingList");
                 return 0; //can not find the bunch of requested node  for the job
@@ -126,11 +126,11 @@ public class ComputeSystem extends GeneralSystem {
             for (int i = 0; i < indexes.length; i++) {
 
                 job.setListOfServer(listServer);
-                ComputeNodeList.get(indexes[i]).feedWork(job);// feed also takes care of setting ready :)
+                getComputeNodeList().get(indexes[i]).feedWork(job);// feed also takes care of setting ready :)
                 if (indexes.length > 1) {
-                    ComputeNodeList.get(indexes[i]).dependency = 1; //means: this server has a process which is dependent on others
+                    getComputeNodeList().get(indexes[i]).dependency = 1; //means: this server has a process which is dependent on others
                 } else {
-                    ComputeNodeList.get(indexes[i]).dependency = 0;
+                    getComputeNodeList().get(indexes[i]).dependency = 0;
                 }
             }
             //Check if dealine is missed
@@ -143,7 +143,7 @@ public class ComputeSystem extends GeneralSystem {
             if (waitingList.isEmpty()) {
                 return 0;
             }
-            job = (BatchJob) (schdler.nextJob(waitingList));
+            job = (BatchJob) (getScheduler().nextJob(waitingList));
         }
         return 0; //it is not important
     }
@@ -153,7 +153,7 @@ public class ComputeSystem extends GeneralSystem {
         //int NumOfSerInChas=DataCenter.theDataCenter.chassisSet.get(0).servers.size();
         //map the index in CS compute node list to physical index(chassID , ServerID)
         for (int i = 0; i < list.length; i++) {
-            retList[i] = ComputeNodeList.get(list[i]).serverID;//chassisID*NumOfSerInChas+ComputeNodeList.get(list[i]).serverID;
+            retList[i] = getComputeNodeList().get(list[i]).serverID;//chassisID*NumOfSerInChas+ComputeNodeList.get(list[i]).serverID;
         }
         return retList;
     }
@@ -170,14 +170,14 @@ public class ComputeSystem extends GeneralSystem {
             SLAviolation++;
         }
         if (SLAViolationType != Violation.NOTHING) {
-            Simulator.getInstance().logHpcViolation(name, SLAViolationType);
-            accumolatedViolation++;
+            Simulator.getInstance().logHpcViolation(getName(), SLAViolationType);
+            setAccumolatedViolation(getAccumolatedViolation() + 1);
         }
     }
 
     boolean readJob(BatchJob j) {
         try {
-            String line = bis.readLine();
+            String line = getBis().readLine();
             if (line == null) {
                 return false;
             }
@@ -214,14 +214,14 @@ public class ComputeSystem extends GeneralSystem {
                     String fileName = path + "/" + childNodes.item(i).getChildNodes().item(0).getNodeValue().trim();
                     try {
                         f = new File(fileName);
-                        bis = new BufferedReader(new InputStreamReader(new FileInputStream(f)));
+                        setBis(new BufferedReader(new InputStreamReader(new FileInputStream(f))));
                     } catch (IOException e) {
                         System.out.println("Uh oh, got an IOException error!" + e.getMessage());
                     } finally {
                     }
                 }
                 if (childNodes.item(i).getNodeName().equalsIgnoreCase("ComputeNode")) {
-                    numberofNode = Integer.parseInt(childNodes.item(i).getChildNodes().item(0).getNodeValue().trim());
+                    setNumberofNode(Integer.parseInt(childNodes.item(i).getChildNodes().item(0).getNodeValue().trim()));
                 }
                 if (childNodes.item(i).getNodeName().equalsIgnoreCase("Priority")) {
                     priority = Integer.parseInt(childNodes.item(i).getChildNodes().item(0).getNodeValue().trim());
@@ -230,7 +230,7 @@ public class ComputeSystem extends GeneralSystem {
                     String str = childNodes.item(i).getChildNodes().item(0).getNodeValue().trim();
                     String[] split = str.split(",");
                     for (int j = 0; j < split.length; j++) {
-                        rackId.add(Integer.parseInt(split[j]));
+                        getRackId().add(Integer.parseInt(split[j]));
                     }
                 }
             }
@@ -238,13 +238,13 @@ public class ComputeSystem extends GeneralSystem {
     }
 
     ArrayList getindexSet() {
-        return ComputeNodeIndex;
+        return getComputeNodeIndex();
     }
 
     public int numberofRunningNode() {
         int cnt = 0;
-        for (int i = 0; i < ComputeNodeList.size(); i++) {
-            if (ComputeNodeList.get(i).ready > -1) {
+        for (int i = 0; i < getComputeNodeList().size(); i++) {
+            if (getComputeNodeList().get(i).ready > -1) {
                 cnt++;
             }
         }
@@ -253,8 +253,8 @@ public class ComputeSystem extends GeneralSystem {
 
     public int numberofIdleNode() {
         int cnt = 0;
-        for (int i = 0; i < ComputeNodeList.size(); i++) {
-            if (ComputeNodeList.get(i).ready == -1) {
+        for (int i = 0; i < getComputeNodeList().size(); i++) {
+            if (getComputeNodeList().get(i).ready == -1) {
                 cnt++;
             }
         }
@@ -263,25 +263,25 @@ public class ComputeSystem extends GeneralSystem {
 
     public void activeOneNode() {
         int i = 0;
-        for (i = 0; i < ComputeNodeList.size(); i++) {
-            if (ComputeNodeList.get(i).ready == -1) {
-                ComputeNodeList.get(i).restart();
-                ComputeNodeList.get(i).ready = 1;
+        for (i = 0; i < getComputeNodeList().size(); i++) {
+            if (getComputeNodeList().get(i).ready == -1) {
+                getComputeNodeList().get(i).restart();
+                getComputeNodeList().get(i).ready = 1;
                 break;
             }
         }
-        System.out.println("activeone node in compuet system MIIIIPPPSSS    " + ComputeNodeList.get(i).Mips);
+        System.out.println("activeone node in compuet system MIIIIPPPSSS    " + getComputeNodeList().get(i).Mips);
     }
 
     double finalized() {
         try {
-            bis.close();
+            getBis().close();
         } catch (IOException ex) {
             Logger.getLogger(EnterpriseApp.class.getName()).log(Level.SEVERE, null, ex);
         }
         double totalResponsetime = 0;
-        for (int i = 0; i < ComputeNodeList.size(); i++) {
-            totalResponsetime = totalResponsetime + ComputeNodeList.get(i).respTime;
+        for (int i = 0; i < getComputeNodeList().size(); i++) {
+            totalResponsetime = totalResponsetime + getComputeNodeList().get(i).respTime;
 
         }
         return totalResponsetime;

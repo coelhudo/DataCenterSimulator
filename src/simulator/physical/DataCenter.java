@@ -255,11 +255,11 @@ public final class DataCenter {
         maxTemp = redTemperature - maxTemp;
         if (maxTemp <= 0) {
             //System.out.println("maxTem less than 0000  " + maxTemp);
-            am.SlowDownFromCooler = true;
+            am.setSlowDownFromCooler(true);
             overRed++;
 
         } else {
-            am.SlowDownFromCooler = false;
+            am.setSlowDownFromCooler(false);
         }
         double cop = cooler1.getCOP(maxTemp);
         try {
