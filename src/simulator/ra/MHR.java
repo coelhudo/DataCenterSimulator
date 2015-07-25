@@ -4,7 +4,7 @@
  */
 package simulator.ra;
 
-import java.util.ArrayList;
+import java.util.List;
 import simulator.physical.BladeServer;
 import simulator.EnterpriseSystem;
 import simulator.InteractiveSystem;
@@ -18,7 +18,7 @@ public class MHR extends ResourceAllocation {
     int[] powIndex = {15, 31, 16, 11, 36, 10, 30, 6, 20, 21, 35, 32, 17, 26, 25, 7, 27, 12, 42, 37, 41, 5, 2, 1, 0, 22, 40, 47, 46, 13, 45, 29, 23, 8, 28, 43, 48, 9, 38, 33, 18, 3, 34, 44, 24, 14, 49, 19, 39, 4};
 
     @Override
-    public int nextServer(ArrayList<BladeServer> bs) {
+    public int nextServer(List<BladeServer> bs) {
         int i = 0, j = 0;
         for (i = 0; i < powIndex.length; i++) {
             for (j = 0; j < bs.size(); j++) {
@@ -32,7 +32,7 @@ public class MHR extends ResourceAllocation {
     }
 
     @Override
-    public int nextServerInSys(ArrayList<BladeServer> bs) {
+    public int nextServerInSys(List<BladeServer> bs) {
         int i = 0, j = 0;
         for (i = 0; i < powIndex.length; i++) {
             for (j = 0; j < bs.size(); j++) {
@@ -46,7 +46,7 @@ public class MHR extends ResourceAllocation {
     }
 
     @Override
-    public int[] nextServerSys(ArrayList<Integer> chassisList) {
+    public int[] nextServerSys(List<Integer> chassisList) {
         int[] retValue = new int[2];
         retValue[0] = -2;
         retValue[1] = -2;
@@ -76,7 +76,7 @@ public class MHR extends ResourceAllocation {
     //List is array of compute nodes
 
     @Override
-    public int[] allocateSystemLevelServer(ArrayList<BladeServer> ComputeNodeList, int list[]) {
+    public int[] allocateSystemLevelServer(List<BladeServer> ComputeNodeList, int list[]) {
         int j = 0, i = 0;
         int totalReadyNodes = 0;
         for (i = 0; i < list.length; i++) {

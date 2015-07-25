@@ -7,7 +7,7 @@ package simulator.ra;
 import simulator.EnterpriseSystem;
 import simulator.InteractiveSystem;
 import simulator.ra.ResourceAllocation;
-import java.util.ArrayList;
+import java.util.List;
 import simulator.physical.BladeServer;
 
 /**
@@ -17,7 +17,7 @@ import simulator.physical.BladeServer;
 public class FirstFit extends ResourceAllocation {
 
     @Override
-    public int nextServer(ArrayList<BladeServer> bs) {
+    public int nextServer(List<BladeServer> bs) {
         for (int j = 0; j < bs.size(); j++) {
             if (bs.get(j).ready == 1) {
                 return j;
@@ -29,7 +29,7 @@ public class FirstFit extends ResourceAllocation {
     }
 
     @Override
-    public int[] nextServerSys(ArrayList<Integer> chassisList) {
+    public int[] nextServerSys(List<Integer> chassisList) {
         int[] retValue = new int[2];
         retValue[0] = -2;
         retValue[1] = -2;
@@ -48,7 +48,7 @@ public class FirstFit extends ResourceAllocation {
     }
 
     @Override
-    public int[] allocateSystemLevelServer(ArrayList<BladeServer> ComputeNodeList, int list[]) {
+    public int[] allocateSystemLevelServer(List<BladeServer> ComputeNodeList, int list[]) {
         int j = 0, i = 0;
         int totalReadyNodes = 0;
         for (i = 0; i < list.length; i++) {

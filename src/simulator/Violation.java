@@ -1,5 +1,5 @@
 package simulator;
 
 public enum Violation {
-    NOTHING, ComputeNodeShortage, DEADLINEPASSED
+    NOTHING, COMPUTE_NODE_SHORTAGE, DEADLINEPASSED
 }

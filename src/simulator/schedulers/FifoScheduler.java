@@ -5,7 +5,7 @@
 package simulator.schedulers;
 
 import simulator.schedulers.Scheduler;
-import java.util.ArrayList;
+import java.util.List;
 import simulator.jobs.Job;
 
 /**
@@ -15,7 +15,7 @@ import simulator.jobs.Job;
 public class FifoScheduler implements Scheduler {
 
     @Override
-    public Job nextJob(ArrayList<? extends Job> queue) {
+    public Job nextJob(List<? extends Job> queue) {
         return queue.get(0);
     }
 }

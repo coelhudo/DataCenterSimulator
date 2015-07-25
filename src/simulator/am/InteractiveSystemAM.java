@@ -15,7 +15,7 @@ public class InteractiveSystemAM extends GeneralAM {
 
     public InteractiveSystemAM(InteractiveSystem is) {
         this.IS = is;
-        recForCoop = new int[IS.UserList.size()];
+        setRecForCoop(new int[IS.UserList.size()]);
     }
 
     @Override

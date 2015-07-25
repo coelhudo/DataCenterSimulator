@@ -7,7 +7,7 @@ package simulator.schedulers;
 import simulator.jobs.BatchJob;
 import simulator.jobs.Job;
 import simulator.schedulers.Scheduler;
-import java.util.ArrayList;
+import java.util.List;
 
 /**
  *
@@ -16,14 +16,13 @@ import java.util.ArrayList;
 public class LeastRemainFirst implements Scheduler {
 
     @Override
-    public Job nextJob(ArrayList<? extends Job> queue) {
-        double rem = ((BatchJob) queue.get(0)).reqTime;
-        BatchJob jj = new BatchJob();
+    public Job nextJob(List<? extends Job> queue) {
+        double rem = ((BatchJob) queue.get(0)).getReqTime();
         int index = 0;
         int minIndex = 0;
         for (; index < queue.size(); index++) {
-            if (((BatchJob) queue.get(index)).reqTime < rem) {
-                rem = ((BatchJob) queue.get(index)).reqTime;
+            if (((BatchJob) queue.get(index)).getReqTime() < rem) {
+                rem = ((BatchJob) queue.get(index)).getReqTime();
                 minIndex = index;
             }
         }

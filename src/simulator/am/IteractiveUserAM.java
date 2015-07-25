@@ -28,7 +28,7 @@ public class IteractiveUserAM extends GeneralAM {
         getPercentageOfComputingPwr();
         ///Check if its neighborhood are not happy to see if it can help or not!
         for (int i = 0; i < sys.UserList.size(); i++) {
-            if (sys.am.recForCoop[i] == 1) {
+            if (sys.am.getRecForCoop()[i] == 1) {
                 //TODO
             }
         }
@@ -55,7 +55,7 @@ public class IteractiveUserAM extends GeneralAM {
             }
         }
         percnt = percnt + levels[0] + 2 * levels[1] + 3 * levels[2];
-        sys.am.compPwrApps[User.id] = sys.am.compPwrApps[User.id] + levels[0] + 2 * levels[1] + 3 * levels[2];
+        sys.am.getCompPwrApps()[User.id] = sys.am.getCompPwrApps()[User.id] + levels[0] + 2 * levels[1] + 3 * levels[2];
         return percnt;
     }
 

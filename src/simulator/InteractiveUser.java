@@ -80,8 +80,8 @@ public class InteractiveUser {
                 return -2;
             }
             InteractiveJob j = new InteractiveJob();
-            j.arrivalTimeOfJob = Integer.parseInt(numbers[0]);
-            j.numberOfJob = Double.parseDouble(numbers[1]) * 50;
+            j.setArrivalTimeOfJob(Integer.parseInt(numbers[0]));
+            j.setNumberOfJob(Double.parseDouble(numbers[1]) * 50);
             queueWL.add(j);
             return 1;
             //System.out.println("Readed inputTime= " + inputTime + " Job Reqested Time=" + j.startTime+" Total job so far="+ total);
@@ -104,7 +104,7 @@ public class InteractiveUser {
     int readWebJob() {
         int retReadLogfile = readingLogFile();
         if (queueWL.size() > 0) {
-            if (queueWL.get(0).arrivalTimeOfJob == Simulator.getInstance().localTime | queueWL.get(0).arrivalTimeOfJob < Simulator.getInstance().localTime) {
+            if (queueWL.get(0).getArrivalTimeOfJob() == Simulator.getInstance().localTime | queueWL.get(0).getArrivalTimeOfJob() < Simulator.getInstance().localTime) {
                 return 1;
             } else {
                 return 0;
@@ -145,51 +145,51 @@ public class InteractiveUser {
         //jj=queueWL.get(0);
         jj = (InteractiveJob) parent.schdler.nextJob(queueWL);
         while (capacityOfNode > 0) {
-            capacityOfNode = capacityOfNode - jj.numberOfJob;
+            capacityOfNode = capacityOfNode - jj.getNumberOfJob();
             if (capacityOfNode == 0) {
-                addToresponseArray(jj.numberOfJob, (Simulator.getInstance().localTime - jj.arrivalTimeOfJob + 1));
+                addToresponseArray(jj.getNumberOfJob(), (Simulator.getInstance().localTime - jj.getArrivalTimeOfJob() + 1));
                 //System.out.println((Main.localTime-wJob.arrivalTimeOfJob+1)*(wJob.numberOfJob) +"\t"+wJob.numberOfJob+"\t q len="+queueLength);
-                beenRunJobs = beenRunJobs + jj.numberOfJob;
+                beenRunJobs = beenRunJobs + jj.getNumberOfJob();
                 queueWL.remove(jj);
                 break;
             }
             if (capacityOfNode < 0) // there are more jobs than capacity
             {
-                addToresponseArray(capacityOfNode + jj.numberOfJob, (Simulator.getInstance().localTime - jj.arrivalTimeOfJob + 1));
-                beenRunJobs = beenRunJobs + capacityOfNode + jj.numberOfJob;
-                jj.numberOfJob = -1 * capacityOfNode;
+                addToresponseArray(capacityOfNode + jj.getNumberOfJob(), (Simulator.getInstance().localTime - jj.getArrivalTimeOfJob() + 1));
+                beenRunJobs = beenRunJobs + capacityOfNode + jj.getNumberOfJob();
+                jj.setNumberOfJob(-1 * capacityOfNode);
                 //System.out.println(1000.0*Mips);
                 break;
             }
             if (capacityOfNode > 0) //still we have capacity to run the jobs
             {
-                addToresponseArray(jj.numberOfJob, (Simulator.getInstance().localTime - jj.arrivalTimeOfJob + 1));
-                beenRunJobs = beenRunJobs + jj.numberOfJob;
+                addToresponseArray(jj.getNumberOfJob(), (Simulator.getInstance().localTime - jj.getArrivalTimeOfJob() + 1));
+                beenRunJobs = beenRunJobs + jj.getNumberOfJob();
                 queueWL.remove(jj);
                 while (queueWL.size() > 0) {
                     //jj=queueWL.get(0);
                     jj = (InteractiveJob) parent.schdler.nextJob(queueWL);
                     double copyTedat = capacityOfNode;
-                    capacityOfNode = capacityOfNode - jj.numberOfJob;
+                    capacityOfNode = capacityOfNode - jj.getNumberOfJob();
                     if (capacityOfNode == 0) {
-                        addToresponseArray(jj.numberOfJob, (Simulator.getInstance().localTime - jj.arrivalTimeOfJob + 1));
+                        addToresponseArray(jj.getNumberOfJob(), (Simulator.getInstance().localTime - jj.getArrivalTimeOfJob() + 1));
                         //System.out.println(wJob.numberOfJob);
-                        beenRunJobs = beenRunJobs + jj.numberOfJob;
+                        beenRunJobs = beenRunJobs + jj.getNumberOfJob();
                         queueWL.remove(0);
                         break;
                     }
                     if (capacityOfNode < 0) //there are more jobs than 1000.0*MIPS
                     {
-                        addToresponseArray(copyTedat, (Simulator.getInstance().localTime - jj.arrivalTimeOfJob + 1));
-                        jj.numberOfJob = -1 * capacityOfNode;
+                        addToresponseArray(copyTedat, (Simulator.getInstance().localTime - jj.getArrivalTimeOfJob() + 1));
+                        jj.setNumberOfJob(-1 * capacityOfNode);
                         beenRunJobs = beenRunJobs + copyTedat;
                         //System.out.println(copyTedat);
                         break;
                     }
                     if (capacityOfNode > 0) {
-                        addToresponseArray(jj.numberOfJob, (Simulator.getInstance().localTime - jj.arrivalTimeOfJob + 1));
+                        addToresponseArray(jj.getNumberOfJob(), (Simulator.getInstance().localTime - jj.getArrivalTimeOfJob() + 1));
                         //System.out.println(wJob.numberOfJob);
-                        beenRunJobs = beenRunJobs + jj.numberOfJob;
+                        beenRunJobs = beenRunJobs + jj.getNumberOfJob();
                         queueWL.remove(0);
                     }
                 } //end while
@@ -327,8 +327,8 @@ public class InteractiveUser {
     public double numberOfWaitingJobs() {
         double lenJob = 0;
         for (int i = 0; i < queueWL.size(); i++) {
-            if (queueWL.get(i).arrivalTimeOfJob <= Simulator.getInstance().localTime) {
-                lenJob = +queueWL.get(i).numberOfJob;
+            if (queueWL.get(i).getArrivalTimeOfJob() <= Simulator.getInstance().localTime) {
+                lenJob = +queueWL.get(i).getNumberOfJob();
             }
         }
 

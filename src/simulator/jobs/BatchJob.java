@@ -5,73 +5,149 @@ import simulator.Simulator;
 
 public class BatchJob extends Job {
 
-    public double startTime, exitTime, deadline;
-    public int isChangedThisTime = 0;
-    public double reqTime, utilization;
-    public double[] remain;
-    public int numOfNode;
-    public int[] listOfServer;
+	private double startTime;
+	private double exitTime;
+	private double deadline;
+	private int isChangedThisTime = 0;
+	private double reqTime;
+	private double utilization;
+	private double[] remain;
+	private int numOfNode;
+	private int[] listOfServer;
 
-    public void setRemainParam(double exp, double ut, int node, int deadln) {
-        if (ut < 1) {
-            utilization = 1;
-        } else {
-            utilization = ut / 100;
-        }
-        numOfNode = node;
-        listOfServer = new int[numOfNode];
-        remain = new double[numOfNode];
-        for (int i = 0; i < numOfNode; i++) {
-            remain[i] = exp;
-        }
-        reqTime = exp;
-        deadline = deadln;
-    }
+	public void setRemainParam(double exp, double ut, int node, int deadln) {
+		if (ut < 1) {
+			setUtilization(1);
+		} else {
+			setUtilization(ut / 100);
+		}
+		setNumOfNode(node);
+		setListOfServer(new int[getNumOfNode()]);
+		setRemain(new double[getNumOfNode()]);
+		for (int i = 0; i < getNumOfNode(); i++) {
+			getRemain()[i] = exp;
+		}
+		setReqTime(exp);
+		setDeadline(deadln);
+	}
 
-    public BatchJob() {
-        startTime = 0;
-        exitTime = 0;
-        reqTime = 0;
-        exitTime = 0;
-        numOfNode = 0;
-        deadline = 0;
-    }
+	public BatchJob() {
+		setStartTime(0);
+		setExitTime(0);
+		setReqTime(0);
+		setExitTime(0);
+		setNumOfNode(0);
+		setDeadline(0);
+	}
 
-    public boolean allDone() {
-        int i;
-        for (i = 0; i < numOfNode; i++) {
-            if (remain[i] > 0) {
-                return false;
-            }
-        }
-        return true;
+	public boolean allDone() {
+		int i;
+		for (i = 0; i < getNumOfNode(); i++) {
+			if (getRemain()[i] > 0) {
+				return false;
+			}
+		}
+		return true;
 
-    }
+	}
 
-    public void jobFinished() {
-        exitTime = Simulator.getInstance().localTime;
-        double waitTime = (Simulator.getInstance().localTime + 1) - startTime;//- (int)(reqTime);
-        if (waitTime < 0) {
-            System.out.println("Alert: Error in BatchJob\t" + waitTime);
-        }
+	public void jobFinished() {
+		setExitTime(Simulator.getInstance().localTime);
+		double waitTime = (Simulator.getInstance().localTime + 1) - getStartTime();
+																					//-  (int)(reqTime);
+		if (waitTime < 0) {
+			System.out.println("Alert: Error in BatchJob\t" + waitTime);
+		}
 
-        BladeServer server = Simulator.getInstance().getDatacenter().getServer(listOfServer[0]);
-        server.respTime = waitTime + server.respTime;
-        for (int i = 0; i < numOfNode; i++) {
-            server = Simulator.getInstance().getDatacenter().getServer(listOfServer[i]);
-            server.blockedBatchList.remove(this);
-        }
+		BladeServer server = Simulator.getInstance().getDatacenter().getServer(getListOfServer()[0]);
+		server.respTime = waitTime + server.respTime;
+		for (int i = 0; i < getNumOfNode(); i++) {
+			server = Simulator.getInstance().getDatacenter().getServer(getListOfServer()[i]);
+			server.blockedBatchList.remove(this);
+		}
 
-        return;
-    }
+		return;
+	}
 
-    public int getThisNodeIndex(int serverIndex) {
-        int ki;
-        for (ki = 0; ki < remain.length; ki++) {
-            if (listOfServer[ki] == serverIndex) {
-                return ki;
-            }
-        }
-        return -1;
-    }
+	public int getThisNodeIndex(int serverIndex) {
+		int ki;
+		for (ki = 0; ki < getRemain().length; ki++) {
+			if (getListOfServer()[ki] == serverIndex) {
+				return ki;
+			}
+		}
+		return -1;
+	}
+
+	public double getStartTime() {
+		return startTime;
+	}
+
+	public void setStartTime(double startTime) {
+		this.startTime = startTime;
+	}
+
+	public double getExitTime() {
+		return exitTime;
+	}
+
+	public void setExitTime(double exitTime) {
+		this.exitTime = exitTime;
+	}
+
+	public double getDeadline() {
+		return deadline;
+	}
+
+	public void setDeadline(double deadline) {
+		this.deadline = deadline;
+	}
+
+	public int getIsChangedThisTime() {
+		return isChangedThisTime;
+	}
+
+	public void setIsChangedThisTime(int isChangedThisTime) {
+		this.isChangedThisTime = isChangedThisTime;
+	}
+
+	public double getReqTime() {
+		return reqTime;
+	}
+
+	public void setReqTime(double reqTime) {
+		this.reqTime = reqTime;
+	}
+
+	public double getUtilization() {
+		return utilization;
+	}
+
+	public void setUtilization(double utilization) {
+		this.utilization = utilization;
+	}
+
+	public double[] getRemain() {
+		return remain;
+	}
+
+	public void setRemain(double[] remain) {
+		this.remain = remain;
+	}
+
+	public int getNumOfNode() {
+		return numOfNode;
+	}
+
+	public void setNumOfNode(int numOfNode) {
+		this.numOfNode = numOfNode;
+	}
+
+	public int[] getListOfServer() {
+		return listOfServer;
+	}
+
+	public void setListOfServer(int[] listOfServer) {
+		this.listOfServer = listOfServer;
+	}
 }

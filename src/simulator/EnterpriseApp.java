@@ -56,8 +56,8 @@ public final class EnterpriseApp {
     public double numberOfWaitingJobs() {
         double lenJob = 0;
         for (int i = 0; i < queueApp.size(); i++) {
-            if (queueApp.get(i).arrivalTimeOfJob <= Simulator.getInstance().localTime) {
-                lenJob = +queueApp.get(i).numberOfJob;
+            if (queueApp.get(i).getArrivalTimeOfJob() <= Simulator.getInstance().localTime) {
+                lenJob = +queueApp.get(i).getNumberOfJob();
             }
         }
 
@@ -100,8 +100,8 @@ public final class EnterpriseApp {
                 return -2;
             }
             EnterpriseJob j = new EnterpriseJob();
-            j.arrivalTimeOfJob = Integer.parseInt(numbers[0]);
-            j.numberOfJob = Double.parseDouble(numbers[1]);
+            j.setArrivalTimeOfJob(Integer.parseInt(numbers[0]));
+            j.setNumberOfJob(Double.parseDouble(numbers[1]));
             queueApp.add(j);
             return 1;
             //System.out.println("Readed inputTime= " + inputTime + " Job Reqested Time=" + j.startTime+" Total job so far="+ total);
@@ -114,8 +114,8 @@ public final class EnterpriseApp {
 
     int readWebJob() {
         int retReadLogfile = readingLogFile();
-        if (queueApp.size() > 0) {
-            if (queueApp.get(0).arrivalTimeOfJob == Simulator.getInstance().localTime | queueApp.get(0).arrivalTimeOfJob < Simulator.getInstance().localTime) {
+        if (!queueApp.isEmpty()) {
+            if (queueApp.get(0).getArrivalTimeOfJob() == Simulator.getInstance().localTime | queueApp.get(0).getArrivalTimeOfJob() < Simulator.getInstance().localTime) {
                 return 1;
             } else {
                 return 0;
@@ -168,52 +168,52 @@ public final class EnterpriseApp {
 
         jj = (EnterpriseJob) parent.schdler.nextJob(queueApp);
         while (capacityOfNode > 0) {
-            capacityOfNode = capacityOfNode - jj.numberOfJob;
+            capacityOfNode = capacityOfNode - jj.getNumberOfJob();
             if (capacityOfNode == 0) {
-                addToresponseArray(jj.numberOfJob, (Simulator.getInstance().localTime - jj.arrivalTimeOfJob + 1));
+                addToresponseArray(jj.getNumberOfJob(), (Simulator.getInstance().localTime - jj.getArrivalTimeOfJob() + 1));
                 //System.out.println((Main.localTime-wJob.arrivalTimeOfJob+1)*(wJob.numberOfJob) +"\t"+wJob.numberOfJob+"\t q len="+queueLength);
-                beenRunJobs = beenRunJobs + jj.numberOfJob;
+                beenRunJobs = beenRunJobs + jj.getNumberOfJob();
                 queueApp.remove(jj);
                 break;
             }
             if (capacityOfNode < 0) // there are more jobs than capacity
             {
-                addToresponseArray(capacityOfNode + jj.numberOfJob, (Simulator.getInstance().localTime - jj.arrivalTimeOfJob + 1));
-                beenRunJobs = beenRunJobs + capacityOfNode + jj.numberOfJob;
-                jj.numberOfJob = -1 * capacityOfNode;
+                addToresponseArray(capacityOfNode + jj.getNumberOfJob(), (Simulator.getInstance().localTime - jj.getArrivalTimeOfJob() + 1));
+                beenRunJobs = beenRunJobs + capacityOfNode + jj.getNumberOfJob();
+                jj.setNumberOfJob(-1 * capacityOfNode);
                 //System.out.println(1000.0*Mips);
                 break;
             }
             if (capacityOfNode > 0) //still we have capacity to run the jobs
             {
-                addToresponseArray(jj.numberOfJob, (Simulator.getInstance().localTime - jj.arrivalTimeOfJob + 1));
-                beenRunJobs = beenRunJobs + jj.numberOfJob;
+                addToresponseArray(jj.getNumberOfJob(), (Simulator.getInstance().localTime - jj.getArrivalTimeOfJob() + 1));
+                beenRunJobs = beenRunJobs + jj.getNumberOfJob();
                 queueApp.remove(jj);
-                while (queueApp.size() > 0) {
+                while (!queueApp.isEmpty()) {
 
                     //jj=queueApp.get(0);
                     jj = (EnterpriseJob) parent.schdler.nextJob(queueApp);
                     double copyTedat = capacityOfNode;
-                    capacityOfNode = capacityOfNode - jj.numberOfJob;
+                    capacityOfNode = capacityOfNode - jj.getNumberOfJob();
                     if (capacityOfNode == 0) {
-                        addToresponseArray(jj.numberOfJob, (Simulator.getInstance().localTime - jj.arrivalTimeOfJob + 1));
+                        addToresponseArray(jj.getNumberOfJob(), (Simulator.getInstance().localTime - jj.getArrivalTimeOfJob() + 1));
                         //System.out.println(wJob.numberOfJob);
-                        beenRunJobs = beenRunJobs + jj.numberOfJob;
+                        beenRunJobs = beenRunJobs + jj.getNumberOfJob();
                         queueApp.remove(0);
                         break;
                     }
                     if (capacityOfNode < 0) //there are more jobs than 1000.0*MIPS
                     {
-                        addToresponseArray(copyTedat, (Simulator.getInstance().localTime - jj.arrivalTimeOfJob + 1));
-                        jj.numberOfJob = -1 * capacityOfNode;
+                        addToresponseArray(copyTedat, (Simulator.getInstance().localTime - jj.getArrivalTimeOfJob() + 1));
+                        jj.setNumberOfJob(-1 * capacityOfNode);
                         beenRunJobs = beenRunJobs + copyTedat;
                         //System.out.println(copyTedat);
                         break;
                     }
                     if (capacityOfNode > 0) {
-                        addToresponseArray(jj.numberOfJob, (Simulator.getInstance().localTime - jj.arrivalTimeOfJob + 1));
+                        addToresponseArray(jj.getNumberOfJob(), (Simulator.getInstance().localTime - jj.getArrivalTimeOfJob() + 1));
                         //System.out.println(wJob.numberOfJob);
-                        beenRunJobs = beenRunJobs + jj.numberOfJob;
+                        beenRunJobs = beenRunJobs + jj.getNumberOfJob();
                         queueApp.remove(0);
                     }
                 } //end while

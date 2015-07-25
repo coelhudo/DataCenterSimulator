@@ -21,7 +21,7 @@ public class EnterpriseSystemAM extends GeneralAM {
     public EnterpriseSystemAM(EnterpriseSystem ES) {
         //super(dtcenter);
         this.ES = ES;
-        recForCoop = new int[ES.applicationList.size()];
+        setRecForCoop(new int[ES.applicationList.size()]);
     }
 
     @Override

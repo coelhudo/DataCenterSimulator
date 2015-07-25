@@ -1,5 +1,6 @@
 package simulator.ra;
 
+import java.util.List;
 import java.util.ArrayList;
 import simulator.physical.BladeServer;
 import simulator.ComputeSystem;
@@ -13,19 +14,19 @@ public abstract class ResourceAllocation {
 
     protected DataCenter dc = Simulator.getInstance().getDatacenter();
 
-    public int[] nextServerSys(ArrayList<Integer> chassisList) {
+    public int[] nextServerSys(List<Integer> chassisList) {
         return null;
     }
 
-    public int nextServerInSys(ArrayList<BladeServer> bs) {
+    public int nextServerInSys(List<BladeServer> bs) {
         return 0;
     }
 
-    public int nextServer(ArrayList<BladeServer> bladeList) {
+    public int nextServer(List<BladeServer> bladeList) {
         return 0;
     }
 
-    public int[] allocateSystemLevelServer(ArrayList<BladeServer> bs, int list[]) {
+    public int[] allocateSystemLevelServer(List<BladeServer> bs, int list[]) {
         return null;
     }
 
@@ -92,7 +93,7 @@ public abstract class ResourceAllocation {
                     if (indexInComputeList == -2) {
                         //System.out.println("nashod alocate konim! for  this application ->"+i +"\tsize quueue 0->"+
                         //       ES.applicationList.get(0).queueApp.size()+"\t1->"+ES.applicationList.get(1).queueApp.size());
-                        ES.am.recForCoop[i] = 1;
+                        ES.am.getRecForCoop()[i] = 1;
                     } else {
                         int indexServer = ES.ComputeNodeList.get(indexInComputeList).serverID;
                         int indexChassis = ES.ComputeNodeList.get(indexInComputeList).chassisID;
@@ -390,7 +391,7 @@ public abstract class ResourceAllocation {
                         System.out.println("nashod alocate konim! for  this User ->" + i + "\tsize quueue 0->"
                                 + IS.UserList.get(0).queueWL.size() + "\t1->" + IS.UserList.get(1).queueWL.size() + "\t2->"
                                 + IS.UserList.get(2).queueWL.size());
-                        IS.am.recForCoop[i] = 1;
+                        IS.am.getRecForCoop()[i] = 1;
                     } else {
                         int indexServer = IS.ComputeNodeList.get(indexInComputeList).serverID;
                         int indexChassis = IS.ComputeNodeList.get(indexInComputeList).chassisID;

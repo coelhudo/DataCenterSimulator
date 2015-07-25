@@ -2,11 +2,27 @@ package simulator.jobs;
 
 public class InteractiveJob extends Job {
 
-    public double numberOfJob;
-    public int arrivalTimeOfJob;
+    private double numberOfJob;
+    private int arrivalTimeOfJob;
 
     public InteractiveJob() {
-        arrivalTimeOfJob = 0;
-        numberOfJob = 0;
+        setArrivalTimeOfJob(0);
+        setNumberOfJob(0);
     }
+
+	public double getNumberOfJob() {
+		return numberOfJob;
+	}
+
+	public void setNumberOfJob(double numberOfJob) {
+		this.numberOfJob = numberOfJob;
+	}
+
+	public int getArrivalTimeOfJob() {
+		return arrivalTimeOfJob;
+	}
+
+	public void setArrivalTimeOfJob(int arrivalTimeOfJob) {
+		this.arrivalTimeOfJob = arrivalTimeOfJob;
+	}
 }

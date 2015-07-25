@@ -114,18 +114,18 @@ public class ComputeSystem extends GeneralSystem {
             return 0;
         }
         BatchJob job = (BatchJob) (schdler.nextJob(waitingList));
-        while (job.startTime <= Simulator.getInstance().localTime) {
-            int[] indexes = new int[job.numOfNode]; //number of node the last job wants
-            int[] listServer = new int[job.numOfNode];
+        while (job.getStartTime() <= Simulator.getInstance().localTime) {
+            int[] indexes = new int[job.getNumOfNode()]; //number of node the last job wants
+            int[] listServer = new int[job.getNumOfNode()];
             if (rc.allocateSystemLevelServer(ComputeNodeList, indexes)[0] == -2) {
-                setSLAviolation(Violation.ComputeNodeShortage);
+                setSLAviolation(Violation.COMPUTE_NODE_SHORTAGE);
                 //  System.out.println("COMPUTE NODE SHORTAGE in getFromWaitingList");
                 return 0; //can not find the bunch of requested node  for the job
             }
             listServer = makeListofServer(indexes);
             for (int i = 0; i < indexes.length; i++) {
 
-                job.listOfServer = listServer;
+                job.setListOfServer(listServer);
                 ComputeNodeList.get(indexes[i]).feedWork(job);// feed also takes care of setting ready :)
                 if (indexes.length > 1) {
                     ComputeNodeList.get(indexes[i]).dependency = 1; //means: this server has a process which is dependent on others
@@ -134,7 +134,7 @@ public class ComputeSystem extends GeneralSystem {
                 }
             }
             //Check if dealine is missed
-            if (Simulator.getInstance().localTime - job.startTime > job.deadline) {
+            if (Simulator.getInstance().localTime - job.getStartTime() > job.getDeadline()) {
                 setSLAviolation(Violation.DEADLINEPASSED);
                 // System.out.println("DEADLINE PASSED in getFromWaitingList");
             }
@@ -160,9 +160,9 @@ public class ComputeSystem extends GeneralSystem {
 
     void setSLAviolation(Violation flag) {
         SLAViolationType = Violation.NOTHING;
-        if (flag == Violation.ComputeNodeShortage)//means there is not enough compute nodes for job, this function is called from resourceIsAvailable
+        if (flag == Violation.COMPUTE_NODE_SHORTAGE)//means there is not enough compute nodes for job, this function is called from resourceIsAvailable
         {
-            SLAViolationType = Violation.ComputeNodeShortage;
+            SLAViolationType = Violation.COMPUTE_NODE_SHORTAGE;
             SLAviolation++;
         }
         if (flag == Violation.DEADLINEPASSED) {
@@ -189,7 +189,7 @@ public class ComputeSystem extends GeneralSystem {
             // Input log format: (time, requiertime, CPU utilization, number of core, dealine for getting to a server buffer)
             inputTime = Double.parseDouble(numbers[0]);
             j.setRemainParam(Double.parseDouble(numbers[1]), Double.parseDouble(numbers[2]), Integer.parseInt(numbers[3]), Integer.parseInt(numbers[4]));
-            j.startTime = inputTime;
+            j.setStartTime(inputTime);
             boolean add = waitingList.add(j);
             //number of jobs which are copied on # of requested nodes
             totalJob = totalJob + 1 /*+Integer.parseInt(numbers[3])*/;

@@ -30,7 +30,7 @@ public class ApplicationAM extends GeneralAM {
         getPercentageOfComputingPwr();
         ///Check if its neighborhood are not happy to see if it can help or not!
         for (int i = 0; i < sys.applicationList.size(); i++) {
-            if (sys.am.recForCoop[i] == 1) {
+            if (sys.am.getRecForCoop()[i] == 1) {
                 if (app.numberOfWaitingJobs() < sys.applicationList.get(i).numberOfWaitingJobs()) {//this app can generously give one resource to the needed app e.i. index i
                     // if(allocateAnodetoThisApp(i)==true)
                     //     sys.AM.recForCoop[i]=0;
@@ -60,7 +60,7 @@ public class ApplicationAM extends GeneralAM {
             }
         }
         percnt = percnt + levels[0] + 2 * levels[1] + 3 * levels[2];
-        sys.am.compPwrApps[app.id] = sys.am.compPwrApps[app.id] + levels[0] + 2 * levels[1] + 3 * levels[2];
+        sys.am.getCompPwrApps()[app.id] = sys.am.getCompPwrApps()[app.id] + levels[0] + 2 * levels[1] + 3 * levels[2];
         return percnt;
     }
 

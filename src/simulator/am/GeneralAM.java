@@ -2,19 +2,37 @@ package simulator.am;
 
 import simulator.Simulator;
 
-abstract public class GeneralAM {
+public abstract class GeneralAM {
 
-    public double[] compPwrApps = new double[256];
+	//FIXME: find what this means and rename it
+	private double[] compPwrApps = new double[256];
     double[] SlaApps = new double[256];
-    public int[] recForCoop;
+    //FIXME: find what this means and rename it
+    private int[] recForCoop;
     int SLAViolationGen;
     Simulator.StrategyEnum strategy;
 
-    abstract public void monitor();
+    public abstract void monitor();
+           
+    public abstract void analysis(Object vilation);
+           
+    public abstract void planning();
+           
+    public abstract void execution();
 
-    abstract public void analysis(Object vilation);
+	public int[] getRecForCoop() {
+		return recForCoop;
+	}
 
-    abstract public void planning();
+	public void setRecForCoop(int[] recForCoop) {
+		this.recForCoop = recForCoop;
+	}
 
-    abstract public void execution();
+	public double[] getCompPwrApps() {
+		return compPwrApps;
+	}
+
+	public void setCompPwrApps(double[] compPwrApps) {
+		this.compPwrApps = compPwrApps;
+	}
 }

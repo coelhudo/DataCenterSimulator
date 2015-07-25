@@ -137,12 +137,12 @@ public class BladeServer {
     }
 
     public void feedWork(InteractiveJob j) {
-        double nums = j.numberOfJob;
-        int time = j.arrivalTimeOfJob;
+        double nums = j.getNumberOfJob();
+        int time = j.getArrivalTimeOfJob();
         queueLength = queueLength + nums;
         InteractiveJob wJob = new InteractiveJob();
-        wJob.arrivalTimeOfJob = time;
-        wJob.numberOfJob = nums;
+        wJob.setArrivalTimeOfJob(time);
+        wJob.setNumberOfJob(nums);
         WebBasedList.add(wJob);
         totalJob = totalJob + nums;
     }
@@ -157,12 +157,12 @@ public class BladeServer {
     //feeding webbased type Job to blade server
 
     public void feedWork(EnterpriseJob j) {
-        double nums = j.numberOfJob;
-        int time = j.arrivalTimeOfJob;
+        double nums = j.getNumberOfJob();
+        int time = j.getArrivalTimeOfJob();
         queueLength = queueLength + nums;
         EnterpriseJob wJob = new EnterpriseJob();
-        wJob.arrivalTimeOfJob = time;
-        wJob.numberOfJob = nums;
+        wJob.setArrivalTimeOfJob(time);
+        wJob.setNumberOfJob(nums);
         EnterprizList.add(wJob);
         totalJob = nums + totalJob;
     }
@@ -224,18 +224,18 @@ public class BladeServer {
         while (index < num) {   //index<activeBatchList.size()
             index_1 = index;
             for (i = 0; i < activeBatchList.size(); i++) {
-                if (activeBatchList.get(i).utilization <= share & activeBatchList.get(i).isChangedThisTime == 0) {
-                    extraShare = extraShare + share - activeBatchList.get(i).utilization;
+                if (activeBatchList.get(i).getUtilization() <= share & activeBatchList.get(i).getIsChangedThisTime() == 0) {
+                    extraShare = extraShare + share - activeBatchList.get(i).getUtilization();
                     index++;
-                    activeBatchList.get(i).isChangedThisTime = 1;
-                    tempCpu = activeBatchList.get(i).utilization + tempCpu;
+                    activeBatchList.get(i).setIsChangedThisTime(1);
+                    tempCpu = activeBatchList.get(i).getUtilization() + tempCpu;
                     ret_done = done(i, share_t);
                     i = i - ret_done;
                     //i=i-done(i,activeBatchList.get(i).utilization);
                 }
             }
             for (i = 0; i < activeBatchList.size(); i++) {
-                if (activeBatchList.get(i).isChangedThisTime == 0) {
+                if (activeBatchList.get(i).getIsChangedThisTime() == 0) {
                     rmpart++;
                 }
             }
@@ -249,19 +249,19 @@ public class BladeServer {
             }
         }
         for (i = 0; i < activeBatchList.size(); i++) {
-            if (activeBatchList.get(i).isChangedThisTime == 0) {
+            if (activeBatchList.get(i).getIsChangedThisTime() == 0) {
                 //ret_done=done(i,share/activeBatchList.get(i).utilization);
-                if ((share / activeBatchList.get(i).utilization) > 1) {
-                    System.out.println("share more than one!\t" + share_t + "\t" + share + "\t" + activeBatchList.get(i).utilization + "\t" + Simulator.getInstance().localTime);
+                if ((share / activeBatchList.get(i).getUtilization()) > 1) {
+                    System.out.println("share more than one!\t" + share_t + "\t" + share + "\t" + activeBatchList.get(i).getUtilization() + "\t" + Simulator.getInstance().localTime);
                 }
-                activeBatchList.get(i).isChangedThisTime = 1;
-                ret_done = done(i, share / activeBatchList.get(i).utilization);
+                activeBatchList.get(i).setIsChangedThisTime(1);
+                ret_done = done(i, share / activeBatchList.get(i).getUtilization());
                 tempCpu = tempCpu + share;
                 i = i - ret_done; //if a job has been removed (finished) in DONE function
             }
         }
         for (i = 0; i < activeBatchList.size(); i++) {
-            activeBatchList.get(i).isChangedThisTime = 0;
+            activeBatchList.get(i).setIsChangedThisTime(0);
         }
         //Inja be nazaram /MIPS ham mikhad ke sad beshe fek konam MIPS ro dar nazar nagereftam!
         currentCPU = 100.0 * tempCpu / Mips;
@@ -280,7 +280,7 @@ public class BladeServer {
         ki = job.getThisNodeIndex(serverIndex);
         if (share == 0) {
             System.out.println("In DONE share== zero00000000000000000000000000000000000000oo,revise the code  need some work!");
-            job.exitTime = Simulator.getInstance().localTime;
+            job.setExitTime(Simulator.getInstance().localTime);
             activeBatchList.remove(tmp--);
             //totalFinishedJob++;
             return 1;
@@ -289,10 +289,10 @@ public class BladeServer {
             System.out.println("Blade server is wrong in BladeServer!!!");
         }
         //setRemainAllNodes(tmp, share);
-        job.remain[ki] = job.remain[ki] - share;
-        if (job.remain[ki] <= 0) {
+        job.getRemain()[ki] = job.getRemain()[ki] - share;
+        if (job.getRemain()[ki] <= 0) {
             blockedBatchList.add(job);
-            activeBatchList.get(tmp).isChangedThisTime = 0;
+            activeBatchList.get(tmp).setIsChangedThisTime(0);
             activeBatchList.remove(job);//still exsits in other nodes
             if (job.allDone()) {
 
@@ -319,7 +319,7 @@ public class BladeServer {
         int num = 0, i;
         num = activeBatchList.size();
         for (i = 0; i < num; i++) {
-            tmp = tmp + activeBatchList.get(i).utilization;
+            tmp = tmp + activeBatchList.get(i).getUtilization();
         }
         if (tmp >= treshold) {
             ready = 0;
