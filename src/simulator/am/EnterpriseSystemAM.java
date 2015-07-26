@@ -35,7 +35,7 @@ public class EnterpriseSystemAM extends GeneralAM {
     @Override
     public void planning() {
         /////Server Provisioning for each application Bundle///////////
-        if (Simulator.getInstance().localTime % 1200 == 0) {
+        if (Simulator.getInstance().getLocalTime() % 1200 == 0) {
 //                numberOfActiveServ=0;
 //                kalmanIndex=Main.localTime/1200;
 //                serverProvisioning();
@@ -74,9 +74,9 @@ public class EnterpriseSystemAM extends GeneralAM {
         for (int i = 0; i < ES.applicationList.size(); i++) {
             ES.setSLAviolation(ES.getSLAviolation() + ES.applicationList.get(i).getSLAviolation());
             // assume epoch system 2 time epoch application 
-            percentCompPwr[i] = ES.applicationList.get(i).getAM().getPercnt() / ((Simulator.getInstance().localTime - lastTime) * 3 * ES.applicationList.get(i).getComputeNodeList().size());//(Main.epochSys*/*3*ES.applicationList.get(i).ComputeNodeList.size());
+            percentCompPwr[i] = ES.applicationList.get(i).getAM().getPercnt() / ((Simulator.getInstance().getLocalTime() - lastTime) * 3 * ES.applicationList.get(i).getComputeNodeList().size());//(Main.epochSys*/*3*ES.applicationList.get(i).ComputeNodeList.size());
             ES.applicationList.get(i).getAM().setPercnt(0);
-            accuSLA[i] = ES.applicationList.get(i).getAM().accumulativeSLA / (Simulator.getInstance().localTime - lastTime);//Main.epochSys;
+            accuSLA[i] = ES.applicationList.get(i).getAM().accumulativeSLA / (Simulator.getInstance().getLocalTime() - lastTime);//Main.epochSys;
             ES.applicationList.get(i).getAM().accumulativeSLA = 0;
             //for fair allocate/release node needs to know how many jobs are already in each application queue
             queueLengthApps[i] = ES.applicationList.get(i).numberOfWaitingJobs();
@@ -87,7 +87,7 @@ public class EnterpriseSystemAM extends GeneralAM {
             ES.setAccumolatedViolation(ES.getAccumolatedViolation() + 1);
         }
         calcSysUtility();
-        lastTime = Simulator.getInstance().localTime;
+        lastTime = Simulator.getInstance().getLocalTime();
     }
 
     public void calcSysUtility() {

@@ -69,7 +69,7 @@ public class IteractiveUserAM extends GeneralAM {
     //SLA Policy 
 
     public void analysis_SLA(Object violation) {
-        if (Simulator.getInstance().localTime % Simulator.getInstance().epochApp != 0)// || Main.localTime<0)
+        if (Simulator.getInstance().getLocalTime() % Simulator.getInstance().epochApp != 0)// || Main.localTime<0)
         {
             violationInEpoch = (Integer) violation + violationInEpoch;
             return;
@@ -98,7 +98,7 @@ public class IteractiveUserAM extends GeneralAM {
 
     // Green policy is applied here:
     public void analysis_GR(Object violation) {
-        if (Simulator.getInstance().localTime % Simulator.getInstance().epochApp != 0)// || Main.localTime<0)
+        if (Simulator.getInstance().getLocalTime() % Simulator.getInstance().epochApp != 0)// || Main.localTime<0)
         {
             violationInEpoch = (Integer) violation + violationInEpoch;
             return;
@@ -131,7 +131,7 @@ public class IteractiveUserAM extends GeneralAM {
             int tedad = User.numberofIdleNode() / 2;
             for (int j = 0; j < User.getComputeNodeList().size() && tedad > 0; j++) {
                 if (User.getComputeNodeList().get(j).getReady() == -1) {
-                    System.out.println("USer GR: " + User.getID() + "\tactive a Server!\t\t @" + Simulator.getInstance().localTime
+                    System.out.println("USer GR: " + User.getID() + "\tactive a Server!\t\t @" + Simulator.getInstance().getLocalTime()
                             + "\tNumber of runinng:  " + User.numberofRunningNode());
                     User.getComputeNodeList().get(j).setReady(1);
                     User.getComputeNodeList().get(j).setMips(1.4);
@@ -199,7 +199,7 @@ public class IteractiveUserAM extends GeneralAM {
         temp.setReady(1);
         sys.getUserList().get(targetUsr).getComputeNodeList().add(temp);
         User.getComputeNodeList().remove(index);
-        System.out.println("User :\t" + User.getID() + " ----------> :\t\t " + targetUsr + "\t\t@:" + Simulator.getInstance().localTime + "\tRunning target node= " + sys.getUserList().get(targetUsr).numberofRunningNode() + "\tRunning this node= " + User.numberofRunningNode() + "\tstrtgy= " + StrategyWsitch);
+        System.out.println("User :\t" + User.getID() + " ----------> :\t\t " + targetUsr + "\t\t@:" + Simulator.getInstance().getLocalTime() + "\tRunning target node= " + sys.getUserList().get(targetUsr).numberofRunningNode() + "\tRunning this node= " + User.numberofRunningNode() + "\tstrtgy= " + StrategyWsitch);
         StrategyWsitch = Simulator.StrategyEnum.SLA;
         return true;
     }

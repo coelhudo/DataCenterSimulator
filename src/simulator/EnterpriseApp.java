@@ -62,7 +62,7 @@ public final class EnterpriseApp {
 	public double numberOfWaitingJobs() {
 		double lenJob = 0;
 		for (int i = 0; i < getQueueApp().size(); i++) {
-			if (getQueueApp().get(i).getArrivalTimeOfJob() <= Simulator.getInstance().localTime) {
+			if (getQueueApp().get(i).getArrivalTimeOfJob() <= Simulator.getInstance().getLocalTime()) {
 				lenJob = +getQueueApp().get(i).getNumberOfJob();
 			}
 		}
@@ -120,8 +120,8 @@ public final class EnterpriseApp {
 	int readWebJob() {
 		int retReadLogfile = readingLogFile();
 		if (!getQueueApp().isEmpty()) {
-			if (getQueueApp().get(0).getArrivalTimeOfJob() == Simulator.getInstance().localTime
-					| getQueueApp().get(0).getArrivalTimeOfJob() < Simulator.getInstance().localTime) {
+			if (getQueueApp().get(0).getArrivalTimeOfJob() == Simulator.getInstance().getLocalTime()
+					| getQueueApp().get(0).getArrivalTimeOfJob() < Simulator.getInstance().getLocalTime()) {
 				return 1;
 			} else {
 				return 0;
@@ -187,7 +187,7 @@ public final class EnterpriseApp {
 			capacityOfNode = capacityOfNode - jj.getNumberOfJob();
 			if (capacityOfNode == 0) {
 				addToresponseArray(jj.getNumberOfJob(),
-						(Simulator.getInstance().localTime - jj.getArrivalTimeOfJob() + 1));
+						(Simulator.getInstance().getLocalTime() - jj.getArrivalTimeOfJob() + 1));
 				// System.out.println((Main.localTime-wJob.arrivalTimeOfJob+1)*(wJob.numberOfJob)
 				// +"\t"+wJob.numberOfJob+"\t q len="+queueLength);
 				beenRunJobs = beenRunJobs + jj.getNumberOfJob();
@@ -197,7 +197,7 @@ public final class EnterpriseApp {
 			if (capacityOfNode < 0) // there are more jobs than capacity
 			{
 				addToresponseArray(capacityOfNode + jj.getNumberOfJob(),
-						(Simulator.getInstance().localTime - jj.getArrivalTimeOfJob() + 1));
+						(Simulator.getInstance().getLocalTime() - jj.getArrivalTimeOfJob() + 1));
 				beenRunJobs = beenRunJobs + capacityOfNode + jj.getNumberOfJob();
 				jj.setNumberOfJob(-1 * capacityOfNode);
 				// System.out.println(1000.0*Mips);
@@ -206,7 +206,7 @@ public final class EnterpriseApp {
 			if (capacityOfNode > 0) // still we have capacity to run the jobs
 			{
 				addToresponseArray(jj.getNumberOfJob(),
-						(Simulator.getInstance().localTime - jj.getArrivalTimeOfJob() + 1));
+						(Simulator.getInstance().getLocalTime() - jj.getArrivalTimeOfJob() + 1));
 				beenRunJobs = beenRunJobs + jj.getNumberOfJob();
 				getQueueApp().remove(jj);
 				while (!getQueueApp().isEmpty()) {
@@ -217,7 +217,7 @@ public final class EnterpriseApp {
 					capacityOfNode = capacityOfNode - jj.getNumberOfJob();
 					if (capacityOfNode == 0) {
 						addToresponseArray(jj.getNumberOfJob(),
-								(Simulator.getInstance().localTime - jj.getArrivalTimeOfJob() + 1));
+								(Simulator.getInstance().getLocalTime() - jj.getArrivalTimeOfJob() + 1));
 						// System.out.println(wJob.numberOfJob);
 						beenRunJobs = beenRunJobs + jj.getNumberOfJob();
 						getQueueApp().remove(0);
@@ -227,7 +227,7 @@ public final class EnterpriseApp {
 											// 1000.0*MIPS
 					{
 						addToresponseArray(copyTedat,
-								(Simulator.getInstance().localTime - jj.getArrivalTimeOfJob() + 1));
+								(Simulator.getInstance().getLocalTime() - jj.getArrivalTimeOfJob() + 1));
 						jj.setNumberOfJob(-1 * capacityOfNode);
 						beenRunJobs = beenRunJobs + copyTedat;
 						// System.out.println(copyTedat);
@@ -235,7 +235,7 @@ public final class EnterpriseApp {
 					}
 					if (capacityOfNode > 0) {
 						addToresponseArray(jj.getNumberOfJob(),
-								(Simulator.getInstance().localTime - jj.getArrivalTimeOfJob() + 1));
+								(Simulator.getInstance().getLocalTime() - jj.getArrivalTimeOfJob() + 1));
 						// System.out.println(wJob.numberOfJob);
 						beenRunJobs = beenRunJobs + jj.getNumberOfJob();
 						getQueueApp().remove(0);

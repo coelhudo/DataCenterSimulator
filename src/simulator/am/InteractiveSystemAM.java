@@ -28,7 +28,7 @@ public class InteractiveSystemAM extends GeneralAM {
     @Override
     public void planning() {
         /////Server Provisioning for each application Bundle///////////
-        if (Simulator.getInstance().localTime % 1200 == 0) {
+        if (Simulator.getInstance().getLocalTime() % 1200 == 0) {
 //                numberOfActiveServ=0;
 //                kalmanIndex=Main.localTime/1200;
 //                serverProvisioning();
@@ -65,15 +65,15 @@ public class InteractiveSystemAM extends GeneralAM {
         workloadIntensity();
         for (int i = 0; i < IS.getUserList().size(); i++) {
             // assume epoch system 2 time epoch application 
-            percentCompPwr[i] = IS.getUserList().get(i).getAM().percnt / ((Simulator.getInstance().localTime - lastTime) * 3 * IS.getUserList().get(i).getComputeNodeList().size());//(Main.epochSys*/*3*ES.applicationList.get(i).ComputeNodeList.size());
+            percentCompPwr[i] = IS.getUserList().get(i).getAM().percnt / ((Simulator.getInstance().getLocalTime() - lastTime) * 3 * IS.getUserList().get(i).getComputeNodeList().size());//(Main.epochSys*/*3*ES.applicationList.get(i).ComputeNodeList.size());
             IS.getUserList().get(i).getAM().percnt = 0;
-            accuSLA[i] = IS.getUserList().get(i).getAM().accumulativeSLA / (Simulator.getInstance().localTime - lastTime);//Main.epochSys;
+            accuSLA[i] = IS.getUserList().get(i).getAM().accumulativeSLA / (Simulator.getInstance().getLocalTime() - lastTime);//Main.epochSys;
             IS.getUserList().get(i).getAM().accumulativeSLA = 0;
             //for fair allocate/release node needs to know how many jobs are already in each application queue
             queueLengthUsr[i] = IS.getUserList().get(i).numberOfWaitingJobs();
         }
         calcSysUtility();
-        lastTime = Simulator.getInstance().localTime;
+        lastTime = Simulator.getInstance().getLocalTime();
         SLAViolationGen = IS.getSLAviolation();
     }
 

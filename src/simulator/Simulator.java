@@ -35,7 +35,7 @@ public class Simulator {
 			allSystemRunACycle();
 			allSystemCalculatePwr();
 			datacenter.calculatePower();
-			localTime++;
+			setLocalTime(getLocalTime() + 1);
 			// ////Data Center Level AM MAPE Loop
 			// if(Main.localTime%1==0)
 			// {
@@ -70,8 +70,9 @@ public class Simulator {
 
 	}
 
-	public int localTime = 1;
-	public int mesg = 0, mesg2 = 0;
+	private int localTime = 1;
+	public int numberOfMessagesFromDataCenterToSystem = 0;
+	public int numberOfMessagesFromSytemToNodes = 0;
 	public int epochApp = 60, epochSys = 120, epochSideApp = 120;
 	public List<ResponseTime> responseArray;
 	public List<InteractiveSystem> IS = new ArrayList<InteractiveSystem>();
@@ -84,17 +85,17 @@ public class Simulator {
 	public int communicationAM = 0;
 	private DataCenter datacenter;
 
-	private double getTotalPowerConsumption() {
+	protected double getTotalPowerConsumption() {
 		return datacenter.totalPowerConsumption;
 	}
 
-	private int getOverRedTempNumber() {
+	protected int getOverRedTempNumber() {
 		return datacenter.getOverRed();
 	}
 
 	public void logHpcViolation(String name, Violation slaViolation) {
 		try {
-			SLALogH.write(name + "\t" + Simulator.getInstance().localTime + "\t" + slaViolation + "\n");
+			SLALogH.write(name + "\t" + Simulator.getInstance().getLocalTime() + "\t" + slaViolation + "\n");
 		} catch (IOException ex) {
 			Logger.getLogger(Simulator.class.getName()).log(Level.SEVERE, null, ex);
 		}
@@ -102,7 +103,7 @@ public class Simulator {
 
 	public void logEnterpriseViolation(String name, int slaViolationNum) {
 		try {
-			SLALogE.write(name + "\t" + Simulator.getInstance().localTime + "\t" + slaViolationNum + "\n");
+			SLALogE.write(name + "\t" + Simulator.getInstance().getLocalTime() + "\t" + slaViolationNum + "\n");
 		} catch (IOException ex) {
 			Logger.getLogger(Simulator.class.getName()).log(Level.SEVERE, null, ex);
 		}
@@ -110,7 +111,7 @@ public class Simulator {
 
 	public void logInteractiveViolation(String name, int slaViolation) {
 		try {
-			SLALogI.write(name + "\t" + Simulator.getInstance().localTime + "\t" + slaViolation + "\n");
+			SLALogI.write(name + "\t" + Simulator.getInstance().getLocalTime() + "\t" + slaViolation + "\n");
 		} catch (IOException ex) {
 			Logger.getLogger(Simulator.class.getName()).log(Level.SEVERE, null, ex);
 		}
@@ -273,6 +274,16 @@ public class Simulator {
 	}
 
 	public static void main(String[] args) throws IOException {
+		SimulationResults results = execute();
+		// System.out.println("Total JOBs= "+CS.totalJob);
+		System.out.println("Total energy Consumption= " + results.getTotalPowerConsumption());
+		System.out.println("LocalTime= " + results.getLocalTime());
+		System.out.println("Mean Power Consumption= " + results.getTotalPowerConsumption() / results.getLocalTime());
+		System.out.println("Over RED\t " + results.getOverRedTemperatureNumber() + "\t# of Messages DC to sys= "
+				+ results.getNumberOfMessagesFromDataCenterToSystem() + "\t# of Messages sys to nodes= " + results.getNumberOfMessagesFromSystemToNodes());
+	}
+
+	public static SimulationResults execute() throws IOException {
 		Simulator simulator = Simulator.getInstance();
 		simulator.initialize("configs/DC_Logic.xml");
 		System.out.println("------------------------------------------");
@@ -281,13 +292,9 @@ public class Simulator {
 		simulator.run();
 		System.out.println("------------------------------------------");
 		simulator.csFinalize();
-		// System.out.println("Total JOBs= "+CS.totalJob);
-		System.out.println("Total energy Consumption= " + simulator.getTotalPowerConsumption());
-		System.out.println("LocalTime= " + simulator.localTime);
-		System.out.println("Mean Power Consumption= " + simulator.getTotalPowerConsumption() / simulator.localTime);
-		System.out.println("Over RED\t " + simulator.getOverRedTempNumber() + "\t# of Messages DC to sys= "
-				+ simulator.mesg + "\t# of Messages sys to nodes= " + simulator.mesg2);
+		return new SimulationResults(simulator);
 	}
+
 
 	void csFinalize() {
 		for (int i = 0; i < CS.size(); i++) {
@@ -313,7 +320,7 @@ public class Simulator {
 				retValue = false;
 			} else {
 				System.out.println("--------------------------------------");
-				System.out.println("finishing Time EnterSys: " + ES.get(i).getName() + " at time: " + localTime);
+				System.out.println("finishing Time EnterSys: " + ES.get(i).getName() + " at time: " + getLocalTime());
 				System.out.println("Computing Power Consumed by  " + ES.get(i).getName() + " is: " + ES.get(i).getPower());
 				// System.out.println("Number of violation:
 				// "+ES.get(i).accumolatedViolation);
@@ -327,7 +334,7 @@ public class Simulator {
 				retValue = false;
 			} else {
 				System.out.println("--------------------------------------");
-				System.out.println("finishing Time Interactive sys:  " + IS.get(i).getName() + " at time: " + localTime);
+				System.out.println("finishing Time Interactive sys:  " + IS.get(i).getName() + " at time: " + getLocalTime());
 				System.out.println("Interactive sys: Number of violation: " + IS.get(i).getAccumolatedViolation());
 				System.out.println("Computing Power Consumed by  " + IS.get(i).getName() + " is: " + IS.get(i).getPower());
 				IS.remove(i);
@@ -342,7 +349,7 @@ public class Simulator {
 				retValue = false; // means still we have work to do
 			} else {
 				System.out.println("--------------------------------------");
-				System.out.println("finishing Time HPC_Sys:  " + CS.get(i).getName() + " at time: " + localTime);
+				System.out.println("finishing Time HPC_Sys:  " + CS.get(i).getName() + " at time: " + getLocalTime());
 				System.out.println("Total Response Time= " + CS.get(i).finalized());
 				System.out.println("Number of violation HPC : " + CS.get(i).getAccumolatedViolation());
 				System.out.println("Computing Power Consumed by  " + CS.get(i).getName() + " is: " + CS.get(i).getPower());
@@ -404,4 +411,12 @@ public class Simulator {
 	 * responseTime(); t.numberOfJob=num; t.responseTime=time;
 	 * responseArray.add(t); return; }
 	 */
+
+	public int getLocalTime() {
+		return localTime;
+	}
+
+	public void setLocalTime(int localTime) {
+		this.localTime = localTime;
+	}
 }

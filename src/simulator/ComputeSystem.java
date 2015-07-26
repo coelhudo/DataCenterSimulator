@@ -50,7 +50,7 @@ public class ComputeSystem extends GeneralSystem {
         BatchJob j = new BatchJob();
         //reads all jobs with arrival time less than Localtime
         while (readJob(j)) {
-            if (inputTime > Simulator.getInstance().localTime) {
+            if (inputTime > Simulator.getInstance().getLocalTime()) {
                 break;
             }
             j = new BatchJob();
@@ -114,7 +114,7 @@ public class ComputeSystem extends GeneralSystem {
             return 0;
         }
         BatchJob job = (BatchJob) (getScheduler().nextJob(waitingList));
-        while (job.getStartTime() <= Simulator.getInstance().localTime) {
+        while (job.getStartTime() <= Simulator.getInstance().getLocalTime()) {
             int[] indexes = new int[job.getNumOfNode()]; //number of node the last job wants
             int[] listServer = new int[job.getNumOfNode()];
             if (getResourceAllocation().allocateSystemLevelServer(getComputeNodeList(), indexes)[0] == -2) {
@@ -134,7 +134,7 @@ public class ComputeSystem extends GeneralSystem {
                 }
             }
             //Check if dealine is missed
-            if (Simulator.getInstance().localTime - job.getStartTime() > job.getDeadline()) {
+            if (Simulator.getInstance().getLocalTime() - job.getStartTime() > job.getDeadline()) {
                 setSLAviolation(Violation.DEADLINEPASSED);
                 // System.out.println("DEADLINE PASSED in getFromWaitingList");
             }

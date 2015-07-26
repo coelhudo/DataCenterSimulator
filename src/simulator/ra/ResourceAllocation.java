@@ -80,8 +80,8 @@ public abstract class ResourceAllocation {
                     }
                     System.out.println("Release:app: " + i + "\t#of comp Node="
                             + ES.applicationList.get(i).getComputeNodeList().size() + "\t system Rdy to aloc="
-                            + ES.numberofAvailableNodetoAlocate() + "\t@:" + Simulator.getInstance().localTime + "\tNumber of running = " + ES.applicationList.get(i).numberofRunningNode());
-                    Simulator.getInstance().mesg++;
+                            + ES.numberofAvailableNodetoAlocate() + "\t@:" + Simulator.getInstance().getLocalTime() + "\tNumber of running = " + ES.applicationList.get(i).numberofRunningNode());
+                    Simulator.getInstance().numberOfMessagesFromDataCenterToSystem++;
                 }
             }
         }
@@ -105,8 +105,8 @@ public abstract class ResourceAllocation {
                         server.setSLAPercentage(ES.applicationList.get(i).getSLAPercentage());
                         server.setTimeTreshold(ES.applicationList.get(i).getTimeTreshold());
                         System.out.println("Alloc: to app:" + i + "\t#of comp Node=" + ES.applicationList.get(i).getComputeNodeList().size() + "\tsys Rdy to aloc=" + ES.numberofAvailableNodetoAlocate()
-                                + "\t@:" + Simulator.getInstance().localTime + "\tsys Number of running = " + ES.applicationList.get(i).numberofRunningNode());
-                        Simulator.getInstance().mesg++;
+                                + "\t@:" + Simulator.getInstance().getLocalTime() + "\tsys Number of running = " + ES.applicationList.get(i).numberofRunningNode());
+                        Simulator.getInstance().numberOfMessagesFromDataCenterToSystem++;
                     }
                 }
             }
@@ -159,8 +159,7 @@ public abstract class ResourceAllocation {
     public void initialResourceAloc(ComputeSystem CS) {
         //Best fit resource allocation
         int[] serverIndex = new int[2];
-        ArrayList<Integer> myChassisList = new ArrayList<Integer>();
-        myChassisList = creatChassisArray(CS.getRackId());// creats a list of servers ID that will be used for resource allocation
+        List<Integer> myChassisList = createChassisArray(CS.getRackId());// creats a list of servers ID that will be used for resource allocation
         for (int i = 0; i < CS.getNumberofNode(); i++) {
             serverIndex = nextServerSys(myChassisList);
             if (serverIndex == null) {
@@ -205,8 +204,7 @@ public abstract class ResourceAllocation {
 
     public void initialResourceAlocator(EnterpriseSystem ES) {
         int[] serverIndex = new int[2];
-        ArrayList<Integer> myChassisList = new ArrayList<Integer>();
-        myChassisList = creatChassisArray(ES.getRackId());// creats a list of servers ID that will be used for resource allocation
+        List<Integer> myChassisList = createChassisArray(ES.getRackId());// creats a list of servers ID that will be used for resource allocation
         for (int i = 0; i < ES.getNumberofNode(); i++) {
             serverIndex = nextServerSys(myChassisList);
             if (serverIndex[0] == -2) {
@@ -263,8 +261,7 @@ public abstract class ResourceAllocation {
     public void initialResourceAlocator(InteractiveSystem WS) {
         ///Initial alocation of compute node 
         int[] serverIndex = new int[2];
-        ArrayList<Integer> myChassisList = new ArrayList<Integer>();
-        myChassisList = creatChassisArray(WS.getRackId());// creats a list of servers ID that will be used for resource allocation
+        List<Integer> myChassisList = createChassisArray(WS.getRackId());// creats a list of servers ID that will be used for resource allocation
         for (int i = 0; i < WS.getNumberofNode(); i++) {
             serverIndex = nextServerSys(myChassisList);
             if (serverIndex[0] == -2) {
@@ -315,34 +312,31 @@ public abstract class ResourceAllocation {
             WS.setNumberofIdleNode(WS.getNumberofIdleNode() - 1);
             System.out.println("Allocating compute node to Inter. User: Chassis#" + indexChassis
                     + "\tNumber of remained IdleNode in sys\t" + WS.getNumberofIdleNode() + "@ time: "
-                    + Simulator.getInstance().localTime);
+                    + Simulator.getInstance().getLocalTime());
         }
         WS.getUserList().add(test);
         WS.getWaitingQueueWL().remove(test);
         return 0;
     }
 
-    ;
-
-    int[] creatServerArray(int[] myRackID) {
-        int[] myServerId = null;
-        int index = 0;
+    List<Integer> createServerArray(int[] myRackID) {
+        List<Integer> myServerId = new ArrayList<Integer>();
         for (int i = 0; i < myRackID.length; i++) {
-            int j = 0;
-            for (; j < dc.chassisSet.size(); j++) {
+            for (int j = 0; j < dc.chassisSet.size(); j++) {
                 if (dc.chassisSet.get(j).rackId == myRackID[i]) {
                     for (int k = 0; k < dc.chassisSet.get(j).servers.size(); k++) {
-                        myServerId[index++] = dc.chassisSet.get(j).servers.get(k).getServerID();
+                    	myServerId.add(dc.chassisSet.get(j).servers.get(k).getServerID());
                     }
                 }
             }
 
         }
+        
         return myServerId;
     }
 
-    ArrayList<Integer> creatChassisArray(ArrayList<Integer> myRackID) {
-        ArrayList<Integer> myChassisId = new ArrayList<Integer>();
+    List<Integer> createChassisArray(List<Integer> myRackID) {
+        List<Integer> myChassisId = new ArrayList<Integer>();
         for (int i = 0; i < myRackID.size(); i++) {
             int j = 0;
             for (; j < dc.chassisSet.size(); j++) {
@@ -377,7 +371,7 @@ public abstract class ResourceAllocation {
                         IS.getUserList().get(i).activeOneNode();
                     }
                     System.out.println("Release:User: " + i + "\t#of comp Node=" + IS.getUserList().get(i).getComputeNodeList().size()
-                            + "\t system Rdy to aloc=" + IS.numberofAvailableNodetoAlocate() + "\t@:" + Simulator.getInstance().localTime
+                            + "\t system Rdy to aloc=" + IS.numberofAvailableNodetoAlocate() + "\t@:" + Simulator.getInstance().getLocalTime()
                             + "\tNumber of running = " + IS.getUserList().get(i).numberofRunningNode());
                 }
             }
@@ -402,7 +396,7 @@ public abstract class ResourceAllocation {
                         server.setReady(1);
                         server.setTimeTreshold(IS.getUserList().get(i).getMaxExpectedResTime());
                         System.out.println("Alloc: to User:" + i + "\t#of comp Node=" + IS.getUserList().get(i).getComputeNodeList().size() + "\tsys Rdy to aloc=" + IS.numberofAvailableNodetoAlocate()
-                                + "\t@:" + Simulator.getInstance().localTime + "\tsys Number of running = " + IS.getUserList().get(i).numberofRunningNode());
+                                + "\t@:" + Simulator.getInstance().getLocalTime() + "\tsys Number of running = " + IS.getUserList().get(i).numberofRunningNode());
                     }
                 }
             }

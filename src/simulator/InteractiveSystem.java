@@ -104,7 +104,7 @@ public class InteractiveSystem extends GeneralSystem {
     int readWL() {
         int retReadLogfile = readingLogFile();
         if (getWaitingQueueWL().size() > 0) {
-            if (getWaitingQueueWL().get(0).arrivalTime == Simulator.getInstance().localTime | getWaitingQueueWL().get(0).arrivalTime < Simulator.getInstance().localTime) {
+            if (getWaitingQueueWL().get(0).arrivalTime == Simulator.getInstance().getLocalTime() | getWaitingQueueWL().get(0).arrivalTime < Simulator.getInstance().getLocalTime()) {
                 return 1;
             } else {
                 return 0;

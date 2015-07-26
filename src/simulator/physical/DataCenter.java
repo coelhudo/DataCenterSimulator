@@ -265,7 +265,7 @@ public final class DataCenter {
         try {
             //System.out.println(((int)(Pcomp*(1+1.0/COP)))+"\t"+(int)Pcomp+"\t"+localTime);
             //oos.write(Integer.toString((int) (Pcomp*(1+1.0/COP)))+"\t"+Integer.toString((int)Pcomp)+"\t"+localTime+"\t"+perc[0]+"\t"+perc[1]+"\t"+perc[2]+"\n");
-            oos.write(((int) (computingPower * (1 + 1.0 / cop))) + "\t" + (int) computingPower + "\t" + Simulator.getInstance().localTime + "\n");
+            oos.write(((int) (computingPower * (1 + 1.0 / cop))) + "\t" + (int) computingPower + "\t" + Simulator.getInstance().getLocalTime() + "\n");
             totalPowerConsumption = totalPowerConsumption + computingPower * (1 + 1.0 / cop);
             // System.out.println(totalPowerConsumption);
         } catch (IOException ex) {

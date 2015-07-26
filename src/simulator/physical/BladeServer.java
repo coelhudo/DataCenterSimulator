@@ -195,7 +195,7 @@ public class BladeServer {
             return 0;
         } else {
             setMips(getFrequencyLevel()[getCurrentFreqLevel() + 1]); //getCurrentFrequency already increased the freq level
-            Simulator.getInstance().mesg++;
+            Simulator.getInstance().numberOfMessagesFromDataCenterToSystem++;
         }
         if (getMips() == 0) {
             System.out.println("Mipss sefr shoodd!!!");
@@ -209,7 +209,7 @@ public class BladeServer {
             return 0;
         } else {
             setMips(getFrequencyLevel()[getCurrentFreqLevel() - 1]);
-            Simulator.getInstance().mesg++;
+            Simulator.getInstance().numberOfMessagesFromDataCenterToSystem++;
         }
         if (getMips() == 0) {
             System.out.println("Mipss sefr shoodd!!!");
@@ -264,7 +264,7 @@ public class BladeServer {
             if (getActiveBatchList().get(i).getIsChangedThisTime() == 0) {
                 //ret_done=done(i,share/activeBatchList.get(i).utilization);
                 if ((share / getActiveBatchList().get(i).getUtilization()) > 1) {
-                    System.out.println("share more than one!\t" + share_t + "\t" + share + "\t" + getActiveBatchList().get(i).getUtilization() + "\t" + Simulator.getInstance().localTime);
+                    System.out.println("share more than one!\t" + share_t + "\t" + share + "\t" + getActiveBatchList().get(i).getUtilization() + "\t" + Simulator.getInstance().getLocalTime());
                 }
                 getActiveBatchList().get(i).setIsChangedThisTime(1);
                 ret_done = done(i, share / getActiveBatchList().get(i).getUtilization());
@@ -292,7 +292,7 @@ public class BladeServer {
         ki = job.getThisNodeIndex(serverIndex);
         if (share == 0) {
             System.out.println("In DONE share== zero00000000000000000000000000000000000000oo,revise the code  need some work!");
-            job.setExitTime(Simulator.getInstance().localTime);
+            job.setExitTime(Simulator.getInstance().getLocalTime());
             getActiveBatchList().remove(tmp--);
             //totalFinishedJob++;
             return 1;

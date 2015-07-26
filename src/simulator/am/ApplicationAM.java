@@ -101,7 +101,7 @@ public class ApplicationAM extends GeneralAM {
     //SLA Policy 
 
     public void analysis_SLA(Object violation) {
-        if (Simulator.getInstance().localTime % Simulator.getInstance().epochApp != 0)// || Main.localTime<0)
+        if (Simulator.getInstance().getLocalTime() % Simulator.getInstance().epochApp != 0)// || Main.localTime<0)
         {
             violationInEpoch = (Integer) violation + violationInEpoch;
             return;
@@ -122,7 +122,7 @@ public class ApplicationAM extends GeneralAM {
                     app.getComputeNodeList().get(j).setReady(1);
                     app.getComputeNodeList().get(j).setMips(1.4);
                     tedad--;
-                    Simulator.getInstance().mesg++;
+                    Simulator.getInstance().numberOfMessagesFromDataCenterToSystem++;
                 }
             }
         }
@@ -131,7 +131,7 @@ public class ApplicationAM extends GeneralAM {
 
     // Green policy is applied here:
     public void analysis_GR(Object violation) {
-        if (Simulator.getInstance().localTime % Simulator.getInstance().epochApp != 0)// || Main.localTime<0)
+        if (Simulator.getInstance().getLocalTime() % Simulator.getInstance().epochApp != 0)// || Main.localTime<0)
         {
             violationInEpoch = (Integer) violation + violationInEpoch;
             return;
@@ -150,7 +150,7 @@ public class ApplicationAM extends GeneralAM {
                     //System.out.print("App:GR  " +app.id);
                     app.getComputeNodeList().get(j).makeItIdle(new EnterpriseJob());
                     //System.out.println("\tIdle\t\t\t\t\t@:"+Main.localTime+"\tNumber of running==  "+app.numberofRunningNode());
-                    Simulator.getInstance().mesg++;
+                    Simulator.getInstance().numberOfMessagesFromDataCenterToSystem++;
                 }
             }
         }
@@ -165,11 +165,11 @@ public class ApplicationAM extends GeneralAM {
             int tedad = app.numberofIdleNode() / 2;
             for (int j = 0; j < app.getComputeNodeList().size() && tedad > 0; j++) {
                 if (app.getComputeNodeList().get(j).getReady() == -1) {
-                    System.out.println("App GR: " + app.getID() + "\tactive a Server!\t\t @" + Simulator.getInstance().localTime + "\tNumber of runinng:  " + app.numberofRunningNode());
+                    System.out.println("App GR: " + app.getID() + "\tactive a Server!\t\t @" + Simulator.getInstance().getLocalTime() + "\tNumber of runinng:  " + app.numberofRunningNode());
                     app.getComputeNodeList().get(j).setReady(1);
                     app.getComputeNodeList().get(j).setMips(1.4);
                     tedad--;
-                    Simulator.getInstance().mesg++;
+                    Simulator.getInstance().numberOfMessagesFromDataCenterToSystem++;
                 }
             }
         }
@@ -234,7 +234,7 @@ public class ApplicationAM extends GeneralAM {
         temp.setReady(1);
         sys.applicationList.get(targetApp).getComputeNodeList().add(temp);
         app.getComputeNodeList().remove(index);
-        System.out.println("app:\t" + app.getID() + " ----------> :\t\t " + targetApp + "\t\t@:" + Simulator.getInstance().localTime + "\tRunning target node= " + sys.applicationList.get(targetApp).numberofRunningNode() + "\tRunning this node= " + app.numberofRunningNode() + "\tstrtgy= " + StrategyWsitch);
+        System.out.println("app:\t" + app.getID() + " ----------> :\t\t " + targetApp + "\t\t@:" + Simulator.getInstance().getLocalTime() + "\tRunning target node= " + sys.applicationList.get(targetApp).numberofRunningNode() + "\tRunning this node= " + app.numberofRunningNode() + "\tstrtgy= " + StrategyWsitch);
         StrategyWsitch = Simulator.StrategyEnum.SLA;
         return true;
     }

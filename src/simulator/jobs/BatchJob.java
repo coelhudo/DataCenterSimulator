@@ -52,8 +52,8 @@ public class BatchJob extends Job {
 	}
 
 	public void jobFinished() {
-		setExitTime(Simulator.getInstance().localTime);
-		double waitTime = (Simulator.getInstance().localTime + 1) - getStartTime();
+		setExitTime(Simulator.getInstance().getLocalTime());
+		double waitTime = (Simulator.getInstance().getLocalTime() + 1) - getStartTime();
 																					//-  (int)(reqTime);
 		if (waitTime < 0) {
 			System.out.println("Alert: Error in BatchJob\t" + waitTime);
