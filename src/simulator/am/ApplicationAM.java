@@ -16,11 +16,13 @@ public class ApplicationAM extends GeneralAM {
     int accumulativeSLA = 0;
     //int cpAccumu=0;
     Simulator.StrategyEnum StrategyWsitch = Simulator.StrategyEnum.Green;
-
-    public ApplicationAM(EnterpriseSystem Sys, EnterpriseApp app) {
+    Simulator.LocalTime localTime;
+    
+    public ApplicationAM(EnterpriseSystem Sys, EnterpriseApp app, Simulator.LocalTime localTime) {
         //dc=dtcenter;
         this.sys = Sys;
         this.app = app;
+        this.localTime = localTime;
     }
 
     @Override
@@ -101,7 +103,7 @@ public class ApplicationAM extends GeneralAM {
     //SLA Policy 
 
     public void analysis_SLA(Object violation) {
-        if (Simulator.getInstance().getLocalTime() % Simulator.getInstance().epochApp != 0)// || Main.localTime<0)
+        if (localTime.getCurrentLocalTime() % Simulator.getInstance().epochApp != 0)// || Main.localTime<0)
         {
             violationInEpoch = (Integer) violation + violationInEpoch;
             return;
@@ -131,7 +133,7 @@ public class ApplicationAM extends GeneralAM {
 
     // Green policy is applied here:
     public void analysis_GR(Object violation) {
-        if (Simulator.getInstance().getLocalTime() % Simulator.getInstance().epochApp != 0)// || Main.localTime<0)
+        if (localTime.getCurrentLocalTime() % Simulator.getInstance().epochApp != 0)// || Main.localTime<0)
         {
             violationInEpoch = (Integer) violation + violationInEpoch;
             return;
@@ -226,7 +228,7 @@ public class ApplicationAM extends GeneralAM {
 //            System.out.println("no need pitttttttttttttttttttttttttttttttttttttttttttttttttttttttty");
 //            return;
 //        }
-        BladeServer temp = new BladeServer(0);
+        BladeServer temp = new BladeServer(0, localTime);
         temp = app.getComputeNodeList().get(index);
         temp.setSLAPercentage(sys.applicationList.get(targetApp).getSLAPercentage());
         temp.setTimeTreshold(sys.applicationList.get(targetApp).getTimeTreshold());

@@ -6,9 +6,11 @@ import simulator.Simulator;
 public class ComputeSystemAM extends GeneralAM {
 
     ComputeSystem CS;
+    private Simulator.LocalTime localTime;
 
-    public ComputeSystemAM(ComputeSystem cs) {
+    public ComputeSystemAM(ComputeSystem cs, Simulator.LocalTime localTime) {
         CS = cs;
+        this.localTime = localTime;
     }
 
     @Override
@@ -122,7 +124,7 @@ public class ComputeSystemAM extends GeneralAM {
 
     @Override
     public void analysis(Object vilation) {
-        if (Simulator.getInstance().getLocalTime() % Simulator.getInstance().epochApp != 0) {
+        if (localTime.getCurrentLocalTime() % Simulator.getInstance().epochApp != 0) {
             return;
         }
         Simulator.getInstance().numberOfMessagesFromDataCenterToSystem++; // one message for monitoring the variables from compute node in the compute system.

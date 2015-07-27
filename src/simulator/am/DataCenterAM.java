@@ -19,14 +19,14 @@ public class DataCenterAM extends GeneralAM {
         if (getBlockTimer() > 0) {
             setBlockTimer(getBlockTimer() - 1);
         }
-        SoSCS = new int[Simulator.getInstance().CS.size()];
-        SoSES = new int[Simulator.getInstance().ES.size()];
-        SoSIS = new int[Simulator.getInstance().IS.size()];
-        SLAVioCS = new int[Simulator.getInstance().CS.size()];
-        SLAVioES = new int[Simulator.getInstance().ES.size()];
-        SLAVioIS = new int[Simulator.getInstance().IS.size()];
-        for (int i = 0; i < Simulator.getInstance().CS.size(); i++) {
-            SLAVioCS[i] = Simulator.getInstance().CS.get(i).getAM().SLAViolationGen;
+        SoSCS = new int[Simulator.getInstance().computeSystems.size()];
+        SoSES = new int[Simulator.getInstance().enterpriseSystems.size()];
+        SoSIS = new int[Simulator.getInstance().interactiveSystems.size()];
+        SLAVioCS = new int[Simulator.getInstance().computeSystems.size()];
+        SLAVioES = new int[Simulator.getInstance().enterpriseSystems.size()];
+        SLAVioIS = new int[Simulator.getInstance().interactiveSystems.size()];
+        for (int i = 0; i < Simulator.getInstance().computeSystems.size(); i++) {
+            SLAVioCS[i] = Simulator.getInstance().computeSystems.get(i).getAM().SLAViolationGen;
         }
     }
 
@@ -49,13 +49,13 @@ public class DataCenterAM extends GeneralAM {
         end 
          */
         for (int i = 0; i < SLAVioCS.length; i++) {
-            if (SLAVioCS[i] > 0 && Simulator.getInstance().CS.get(i).getAM().strategy == Simulator.StrategyEnum.Green) {
-                Simulator.getInstance().CS.get(i).getAM().strategy = Simulator.StrategyEnum.SLA;
+            if (SLAVioCS[i] > 0 && Simulator.getInstance().computeSystems.get(i).getAM().strategy == Simulator.StrategyEnum.Green) {
+				Simulator.getInstance().computeSystems.get(i).getAM().strategy = Simulator.StrategyEnum.SLA;
                 System.out.println("AM in DC Switch HPC system: " + i + " to SLA  @  " + Simulator.getInstance().getLocalTime());
             }
-            if (SLAVioCS[i] == 0 && Simulator.getInstance().CS.get(i).getAM().strategy == Simulator.StrategyEnum.SLA) {
+            if (SLAVioCS[i] == 0 && Simulator.getInstance().computeSystems.get(i).getAM().strategy == Simulator.StrategyEnum.SLA) {
                 System.out.println("AM in DC Switch HPC system: " + i + "  to Green @  " + Simulator.getInstance().getLocalTime());
-                Simulator.getInstance().CS.get(i).getAM().strategy = Simulator.StrategyEnum.Green;
+                Simulator.getInstance().computeSystems.get(i).getAM().strategy = Simulator.StrategyEnum.Green;
             }
         }
         /* if Slowdown from cooler        begin 
@@ -64,19 +64,19 @@ public class DataCenterAM extends GeneralAM {
         end
         if available nodes in system allocate one node to the SOS sender
          */
-        if (getBlockTimer() == 0 && Simulator.getInstance().CS.get(0).blocked) //time to unblock hpc system
+        if (getBlockTimer() == 0 && Simulator.getInstance().computeSystems.get(0).blocked) //time to unblock hpc system
         {
-            Simulator.getInstance().CS.get(0).blocked = false;
-            Simulator.getInstance().CS.get(0).makeSystemaUnBlocked();
+            Simulator.getInstance().computeSystems.get(0).blocked = false;
+            Simulator.getInstance().computeSystems.get(0).makeSystemaUnBlocked();
             System.out.println("unblocked a system@ time : \t" + Simulator.getInstance().getLocalTime());
         }
         if (isSlowDownFromCooler()) {
-            if (!Simulator.getInstance().CS.get(0).blocked) {
-                Simulator.getInstance().CS.get(0).blocked = true;
+            if (!Simulator.getInstance().computeSystems.get(0).blocked) {
+                Simulator.getInstance().computeSystems.get(0).blocked = true;
                 setBlockTimer(120);
-                System.out.println("A system is blocked and we have this # of systems:  " + Simulator.getInstance().CS.size() + "@ time= \t" + Simulator.getInstance().getLocalTime());
+                System.out.println("A system is blocked and we have this # of systems:  " + Simulator.getInstance().computeSystems.size() + "@ time= \t" + Simulator.getInstance().getLocalTime());
                 //Every system should work in Greeeen
-                Simulator.getInstance().CS.get(1).getAM().strategy = Simulator.StrategyEnum.Green;
+                Simulator.getInstance().computeSystems.get(1).getAM().strategy = Simulator.StrategyEnum.Green;
             } else {
                 System.out.println("AM in data center level : HPC system is already blocked nothing can do here @: " + Simulator.getInstance().getLocalTime());
             }

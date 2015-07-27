@@ -6,9 +6,11 @@ package simulator.ra;
 
 import simulator.EnterpriseSystem;
 import simulator.InteractiveSystem;
+import simulator.Simulator.LocalTime;
 import simulator.ra.ResourceAllocation;
 import java.util.List;
 import simulator.physical.BladeServer;
+import simulator.physical.DataCenter;
 
 /**
  *
@@ -16,7 +18,11 @@ import simulator.physical.BladeServer;
  */
 public class FirstFit extends ResourceAllocation {
 
-    @Override
+    public FirstFit(LocalTime localTime, DataCenter dataCenter) {
+		super(localTime, dataCenter);
+		}
+
+	@Override
     public int nextServer(List<BladeServer> bs) {
         for (int j = 0; j < bs.size(); j++) {
             if (bs.get(j).getReady() == 1) {
@@ -36,8 +42,8 @@ public class FirstFit extends ResourceAllocation {
 
         ////////////////////////
         for (int l = 0; l < chassisList.size(); l++) {
-            for (int k = 0; k < dc.chassisSet.get(chassisList.get(l)).servers.size(); k++) {
-                if (dc.chassisSet.get(chassisList.get(l)).servers.get(k).getReady() == -3) {
+            for (int k = 0; k < dataCenter.chassisSet.get(chassisList.get(l)).servers.size(); k++) {
+                if (dataCenter.chassisSet.get(chassisList.get(l)).servers.get(k).getReady() == -3) {
                     retValue[0] = chassisList.get(l);  // chassis id
                     retValue[1] = k;  //Server ID
                     return retValue;

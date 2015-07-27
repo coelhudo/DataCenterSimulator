@@ -9,6 +9,7 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.xml.parsers.DocumentBuilder;
@@ -29,9 +30,9 @@ public class GeneralSystem {
     private Scheduler scheduler;
     private int numberofIdleNode = 0; // idle is change in allocation function
 	private int numberofNode;
-    private ArrayList<Integer> rackId = new ArrayList<Integer>();
-    private ArrayList<BladeServer> ComputeNodeList;
-    private ArrayList<Integer> ComputeNodeIndex;
+    private List<Integer> rackId = new ArrayList<Integer>();
+    private List<BladeServer> ComputeNodeList;
+    private List<Integer> ComputeNodeIndex;
     private BufferedReader bis = null;
     protected int SLAviolation;
     private boolean sysIsDone = false;
@@ -48,7 +49,7 @@ public class GeneralSystem {
     void readFromNode(Node node, String path) {
     }
 
-    void calculatePwr() {
+    void calculatePower() {
         for (int i = 0; i < getComputeNodeList().size(); i++) {
             setPower(getPower() + getComputeNodeList().get(i).getPower());
         }
@@ -114,7 +115,7 @@ public class GeneralSystem {
 		this.numberofNode = numberofNode;
 	}
 
-	public ArrayList<Integer> getRackId() {
+	public List<Integer> getRackId() {
 		return rackId;
 	}
 
@@ -122,7 +123,7 @@ public class GeneralSystem {
 		this.rackId = rackId;
 	}
 
-	public ArrayList<BladeServer> getComputeNodeList() {
+	public List<BladeServer> getComputeNodeList() {
 		return ComputeNodeList;
 	}
 
@@ -130,7 +131,7 @@ public class GeneralSystem {
 		ComputeNodeList = computeNodeList;
 	}
 
-	public ArrayList<Integer> getComputeNodeIndex() {
+	public List<Integer> getComputeNodeIndex() {
 		return ComputeNodeIndex;
 	}
 
@@ -154,12 +155,12 @@ public class GeneralSystem {
 		SLAviolation = sLAviolation;
 	}
 
-	public boolean isSysIsDone() {
+	public boolean isDone() {
 		return sysIsDone;
 	}
 
-	public void setSysIsDone(boolean sysIsDone) {
-		this.sysIsDone = sysIsDone;
+	public void markAsDone() {
+		this.sysIsDone = true;
 	}
 
 	public double getPower() {

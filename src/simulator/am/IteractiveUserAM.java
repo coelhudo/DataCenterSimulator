@@ -16,10 +16,12 @@ public class IteractiveUserAM extends GeneralAM {
     int accumulativeSLA = 0;
     //int cpAccumu=0;
     Simulator.StrategyEnum StrategyWsitch = Simulator.StrategyEnum.Green; //Green
-
-    public IteractiveUserAM(InteractiveSystem sys, InteractiveUser usr) {
+    Simulator.LocalTime localTime;
+    
+    public IteractiveUserAM(InteractiveSystem sys, InteractiveUser usr, Simulator.LocalTime localTime) {
         this.sys = sys;
         this.User = usr;
+        this.localTime = localTime;
     }
 
     @Override
@@ -69,7 +71,7 @@ public class IteractiveUserAM extends GeneralAM {
     //SLA Policy 
 
     public void analysis_SLA(Object violation) {
-        if (Simulator.getInstance().getLocalTime() % Simulator.getInstance().epochApp != 0)// || Main.localTime<0)
+        if (localTime.getCurrentLocalTime() % Simulator.getInstance().epochApp != 0)// || Main.localTime<0)
         {
             violationInEpoch = (Integer) violation + violationInEpoch;
             return;
@@ -98,7 +100,7 @@ public class IteractiveUserAM extends GeneralAM {
 
     // Green policy is applied here:
     public void analysis_GR(Object violation) {
-        if (Simulator.getInstance().getLocalTime() % Simulator.getInstance().epochApp != 0)// || Main.localTime<0)
+        if (localTime.getCurrentLocalTime() % Simulator.getInstance().epochApp != 0)// || Main.localTime<0)
         {
             violationInEpoch = (Integer) violation + violationInEpoch;
             return;
@@ -192,7 +194,7 @@ public class IteractiveUserAM extends GeneralAM {
 //            System.out.println("no need pitttttttttttttttttttttttttttttttttttttttttttttttttttttttty");
 //            return;
 //        }
-        BladeServer temp = new BladeServer(0);
+        BladeServer temp = new BladeServer(0, localTime);
         temp = User.getComputeNodeList().get(index);
         temp.setMaxExpectedRes(sys.getUserList().get(targetUsr).getMaxExpectedResTime());
         temp.setMips(1.4);

@@ -1,25 +1,33 @@
 package simulator;
 
-import simulator.physical.DataCenter;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
-import org.w3c.dom.*;
-import org.xml.sax.SAXException;
+
+import simulator.physical.DataCenter;
 
 public class Simulator {
 
+	public class LocalTime {
+		private int localTime = 1;
+
+		public int getCurrentLocalTime() {
+			return localTime;
+		}
+
+		protected void update() {
+			localTime++;
+		}
+	}
+
 	private static Simulator instance = null;
 
+	// FIXME: get rid of this
 	public static Simulator getInstance() {
 		if (instance == null) {
 			instance = new Simulator();
@@ -35,7 +43,7 @@ public class Simulator {
 			allSystemRunACycle();
 			allSystemCalculatePwr();
 			datacenter.calculatePower();
-			setLocalTime(getLocalTime() + 1);
+			localTime.update();
 			// ////Data Center Level AM MAPE Loop
 			// if(Main.localTime%1==0)
 			// {
@@ -51,7 +59,13 @@ public class Simulator {
 	}
 
 	private void initialize(String config) {
-		CreatLogicalDC(config);
+		DataCenterBuilder dataCenterBuilder = new DataCenterBuilder(localTime);
+		dataCenterBuilder.buildLogicalDataCenter(config);
+
+		datacenter = dataCenterBuilder.getDataCenter();
+		enterpriseSystems = dataCenterBuilder.getEnterpriseSystems();
+		interactiveSystems = dataCenterBuilder.getInteractiveSystems();
+		computeSystems = dataCenterBuilder.getComputeSystems();
 
 		try {
 			SLALogE = new OutputStreamWriter(new FileOutputStream(new File("slaViolLogE.txt")));
@@ -70,14 +84,14 @@ public class Simulator {
 
 	}
 
-	private int localTime = 1;
+	private LocalTime localTime = new LocalTime();
 	public int numberOfMessagesFromDataCenterToSystem = 0;
 	public int numberOfMessagesFromSytemToNodes = 0;
 	public int epochApp = 60, epochSys = 120, epochSideApp = 120;
 	public List<ResponseTime> responseArray;
-	public List<InteractiveSystem> IS = new ArrayList<InteractiveSystem>();
-	public List<EnterpriseSystem> ES = new ArrayList<EnterpriseSystem>();
-	public List<ComputeSystem> CS = new ArrayList<ComputeSystem>();
+	public List<InteractiveSystem> interactiveSystems;
+	public List<EnterpriseSystem> enterpriseSystems;
+	public List<ComputeSystem> computeSystems;
 	public double[] peakEstimate;
 	private OutputStreamWriter SLALogE = null;
 	private OutputStreamWriter SLALogI = null;
@@ -93,9 +107,9 @@ public class Simulator {
 		return datacenter.getOverRed();
 	}
 
-	public void logHpcViolation(String name, Violation slaViolation) {
+	public void logHPCViolation(String name, Violation slaViolation) {
 		try {
-			SLALogH.write(name + "\t" + Simulator.getInstance().getLocalTime() + "\t" + slaViolation + "\n");
+			SLALogH.write(name + "\t" + localTime.getCurrentLocalTime() + "\t" + slaViolation + "\n");
 		} catch (IOException ex) {
 			Logger.getLogger(Simulator.class.getName()).log(Level.SEVERE, null, ex);
 		}
@@ -103,7 +117,7 @@ public class Simulator {
 
 	public void logEnterpriseViolation(String name, int slaViolationNum) {
 		try {
-			SLALogE.write(name + "\t" + Simulator.getInstance().getLocalTime() + "\t" + slaViolationNum + "\n");
+			SLALogE.write(name + "\t" + localTime.getCurrentLocalTime() + "\t" + slaViolationNum + "\n");
 		} catch (IOException ex) {
 			Logger.getLogger(Simulator.class.getName()).log(Level.SEVERE, null, ex);
 		}
@@ -111,7 +125,7 @@ public class Simulator {
 
 	public void logInteractiveViolation(String name, int slaViolation) {
 		try {
-			SLALogI.write(name + "\t" + Simulator.getInstance().getLocalTime() + "\t" + slaViolation + "\n");
+			SLALogI.write(name + "\t" + localTime.getCurrentLocalTime() + "\t" + slaViolation + "\n");
 		} catch (IOException ex) {
 			Logger.getLogger(Simulator.class.getName()).log(Level.SEVERE, null, ex);
 		}
@@ -127,142 +141,56 @@ public class Simulator {
 	};
 
 	public boolean anySysetm() {
-		for (int i = 0; i < ES.size(); i++) {
-			if (!ES.get(i).isSysIsDone()) {
+		for (int i = 0; i < enterpriseSystems.size(); i++) {
+			if (!enterpriseSystems.get(i).isDone()) {
 				return false;
 			}
 		}
-		for (int i = 0; i < IS.size(); i++) {
-			if (!IS.get(i).isSysIsDone()) {
+		for (int i = 0; i < interactiveSystems.size(); i++) {
+			if (!interactiveSystems.get(i).isDone()) {
 				return false;
 			}
 		}
-		for (int i = 0; i < CS.size(); i++) {
-			if (!CS.get(i).isSysIsDone()) {
+		for (int i = 0; i < computeSystems.size(); i++) {
+			if (!computeSystems.get(i).isDone()) {
 				return false; // still we have work to do
 			}
 		}
 		return true; // there is no job left in all system
 	}
 
-	public void CreatLogicalDC(String config) {
-		try {
-			DocumentBuilderFactory docBuilderFactory = DocumentBuilderFactory.newInstance();
-			DocumentBuilder docBuilder = docBuilderFactory.newDocumentBuilder();
-			final File file = new File(config);
-			Document doc = docBuilder.parse(file);
-			String path = file.getParent();
-			// normalize text representation
-			doc.getDocumentElement().normalize();
-			Node node = doc.getDocumentElement();
-			NodeList childNodes = node.getChildNodes();
-			for (int i = 0; i < childNodes.getLength(); i++) {
-				if (childNodes.item(i).getNodeType() == Node.ELEMENT_NODE) {
-					if (childNodes.item(i).getNodeName().equalsIgnoreCase("layout")) {
-						String DCLayout = path + "/" + childNodes.item(i).getChildNodes().item(0).getNodeValue().trim();
-						datacenter = new DataCenter(DCLayout);
-					}
-					if (childNodes.item(i).getNodeName().equalsIgnoreCase("System")) {
-						NodeList nodiLst = childNodes.item(i).getChildNodes();
-						systemConfig(nodiLst, path);
-					}
-				}
-			}
-
-		} catch (ParserConfigurationException ex) {
-			Logger.getLogger(DataCenter.class.getName()).log(Level.SEVERE, null, ex);
-		} catch (SAXException ex) {
-			Logger.getLogger(DataCenter.class.getName()).log(Level.SEVERE, null, ex);
-		} catch (IOException ex) {
-			Logger.getLogger(DataCenter.class.getName()).log(Level.SEVERE, null, ex);
-		}
-	}
-
-	public void systemConfig(NodeList nodiLst, String path) {
-		int whichSystem = -1;
-		// whichSystem=1 means Enterprise
-		// whichSystem=2 means Interactive
-		// whichSystem=3 means HPC
-		String name = new String();
-		for (int i = 0; i < nodiLst.getLength(); i++) {
-			if (nodiLst.item(i).getNodeType() == Node.ELEMENT_NODE) {
-				if (nodiLst.item(i).getNodeName().equalsIgnoreCase("type")) {
-					String systemType = nodiLst.item(i).getChildNodes().item(0).getNodeValue().trim();
-					if (systemType.equalsIgnoreCase("Enterprise")) {
-						whichSystem = 1;
-					} else if (systemType.equalsIgnoreCase("Interactive")) {
-						whichSystem = 2;
-					} else if (systemType.equalsIgnoreCase("HPC")) {
-						whichSystem = 3;
-					}
-				}
-				if (nodiLst.item(i).getNodeName().equalsIgnoreCase("name")) {
-					name = nodiLst.item(i).getChildNodes().item(0).getNodeValue().trim();
-				}
-				if (nodiLst.item(i).getNodeName().equalsIgnoreCase("configFile")) {
-					String fileName = path + "/" + nodiLst.item(i).getChildNodes().item(0).getNodeValue().trim();
-					switch (whichSystem) {
-					case 1:
-						System.out.println("------------------------------------------");
-						System.out.println("Initialization of Enterprise System Name=" + name);
-						EnterpriseSystem ES1 = new EnterpriseSystem(fileName);
-						ES1.setName(name);
-						ES.add(ES1);
-						whichSystem = -1;
-						break;
-					case 2:
-						System.out.println("------------------------------------------");
-						System.out.println("Initialization of Interactive System Name=" + name);
-						InteractiveSystem wb1 = new InteractiveSystem(fileName);
-						wb1.setName(name);
-						IS.add(wb1);
-						whichSystem = -1;
-						break;
-					case 3:
-						System.out.println("------------------------------------------");
-						System.out.println("Initialization of HPC System Name=" + name);
-						ComputeSystem CP = new ComputeSystem(fileName);
-						CP.setName(name);
-						CS.add(CP);
-						whichSystem = -1;
-						break;
-					}
-				}
-			}
-		}
-	}
-
 	public void allSystemRunACycle() throws IOException {
-		for (int i = 0; i < ES.size(); i++) {
-			if (!ES.get(i).isSysIsDone()) {
-				ES.get(i).runAcycle();
+		for (EnterpriseSystem enterpriseSystem : enterpriseSystems) {
+			if (!enterpriseSystem.isDone()) {
+				enterpriseSystem.runAcycle();
 			}
 		}
-		for (int i = 0; i < CS.size(); i++) {
-			if (!CS.get(i).isSysIsDone()) {
-				CS.get(i).runAcycle();
+
+		for (ComputeSystem computeSystem : computeSystems) {
+			if (!computeSystem.isDone()) {
+				computeSystem.runAcycle();
 			}
 		}
-		for (int i = 0; i < IS.size(); i++) {
-			if (!IS.get(i).isSysIsDone()) {
-				IS.get(i).runAcycle();
+
+		for (InteractiveSystem interactiveSystem : interactiveSystems) {
+			if (!interactiveSystem.isDone()) {
+				interactiveSystem.runAcycle();
 			}
 		}
 	}
-	/////////////////////////////
 
 	public void allSystemCalculatePwr() throws IOException {
-		for (int i = 0; i < ES.size(); i++) {
-			ES.get(i).calculatePwr();
+
+		for (EnterpriseSystem enterpriseSystem : enterpriseSystems) {
+			enterpriseSystem.calculatePower();
 		}
-		for (int i = 0; i < CS.size(); i++) {
-			CS.get(i).calculatePwr();
+		for (ComputeSystem computeSystem : computeSystems) {
+			computeSystem.calculatePower();
 		}
-		for (int i = 0; i < IS.size(); i++) {
-			IS.get(i).calculatePwr();
+		for (InteractiveSystem interactiveSystem : interactiveSystems) {
+			interactiveSystem.calculatePower();
 		}
 	}
-	/////////////////////////////
 
 	public void GetStat() {
 		for (int i = 0; i < 50; i++) {
@@ -280,7 +208,8 @@ public class Simulator {
 		System.out.println("LocalTime= " + results.getLocalTime());
 		System.out.println("Mean Power Consumption= " + results.getTotalPowerConsumption() / results.getLocalTime());
 		System.out.println("Over RED\t " + results.getOverRedTemperatureNumber() + "\t# of Messages DC to sys= "
-				+ results.getNumberOfMessagesFromDataCenterToSystem() + "\t# of Messages sys to nodes= " + results.getNumberOfMessagesFromSystemToNodes());
+				+ results.getNumberOfMessagesFromDataCenterToSystem() + "\t# of Messages sys to nodes= "
+				+ results.getNumberOfMessagesFromSystemToNodes());
 	}
 
 	public static SimulationResults execute() throws IOException {
@@ -295,10 +224,9 @@ public class Simulator {
 		return new SimulationResults(simulator);
 	}
 
-
 	void csFinalize() {
-		for (int i = 0; i < CS.size(); i++) {
-			System.out.println("Total Response Time in CS " + i + "th CS = " + CS.get(i).finalized());
+		for (int i = 0; i < computeSystems.size(); i++) {
+			System.out.println("Total Response Time in CS " + i + "th CS = " + computeSystems.get(i).finalized());
 		}
 		try {
 			datacenter.shutDownDC();
@@ -315,45 +243,52 @@ public class Simulator {
 
 	public boolean anySystem() {
 		boolean retValue = true;
-		for (int i = 0; i < ES.size(); i++) {
-			if (ES.get(i).isSysIsDone() == false) {
+		for (int i = 0; i < enterpriseSystems.size(); i++) {
+			if (!enterpriseSystems.get(i).isDone()) {
 				retValue = false;
 			} else {
 				System.out.println("--------------------------------------");
-				System.out.println("finishing Time EnterSys: " + ES.get(i).getName() + " at time: " + getLocalTime());
-				System.out.println("Computing Power Consumed by  " + ES.get(i).getName() + " is: " + ES.get(i).getPower());
+				System.out.println("finishing Time EnterSys: " + enterpriseSystems.get(i).getName() + " at time: "
+						+ localTime.getCurrentLocalTime());
+				System.out.println("Computing Power Consumed by  " + enterpriseSystems.get(i).getName() + " is: "
+						+ enterpriseSystems.get(i).getPower());
 				// System.out.println("Number of violation:
 				// "+ES.get(i).accumolatedViolation);
 
-				ES.remove(i);
+				enterpriseSystems.remove(i);
 				i--;
 			}
 		}
-		for (int i = 0; i < IS.size(); i++) {
-			if (IS.get(i).isSysIsDone() == false) {
+		for (int i = 0; i < interactiveSystems.size(); i++) {
+			if (!interactiveSystems.get(i).isDone()) {
 				retValue = false;
 			} else {
 				System.out.println("--------------------------------------");
-				System.out.println("finishing Time Interactive sys:  " + IS.get(i).getName() + " at time: " + getLocalTime());
-				System.out.println("Interactive sys: Number of violation: " + IS.get(i).getAccumolatedViolation());
-				System.out.println("Computing Power Consumed by  " + IS.get(i).getName() + " is: " + IS.get(i).getPower());
-				IS.remove(i);
+				System.out.println("finishing Time Interactive sys:  " + interactiveSystems.get(i).getName()
+						+ " at time: " + localTime.getCurrentLocalTime());
+				System.out.println(
+						"Interactive sys: Number of violation: " + interactiveSystems.get(i).getAccumolatedViolation());
+				System.out.println("Computing Power Consumed by  " + interactiveSystems.get(i).getName() + " is: "
+						+ interactiveSystems.get(i).getPower());
+				interactiveSystems.remove(i);
 				i--;
 
 				// opps !! hardcoded policy
 				datacenter.getAM().resetBlockTimer();
 			}
 		}
-		for (int i = 0; i < CS.size(); i++) {
-			if (CS.get(i).isSysIsDone() == false) {
+		for (int i = 0; i < computeSystems.size(); i++) {
+			if (!computeSystems.get(i).isDone()) {
 				retValue = false; // means still we have work to do
 			} else {
 				System.out.println("--------------------------------------");
-				System.out.println("finishing Time HPC_Sys:  " + CS.get(i).getName() + " at time: " + getLocalTime());
-				System.out.println("Total Response Time= " + CS.get(i).finalized());
-				System.out.println("Number of violation HPC : " + CS.get(i).getAccumolatedViolation());
-				System.out.println("Computing Power Consumed by  " + CS.get(i).getName() + " is: " + CS.get(i).getPower());
-				CS.remove(i);
+				System.out.println("finishing Time HPC_Sys:  " + computeSystems.get(i).getName() + " at time: "
+						+ localTime.getCurrentLocalTime());
+				System.out.println("Total Response Time= " + computeSystems.get(i).finalized());
+				System.out.println("Number of violation HPC : " + computeSystems.get(i).getAccumolatedViolation());
+				System.out.println("Computing Power Consumed by  " + computeSystems.get(i).getName() + " is: "
+						+ computeSystems.get(i).getPower());
+				computeSystems.remove(i);
 				i--;
 			}
 		}
@@ -412,11 +347,7 @@ public class Simulator {
 	 * responseArray.add(t); return; }
 	 */
 
-	public int getLocalTime() {
+	public Simulator.LocalTime getLocalTime() {
 		return localTime;
-	}
-
-	public void setLocalTime(int localTime) {
-		this.localTime = localTime;
 	}
 }

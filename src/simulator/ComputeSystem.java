@@ -2,6 +2,8 @@ package simulator;
 
 import simulator.schedulers.LeastRemainFirst;
 import simulator.physical.BladeServer;
+import simulator.physical.DataCenter;
+import simulator.Simulator.LocalTime;
 import simulator.am.ComputeSystemAM;
 import simulator.ra.MHR;
 import simulator.jobs.BatchJob;
@@ -12,6 +14,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.w3c.dom.*;
@@ -27,19 +30,18 @@ public class ComputeSystem extends GeneralSystem {
     File f;
     int predictNumberofNode;
     int priority;
+    private Simulator.LocalTime localTime;
 
-    ////////////////////////////////////
-    public ComputeSystem(String config) {
+    private ComputeSystem(String config, Simulator.LocalTime localTime, DataCenter dataCenter) {
         setComputeNodeList(new ArrayList<BladeServer>());
         waitingList = new ArrayList<BatchJob>();
         setComputeNodeIndex(new ArrayList<Integer>());
+        this.localTime = localTime;
         parseXmlConfig(config);
         setScheduler(new LeastRemainFirst());
         //placement=new jobPlacement(ComputeNodeList);
-        setResourceAllocation(new MHR());
+        setResourceAllocation(new MHR(localTime, dataCenter));
         totalJob = 0;
-        getResourceAllocation().initialResourceAloc(this);
-        setAM(new ComputeSystemAM(this));
     }
 
     boolean runAcycle() {
@@ -47,19 +49,19 @@ public class ComputeSystem extends GeneralSystem {
         int numberOfFinishedJob = 0;
         // if(Main.localTime%1200==0 |Main.localTime%1200==2 )
         //         ASP();
-        BatchJob j = new BatchJob();
+        BatchJob j = new BatchJob(localTime);
         //reads all jobs with arrival time less than Localtime
         while (readJob(j)) {
-            if (inputTime > Simulator.getInstance().getLocalTime()) {
+            if (inputTime > localTime.getCurrentLocalTime()) {
                 break;
             }
-            j = new BatchJob();
+            j = new BatchJob(localTime);
         }
         if (!blocked) {
             //feeds jobs from waiting list to servers as much as possible
             getFromWaitinglist();
             for (int temp = 0; temp < getComputeNodeList().size(); temp++) {
-                getComputeNodeList().get(temp).run(new BatchJob());
+                getComputeNodeList().get(temp).run(new BatchJob(localTime));
             }
             for (int temp = 0; temp < getComputeNodeList().size(); temp++) {
                 numberOfFinishedJob = getComputeNodeList().get(temp).getTotalFinishedJob() + numberOfFinishedJob;
@@ -77,7 +79,7 @@ public class ComputeSystem extends GeneralSystem {
         }
         //System.out.println(Main.localTime +"\t"+totalJob+ "\t"+numberOfFinishedJob);
         if (numberOfFinishedJob == totalJob) {
-            setSysIsDone(true);
+            markAsDone();
             return true;
         } else {
             return false;
@@ -114,7 +116,7 @@ public class ComputeSystem extends GeneralSystem {
             return 0;
         }
         BatchJob job = (BatchJob) (getScheduler().nextJob(waitingList));
-        while (job.getStartTime() <= Simulator.getInstance().getLocalTime()) {
+        while (job.getStartTime() <= localTime.getCurrentLocalTime()) {
             int[] indexes = new int[job.getNumOfNode()]; //number of node the last job wants
             int[] listServer = new int[job.getNumOfNode()];
             if (getResourceAllocation().allocateSystemLevelServer(getComputeNodeList(), indexes)[0] == -2) {
@@ -134,7 +136,7 @@ public class ComputeSystem extends GeneralSystem {
                 }
             }
             //Check if dealine is missed
-            if (Simulator.getInstance().getLocalTime() - job.getStartTime() > job.getDeadline()) {
+            if (localTime.getCurrentLocalTime() - job.getStartTime() > job.getDeadline()) {
                 setSLAviolation(Violation.DEADLINEPASSED);
                 // System.out.println("DEADLINE PASSED in getFromWaitingList");
             }
@@ -170,7 +172,7 @@ public class ComputeSystem extends GeneralSystem {
             SLAviolation++;
         }
         if (SLAViolationType != Violation.NOTHING) {
-            Simulator.getInstance().logHpcViolation(getName(), SLAViolationType);
+            Simulator.getInstance().logHPCViolation(getName(), SLAViolationType);
             setAccumolatedViolation(getAccumolatedViolation() + 1);
         }
     }
@@ -237,7 +239,7 @@ public class ComputeSystem extends GeneralSystem {
         }
     }
 
-    ArrayList getindexSet() {
+    List<Integer> getindexSet() {
         return getComputeNodeIndex();
     }
 
@@ -286,4 +288,11 @@ public class ComputeSystem extends GeneralSystem {
         }
         return totalResponsetime;
     }
+
+	public static ComputeSystem Create(String config, Simulator.LocalTime localTime, DataCenter dataCenter) {
+		ComputeSystem computeSystem = new ComputeSystem(config, localTime, dataCenter);
+		computeSystem.getResourceAllocation().initialResourceAloc(computeSystem);
+		computeSystem.setAM(new ComputeSystemAM(computeSystem, localTime));
+        return computeSystem;
+	}
 }

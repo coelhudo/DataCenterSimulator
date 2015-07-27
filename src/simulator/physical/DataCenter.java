@@ -35,8 +35,9 @@ public final class DataCenter {
     public double[][] D;
     public DataCenterAM am = new DataCenterAM();
     ///////////////////////////
-
-    public DataCenter(String config) {
+    private Simulator.LocalTime localTime;
+    
+    public DataCenter(String config, Simulator.LocalTime localTime) {
         //output file for writing total DC power consumption
         String s = "out_W.txt";
         File destinationFile = new File(s);
@@ -45,6 +46,7 @@ public final class DataCenter {
         } catch (FileNotFoundException ex) {
             Logger.getLogger(DataCenter.class.getName()).log(Level.SEVERE, null, ex);
         }
+        this.localTime = localTime;
         oos = new OutputStreamWriter(fos);
         //reading config file to set the parameters
         parseXmlConfig(config);
@@ -85,7 +87,7 @@ public final class DataCenter {
         for (int i = 0; i < childNodes.getLength(); i++) {
             if (childNodes.item(i).getNodeType() == Node.ELEMENT_NODE) {
                 if (childNodes.item(i).getNodeName().equalsIgnoreCase("BladeServer")) {
-                    BladeServer bs = new BladeServer(-1);
+                    BladeServer bs = new BladeServer(-1, localTime);
                     bs.readFromNode(childNodes.item(i));
                     BSTemp.add(bs);
                 }
@@ -94,7 +96,7 @@ public final class DataCenter {
         for (int i = 0; i < childNodes.getLength(); i++) {
             if (childNodes.item(i).getNodeType() == Node.ELEMENT_NODE) {
                 if (childNodes.item(i).getNodeName().equalsIgnoreCase("Chassis")) {
-                    Chassis chs = new Chassis(-1);
+                    Chassis chs = new Chassis(-1, localTime);
                     chs.readFromNode(childNodes.item(i));
                     setUpChassis(chs);
                     CHSTemp.add(chs);
@@ -184,7 +186,7 @@ public final class DataCenter {
                 if (k == CHSTemp.size()) {
                     System.out.println("ERORE IN CONFIG FILE DATACENTE.java");
                 }
-                Chassis ch1 = new Chassis(numbOfSofarChassis + kk);
+                Chassis ch1 = new Chassis(numbOfSofarChassis + kk, localTime);
                 cloneChassis(ch1, CHSTemp.get(k));
                 ch1.rackId = rackID;
                 for (int inx = 0; inx < ch1.servers.size(); inx++) {
@@ -200,7 +202,7 @@ public final class DataCenter {
     void cloneChassis(Chassis A, Chassis B) //    A<--B
     {
         for (int i = 0; i < B.servers.size(); i++) {
-            BladeServer a = new BladeServer(i);
+            BladeServer a = new BladeServer(i, localTime);
             //
             a.setFrequencyLevel(new double[B.servers.get(i).getFrequencyLevel().length]);
             a.setPowerBusy(new double[B.servers.get(i).getPowerBusy().length]);

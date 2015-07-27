@@ -3,19 +3,19 @@ package simulator;
 public class SimulationResults {
 
 	private double totalPowerConsumption;
-	private double localTime;
+	private Simulator.LocalTime localTime;
 	private double meanPowerConsumption;
 	private int overRedTemperatureNumber;
-	private int mesg;
-	private int mesg2;
+	private int numberOfMessagesFromDataCenterToSystem;
+	private int numberOfMessagesFromSytemToNodes;
 
 	public SimulationResults(Simulator simulator) {
 		totalPowerConsumption = simulator.getTotalPowerConsumption();
 		localTime = simulator.getLocalTime();
-		meanPowerConsumption = totalPowerConsumption / localTime;
+		meanPowerConsumption = totalPowerConsumption / localTime.getCurrentLocalTime();
 		overRedTemperatureNumber = simulator.getOverRedTempNumber();
-		mesg = simulator.numberOfMessagesFromDataCenterToSystem;
-		mesg2 = simulator.numberOfMessagesFromSytemToNodes;
+		numberOfMessagesFromDataCenterToSystem = simulator.numberOfMessagesFromDataCenterToSystem;
+		numberOfMessagesFromSytemToNodes = simulator.numberOfMessagesFromSytemToNodes;
 	}
 
 	public double getTotalPowerConsumption() {
@@ -23,7 +23,7 @@ public class SimulationResults {
 	}
 
 	public double getLocalTime() {
-		return localTime;
+		return localTime.getCurrentLocalTime();
 	}
 
 	public int getOverRedTemperatureNumber() {
@@ -31,11 +31,11 @@ public class SimulationResults {
 	}
 
 	public int getNumberOfMessagesFromDataCenterToSystem() {
-		return mesg;
+		return numberOfMessagesFromDataCenterToSystem;
 	}
 
 	public int getNumberOfMessagesFromSystemToNodes() {
-		return mesg2;
+		return numberOfMessagesFromSytemToNodes;
 	}
 
 	public double getMeanPowerConsumption() {

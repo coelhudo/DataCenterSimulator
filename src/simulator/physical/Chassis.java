@@ -4,16 +4,21 @@ import java.util.ArrayList;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
+import simulator.Simulator;
+import simulator.Simulator.LocalTime;
+
 public class Chassis {
 
     public ArrayList<BladeServer> servers = new ArrayList<BladeServer>();
     boolean turnON = true;
     public int chassisID, rackId;
     String chassisType = new String();
-
-    public Chassis(int idArg) {
+    private Simulator.LocalTime localTime;
+    
+    public Chassis(int idArg, Simulator.LocalTime localTime) {
         //if it is -1 means this chassis is just a template and not assigned yet
         chassisID = idArg;
+        this.localTime = localTime;
     }
 
     public void turnIt(boolean tag) {
@@ -75,7 +80,7 @@ public class Chassis {
         }
         for (int j = 0; j < tedad; j++) {
             for (int k = 0; k < number[j]; k++) {
-                BladeServer bldServ = new BladeServer(-1);
+                BladeServer bldServ = new BladeServer(-1, localTime);
                 //s[j]=s[j].substring(1,s[j].length()-1);
                 bldServ.bladeType = s[j].trim();
                 servers.add(bldServ);
