@@ -16,12 +16,12 @@ public class IteractiveUserAM extends GeneralAM {
     int accumulativeSLA = 0;
     //int cpAccumu=0;
     Simulator.StrategyEnum StrategyWsitch = Simulator.StrategyEnum.Green; //Green
-    Simulator.LocalTime localTime;
+    Simulator.Environment environment;
     
-    public IteractiveUserAM(InteractiveSystem sys, InteractiveUser usr, Simulator.LocalTime localTime) {
+    public IteractiveUserAM(InteractiveSystem sys, InteractiveUser usr, Simulator.Environment environment) {
         this.sys = sys;
         this.User = usr;
-        this.localTime = localTime;
+        this.environment = environment;
     }
 
     @Override
@@ -71,7 +71,7 @@ public class IteractiveUserAM extends GeneralAM {
     //SLA Policy 
 
     public void analysis_SLA(Object violation) {
-        if (localTime.getCurrentLocalTime() % Simulator.getInstance().epochApp != 0)// || Main.localTime<0)
+        if (environment.localTimeByEpoch())
         {
             violationInEpoch = (Integer) violation + violationInEpoch;
             return;
@@ -100,7 +100,7 @@ public class IteractiveUserAM extends GeneralAM {
 
     // Green policy is applied here:
     public void analysis_GR(Object violation) {
-        if (localTime.getCurrentLocalTime() % Simulator.getInstance().epochApp != 0)// || Main.localTime<0)
+        if (environment.localTimeByEpoch())
         {
             violationInEpoch = (Integer) violation + violationInEpoch;
             return;
@@ -133,7 +133,7 @@ public class IteractiveUserAM extends GeneralAM {
             int tedad = User.numberofIdleNode() / 2;
             for (int j = 0; j < User.getComputeNodeList().size() && tedad > 0; j++) {
                 if (User.getComputeNodeList().get(j).getReady() == -1) {
-                    System.out.println("USer GR: " + User.getID() + "\tactive a Server!\t\t @" + Simulator.getInstance().getLocalTime()
+                    System.out.println("USer GR: " + User.getID() + "\tactive a Server!\t\t @" + environment.getCurrentLocalTime()
                             + "\tNumber of runinng:  " + User.numberofRunningNode());
                     User.getComputeNodeList().get(j).setReady(1);
                     User.getComputeNodeList().get(j).setMips(1.4);
@@ -194,14 +194,14 @@ public class IteractiveUserAM extends GeneralAM {
 //            System.out.println("no need pitttttttttttttttttttttttttttttttttttttttttttttttttttttttty");
 //            return;
 //        }
-        BladeServer temp = new BladeServer(0, localTime);
+        BladeServer temp = new BladeServer(0, environment);
         temp = User.getComputeNodeList().get(index);
         temp.setMaxExpectedRes(sys.getUserList().get(targetUsr).getMaxExpectedResTime());
         temp.setMips(1.4);
         temp.setReady(1);
         sys.getUserList().get(targetUsr).getComputeNodeList().add(temp);
         User.getComputeNodeList().remove(index);
-        System.out.println("User :\t" + User.getID() + " ----------> :\t\t " + targetUsr + "\t\t@:" + Simulator.getInstance().getLocalTime() + "\tRunning target node= " + sys.getUserList().get(targetUsr).numberofRunningNode() + "\tRunning this node= " + User.numberofRunningNode() + "\tstrtgy= " + StrategyWsitch);
+        System.out.println("User :\t" + User.getID() + " ----------> :\t\t " + targetUsr + "\t\t@:" + environment.getCurrentLocalTime() + "\tRunning target node= " + sys.getUserList().get(targetUsr).numberofRunningNode() + "\tRunning this node= " + User.numberofRunningNode() + "\tstrtgy= " + StrategyWsitch);
         StrategyWsitch = Simulator.StrategyEnum.SLA;
         return true;
     }

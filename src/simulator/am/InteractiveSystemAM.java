@@ -12,11 +12,11 @@ public class InteractiveSystemAM extends GeneralAM {
 	int[] accuSLA;
 	double[] queueLengthUsr;
 	int lastTime = 0;
-	private Simulator.LocalTime localTime;
+	private Simulator.Environment environment;
 
-	public InteractiveSystemAM(InteractiveSystem is, Simulator.LocalTime localTime) {
+	public InteractiveSystemAM(InteractiveSystem is, Simulator.Environment environment) {
 		this.IS = is;
-		this.localTime = localTime;
+		this.environment = environment;
 		setRecForCoop(new int[IS.getUserList().size()]);
 	}
 
@@ -30,7 +30,7 @@ public class InteractiveSystemAM extends GeneralAM {
 	@Override
 	public void planning() {
 		///// Server Provisioning for each application Bundle///////////
-		if (localTime.getCurrentLocalTime() % 1200 == 0) {
+		if (environment.getCurrentLocalTime() % 1200 == 0) {
 			// numberOfActiveServ=0;
 			// kalmanIndex=Main.localTime/1200;
 			// serverProvisioning();
@@ -68,17 +68,17 @@ public class InteractiveSystemAM extends GeneralAM {
 		workloadIntensity();
 		for (int i = 0; i < IS.getUserList().size(); i++) {
 			// assume epoch system 2 time epoch application
-			percentCompPwr[i] = IS.getUserList().get(i).getAM().percnt / ((localTime.getCurrentLocalTime() - lastTime)
+			percentCompPwr[i] = IS.getUserList().get(i).getAM().percnt / ((environment.getCurrentLocalTime() - lastTime)
 					* 3 * IS.getUserList().get(i).getComputeNodeList().size());// (Main.epochSys*/*3*ES.applicationList.get(i).ComputeNodeList.size());
 			IS.getUserList().get(i).getAM().percnt = 0;
-			accuSLA[i] = IS.getUserList().get(i).getAM().accumulativeSLA / (localTime.getCurrentLocalTime() - lastTime);// Main.epochSys;
+			accuSLA[i] = IS.getUserList().get(i).getAM().accumulativeSLA / (environment.getCurrentLocalTime() - lastTime);// Main.epochSys;
 			IS.getUserList().get(i).getAM().accumulativeSLA = 0;
 			// for fair allocate/release node needs to know how many jobs are
 			// already in each application queue
 			queueLengthUsr[i] = IS.getUserList().get(i).numberOfWaitingJobs();
 		}
 		calcSysUtility();
-		lastTime = localTime.getCurrentLocalTime();
+		lastTime = environment.getCurrentLocalTime();
 		SLAViolationGen = IS.getSLAviolation();
 	}
 

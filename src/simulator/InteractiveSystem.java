@@ -21,15 +21,15 @@ public class InteractiveSystem extends GeneralSystem {
 	private ArrayList<InteractiveUser> UserList;
 	private ArrayList<InteractiveUser> waitingQueueWL;
 	File logFile;
-	private Simulator.LocalTime localTime;
+	private Simulator.Environment environment;
 
-	public InteractiveSystem(String config, Simulator.LocalTime localTime, DataCenter dataCenter) {
-		this.localTime = localTime;
+	public InteractiveSystem(String config, Simulator.Environment environment, DataCenter dataCenter) {
+		this.environment = environment;
 		setComputeNodeList(new ArrayList<BladeServer>());
 		setComputeNodeIndex(new ArrayList<Integer>());
 		setUserList(new ArrayList<InteractiveUser>());
 		setWaitingQueueWL(new ArrayList<InteractiveUser>());
-		setResourceAllocation(new MHR(localTime, dataCenter));
+		setResourceAllocation(new MHR(this.environment, dataCenter));
 		setScheduler(new FifoScheduler());
 		parseXmlConfig(config);
 		setSLAviolation(0);
@@ -110,8 +110,8 @@ public class InteractiveSystem extends GeneralSystem {
 	int readWL() {
 		int retReadLogfile = readingLogFile();
 		if (getWaitingQueueWL().size() > 0) {
-			if (getWaitingQueueWL().get(0).arrivalTime == localTime.getCurrentLocalTime()
-					| getWaitingQueueWL().get(0).arrivalTime < localTime.getCurrentLocalTime()) {
+			if (getWaitingQueueWL().get(0).arrivalTime == environment.getCurrentLocalTime()
+					| getWaitingQueueWL().get(0).arrivalTime < environment.getCurrentLocalTime()) {
 				return 1;
 			} else {
 				return 0;
@@ -134,7 +134,7 @@ public class InteractiveSystem extends GeneralSystem {
 			if (numbers.length < 6) {
 				return -2;
 			}
-			InteractiveUser test = new InteractiveUser(this, localTime);
+			InteractiveUser test = new InteractiveUser(this, environment);
 			test.arrivalTime = Integer.parseInt(numbers[0]);
 			test.setMinProc(Integer.parseInt(numbers[1]));
 			test.setMaxProc(Integer.parseInt(numbers[2]));
@@ -161,7 +161,7 @@ public class InteractiveSystem extends GeneralSystem {
 			setSLAviolation(+getUserList().get(i).getSLAviolation());
 		}
 		if (getSLAviolation() > 0) {
-			Simulator.getInstance().logInteractiveViolation(getName(), getSLAviolation());
+			environment.logInteractiveViolation(getName(), getSLAviolation());
 
 			setAccumolatedViolation(getAccumolatedViolation() + 1);
 		}
@@ -239,10 +239,10 @@ public class InteractiveSystem extends GeneralSystem {
 		this.waitingQueueWL = waitingQueueWL;
 	}
 
-	public static InteractiveSystem Create(String config, Simulator.LocalTime localTime, DataCenter dataCenter) {
-		InteractiveSystem interactiveSystem = new InteractiveSystem(config, localTime, dataCenter);
+	public static InteractiveSystem Create(String config, Simulator.Environment environment, DataCenter dataCenter) {
+		InteractiveSystem interactiveSystem = new InteractiveSystem(config, environment, dataCenter);
 		interactiveSystem.getResourceAllocation().initialResourceAlocator(interactiveSystem);
-		interactiveSystem.setAM(new InteractiveSystemAM(interactiveSystem, localTime));
+		interactiveSystem.setAM(new InteractiveSystemAM(interactiveSystem, environment));
 	    
 		return interactiveSystem;
 	}

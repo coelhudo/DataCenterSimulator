@@ -9,12 +9,12 @@ import simulator.EnterpriseSystem;
 import simulator.InteractiveSystem;
 import simulator.InteractiveUser;
 import simulator.Simulator;
-import simulator.Simulator.LocalTime;
+import simulator.Simulator.Environment;
 
 public abstract class ResourceAllocation {
 
 	protected DataCenter dataCenter;
-	private LocalTime localTime;
+	private Environment environment;
 
 	public int[] nextServerSys(List<Integer> chassisList) {
 		return null;
@@ -32,8 +32,8 @@ public abstract class ResourceAllocation {
 		return null;
 	}
 
-	public ResourceAllocation(Simulator.LocalTime localTime, DataCenter dataCenter) {
-		this.localTime = localTime;
+	public ResourceAllocation(Simulator.Environment environment, DataCenter dataCenter) {
+		this.environment = environment;
 		this.dataCenter = dataCenter;
 	}
 
@@ -87,9 +87,9 @@ public abstract class ResourceAllocation {
 					}
 					System.out.println("Release:app: " + i + "\t#of comp Node="
 							+ ES.applicationList.get(i).getComputeNodeList().size() + "\t system Rdy to aloc="
-							+ ES.numberofAvailableNodetoAlocate() + "\t@:" + localTime.getCurrentLocalTime()
+							+ ES.numberofAvailableNodetoAlocate() + "\t@:" + environment.getCurrentLocalTime()
 							+ "\tNumber of running = " + ES.applicationList.get(i).numberofRunningNode());
-					Simulator.getInstance().numberOfMessagesFromDataCenterToSystem++;
+					environment.updateNumberOfMessagesFromDataCenterToSystem();
 				}
 			}
 		}
@@ -118,9 +118,9 @@ public abstract class ResourceAllocation {
 						server.setTimeTreshold(ES.applicationList.get(i).getTimeTreshold());
 						System.out.println("Alloc: to app:" + i + "\t#of comp Node="
 								+ ES.applicationList.get(i).getComputeNodeList().size() + "\tsys Rdy to aloc="
-								+ ES.numberofAvailableNodetoAlocate() + "\t@:" + localTime.getCurrentLocalTime()
+								+ ES.numberofAvailableNodetoAlocate() + "\t@:" + environment.getCurrentLocalTime()
 								+ "\tsys Number of running = " + ES.applicationList.get(i).numberofRunningNode());
-						Simulator.getInstance().numberOfMessagesFromDataCenterToSystem++;
+						environment.updateNumberOfMessagesFromDataCenterToSystem();
 					}
 				}
 			}
@@ -358,7 +358,7 @@ public abstract class ResourceAllocation {
 
 	public int initialResourceAloc(InteractiveSystem WS) {
 		int i = 0, j;
-		InteractiveUser test = new InteractiveUser(WS, localTime);
+		InteractiveUser test = new InteractiveUser(WS, environment);
 		test = WS.getWaitingQueueWL().get(0);
 		if (test.getMinProc() > WS.getNumberofIdleNode()) {
 			System.out.println("initialResource ALoc: not enough resource for WLBundle");
@@ -396,7 +396,7 @@ public abstract class ResourceAllocation {
 			WS.setNumberofIdleNode(WS.getNumberofIdleNode() - 1);
 			System.out.println("Allocating compute node to Inter. User: Chassis#" + indexChassis
 					+ "\tNumber of remained IdleNode in sys\t" + WS.getNumberofIdleNode() + "@ time: "
-					+ localTime.getCurrentLocalTime());
+					+ environment.getCurrentLocalTime());
 		}
 		WS.getUserList().add(test);
 		WS.getWaitingQueueWL().remove(test);
@@ -457,7 +457,7 @@ public abstract class ResourceAllocation {
 					}
 					System.out.println("Release:User: " + i + "\t#of comp Node="
 							+ IS.getUserList().get(i).getComputeNodeList().size() + "\t system Rdy to aloc="
-							+ IS.numberofAvailableNodetoAlocate() + "\t@:" + localTime.getCurrentLocalTime()
+							+ IS.numberofAvailableNodetoAlocate() + "\t@:" + environment.getCurrentLocalTime()
 							+ "\tNumber of running = " + IS.getUserList().get(i).numberofRunningNode());
 				}
 			}
@@ -487,7 +487,7 @@ public abstract class ResourceAllocation {
 						server.setTimeTreshold(IS.getUserList().get(i).getMaxExpectedResTime());
 						System.out.println("Alloc: to User:" + i + "\t#of comp Node="
 								+ IS.getUserList().get(i).getComputeNodeList().size() + "\tsys Rdy to aloc="
-								+ IS.numberofAvailableNodetoAlocate() + "\t@:" + localTime.getCurrentLocalTime()
+								+ IS.numberofAvailableNodetoAlocate() + "\t@:" + environment.getCurrentLocalTime()
 								+ "\tsys Number of running = " + IS.getUserList().get(i).numberofRunningNode());
 					}
 				}

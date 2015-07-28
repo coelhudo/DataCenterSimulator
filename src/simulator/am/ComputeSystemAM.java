@@ -6,11 +6,11 @@ import simulator.Simulator;
 public class ComputeSystemAM extends GeneralAM {
 
     ComputeSystem CS;
-    private Simulator.LocalTime localTime;
+    private Simulator.Environment environment;
 
-    public ComputeSystemAM(ComputeSystem cs, Simulator.LocalTime localTime) {
+    public ComputeSystemAM(ComputeSystem cs, Simulator.Environment environment) {
         CS = cs;
-        this.localTime = localTime;
+        this.environment = environment;
     }
 
     @Override
@@ -54,10 +54,10 @@ public class ComputeSystemAM extends GeneralAM {
             int tedad = 0;
             for (int i = 0; i < CS.getComputeNodeList().size(); i++) {
                 if (CS.getComputeNodeList().get(i).getReady() == -1) {
-                    System.out.println("CSys GR: " + "\tactive a Server!\t\t @" + Simulator.getInstance().getLocalTime() + "\tNumber of runinng:  " + CS.numberofRunningNode());
+                    System.out.println("CSys GR: " + "\tactive a Server!\t\t @" + environment.getCurrentLocalTime() + "\tNumber of runinng:  " + CS.numberofRunningNode());
                     CS.getComputeNodeList().get(i).setReady(1);
                     CS.getComputeNodeList().get(i).setMips(1.4);
-                    Simulator.getInstance().numberOfMessagesFromSytemToNodes++;
+                    environment.updateNumberOfMessagesFromSystemToNodes();
                     tedad++;
                 }
                 if (tedad == hlfNumofSlept) {
@@ -82,7 +82,7 @@ public class ComputeSystemAM extends GeneralAM {
             // If node is ready and is not used make it sleep
             for (int i = 0; i < CS.getComputeNodeList().size(); i++) {
                 if (CS.getComputeNodeList().get(i).getActiveBatchList().isEmpty() && CS.getComputeNodeList().get(i).getBlockedBatchList().isEmpty() && CS.getComputeNodeList().get(i).getReady() > -1) {
-                    Simulator.getInstance().numberOfMessagesFromSytemToNodes++;
+                    environment.updateNumberOfMessagesFromSystemToNodes();
                     CS.getComputeNodeList().get(i).setReady(-1);
                 }
             }
@@ -103,7 +103,7 @@ public class ComputeSystemAM extends GeneralAM {
                     CS.getComputeNodeList().get(i).increaseFrequency();
                 }
                 if (CS.getComputeNodeList().get(i).getReady() == -1) {
-                    Simulator.getInstance().numberOfMessagesFromSytemToNodes++;
+                    environment.updateNumberOfMessagesFromSystemToNodes();
                     CS.getComputeNodeList().get(i).setReady(1);
                 }
             }
@@ -124,10 +124,10 @@ public class ComputeSystemAM extends GeneralAM {
 
     @Override
     public void analysis(Object vilation) {
-        if (localTime.getCurrentLocalTime() % Simulator.getInstance().epochApp != 0) {
+        if (environment.localTimeByEpoch()) {
             return;
         }
-        Simulator.getInstance().numberOfMessagesFromDataCenterToSystem++; // one message for monitoring the variables from compute node in the compute system.
+        environment.updateNumberOfMessagesFromDataCenterToSystem(); // one message for monitoring the variables from compute node in the compute system.
         SLAViolationGen = CS.getSLAviolation();///Main.epochApp;
 //        if(strtg==Main.strategyEnum.Green)
         analysisGreen();

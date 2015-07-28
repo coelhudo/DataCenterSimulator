@@ -32,17 +32,17 @@ public class ComputeSystem extends GeneralSystem {
     File f;
     int predictNumberofNode;
     int priority;
-    private Simulator.LocalTime localTime;
+    private Simulator.Environment environment;
 
-    private ComputeSystem(String config, Simulator.LocalTime localTime, DataCenter dataCenter) {
+    private ComputeSystem(String config, Simulator.Environment environment, DataCenter dataCenter) {
+    	this.environment = environment;
         setComputeNodeList(new ArrayList<BladeServer>());
         waitingList = new ArrayList<BatchJob>();
         setComputeNodeIndex(new ArrayList<Integer>());
-        this.localTime = localTime;
         parseXmlConfig(config);
         setScheduler(new LeastRemainFirst());
         //placement=new jobPlacement(ComputeNodeList);
-        setResourceAllocation(new MHR(localTime, dataCenter));
+        setResourceAllocation(new MHR(environment, dataCenter));
         totalJob = 0;
     }
 
@@ -51,19 +51,19 @@ public class ComputeSystem extends GeneralSystem {
         int numberOfFinishedJob = 0;
         // if(Main.localTime%1200==0 |Main.localTime%1200==2 )
         //         ASP();
-        BatchJob j = new BatchJob(localTime);
+        BatchJob j = new BatchJob(environment);
         //reads all jobs with arrival time less than Localtime
         while (readJob(j)) {
-            if (inputTime > localTime.getCurrentLocalTime()) {
+            if (inputTime > environment.getCurrentLocalTime()) {
                 break;
             }
-            j = new BatchJob(localTime);
+            j = new BatchJob(environment);
         }
         if (!blocked) {
             //feeds jobs from waiting list to servers as much as possible
             getFromWaitinglist();
             for (int temp = 0; temp < getComputeNodeList().size(); temp++) {
-                getComputeNodeList().get(temp).run(new BatchJob(localTime));
+                getComputeNodeList().get(temp).run(new BatchJob(environment));
             }
             for (int temp = 0; temp < getComputeNodeList().size(); temp++) {
                 numberOfFinishedJob = getComputeNodeList().get(temp).getTotalFinishedJob() + numberOfFinishedJob;
@@ -118,7 +118,7 @@ public class ComputeSystem extends GeneralSystem {
             return 0;
         }
         BatchJob job = (BatchJob) (getScheduler().nextJob(waitingList));
-        while (job.getStartTime() <= localTime.getCurrentLocalTime()) {
+        while (job.getStartTime() <= environment.getCurrentLocalTime()) {
             int[] indexes = new int[job.getNumOfNode()]; //number of node the last job wants
             int[] listServer = new int[job.getNumOfNode()];
             if (getResourceAllocation().allocateSystemLevelServer(getComputeNodeList(), indexes)[0] == -2) {
@@ -138,7 +138,7 @@ public class ComputeSystem extends GeneralSystem {
                 }
             }
             //Check if dealine is missed
-            if (localTime.getCurrentLocalTime() - job.getStartTime() > job.getDeadline()) {
+            if (environment.getCurrentLocalTime() - job.getStartTime() > job.getDeadline()) {
                 setSLAviolation(Violation.DEADLINEPASSED);
                 // System.out.println("DEADLINE PASSED in getFromWaitingList");
             }
@@ -174,7 +174,7 @@ public class ComputeSystem extends GeneralSystem {
             SLAviolation++;
         }
         if (SLAViolationType != Violation.NOTHING) {
-            Simulator.getInstance().logHPCViolation(getName(), SLAViolationType);
+            environment.logHPCViolation(getName(), SLAViolationType);
             setAccumolatedViolation(getAccumolatedViolation() + 1);
         }
     }
@@ -291,10 +291,10 @@ public class ComputeSystem extends GeneralSystem {
         return totalResponsetime;
     }
 
-	public static ComputeSystem Create(String config, Simulator.LocalTime localTime, DataCenter dataCenter) {
-		ComputeSystem computeSystem = new ComputeSystem(config, localTime, dataCenter);
+	public static ComputeSystem Create(String config, Simulator.Environment environment, DataCenter dataCenter) {
+		ComputeSystem computeSystem = new ComputeSystem(config, environment, dataCenter);
 		computeSystem.getResourceAllocation().initialResourceAloc(computeSystem);
-		computeSystem.setAM(new ComputeSystemAM(computeSystem, localTime));
+		computeSystem.setAM(new ComputeSystemAM(computeSystem, environment));
         return computeSystem;
 	}
 }

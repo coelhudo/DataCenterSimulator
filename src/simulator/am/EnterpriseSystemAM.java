@@ -13,12 +13,12 @@ public class EnterpriseSystemAM extends GeneralAM {
 	int lastTime = 0;
 	int[] accuSLA;
 	double wlkIntens = 0;
-	private Simulator.LocalTime localTime;
+	private Simulator.Environment environment;
 
-	public EnterpriseSystemAM(EnterpriseSystem ES, Simulator.LocalTime localTime) {
+	public EnterpriseSystemAM(EnterpriseSystem ES, Simulator.Environment environment) {
 		// super(dtcenter);
 		this.ES = ES;
-		this.localTime = localTime;
+		this.environment = environment;
 		setRecForCoop(new int[ES.applicationList.size()]);
 	}
 
@@ -33,7 +33,7 @@ public class EnterpriseSystemAM extends GeneralAM {
 	@Override
 	public void planning() {
 		///// Server Provisioning for each application Bundle///////////
-		if (localTime.getCurrentLocalTime() % 1200 == 0) {
+		if (environment.getCurrentLocalTime() % 1200 == 0) {
 			// numberOfActiveServ=0;
 			// kalmanIndex=Main.localTime/1200;
 			// serverProvisioning();
@@ -74,11 +74,11 @@ public class EnterpriseSystemAM extends GeneralAM {
 			ES.setSLAviolation(ES.getSLAviolation() + ES.applicationList.get(i).getSLAviolation());
 			// assume epoch system 2 time epoch application
 			percentCompPwr[i] = ES.applicationList.get(i).getAM().getPercnt()
-					/ ((localTime.getCurrentLocalTime() - lastTime) * 3
+					/ ((environment.getCurrentLocalTime() - lastTime) * 3
 							* ES.applicationList.get(i).getComputeNodeList().size());// (Main.epochSys*/*3*ES.applicationList.get(i).ComputeNodeList.size());
 			ES.applicationList.get(i).getAM().setPercnt(0);
 			accuSLA[i] = ES.applicationList.get(i).getAM().accumulativeSLA
-					/ (localTime.getCurrentLocalTime() - lastTime);// Main.epochSys;
+					/ (environment.getCurrentLocalTime() - lastTime);// Main.epochSys;
 			ES.applicationList.get(i).getAM().accumulativeSLA = 0;
 			// for fair allocate/release node needs to know how many jobs are
 			// already in each application queue
@@ -86,11 +86,11 @@ public class EnterpriseSystemAM extends GeneralAM {
 		}
 		SLAViolationGen = ES.getSLAviolation();
 		if (ES.getSLAviolation() > 0) {
-			Simulator.getInstance().logEnterpriseViolation(ES.getName(), ES.getSLAviolation());
+			environment.logEnterpriseViolation(ES.getName(), ES.getSLAviolation());
 			ES.setAccumolatedViolation(ES.getAccumolatedViolation() + 1);
 		}
 		calcSysUtility();
-		lastTime = localTime.getCurrentLocalTime();
+		lastTime = environment.getCurrentLocalTime();
 	}
 
 	public void calcSysUtility() {

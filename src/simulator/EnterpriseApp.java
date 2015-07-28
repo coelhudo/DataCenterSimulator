@@ -46,11 +46,11 @@ public final class EnterpriseApp {
 										// utilization
 	private int NumberofBasicNode = 0;
 	GeneralSystem parent;
-	private Simulator.LocalTime localTime;
+	private Simulator.Environment environment;
 
-	public EnterpriseApp(String path, Node node, GeneralSystem parent, Simulator.LocalTime localTime) {
+	public EnterpriseApp(String path, Node node, GeneralSystem parent, Simulator.Environment environment) {
 		this.parent = parent;
-		this.localTime = localTime;
+		this.environment = environment;
 		setComputeNodeList(new ArrayList<BladeServer>());
 		setQueueApp(new ArrayList<EnterpriseJob>());
 		setResponseList(new ArrayList<ResponseTime>());
@@ -58,13 +58,13 @@ public final class EnterpriseApp {
 		readFromNode(node, path);
 		configSLAallcomputingNode();
 		// placement= new jobPlacement(ComputeNodeList) ;
-		setAM(new ApplicationAM((EnterpriseSystem) parent, this, localTime));
+		setAM(new ApplicationAM((EnterpriseSystem) parent, this, environment));
 		}
 
 	public double numberOfWaitingJobs() {
 		double lenJob = 0;
 		for (int i = 0; i < getQueueApp().size(); i++) {
-			if (getQueueApp().get(i).getArrivalTimeOfJob() <= localTime.getCurrentLocalTime()) {
+			if (getQueueApp().get(i).getArrivalTimeOfJob() <= environment.getCurrentLocalTime()) {
 				lenJob = +getQueueApp().get(i).getNumberOfJob();
 			}
 		}
@@ -122,8 +122,8 @@ public final class EnterpriseApp {
 	int readWebJob() {
 		int retReadLogfile = readingLogFile();
 		if (!getQueueApp().isEmpty()) {
-			if (getQueueApp().get(0).getArrivalTimeOfJob() == localTime.getCurrentLocalTime()
-					| getQueueApp().get(0).getArrivalTimeOfJob() < localTime.getCurrentLocalTime()) {
+			if (getQueueApp().get(0).getArrivalTimeOfJob() == environment.getCurrentLocalTime()
+					| getQueueApp().get(0).getArrivalTimeOfJob() < environment.getCurrentLocalTime()) {
 				return 1;
 			} else {
 				return 0;
@@ -189,7 +189,7 @@ public final class EnterpriseApp {
 			capacityOfNode = capacityOfNode - jj.getNumberOfJob();
 			if (capacityOfNode == 0) {
 				addToresponseArray(jj.getNumberOfJob(),
-						(localTime.getCurrentLocalTime() - jj.getArrivalTimeOfJob() + 1));
+						(environment.getCurrentLocalTime() - jj.getArrivalTimeOfJob() + 1));
 				// System.out.println((Main.localTime-wJob.arrivalTimeOfJob+1)*(wJob.numberOfJob)
 				// +"\t"+wJob.numberOfJob+"\t q len="+queueLength);
 				beenRunJobs = beenRunJobs + jj.getNumberOfJob();
@@ -199,7 +199,7 @@ public final class EnterpriseApp {
 			if (capacityOfNode < 0) // there are more jobs than capacity
 			{
 				addToresponseArray(capacityOfNode + jj.getNumberOfJob(),
-						(localTime.getCurrentLocalTime() - jj.getArrivalTimeOfJob() + 1));
+						(environment.getCurrentLocalTime() - jj.getArrivalTimeOfJob() + 1));
 				beenRunJobs = beenRunJobs + capacityOfNode + jj.getNumberOfJob();
 				jj.setNumberOfJob(-1 * capacityOfNode);
 				// System.out.println(1000.0*Mips);
@@ -208,7 +208,7 @@ public final class EnterpriseApp {
 			if (capacityOfNode > 0) // still we have capacity to run the jobs
 			{
 				addToresponseArray(jj.getNumberOfJob(),
-						(localTime.getCurrentLocalTime() - jj.getArrivalTimeOfJob() + 1));
+						(environment.getCurrentLocalTime() - jj.getArrivalTimeOfJob() + 1));
 				beenRunJobs = beenRunJobs + jj.getNumberOfJob();
 				getQueueApp().remove(jj);
 				while (!getQueueApp().isEmpty()) {
@@ -219,7 +219,7 @@ public final class EnterpriseApp {
 					capacityOfNode = capacityOfNode - jj.getNumberOfJob();
 					if (capacityOfNode == 0) {
 						addToresponseArray(jj.getNumberOfJob(),
-								(localTime.getCurrentLocalTime() - jj.getArrivalTimeOfJob() + 1));
+								(environment.getCurrentLocalTime() - jj.getArrivalTimeOfJob() + 1));
 						// System.out.println(wJob.numberOfJob);
 						beenRunJobs = beenRunJobs + jj.getNumberOfJob();
 						getQueueApp().remove(0);
@@ -229,7 +229,7 @@ public final class EnterpriseApp {
 											// 1000.0*MIPS
 					{
 						addToresponseArray(copyTedat,
-								(localTime.getCurrentLocalTime() - jj.getArrivalTimeOfJob() + 1));
+								(environment.getCurrentLocalTime() - jj.getArrivalTimeOfJob() + 1));
 						jj.setNumberOfJob(-1 * capacityOfNode);
 						beenRunJobs = beenRunJobs + copyTedat;
 						// System.out.println(copyTedat);
@@ -237,7 +237,7 @@ public final class EnterpriseApp {
 					}
 					if (capacityOfNode > 0) {
 						addToresponseArray(jj.getNumberOfJob(),
-								(localTime.getCurrentLocalTime() - jj.getArrivalTimeOfJob() + 1));
+								(environment.getCurrentLocalTime() - jj.getArrivalTimeOfJob() + 1));
 						// System.out.println(wJob.numberOfJob);
 						beenRunJobs = beenRunJobs + jj.getNumberOfJob();
 						getQueueApp().remove(0);

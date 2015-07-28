@@ -14,7 +14,7 @@ public class BatchJob extends Job {
 	private double[] remain;
 	private int numOfNode;
 	private int[] listOfServer;
-	private Simulator.LocalTime localTime;
+	private Simulator.Environment environment;
 
 	public void setRemainParam(double exp, double ut, int node, int deadln) {
 		if (ut < 1) {
@@ -32,8 +32,8 @@ public class BatchJob extends Job {
 		setDeadline(deadln);
 	}
 
-	public BatchJob(Simulator.LocalTime localTime) {
-		this.localTime = localTime;
+	public BatchJob(Simulator.Environment environment) {
+		this.environment = environment;
 		setStartTime(0);
 		setExitTime(0);
 		setReqTime(0);
@@ -54,8 +54,8 @@ public class BatchJob extends Job {
 	}
 
 	public void jobFinished() {
-		setExitTime(localTime.getCurrentLocalTime());
-		double waitTime = (localTime.getCurrentLocalTime() + 1) - getStartTime();
+		setExitTime(environment.getCurrentLocalTime());
+		double waitTime = (environment.getCurrentLocalTime() + 1) - getStartTime();
 		// - (int)(reqTime);
 		if (waitTime < 0) {
 			System.out.println("Alert: Error in BatchJob\t" + waitTime);

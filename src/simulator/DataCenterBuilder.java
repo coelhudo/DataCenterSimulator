@@ -24,10 +24,10 @@ public class DataCenterBuilder {
 	private List<InteractiveSystem> interactiveSystems = new ArrayList<InteractiveSystem>();
 	private List<EnterpriseSystem> enterpriseSystems = new ArrayList<EnterpriseSystem>();
 	private List<ComputeSystem> computeSystems = new ArrayList<ComputeSystem>();
-	private Simulator.LocalTime localTime;
+	private Simulator.Environment environment;
 
-	public DataCenterBuilder(Simulator.LocalTime localTime) {
-		this.localTime = localTime;
+	public DataCenterBuilder(Simulator.Environment environment) {
+		this.environment = environment;
 	}
 
 	public void buildLogicalDataCenter(String config) {
@@ -45,7 +45,7 @@ public class DataCenterBuilder {
 				if (childNodes.item(i).getNodeType() == Node.ELEMENT_NODE) {
 					if (childNodes.item(i).getNodeName().equalsIgnoreCase("layout")) {
 						String DCLayout = path + "/" + childNodes.item(i).getChildNodes().item(0).getNodeValue().trim();
-						dataCenter = new DataCenter(DCLayout, localTime);
+						dataCenter = new DataCenter(DCLayout, environment);
 					}
 					if (childNodes.item(i).getNodeName().equalsIgnoreCase("System")) {
 						NodeList nodiLst = childNodes.item(i).getChildNodes();
@@ -90,7 +90,7 @@ public class DataCenterBuilder {
 					case 1:
 						System.out.println("------------------------------------------");
 						System.out.println("Initialization of Enterprise System Name=" + name);
-						EnterpriseSystem ES1 = EnterpriseSystem.Create(fileName, localTime, dataCenter);
+						EnterpriseSystem ES1 = EnterpriseSystem.Create(fileName, environment, dataCenter);
 						ES1.setName(name);
 						getEnterpriseSystems().add(ES1);
 						whichSystem = -1;
@@ -98,7 +98,7 @@ public class DataCenterBuilder {
 					case 2:
 						System.out.println("------------------------------------------");
 						System.out.println("Initialization of Interactive System Name=" + name);
-						InteractiveSystem wb1 = InteractiveSystem.Create(fileName, localTime, dataCenter);
+						InteractiveSystem wb1 = InteractiveSystem.Create(fileName, environment, dataCenter);
 						wb1.setName(name);
 						getInteractiveSystems().add(wb1);
 						whichSystem = -1;
@@ -106,7 +106,7 @@ public class DataCenterBuilder {
 					case 3:
 						System.out.println("------------------------------------------");
 						System.out.println("Initialization of HPC System Name=" + name);
-						ComputeSystem CP = ComputeSystem.Create(fileName, localTime, dataCenter);
+						ComputeSystem CP = ComputeSystem.Create(fileName, environment, dataCenter);
 						CP.setName(name);
 						getComputeSystems().add(CP);
 						whichSystem = -1;

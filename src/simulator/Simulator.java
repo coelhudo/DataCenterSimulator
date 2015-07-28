@@ -13,15 +13,66 @@ import simulator.physical.DataCenter;
 
 public class Simulator {
 
-	public class LocalTime {
+	public class Environment {
 		private int localTime = 1;
-
+		private int numberOfMessagesFromDataCenterToSystem = 0;
+		private int numberOfMessagesFromSystemToNodes = 0;
+		
 		public int getCurrentLocalTime() {
 			return localTime;
 		}
 
-		protected void update() {
+		protected void updateCurrentLocalTime() {
 			localTime++;
+		}
+		
+		public void logHPCViolation(String name, Violation slaViolation) {
+			try {
+				SLALogH.write(name + "\t" + getCurrentLocalTime() + "\t" + slaViolation + "\n");
+			} catch (IOException ex) {
+				Logger.getLogger(Simulator.class.getName()).log(Level.SEVERE, null, ex);
+			}
+		}
+
+		public void logEnterpriseViolation(String name, int slaViolationNum) {
+			try {
+				SLALogE.write(name + "\t" + getCurrentLocalTime() + "\t" + slaViolationNum + "\n");
+			} catch (IOException ex) {
+				Logger.getLogger(Simulator.class.getName()).log(Level.SEVERE, null, ex);
+			}
+		}
+
+		public void logInteractiveViolation(String name, int slaViolation) {
+			try {
+				SLALogI.write(name + "\t" + getCurrentLocalTime() + "\t" + slaViolation + "\n");
+			} catch (IOException ex) {
+				Logger.getLogger(Simulator.class.getName()).log(Level.SEVERE, null, ex);
+			}
+		}
+		
+		public void updateNumberOfMessagesFromDataCenterToSystem()
+		{
+			numberOfMessagesFromDataCenterToSystem++;
+		}
+		
+		public int getNumberOfMessagesFromDataCenterToSystem()
+		{
+			return numberOfMessagesFromDataCenterToSystem;
+		}
+		
+		public void updateNumberOfMessagesFromSystemToNodes()
+		{
+			numberOfMessagesFromSystemToNodes++;
+		}
+		
+		public int getNumberOfMessagesFromSystemToNodes()
+		{
+			return numberOfMessagesFromSystemToNodes;
+		}
+		
+		public boolean localTimeByEpoch()
+		{
+			return localTime % EPOCH_APP != 0;
 		}
 	}
 
@@ -43,7 +94,7 @@ public class Simulator {
 			allSystemRunACycle();
 			allSystemCalculatePwr();
 			datacenter.calculatePower();
-			localTime.update();
+			environment.updateCurrentLocalTime();
 			// ////Data Center Level AM MAPE Loop
 			// if(Main.localTime%1==0)
 			// {
@@ -56,10 +107,10 @@ public class Simulator {
 	}
 
 	private Simulator() {
-	}
+	} 
 
 	private void initialize(String config) {
-		DataCenterBuilder dataCenterBuilder = new DataCenterBuilder(localTime);
+		DataCenterBuilder dataCenterBuilder = new DataCenterBuilder(environment);
 		dataCenterBuilder.buildLogicalDataCenter(config);
 
 		datacenter = dataCenterBuilder.getDataCenter();
@@ -84,10 +135,9 @@ public class Simulator {
 
 	}
 
-	private LocalTime localTime = new LocalTime();
-	public int numberOfMessagesFromDataCenterToSystem = 0;
-	public int numberOfMessagesFromSytemToNodes = 0;
-	public int epochApp = 60, epochSys = 120, epochSideApp = 120;
+	private Environment environment = new Environment();
+	private final int EPOCH_APP = 60;
+	public int epochSys = 120, epochSideApp = 120;
 	public List<ResponseTime> responseArray;
 	public List<InteractiveSystem> interactiveSystems;
 	public List<EnterpriseSystem> enterpriseSystems;
@@ -105,31 +155,7 @@ public class Simulator {
 
 	protected int getOverRedTempNumber() {
 		return datacenter.getOverRed();
-	}
-
-	public void logHPCViolation(String name, Violation slaViolation) {
-		try {
-			SLALogH.write(name + "\t" + localTime.getCurrentLocalTime() + "\t" + slaViolation + "\n");
-		} catch (IOException ex) {
-			Logger.getLogger(Simulator.class.getName()).log(Level.SEVERE, null, ex);
-		}
-	}
-
-	public void logEnterpriseViolation(String name, int slaViolationNum) {
-		try {
-			SLALogE.write(name + "\t" + localTime.getCurrentLocalTime() + "\t" + slaViolationNum + "\n");
-		} catch (IOException ex) {
-			Logger.getLogger(Simulator.class.getName()).log(Level.SEVERE, null, ex);
-		}
-	}
-
-	public void logInteractiveViolation(String name, int slaViolation) {
-		try {
-			SLALogI.write(name + "\t" + localTime.getCurrentLocalTime() + "\t" + slaViolation + "\n");
-		} catch (IOException ex) {
-			Logger.getLogger(Simulator.class.getName()).log(Level.SEVERE, null, ex);
-		}
-	}
+	}	
 
 	public DataCenter getDatacenter() {
 		return datacenter;
@@ -249,7 +275,7 @@ public class Simulator {
 			} else {
 				System.out.println("--------------------------------------");
 				System.out.println("finishing Time EnterSys: " + enterpriseSystems.get(i).getName() + " at time: "
-						+ localTime.getCurrentLocalTime());
+						+ environment.getCurrentLocalTime());
 				System.out.println("Computing Power Consumed by  " + enterpriseSystems.get(i).getName() + " is: "
 						+ enterpriseSystems.get(i).getPower());
 				// System.out.println("Number of violation:
@@ -265,7 +291,7 @@ public class Simulator {
 			} else {
 				System.out.println("--------------------------------------");
 				System.out.println("finishing Time Interactive sys:  " + interactiveSystems.get(i).getName()
-						+ " at time: " + localTime.getCurrentLocalTime());
+						+ " at time: " + environment.getCurrentLocalTime());
 				System.out.println(
 						"Interactive sys: Number of violation: " + interactiveSystems.get(i).getAccumolatedViolation());
 				System.out.println("Computing Power Consumed by  " + interactiveSystems.get(i).getName() + " is: "
@@ -283,7 +309,7 @@ public class Simulator {
 			} else {
 				System.out.println("--------------------------------------");
 				System.out.println("finishing Time HPC_Sys:  " + computeSystems.get(i).getName() + " at time: "
-						+ localTime.getCurrentLocalTime());
+						+ environment.getCurrentLocalTime());
 				System.out.println("Total Response Time= " + computeSystems.get(i).finalized());
 				System.out.println("Number of violation HPC : " + computeSystems.get(i).getAccumolatedViolation());
 				System.out.println("Computing Power Consumed by  " + computeSystems.get(i).getName() + " is: "
@@ -347,7 +373,7 @@ public class Simulator {
 	 * responseArray.add(t); return; }
 	 */
 
-	public Simulator.LocalTime getLocalTime() {
-		return localTime;
+	public Simulator.Environment getEnvironment() {
+		return environment;
 	}
 }

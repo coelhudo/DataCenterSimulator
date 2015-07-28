@@ -9,7 +9,7 @@ import simulator.physical.BladeServer;
 import simulator.physical.DataCenter;
 import simulator.EnterpriseSystem;
 import simulator.InteractiveSystem;
-import simulator.Simulator.LocalTime;
+import simulator.Simulator.Environment;
 
 /**
  *
@@ -17,8 +17,8 @@ import simulator.Simulator.LocalTime;
  */
 public class MHR extends ResourceAllocation {
 
-	public MHR(LocalTime localTime, DataCenter dataCenter) {
-		super(localTime, dataCenter);
+	public MHR(Environment environment, DataCenter dataCenter) {
+		super(environment, dataCenter);
 	}
 
 	int[] powIndex = { 15, 31, 16, 11, 36, 10, 30, 6, 20, 21, 35, 32, 17, 26, 25, 7, 27, 12, 42, 37, 41, 5, 2, 1, 0, 22,

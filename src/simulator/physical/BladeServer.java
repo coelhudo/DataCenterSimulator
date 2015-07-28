@@ -48,10 +48,10 @@ public class BladeServer {
 	private int maxExpectedRes = 0;
 	private boolean SLAviolation;
 	////////////////
-	private Simulator.LocalTime localTime;
+	private Simulator.Environment environment;
 
-	public BladeServer(int chasID, Simulator.LocalTime localTime) {
-		this.localTime = localTime;
+	public BladeServer(int chasID, Simulator.Environment environment) {
+		this.environment = environment;
 		setRespTime(0);
 		// if it is -1 means that it is not put in the proper position yet ID
 		// should be set
@@ -210,7 +210,7 @@ public class BladeServer {
 																		// the
 																		// freq
 																		// level
-			Simulator.getInstance().numberOfMessagesFromDataCenterToSystem++;
+			environment.updateNumberOfMessagesFromDataCenterToSystem();
 		}
 		if (getMips() == 0) {
 			System.out.println("Mipss sefr shoodd!!!");
@@ -225,7 +225,7 @@ public class BladeServer {
 			return 0;
 		} else {
 			setMips(getFrequencyLevel()[getCurrentFreqLevel() - 1]);
-			Simulator.getInstance().numberOfMessagesFromDataCenterToSystem++;
+			environment.updateNumberOfMessagesFromDataCenterToSystem();
 		}
 		if (getMips() == 0) {
 			System.out.println("Mipss sefr shoodd!!!");
@@ -283,7 +283,7 @@ public class BladeServer {
 				if ((share / getActiveBatchList().get(i).getUtilization()) > 1) {
 					System.out.println("share more than one!\t" + share_t + "\t" + share + "\t"
 							+ getActiveBatchList().get(i).getUtilization() + "\t"
-							+ Simulator.getInstance().getLocalTime());
+							+ environment.getCurrentLocalTime());
 				}
 				getActiveBatchList().get(i).setIsChangedThisTime(1);
 				ret_done = done(i, share / getActiveBatchList().get(i).getUtilization());
@@ -316,7 +316,7 @@ public class BladeServer {
 		if (share == 0) {
 			System.out.println(
 					"In DONE share== zero00000000000000000000000000000000000000oo,revise the code  need some work!");
-			job.setExitTime(localTime.getCurrentLocalTime());
+			job.setExitTime(environment.getCurrentLocalTime());
 			getActiveBatchList().remove(tmp--);
 			// totalFinishedJob++;
 			return 1;

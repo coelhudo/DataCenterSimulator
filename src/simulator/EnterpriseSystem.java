@@ -16,14 +16,14 @@ import simulator.schedulers.FifoScheduler;
 public class EnterpriseSystem extends GeneralSystem {
 
 	public List<EnterpriseApp> applicationList;
-	private Simulator.LocalTime localTime;
+	private Simulator.Environment environment;
 
-	private EnterpriseSystem(String config, Simulator.LocalTime localTime, DataCenter dataCenter) {
+	private EnterpriseSystem(String config, Simulator.Environment environment, DataCenter dataCenter) {
+		this.environment = environment;
 		setComputeNodeList(new ArrayList<BladeServer>());
 		setComputeNodeIndex(new ArrayList<Integer>());
 		applicationList = new ArrayList<EnterpriseApp>();
-		this.localTime = localTime;
-		setResourceAllocation(new MHR(localTime, dataCenter));
+		setResourceAllocation(new MHR(environment, dataCenter));
 		parseXmlConfig(config);
 		setSLAviolation(0);
 		setScheduler(new FifoScheduler());
@@ -121,17 +121,17 @@ public class EnterpriseSystem extends GeneralSystem {
 				if (childNodes.item(i).getNodeName().equalsIgnoreCase("Scheduler"))
 					;
 				if (childNodes.item(i).getNodeName().equalsIgnoreCase("EnterpriseApplication")) {
-					applicationList.add(new EnterpriseApp(path, childNodes.item(i), this, localTime));
+					applicationList.add(new EnterpriseApp(path, childNodes.item(i), this, environment));
 					applicationList.get(applicationList.size() - 1).parent = this;
 				}
 			}
 		}
 	}
 
-	public static EnterpriseSystem Create(String config, Simulator.LocalTime localTime, DataCenter dataCenter) {
-		EnterpriseSystem enterpriseSytem = new EnterpriseSystem(config, localTime, dataCenter);
+	public static EnterpriseSystem Create(String config, Simulator.Environment environment, DataCenter dataCenter) {
+		EnterpriseSystem enterpriseSytem = new EnterpriseSystem(config, environment, dataCenter);
 		enterpriseSytem.getResourceAllocation().initialResourceAlocator(enterpriseSytem);
-		enterpriseSytem.setAM(new EnterpriseSystemAM(enterpriseSytem, localTime));
+		enterpriseSytem.setAM(new EnterpriseSystemAM(enterpriseSytem, environment));
 
 		return enterpriseSytem;
 	}

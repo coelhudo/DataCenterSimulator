@@ -12,12 +12,12 @@ public class Chassis {
     boolean turnON = true;
     public int chassisID, rackId;
     String chassisType = new String();
-    private Simulator.LocalTime localTime;
+    private Simulator.Environment environment;
     
-    public Chassis(int idArg, Simulator.LocalTime localTime) {
+    public Chassis(int idArg, Simulator.Environment environment) {
         //if it is -1 means this chassis is just a template and not assigned yet
         chassisID = idArg;
-        this.localTime = localTime;
+        this.environment = environment;
     }
 
     public void turnIt(boolean tag) {
@@ -79,7 +79,7 @@ public class Chassis {
         }
         for (int j = 0; j < tedad; j++) {
             for (int k = 0; k < number[j]; k++) {
-                BladeServer bldServ = new BladeServer(-1, localTime);
+                BladeServer bldServ = new BladeServer(-1, environment);
                 //s[j]=s[j].substring(1,s[j].length()-1);
                 bldServ.bladeType = s[j].trim();
                 servers.add(bldServ);

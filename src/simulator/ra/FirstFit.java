@@ -6,7 +6,7 @@ package simulator.ra;
 
 import simulator.EnterpriseSystem;
 import simulator.InteractiveSystem;
-import simulator.Simulator.LocalTime;
+import simulator.Simulator.Environment;
 import simulator.ra.ResourceAllocation;
 import java.util.List;
 import simulator.physical.BladeServer;
@@ -18,8 +18,8 @@ import simulator.physical.DataCenter;
  */
 public class FirstFit extends ResourceAllocation {
 
-    public FirstFit(LocalTime localTime, DataCenter dataCenter) {
-		super(localTime, dataCenter);
+    public FirstFit(Environment environment, DataCenter dataCenter) {
+		super(environment, dataCenter);
 		}
 
 	@Override

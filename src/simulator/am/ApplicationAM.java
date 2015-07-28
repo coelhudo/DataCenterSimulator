@@ -16,13 +16,13 @@ public class ApplicationAM extends GeneralAM {
     int accumulativeSLA = 0;
     //int cpAccumu=0;
     Simulator.StrategyEnum StrategyWsitch = Simulator.StrategyEnum.Green;
-    Simulator.LocalTime localTime;
+    Simulator.Environment environment;
     
-    public ApplicationAM(EnterpriseSystem Sys, EnterpriseApp app, Simulator.LocalTime localTime) {
+    public ApplicationAM(EnterpriseSystem Sys, EnterpriseApp app, Simulator.Environment environment) {
         //dc=dtcenter;
         this.sys = Sys;
         this.app = app;
-        this.localTime = localTime;
+        this.environment = environment;
     }
 
     @Override
@@ -103,7 +103,7 @@ public class ApplicationAM extends GeneralAM {
     //SLA Policy 
 
     public void analysis_SLA(Object violation) {
-        if (localTime.getCurrentLocalTime() % Simulator.getInstance().epochApp != 0)// || Main.localTime<0)
+        if (environment.localTimeByEpoch())
         {
             violationInEpoch = (Integer) violation + violationInEpoch;
             return;
@@ -124,7 +124,7 @@ public class ApplicationAM extends GeneralAM {
                     app.getComputeNodeList().get(j).setReady(1);
                     app.getComputeNodeList().get(j).setMips(1.4);
                     tedad--;
-                    Simulator.getInstance().numberOfMessagesFromDataCenterToSystem++;
+                    environment.updateNumberOfMessagesFromDataCenterToSystem();
                 }
             }
         }
@@ -133,7 +133,7 @@ public class ApplicationAM extends GeneralAM {
 
     // Green policy is applied here:
     public void analysis_GR(Object violation) {
-        if (localTime.getCurrentLocalTime() % Simulator.getInstance().epochApp != 0)// || Main.localTime<0)
+        if (environment.localTimeByEpoch())
         {
             violationInEpoch = (Integer) violation + violationInEpoch;
             return;
@@ -152,7 +152,7 @@ public class ApplicationAM extends GeneralAM {
                     //System.out.print("App:GR  " +app.id);
                     app.getComputeNodeList().get(j).makeItIdle(new EnterpriseJob());
                     //System.out.println("\tIdle\t\t\t\t\t@:"+Main.localTime+"\tNumber of running==  "+app.numberofRunningNode());
-                    Simulator.getInstance().numberOfMessagesFromDataCenterToSystem++;
+                    environment.updateNumberOfMessagesFromDataCenterToSystem();
                 }
             }
         }
@@ -167,11 +167,11 @@ public class ApplicationAM extends GeneralAM {
             int tedad = app.numberofIdleNode() / 2;
             for (int j = 0; j < app.getComputeNodeList().size() && tedad > 0; j++) {
                 if (app.getComputeNodeList().get(j).getReady() == -1) {
-                    System.out.println("App GR: " + app.getID() + "\tactive a Server!\t\t @" + Simulator.getInstance().getLocalTime() + "\tNumber of runinng:  " + app.numberofRunningNode());
+                    System.out.println("App GR: " + app.getID() + "\tactive a Server!\t\t @" + environment.getCurrentLocalTime() + "\tNumber of runinng:  " + app.numberofRunningNode());
                     app.getComputeNodeList().get(j).setReady(1);
                     app.getComputeNodeList().get(j).setMips(1.4);
                     tedad--;
-                    Simulator.getInstance().numberOfMessagesFromDataCenterToSystem++;
+                    environment.updateNumberOfMessagesFromDataCenterToSystem();
                 }
             }
         }
@@ -228,7 +228,7 @@ public class ApplicationAM extends GeneralAM {
 //            System.out.println("no need pitttttttttttttttttttttttttttttttttttttttttttttttttttttttty");
 //            return;
 //        }
-        BladeServer temp = new BladeServer(0, localTime);
+        BladeServer temp = new BladeServer(0, environment);
         temp = app.getComputeNodeList().get(index);
         temp.setSLAPercentage(sys.applicationList.get(targetApp).getSLAPercentage());
         temp.setTimeTreshold(sys.applicationList.get(targetApp).getTimeTreshold());
@@ -236,7 +236,7 @@ public class ApplicationAM extends GeneralAM {
         temp.setReady(1);
         sys.applicationList.get(targetApp).getComputeNodeList().add(temp);
         app.getComputeNodeList().remove(index);
-        System.out.println("app:\t" + app.getID() + " ----------> :\t\t " + targetApp + "\t\t@:" + Simulator.getInstance().getLocalTime() + "\tRunning target node= " + sys.applicationList.get(targetApp).numberofRunningNode() + "\tRunning this node= " + app.numberofRunningNode() + "\tstrtgy= " + StrategyWsitch);
+        System.out.println("app:\t" + app.getID() + " ----------> :\t\t " + targetApp + "\t\t@:" + environment.getCurrentLocalTime() + "\tRunning target node= " + sys.applicationList.get(targetApp).numberofRunningNode() + "\tRunning this node= " + app.numberofRunningNode() + "\tstrtgy= " + StrategyWsitch);
         StrategyWsitch = Simulator.StrategyEnum.SLA;
         return true;
     }
