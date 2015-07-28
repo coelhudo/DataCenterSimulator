@@ -12,10 +12,10 @@ IT infrastructure
 * Autonomic Computing layer to manage Autonomic Managers and its
 configuration and interactions
 
-Archtecture
+Architecture
 ===========
 
-Currently three kinds of systems are available for evalutation:
+Currently three kinds of systems are available for evaluation:
 * Interactive Systems
 * Enterprise Systems
 * HPC (High-performance Computing) Systems
@@ -51,14 +51,16 @@ Energy Efficient Data Centers." CLOUD COMPUTING 2015 (2015): 153.
 References
 ==========
 
-\[1\] [Autonomic Computing]((https://en.wikipedia.org/wiki/Autonomic_computing
-"Autonomic Computing"))
-\[2\] T. Mukherjee, A. Banerjee, G. Varsamopoulos, S. K. S. Gupta, and
+1. [Autonomic Computing](https://en.wikipedia.org/wiki/Autonomic_computing
+   "Autonomic Computing")
+
+2. T. Mukherjee, A. Banerjee, G. Varsamopoulos, S. K. S. Gupta, and
 S. Rungta, Spatio-Temporal Thermal-Aware Job Scheduling to Minimize
 Energy Consumption in Virtualized Heterogeneous Data Centers. Elsevier
 Computer Networks (ComNet), Vol. 53, Issue 17, Pages 2888-2904,
 December, 2009.
-\[3\] J. Moore, J. Chase, P. Ranganathan, and R. Sharma. Making
+
+3. J. Moore, J. Chase, P. Ranganathan, and R. Sharma. Making
 scheduling "cool,": Temperature-aware workload placement in data
 centers. In USENIX Annual Technical Conference, pages 61-75,
 April 2005.
