@@ -8,33 +8,33 @@ public class SimulationResults {
     private int overRedTemperatureNumber;
 
     public SimulationResults(Simulator simulator) {
-	totalPowerConsumption = simulator.getTotalPowerConsumption();
-	environment = simulator.getEnvironment();
-	meanPowerConsumption = totalPowerConsumption / environment.getCurrentLocalTime();
-	overRedTemperatureNumber = simulator.getOverRedTempNumber();
+        totalPowerConsumption = simulator.getTotalPowerConsumption();
+        environment = simulator.getEnvironment();
+        meanPowerConsumption = totalPowerConsumption / environment.getCurrentLocalTime();
+        overRedTemperatureNumber = simulator.getOverRedTempNumber();
     }
 
     public double getTotalPowerConsumption() {
-	return totalPowerConsumption;
+        return totalPowerConsumption;
     }
 
     public double getLocalTime() {
-	return environment.getCurrentLocalTime();
+        return environment.getCurrentLocalTime();
     }
 
     public int getOverRedTemperatureNumber() {
-	return overRedTemperatureNumber;
+        return overRedTemperatureNumber;
     }
 
     public int getNumberOfMessagesFromDataCenterToSystem() {
-	return environment.getNumberOfMessagesFromDataCenterToSystem();
+        return environment.getNumberOfMessagesFromDataCenterToSystem();
     }
 
     public int getNumberOfMessagesFromSystemToNodes() {
-	return environment.getNumberOfMessagesFromSystemToNodes();
+        return environment.getNumberOfMessagesFromSystemToNodes();
     }
 
     public double getMeanPowerConsumption() {
-	return meanPowerConsumption;
+        return meanPowerConsumption;
     }
 }

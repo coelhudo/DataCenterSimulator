@@ -42,156 +42,156 @@ public class GeneralSystem {
     private int numberOfActiveServ = 0;
 
     public void addComputeNodeToSys(BladeServer b) {
-	b.restart();
-	getComputeNodeList().add(b);
+        b.restart();
+        getComputeNodeList().add(b);
     }
 
     void readFromNode(Node node, String path) {
     }
 
     void calculatePower() {
-	for (int i = 0; i < getComputeNodeList().size(); i++) {
-	    setPower(getPower() + getComputeNodeList().get(i).getPower());
-	}
+        for (int i = 0; i < getComputeNodeList().size(); i++) {
+            setPower(getPower() + getComputeNodeList().get(i).getPower());
+        }
 
     }
 
     void parseXmlConfig(String config) {
-	try {
-	    DocumentBuilderFactory docBuilderFactory = DocumentBuilderFactory.newInstance();
-	    DocumentBuilder docBuilder = docBuilderFactory.newDocumentBuilder();
-	    final File file = new File(config);
-	    Document doc = docBuilder.parse(file);
-	    String path = file.getParent();
-	    // normalize text representation
-	    doc.getDocumentElement().normalize();
-	    readFromNode(doc.getDocumentElement(), path);
-	} catch (ParserConfigurationException ex) {
-	    Logger.getLogger(DataCenter.class.getName()).log(Level.SEVERE, null, ex);
-	} catch (SAXException ex) {
-	    Logger.getLogger(DataCenter.class.getName()).log(Level.SEVERE, null, ex);
-	} catch (IOException ex) {
-	    Logger.getLogger(DataCenter.class.getName()).log(Level.SEVERE, null, ex);
-	}
+        try {
+            DocumentBuilderFactory docBuilderFactory = DocumentBuilderFactory.newInstance();
+            DocumentBuilder docBuilder = docBuilderFactory.newDocumentBuilder();
+            final File file = new File(config);
+            Document doc = docBuilder.parse(file);
+            String path = file.getParent();
+            // normalize text representation
+            doc.getDocumentElement().normalize();
+            readFromNode(doc.getDocumentElement(), path);
+        } catch (ParserConfigurationException ex) {
+            Logger.getLogger(DataCenter.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (SAXException ex) {
+            Logger.getLogger(DataCenter.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (IOException ex) {
+            Logger.getLogger(DataCenter.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
 
     public String getName() {
-	return name;
+        return name;
     }
 
     public void setName(String name) {
-	this.name = name;
+        this.name = name;
     }
 
     public ResourceAllocation getResourceAllocation() {
-	return resourceAllocation;
+        return resourceAllocation;
     }
 
     public void setResourceAllocation(ResourceAllocation resourceAllocation) {
-	this.resourceAllocation = resourceAllocation;
+        this.resourceAllocation = resourceAllocation;
     }
 
     public Scheduler getScheduler() {
-	return scheduler;
+        return scheduler;
     }
 
     public void setScheduler(Scheduler scheduler) {
-	this.scheduler = scheduler;
+        this.scheduler = scheduler;
     }
 
     public int getNumberofIdleNode() {
-	return numberofIdleNode;
+        return numberofIdleNode;
     }
 
     public void setNumberofIdleNode(int numberofIdleNode) {
-	this.numberofIdleNode = numberofIdleNode;
+        this.numberofIdleNode = numberofIdleNode;
     }
 
     public int getNumberofNode() {
-	return numberofNode;
+        return numberofNode;
     }
 
     public void setNumberofNode(int numberofNode) {
-	this.numberofNode = numberofNode;
+        this.numberofNode = numberofNode;
     }
 
     public List<Integer> getRackId() {
-	return rackId;
+        return rackId;
     }
 
     public void setRackId(ArrayList<Integer> rackId) {
-	this.rackId = rackId;
+        this.rackId = rackId;
     }
 
     public List<BladeServer> getComputeNodeList() {
-	return ComputeNodeList;
+        return ComputeNodeList;
     }
 
     public void setComputeNodeList(ArrayList<BladeServer> computeNodeList) {
-	ComputeNodeList = computeNodeList;
+        ComputeNodeList = computeNodeList;
     }
 
     public List<Integer> getComputeNodeIndex() {
-	return ComputeNodeIndex;
+        return ComputeNodeIndex;
     }
 
     public void setComputeNodeIndex(ArrayList<Integer> computeNodeIndex) {
-	ComputeNodeIndex = computeNodeIndex;
+        ComputeNodeIndex = computeNodeIndex;
     }
 
     public BufferedReader getBis() {
-	return bis;
+        return bis;
     }
 
     public void setBis(BufferedReader bis) {
-	this.bis = bis;
+        this.bis = bis;
     }
 
     public int getSLAviolation() {
-	return SLAviolation;
+        return SLAviolation;
     }
 
     public void setSLAviolation(int sLAviolation) {
-	SLAviolation = sLAviolation;
+        SLAviolation = sLAviolation;
     }
 
     public boolean isDone() {
-	return sysIsDone;
+        return sysIsDone;
     }
 
     public void markAsDone() {
-	this.sysIsDone = true;
+        this.sysIsDone = true;
     }
 
     public double getPower() {
-	return power;
+        return power;
     }
 
     public void setPower(double power) {
-	this.power = power;
+        this.power = power;
     }
 
     public GeneralAM getAM() {
-	return am;
+        return am;
     }
 
     public void setAM(GeneralAM am) {
-	this.am = am;
+        this.am = am;
     }
 
     public int getAccumolatedViolation() {
-	return accumolatedViolation;
+        return accumolatedViolation;
     }
 
     public void setAccumolatedViolation(int accumolatedViolation) {
-	this.accumolatedViolation = accumolatedViolation;
+        this.accumolatedViolation = accumolatedViolation;
     }
 
     public int getNumberOfActiveServ() {
-	return numberOfActiveServ;
+        return numberOfActiveServ;
     }
 
     public void setNumberOfActiveServ(int numberOfActiveServ) {
-	this.numberOfActiveServ = numberOfActiveServ;
+        this.numberOfActiveServ = numberOfActiveServ;
     }
 }

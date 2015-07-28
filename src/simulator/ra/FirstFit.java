@@ -19,76 +19,76 @@ import simulator.physical.DataCenter;
 public class FirstFit extends ResourceAllocation {
 
     public FirstFit(Environment environment, DataCenter dataCenter) {
-	super(environment, dataCenter);
+        super(environment, dataCenter);
     }
 
     @Override
     public int nextServer(List<BladeServer> bs) {
-	for (int j = 0; j < bs.size(); j++) {
-	    if (bs.get(j).getReady() == 1) {
-		return j;
-	    }
-	}
+        for (int j = 0; j < bs.size(); j++) {
+            if (bs.get(j).getReady() == 1) {
+                return j;
+            }
+        }
 
-	return -2;
+        return -2;
     }
 
     @Override
     public int[] nextServerSys(List<Integer> chassisList) {
-	int[] retValue = new int[2];
-	retValue[0] = -2;
-	retValue[1] = -2;
+        int[] retValue = new int[2];
+        retValue[0] = -2;
+        retValue[1] = -2;
 
-	////////////////////////
-	for (int l = 0; l < chassisList.size(); l++) {
-	    for (int k = 0; k < dataCenter.chassisSet.get(chassisList.get(l)).servers.size(); k++) {
-		if (dataCenter.chassisSet.get(chassisList.get(l)).servers.get(k).getReady() == -3) {
-		    retValue[0] = chassisList.get(l); // chassis id
-		    retValue[1] = k; // Server ID
-		    return retValue;
-		}
-	    }
-	}
-	return retValue;
+        ////////////////////////
+        for (int l = 0; l < chassisList.size(); l++) {
+            for (int k = 0; k < dataCenter.chassisSet.get(chassisList.get(l)).servers.size(); k++) {
+                if (dataCenter.chassisSet.get(chassisList.get(l)).servers.get(k).getReady() == -3) {
+                    retValue[0] = chassisList.get(l); // chassis id
+                    retValue[1] = k; // Server ID
+                    return retValue;
+                }
+            }
+        }
+        return retValue;
     }
 
     @Override
     public int[] allocateSystemLevelServer(List<BladeServer> ComputeNodeList, int list[]) {
-	int j = 0, i = 0;
-	int totalReadyNodes = 0;
-	for (i = 0; i < list.length; i++) {
-	    list[i] = -2;
-	}
-	for (int k = 0; k < ComputeNodeList.size(); k++) {
-	    if (ComputeNodeList.get(k).getReady() == 1) {
-		totalReadyNodes++;
-	    }
-	}
-	if (totalReadyNodes < list.length) {
-	    return list; // there is not enought ready node to accept this job
-	} // in CS which compute node is ready just save its index
-	i = 0;
-	for (j = 0; j < list.length; j++) {
-	    for (; i < ComputeNodeList.size(); i++) {
-		if (ComputeNodeList.get(i).getReady() == 1) // &
-							    // ComputeNodeList.get(i).activeBatchList.size()==0)
-		{
-		    list[j] = i++;
-		    break;
-		}
-	    }
-	}
+        int j = 0, i = 0;
+        int totalReadyNodes = 0;
+        for (i = 0; i < list.length; i++) {
+            list[i] = -2;
+        }
+        for (int k = 0; k < ComputeNodeList.size(); k++) {
+            if (ComputeNodeList.get(k).getReady() == 1) {
+                totalReadyNodes++;
+            }
+        }
+        if (totalReadyNodes < list.length) {
+            return list; // there is not enought ready node to accept this job
+        } // in CS which compute node is ready just save its index
+        i = 0;
+        for (j = 0; j < list.length; j++) {
+            for (; i < ComputeNodeList.size(); i++) {
+                if (ComputeNodeList.get(i).getReady() == 1) // &
+                // ComputeNodeList.get(i).activeBatchList.size()==0)
+                {
+                    list[j] = i++;
+                    break;
+                }
+            }
+        }
 
-	return list;
+        return list;
     }
 
     @Override
     public void resourceAloc(InteractiveSystem WS) {
-	// ToDo
+        // ToDo
     }
 
     @Override
     public void resourceAloc(EnterpriseSystem ES) {
-	// ToDo
+        // ToDo
     }
 }

@@ -16,6 +16,6 @@ public class FifoScheduler implements Scheduler {
 
     @Override
     public Job nextJob(List<? extends Job> queue) {
-	return queue.get(0);
+        return queue.get(0);
     }
 }

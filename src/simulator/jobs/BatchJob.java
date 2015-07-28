@@ -3,8 +3,6 @@ package simulator.jobs;
 import simulator.physical.BladeServer;
 import simulator.physical.DataCenter;
 
-import javax.xml.crypto.Data;
-
 import simulator.Simulator;
 
 public class BatchJob extends Job {
@@ -22,140 +20,140 @@ public class BatchJob extends Job {
     private DataCenter dataCenter;
 
     public void setRemainParam(double exp, double ut, int node, int deadln) {
-	if (ut < 1) {
-	    setUtilization(1);
-	} else {
-	    setUtilization(ut / 100);
-	}
-	setNumOfNode(node);
-	setListOfServer(new int[getNumOfNode()]);
-	setRemain(new double[getNumOfNode()]);
-	for (int i = 0; i < getNumOfNode(); i++) {
-	    getRemain()[i] = exp;
-	}
-	setReqTime(exp);
-	setDeadline(deadln);
+        if (ut < 1) {
+            setUtilization(1);
+        } else {
+            setUtilization(ut / 100);
+        }
+        setNumOfNode(node);
+        setListOfServer(new int[getNumOfNode()]);
+        setRemain(new double[getNumOfNode()]);
+        for (int i = 0; i < getNumOfNode(); i++) {
+            getRemain()[i] = exp;
+        }
+        setReqTime(exp);
+        setDeadline(deadln);
     }
 
     public BatchJob(Simulator.Environment environment, DataCenter dataCenter) {
-	this.environment = environment;
-	this.dataCenter = dataCenter;
-	setStartTime(0);
-	setExitTime(0);
-	setReqTime(0);
-	setExitTime(0);
-	setNumOfNode(0);
-	setDeadline(0);
+        this.environment = environment;
+        this.dataCenter = dataCenter;
+        setStartTime(0);
+        setExitTime(0);
+        setReqTime(0);
+        setExitTime(0);
+        setNumOfNode(0);
+        setDeadline(0);
     }
 
     public boolean allDone() {
-	int i;
-	for (i = 0; i < getNumOfNode(); i++) {
-	    if (getRemain()[i] > 0) {
-		return false;
-	    }
-	}
-	return true;
+        int i;
+        for (i = 0; i < getNumOfNode(); i++) {
+            if (getRemain()[i] > 0) {
+                return false;
+            }
+        }
+        return true;
 
     }
 
     public void jobFinished() {
-	setExitTime(environment.getCurrentLocalTime());
-	double waitTime = (environment.getCurrentLocalTime() + 1) - getStartTime();
-	// - (int)(reqTime);
-	if (waitTime < 0) {
-	    System.out.println("Alert: Error in BatchJob\t" + waitTime);
-	}
+        setExitTime(environment.getCurrentLocalTime());
+        double waitTime = (environment.getCurrentLocalTime() + 1) - getStartTime();
+        // - (int)(reqTime);
+        if (waitTime < 0) {
+            System.out.println("Alert: Error in BatchJob\t" + waitTime);
+        }
 
-	BladeServer server = dataCenter.getServer(getListOfServer()[0]);
-	server.setRespTime(waitTime + server.getRespTime());
-	for (int i = 0; i < getNumOfNode(); i++) {
-	    server = dataCenter.getServer(getListOfServer()[i]);
-	    server.getBlockedBatchList().remove(this);
-	}
+        BladeServer server = dataCenter.getServer(getListOfServer()[0]);
+        server.setRespTime(waitTime + server.getRespTime());
+        for (int i = 0; i < getNumOfNode(); i++) {
+            server = dataCenter.getServer(getListOfServer()[i]);
+            server.getBlockedBatchList().remove(this);
+        }
 
-	return;
+        return;
     }
 
     public int getThisNodeIndex(int serverIndex) {
-	int ki;
-	for (ki = 0; ki < getRemain().length; ki++) {
-	    if (getListOfServer()[ki] == serverIndex) {
-		return ki;
-	    }
-	}
-	return -1;
+        int ki;
+        for (ki = 0; ki < getRemain().length; ki++) {
+            if (getListOfServer()[ki] == serverIndex) {
+                return ki;
+            }
+        }
+        return -1;
     }
 
     public double getStartTime() {
-	return startTime;
+        return startTime;
     }
 
     public void setStartTime(double startTime) {
-	this.startTime = startTime;
+        this.startTime = startTime;
     }
 
     public double getExitTime() {
-	return exitTime;
+        return exitTime;
     }
 
     public void setExitTime(double exitTime) {
-	this.exitTime = exitTime;
+        this.exitTime = exitTime;
     }
 
     public double getDeadline() {
-	return deadline;
+        return deadline;
     }
 
     public void setDeadline(double deadline) {
-	this.deadline = deadline;
+        this.deadline = deadline;
     }
 
     public int getIsChangedThisTime() {
-	return isChangedThisTime;
+        return isChangedThisTime;
     }
 
     public void setIsChangedThisTime(int isChangedThisTime) {
-	this.isChangedThisTime = isChangedThisTime;
+        this.isChangedThisTime = isChangedThisTime;
     }
 
     public double getReqTime() {
-	return reqTime;
+        return reqTime;
     }
 
     public void setReqTime(double reqTime) {
-	this.reqTime = reqTime;
+        this.reqTime = reqTime;
     }
 
     public double getUtilization() {
-	return utilization;
+        return utilization;
     }
 
     public void setUtilization(double utilization) {
-	this.utilization = utilization;
+        this.utilization = utilization;
     }
 
     public double[] getRemain() {
-	return remain;
+        return remain;
     }
 
     public void setRemain(double[] remain) {
-	this.remain = remain;
+        this.remain = remain;
     }
 
     public int getNumOfNode() {
-	return numOfNode;
+        return numOfNode;
     }
 
     public void setNumOfNode(int numOfNode) {
-	this.numOfNode = numOfNode;
+        this.numOfNode = numOfNode;
     }
 
     public int[] getListOfServer() {
-	return listOfServer;
+        return listOfServer;
     }
 
     public void setListOfServer(int[] listOfServer) {
-	this.listOfServer = listOfServer;
+        this.listOfServer = listOfServer;
     }
 }

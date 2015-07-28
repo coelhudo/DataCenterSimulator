@@ -6,23 +6,23 @@ public class EnterpriseJob extends Job {
     private int arrivalTimeOfJob;
 
     public EnterpriseJob() {
-	setNumberOfJob(0);
-	setArrivalTimeOfJob(0);
+        setNumberOfJob(0);
+        setArrivalTimeOfJob(0);
     }
 
     public double getNumberOfJob() {
-	return numberOfJob;
+        return numberOfJob;
     }
 
     public void setNumberOfJob(double numberOfJob) {
-	this.numberOfJob = numberOfJob;
+        this.numberOfJob = numberOfJob;
     }
 
     public int getArrivalTimeOfJob() {
-	return arrivalTimeOfJob;
+        return arrivalTimeOfJob;
     }
 
     public void setArrivalTimeOfJob(int arrivalTimeOfJob) {
-	this.arrivalTimeOfJob = arrivalTimeOfJob;
+        this.arrivalTimeOfJob = arrivalTimeOfJob;
     }
 }

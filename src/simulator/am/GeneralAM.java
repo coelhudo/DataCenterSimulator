@@ -21,18 +21,18 @@ public abstract class GeneralAM {
     public abstract void execution();
 
     public int[] getRecForCoop() {
-	return recForCoop;
+        return recForCoop;
     }
 
     public void setRecForCoop(int[] recForCoop) {
-	this.recForCoop = recForCoop;
+        this.recForCoop = recForCoop;
     }
 
     public double[] getCompPwrApps() {
-	return compPwrApps;
+        return compPwrApps;
     }
 
     public void setCompPwrApps(double[] compPwrApps) {
-	this.compPwrApps = compPwrApps;
+        this.compPwrApps = compPwrApps;
     }
 }
