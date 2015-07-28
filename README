@@ -12,10 +12,10 @@ IT infrastructure
 * Autonomic Computing layer to manage Autonomic Managers and its
 configuration and interactions
 
-Archtecture
+Architecture
 ===========
 
-Currently three kinds of systems are available for evalutation:
+Currently three kinds of systems are available for evaluation:
 * Interactive Systems
 * Enterprise Systems
 * HPC (High-performance Computing) Systems
