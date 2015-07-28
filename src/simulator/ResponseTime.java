@@ -11,26 +11,26 @@ package simulator;
 public class ResponseTime {
 
     private double numberOfJob;
-    private  int responseTime;
+    private int responseTime;
 
     public double getNumberOfJob() {
-        return numberOfJob;
+	return numberOfJob;
     }
 
     public void setNumberOfJob(double numberOfJob) {
-        this.numberOfJob = numberOfJob;
+	this.numberOfJob = numberOfJob;
     }
 
     public int getResponseTime() {
-        return responseTime;
+	return responseTime;
     }
 
     public void setResponseTime(int responseTime) {
-        this.responseTime = responseTime;
+	this.responseTime = responseTime;
     }
 
     ResponseTime() {
-        numberOfJob = 0;
-        responseTime = 0;
+	numberOfJob = 0;
+	responseTime = 0;
     }
 }

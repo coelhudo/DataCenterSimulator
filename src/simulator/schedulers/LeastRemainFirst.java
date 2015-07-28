@@ -17,16 +17,16 @@ public class LeastRemainFirst implements Scheduler {
 
     @Override
     public Job nextJob(List<? extends Job> queue) {
-        double rem = ((BatchJob) queue.get(0)).getReqTime();
-        int index = 0;
-        int minIndex = 0;
-        for (; index < queue.size(); index++) {
-            if (((BatchJob) queue.get(index)).getReqTime() < rem) {
-                rem = ((BatchJob) queue.get(index)).getReqTime();
-                minIndex = index;
-            }
-        }
+	double rem = ((BatchJob) queue.get(0)).getReqTime();
+	int index = 0;
+	int minIndex = 0;
+	for (; index < queue.size(); index++) {
+	    if (((BatchJob) queue.get(index)).getReqTime() < rem) {
+		rem = ((BatchJob) queue.get(index)).getReqTime();
+		minIndex = index;
+	    }
+	}
 
-        return queue.get(minIndex);
+	return queue.get(minIndex);
     }
 }

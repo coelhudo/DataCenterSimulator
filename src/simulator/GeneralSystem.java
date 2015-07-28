@@ -29,7 +29,7 @@ public class GeneralSystem {
     private ResourceAllocation resourceAllocation;
     private Scheduler scheduler;
     private int numberofIdleNode = 0; // idle is change in allocation function
-	private int numberofNode;
+    private int numberofNode;
     private List<Integer> rackId = new ArrayList<Integer>();
     private List<BladeServer> ComputeNodeList;
     private List<Integer> ComputeNodeIndex;
@@ -42,156 +42,156 @@ public class GeneralSystem {
     private int numberOfActiveServ = 0;
 
     public void addComputeNodeToSys(BladeServer b) {
-        b.restart();
-        getComputeNodeList().add(b);
+	b.restart();
+	getComputeNodeList().add(b);
     }
 
     void readFromNode(Node node, String path) {
     }
 
     void calculatePower() {
-        for (int i = 0; i < getComputeNodeList().size(); i++) {
-            setPower(getPower() + getComputeNodeList().get(i).getPower());
-        }
+	for (int i = 0; i < getComputeNodeList().size(); i++) {
+	    setPower(getPower() + getComputeNodeList().get(i).getPower());
+	}
 
     }
 
     void parseXmlConfig(String config) {
-        try {
-            DocumentBuilderFactory docBuilderFactory = DocumentBuilderFactory.newInstance();
-            DocumentBuilder docBuilder = docBuilderFactory.newDocumentBuilder();
-            final File file = new File(config);
-            Document doc = docBuilder.parse(file);
-            String path = file.getParent();
-            // normalize text representation
-            doc.getDocumentElement().normalize();
-            readFromNode(doc.getDocumentElement(), path);
-        } catch (ParserConfigurationException ex) {
-            Logger.getLogger(DataCenter.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (SAXException ex) {
-            Logger.getLogger(DataCenter.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (IOException ex) {
-            Logger.getLogger(DataCenter.class.getName()).log(Level.SEVERE, null, ex);
-        }
+	try {
+	    DocumentBuilderFactory docBuilderFactory = DocumentBuilderFactory.newInstance();
+	    DocumentBuilder docBuilder = docBuilderFactory.newDocumentBuilder();
+	    final File file = new File(config);
+	    Document doc = docBuilder.parse(file);
+	    String path = file.getParent();
+	    // normalize text representation
+	    doc.getDocumentElement().normalize();
+	    readFromNode(doc.getDocumentElement(), path);
+	} catch (ParserConfigurationException ex) {
+	    Logger.getLogger(DataCenter.class.getName()).log(Level.SEVERE, null, ex);
+	} catch (SAXException ex) {
+	    Logger.getLogger(DataCenter.class.getName()).log(Level.SEVERE, null, ex);
+	} catch (IOException ex) {
+	    Logger.getLogger(DataCenter.class.getName()).log(Level.SEVERE, null, ex);
+	}
     }
 
-	public String getName() {
-		return name;
-	}
+    public String getName() {
+	return name;
+    }
 
-	public void setName(String name) {
-		this.name = name;
-	}
+    public void setName(String name) {
+	this.name = name;
+    }
 
-	public ResourceAllocation getResourceAllocation() {
-		return resourceAllocation;
-	}
+    public ResourceAllocation getResourceAllocation() {
+	return resourceAllocation;
+    }
 
-	public void setResourceAllocation(ResourceAllocation resourceAllocation) {
-		this.resourceAllocation = resourceAllocation;
-	}
+    public void setResourceAllocation(ResourceAllocation resourceAllocation) {
+	this.resourceAllocation = resourceAllocation;
+    }
 
-	public Scheduler getScheduler() {
-		return scheduler;
-	}
+    public Scheduler getScheduler() {
+	return scheduler;
+    }
 
-	public void setScheduler(Scheduler scheduler) {
-		this.scheduler = scheduler;
-	}
+    public void setScheduler(Scheduler scheduler) {
+	this.scheduler = scheduler;
+    }
 
-	public int getNumberofIdleNode() {
-		return numberofIdleNode;
-	}
+    public int getNumberofIdleNode() {
+	return numberofIdleNode;
+    }
 
-	public void setNumberofIdleNode(int numberofIdleNode) {
-		this.numberofIdleNode = numberofIdleNode;
-	}
+    public void setNumberofIdleNode(int numberofIdleNode) {
+	this.numberofIdleNode = numberofIdleNode;
+    }
 
-	public int getNumberofNode() {
-		return numberofNode;
-	}
+    public int getNumberofNode() {
+	return numberofNode;
+    }
 
-	public void setNumberofNode(int numberofNode) {
-		this.numberofNode = numberofNode;
-	}
+    public void setNumberofNode(int numberofNode) {
+	this.numberofNode = numberofNode;
+    }
 
-	public List<Integer> getRackId() {
-		return rackId;
-	}
+    public List<Integer> getRackId() {
+	return rackId;
+    }
 
-	public void setRackId(ArrayList<Integer> rackId) {
-		this.rackId = rackId;
-	}
+    public void setRackId(ArrayList<Integer> rackId) {
+	this.rackId = rackId;
+    }
 
-	public List<BladeServer> getComputeNodeList() {
-		return ComputeNodeList;
-	}
+    public List<BladeServer> getComputeNodeList() {
+	return ComputeNodeList;
+    }
 
-	public void setComputeNodeList(ArrayList<BladeServer> computeNodeList) {
-		ComputeNodeList = computeNodeList;
-	}
+    public void setComputeNodeList(ArrayList<BladeServer> computeNodeList) {
+	ComputeNodeList = computeNodeList;
+    }
 
-	public List<Integer> getComputeNodeIndex() {
-		return ComputeNodeIndex;
-	}
+    public List<Integer> getComputeNodeIndex() {
+	return ComputeNodeIndex;
+    }
 
-	public void setComputeNodeIndex(ArrayList<Integer> computeNodeIndex) {
-		ComputeNodeIndex = computeNodeIndex;
-	}
+    public void setComputeNodeIndex(ArrayList<Integer> computeNodeIndex) {
+	ComputeNodeIndex = computeNodeIndex;
+    }
 
-	public BufferedReader getBis() {
-		return bis;
-	}
+    public BufferedReader getBis() {
+	return bis;
+    }
 
-	public void setBis(BufferedReader bis) {
-		this.bis = bis;
-	}
+    public void setBis(BufferedReader bis) {
+	this.bis = bis;
+    }
 
-	public int getSLAviolation() {
-		return SLAviolation;
-	}
+    public int getSLAviolation() {
+	return SLAviolation;
+    }
 
-	public void setSLAviolation(int sLAviolation) {
-		SLAviolation = sLAviolation;
-	}
+    public void setSLAviolation(int sLAviolation) {
+	SLAviolation = sLAviolation;
+    }
 
-	public boolean isDone() {
-		return sysIsDone;
-	}
+    public boolean isDone() {
+	return sysIsDone;
+    }
 
-	public void markAsDone() {
-		this.sysIsDone = true;
-	}
+    public void markAsDone() {
+	this.sysIsDone = true;
+    }
 
-	public double getPower() {
-		return power;
-	}
+    public double getPower() {
+	return power;
+    }
 
-	public void setPower(double power) {
-		this.power = power;
-	}
+    public void setPower(double power) {
+	this.power = power;
+    }
 
-	public GeneralAM getAM() {
-		return am;
-	}
+    public GeneralAM getAM() {
+	return am;
+    }
 
-	public void setAM(GeneralAM am) {
-		this.am = am;
-	}
+    public void setAM(GeneralAM am) {
+	this.am = am;
+    }
 
-	public int getAccumolatedViolation() {
-		return accumolatedViolation;
-	}
+    public int getAccumolatedViolation() {
+	return accumolatedViolation;
+    }
 
-	public void setAccumolatedViolation(int accumolatedViolation) {
-		this.accumolatedViolation = accumolatedViolation;
-	}
+    public void setAccumolatedViolation(int accumolatedViolation) {
+	this.accumolatedViolation = accumolatedViolation;
+    }
 
-	public int getNumberOfActiveServ() {
-		return numberOfActiveServ;
-	}
+    public int getNumberOfActiveServ() {
+	return numberOfActiveServ;
+    }
 
-	public void setNumberOfActiveServ(int numberOfActiveServ) {
-		this.numberOfActiveServ = numberOfActiveServ;
-	}
+    public void setNumberOfActiveServ(int numberOfActiveServ) {
+	this.numberOfActiveServ = numberOfActiveServ;
+    }
 }

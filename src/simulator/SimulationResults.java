@@ -2,39 +2,39 @@ package simulator;
 
 public class SimulationResults {
 
-	private double totalPowerConsumption;
-	private Simulator.Environment environment;
-	private double meanPowerConsumption;
-	private int overRedTemperatureNumber;
+    private double totalPowerConsumption;
+    private Simulator.Environment environment;
+    private double meanPowerConsumption;
+    private int overRedTemperatureNumber;
 
-	public SimulationResults(Simulator simulator) {
-		totalPowerConsumption = simulator.getTotalPowerConsumption();
-		environment = simulator.getEnvironment();
-		meanPowerConsumption = totalPowerConsumption / environment.getCurrentLocalTime();
-		overRedTemperatureNumber = simulator.getOverRedTempNumber();
-	}
+    public SimulationResults(Simulator simulator) {
+	totalPowerConsumption = simulator.getTotalPowerConsumption();
+	environment = simulator.getEnvironment();
+	meanPowerConsumption = totalPowerConsumption / environment.getCurrentLocalTime();
+	overRedTemperatureNumber = simulator.getOverRedTempNumber();
+    }
 
-	public double getTotalPowerConsumption() {
-		return totalPowerConsumption;
-	}
+    public double getTotalPowerConsumption() {
+	return totalPowerConsumption;
+    }
 
-	public double getLocalTime() {
-		return environment.getCurrentLocalTime();
-	}
+    public double getLocalTime() {
+	return environment.getCurrentLocalTime();
+    }
 
-	public int getOverRedTemperatureNumber() {
-		return overRedTemperatureNumber;
-	}
+    public int getOverRedTemperatureNumber() {
+	return overRedTemperatureNumber;
+    }
 
-	public int getNumberOfMessagesFromDataCenterToSystem() {
-		return environment.getNumberOfMessagesFromDataCenterToSystem();
-	}
+    public int getNumberOfMessagesFromDataCenterToSystem() {
+	return environment.getNumberOfMessagesFromDataCenterToSystem();
+    }
 
-	public int getNumberOfMessagesFromSystemToNodes() {
-		return environment.getNumberOfMessagesFromSystemToNodes();
-	}
+    public int getNumberOfMessagesFromSystemToNodes() {
+	return environment.getNumberOfMessagesFromSystemToNodes();
+    }
 
-	public double getMeanPowerConsumption() {
-		return meanPowerConsumption;
-	}
+    public double getMeanPowerConsumption() {
+	return meanPowerConsumption;
+    }
 }
