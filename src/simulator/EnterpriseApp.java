@@ -2,7 +2,6 @@ package simulator;
 
 import simulator.physical.BladeServer;
 import simulator.physical.DataCenter;
-import simulator.Simulator.LocalTime;
 import simulator.am.ApplicationAM;
 import simulator.jobs.EnterpriseJob;
 import simulator.schedulers.Scheduler;

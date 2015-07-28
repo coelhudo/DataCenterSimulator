@@ -83,7 +83,8 @@ public class InteractiveSystemAM extends GeneralAM {
 	}
 
 	public void calcSysUtility() {
-		int localUtil = 0, globalUtil;
+		int localUtil = 0;
+		//int globalUtil;
 		for (int i = 0; i < IS.getUserList().size(); i++) {
 			localUtil += IS.getUserList().get(i).getAM().util;
 		}

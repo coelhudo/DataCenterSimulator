@@ -1,11 +1,7 @@
 package simulator.am;
 
-import java.io.IOException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import simulator.EnterpriseSystem;
 import simulator.Simulator;
-import simulator.Violation;
 
 public class EnterpriseSystemAM extends GeneralAM {
 
@@ -98,7 +94,8 @@ public class EnterpriseSystemAM extends GeneralAM {
 	}
 
 	public void calcSysUtility() {
-		int localUtil = 0, globalUtil;
+		int localUtil = 0;
+		//int globalUtil;
 		for (int i = 0; i < ES.applicationList.size(); i++) {
 			localUtil += ES.applicationList.get(i).getAM().getUtil();
 		}

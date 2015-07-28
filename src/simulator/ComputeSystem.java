@@ -1,13 +1,5 @@
 package simulator;
 
-import simulator.schedulers.LeastRemainFirst;
-import simulator.physical.BladeServer;
-import simulator.physical.DataCenter;
-import simulator.Simulator.LocalTime;
-import simulator.am.ComputeSystemAM;
-import simulator.ra.MHR;
-import simulator.jobs.BatchJob;
-import simulator.schedulers.Scheduler;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
@@ -17,7 +9,17 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import org.w3c.dom.*;
+
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
+
+import simulator.am.ComputeSystemAM;
+import simulator.jobs.BatchJob;
+import simulator.physical.BladeServer;
+import simulator.physical.DataCenter;
+import simulator.ra.MHR;
+import simulator.schedulers.LeastRemainFirst;
+import simulator.schedulers.Scheduler;
 
 public class ComputeSystem extends GeneralSystem {
 

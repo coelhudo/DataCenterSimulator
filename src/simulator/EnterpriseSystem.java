@@ -7,7 +7,6 @@ import java.util.List;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
-import simulator.Simulator.LocalTime;
 import simulator.am.EnterpriseSystemAM;
 import simulator.physical.BladeServer;
 import simulator.physical.DataCenter;

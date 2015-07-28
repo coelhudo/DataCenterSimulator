@@ -5,7 +5,6 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
 import simulator.Simulator;
-import simulator.Simulator.LocalTime;
 
 public class Chassis {
 

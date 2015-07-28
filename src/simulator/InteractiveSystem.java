@@ -64,7 +64,6 @@ public class InteractiveSystem extends GeneralSystem {
 			// AM.planning();
 			// AM.execution();
 		}
-		int readingResult = forwardingJob();
 		int finishedBundle = 0;
 		for (int i = 0; i < getUserList().size(); i++) {
 			// TODO: if each bundle needs some help should ask and here
