@@ -56,7 +56,7 @@ public class InteractiveSystem extends GeneralSystem {
     // Return False means everything is finished!
 
     boolean runAcycle() throws IOException {
-        if (getUserList().size() > 0 & checkForViolation()) // &
+        if (!getUserList().isEmpty() & checkForViolation()) // &
         // Main.localTime%Main.epochSys==0)
         {
             // AM.monitor();
@@ -109,7 +109,7 @@ public class InteractiveSystem extends GeneralSystem {
 
     int readWL() {
         int retReadLogfile = readingLogFile();
-        if (getWaitingQueueWL().size() > 0) {
+        if (!getWaitingQueueWL().isEmpty()) {
             if (getWaitingQueueWL().get(0).arrivalTime == environment.getCurrentLocalTime()
                     | getWaitingQueueWL().get(0).arrivalTime < environment.getCurrentLocalTime()) {
                 return 1;

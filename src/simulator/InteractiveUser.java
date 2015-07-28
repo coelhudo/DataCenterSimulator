@@ -109,7 +109,7 @@ public class InteractiveUser {
 
     int readWebJob() {
         int retReadLogfile = readingLogFile();
-        if (getQueueWL().size() > 0) {
+        if (!getQueueWL().isEmpty()) {
             if (getQueueWL().get(0).getArrivalTimeOfJob() == environment.getCurrentLocalTime()
                     | getQueueWL().get(0).getArrivalTimeOfJob() < environment.getCurrentLocalTime()) {
                 return 1;
@@ -183,7 +183,7 @@ public class InteractiveUser {
                         (environment.getCurrentLocalTime() - jj.getArrivalTimeOfJob() + 1));
                 beenRunJobs = beenRunJobs + jj.getNumberOfJob();
                 getQueueWL().remove(jj);
-                while (getQueueWL().size() > 0) {
+                while (!getQueueWL().isEmpty()) {
                     // jj=queueWL.get(0);
                     jj = (InteractiveJob) parent.getScheduler().nextJob(getQueueWL());
                     double copyTedat = capacityOfNode;
