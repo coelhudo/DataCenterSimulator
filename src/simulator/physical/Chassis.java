@@ -1,6 +1,8 @@
 package simulator.physical;
 
 import java.util.ArrayList;
+import java.util.List;
+
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
@@ -8,9 +10,9 @@ import simulator.Simulator;
 
 public class Chassis {
 
-    public ArrayList<BladeServer> servers = new ArrayList<BladeServer>();
+    private List<BladeServer> servers = new ArrayList<BladeServer>();
     boolean turnON = true;
-    public int chassisID, rackId;
+    private int chassisID, rackId;
     String chassisType = new String();
     private Simulator.Environment environment;
 
@@ -20,11 +22,27 @@ public class Chassis {
         chassisID = idArg;
         this.environment = environment;
     }
+    
+    public List<BladeServer> getServers() {
+        return servers;
+    }
 
     public void turnIt(boolean tag) {
         turnON = tag;
     }
+    
+    public int getRackID() {
+        return rackId;
+    }
+    
+    public void setRackID(int rackId) {
+        this.rackId = rackId;
+    }
 
+    public int getChassisID() {
+        return chassisID;
+    }
+    
     public boolean isReady() {
         int RDY = 0;
         for (int i = 0; i < servers.size(); i++) {

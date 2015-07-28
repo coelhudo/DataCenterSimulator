@@ -78,17 +78,17 @@ public class DataCenterAM extends GeneralAM {
          * start a timer: “block timer” end if available nodes in system
          * allocate one node to the SOS sender
          */
-        if (getBlockTimer() == 0 && computeSystems.get(0).blocked) // time to
+        if (getBlockTimer() == 0 && computeSystems.get(0).isBlocked()) // time to
         // unblock
         // hpc system
         {
-            computeSystems.get(0).blocked = false;
+            computeSystems.get(0).setBlocked(false);
             computeSystems.get(0).makeSystemaUnBlocked();
             System.out.println("unblocked a system@ time : \t" + environment.getCurrentLocalTime());
         }
         if (isSlowDownFromCooler()) {
-            if (!computeSystems.get(0).blocked) {
-                computeSystems.get(0).blocked = true;
+            if (!computeSystems.get(0).isBlocked()) {
+                computeSystems.get(0).setBlocked(true);
                 setBlockTimer(120);
                 System.out.println("A system is blocked and we have this # of systems:  " + computeSystems.size()
                         + "@ time= \t" + environment.getCurrentLocalTime());

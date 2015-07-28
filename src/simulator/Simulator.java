@@ -148,7 +148,7 @@ public class Simulator {
     private DataCenter datacenter;
 
     protected double getTotalPowerConsumption() {
-        return datacenter.totalPowerConsumption;
+        return datacenter.getTotalPowerConsumption();
     }
 
     protected int getOverRedTempNumber() {
@@ -217,10 +217,11 @@ public class Simulator {
     }
 
     public void GetStat() {
+        //FIXME: 50?
         for (int i = 0; i < 50; i++) {
-            datacenter.chassisSet.get(i).servers.get(0).setReady(-1);
-            datacenter.chassisSet.get(i).servers.get(0).setMips(1);// 1.04 1.4;
-            datacenter.chassisSet.get(i).servers.get(0).setCurrentCPU(100);
+            datacenter.getChassisSet().get(i).getServers().get(0).setReady(-1);
+            datacenter.getChassisSet().get(i).getServers().get(0).setMips(1);// 1.04 1.4;
+            datacenter.getChassisSet().get(i).getServers().get(0).setCurrentCPU(100);
         }
         datacenter.calculatePower();
     }

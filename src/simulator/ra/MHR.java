@@ -69,8 +69,8 @@ public class MHR extends ResourceAllocation {
             if (l != chassisList.size()) // in found chassis looking for a ready
             // server
             {
-                for (int k = 0; k < dataCenter.chassisSet.get(chassisList.get(l)).servers.size(); k++) {
-                    if (dataCenter.chassisSet.get(chassisList.get(l)).servers.get(k).getReady() == -3) {
+                for (int k = 0; k < dataCenter.getChassisSet().get(chassisList.get(l)).getServers().size(); k++) {
+                    if (dataCenter.getChassisSet().get(chassisList.get(l)).getServers().get(k).getReady() == -3) {
                         retValue[0] = chassisList.get(l); // chassis id
                         retValue[1] = k; // Server ID
                         return retValue;

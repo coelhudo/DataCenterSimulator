@@ -22,19 +22,19 @@ import simulator.Simulator;
 
 public final class DataCenter {
 
-    public int overRed = 0;
-    public double totalPowerConsumption = 0;
-    public Cooler cooler1 = new Cooler();
-    public List<Chassis> chassisSet = new ArrayList<Chassis>();
-    public List<BladeServer> BSTemp = new ArrayList<BladeServer>();
-    public List<Chassis> CHSTemp = new ArrayList<Chassis>();
-    public int redTemperature;
-    public FileOutputStream fos;
-    public OutputStreamWriter oos;
-    public int numbOfSofarChassis = 0;
-    public int numOfServerSoFar = 0;
-    public double[][] D;
-    public DataCenterAM am;
+    private int overRed = 0;
+    private double totalPowerConsumption = 0;
+    private Cooler cooler1 = new Cooler();
+    private List<Chassis> chassisSet = new ArrayList<Chassis>();
+    private List<BladeServer> BSTemp = new ArrayList<BladeServer>();
+    private List<Chassis> CHSTemp = new ArrayList<Chassis>();
+    private int redTemperature;
+    private FileOutputStream fos;
+    private OutputStreamWriter oos;
+    private int numbOfSofarChassis = 0;
+    private int numOfServerSoFar = 0;
+    private double[][] D;
+    private DataCenterAM am;
     ///////////////////////////
     private Simulator.Environment environment;
 
@@ -55,11 +55,11 @@ public final class DataCenter {
     }
 
     int getServerIndex(int i) {
-        return i % chassisSet.get(0).servers.size();
+        return i % chassisSet.get(0).getServers().size();
     }
 
     int getChasisIndex(int i) {
-        return i / chassisSet.get(0).servers.size();
+        return i / chassisSet.get(0).getServers().size();
     }
 
     void parseXmlConfig(String config) {
@@ -123,27 +123,27 @@ public final class DataCenter {
     }
 
     void setUpChassis(Chassis ch) {
-        for (int j = 0; j < ch.servers.size(); j++) {
+        for (int j = 0; j < ch.getServers().size(); j++) {
             int i;
             for (i = 0; i < BSTemp.size(); i++) {
-                if (ch.servers.get(j).bladeType.trim().equalsIgnoreCase(BSTemp.get(i).bladeType.trim())) {
+                if (ch.getServers().get(j).bladeType.trim().equalsIgnoreCase(BSTemp.get(i).bladeType.trim())) {
                     break;
                 }
             }
             if (i == BSTemp.size()) {
                 System.out.println("DataCenter.java");
             }
-            ch.servers.get(j).setFrequencyLevel(new double[BSTemp.get(i).getFrequencyLevel().length]);
-            ch.servers.get(j).setPowerBusy(new double[BSTemp.get(i).getPowerBusy().length]);
-            ch.servers.get(j).setPowerIdle(new double[BSTemp.get(i).getPowerIdle().length]);
+            ch.getServers().get(j).setFrequencyLevel(new double[BSTemp.get(i).getFrequencyLevel().length]);
+            ch.getServers().get(j).setPowerBusy(new double[BSTemp.get(i).getPowerBusy().length]);
+            ch.getServers().get(j).setPowerIdle(new double[BSTemp.get(i).getPowerIdle().length]);
             for (int p = 0; p < BSTemp.get(i).getFrequencyLevel().length; p++) {
-                ch.servers.get(j).getFrequencyLevel()[p] = BSTemp.get(i).getFrequencyLevel()[p];
-                ch.servers.get(j).getPowerBusy()[p] = BSTemp.get(i).getPowerBusy()[p];
-                ch.servers.get(j).getPowerIdle()[p] = BSTemp.get(i).getPowerIdle()[p];
+                ch.getServers().get(j).getFrequencyLevel()[p] = BSTemp.get(i).getFrequencyLevel()[p];
+                ch.getServers().get(j).getPowerBusy()[p] = BSTemp.get(i).getPowerBusy()[p];
+                ch.getServers().get(j).getPowerIdle()[p] = BSTemp.get(i).getPowerIdle()[p];
             }
-            ch.servers.get(j).setIdleConsumption(BSTemp.get(i).getIdleConsumption());
-            ch.servers.get(j).setServerID(j);
-            ch.servers.get(j).bladeType = BSTemp.get(i).bladeType;
+            ch.getServers().get(j).setIdleConsumption(BSTemp.get(i).getIdleConsumption());
+            ch.getServers().get(j).setServerID(j);
+            ch.getServers().get(j).bladeType = BSTemp.get(i).bladeType;
         }
 
     }
@@ -190,10 +190,10 @@ public final class DataCenter {
                 }
                 Chassis ch1 = new Chassis(numbOfSofarChassis + kk, environment);
                 cloneChassis(ch1, CHSTemp.get(k));
-                ch1.rackId = rackID;
-                for (int inx = 0; inx < ch1.servers.size(); inx++) {
-                    ch1.servers.get(inx).setChassisID(numbOfSofarChassis + kk);
-                    ch1.servers.get(inx).setRackId(rackID);
+                ch1.setRackID(rackID);
+                for (int inx = 0; inx < ch1.getServers().size(); inx++) {
+                    ch1.getServers().get(inx).setChassisID(numbOfSofarChassis + kk);
+                    ch1.getServers().get(inx).setRackId(rackID);
                 }
                 chassisSet.add(ch1);
             }
@@ -203,24 +203,24 @@ public final class DataCenter {
 
     void cloneChassis(Chassis A, Chassis B) // A<--B
     {
-        for (int i = 0; i < B.servers.size(); i++) {
+        for (int i = 0; i < B.getServers().size(); i++) {
             BladeServer a = new BladeServer(i, environment);
             //
-            a.setFrequencyLevel(new double[B.servers.get(i).getFrequencyLevel().length]);
-            a.setPowerBusy(new double[B.servers.get(i).getPowerBusy().length]);
-            a.setPowerIdle(new double[B.servers.get(i).getPowerIdle().length]);
-            int numberOfMIPSlevels = B.servers.get(i).getFrequencyLevel().length;
+            a.setFrequencyLevel(new double[B.getServers().get(i).getFrequencyLevel().length]);
+            a.setPowerBusy(new double[B.getServers().get(i).getPowerBusy().length]);
+            a.setPowerIdle(new double[B.getServers().get(i).getPowerIdle().length]);
+            int numberOfMIPSlevels = B.getServers().get(i).getFrequencyLevel().length;
             //
-            A.servers.add(a);
+            A.getServers().add(a);
 
             for (int p = 0; p < numberOfMIPSlevels; p++) {
-                A.servers.get(i).getFrequencyLevel()[p] = B.servers.get(i).getFrequencyLevel()[p];
-                A.servers.get(i).getPowerBusy()[p] = B.servers.get(i).getPowerBusy()[p];
-                A.servers.get(i).getPowerIdle()[p] = B.servers.get(i).getPowerIdle()[p];
+                A.getServers().get(i).getFrequencyLevel()[p] = B.getServers().get(i).getFrequencyLevel()[p];
+                A.getServers().get(i).getPowerBusy()[p] = B.getServers().get(i).getPowerBusy()[p];
+                A.getServers().get(i).getPowerIdle()[p] = B.getServers().get(i).getPowerIdle()[p];
             }
-            A.servers.get(i).setIdleConsumption(B.servers.get(i).getIdleConsumption());
-            A.servers.get(i).bladeType = B.servers.get(i).bladeType;
-            A.servers.get(i).setServerID(numOfServerSoFar);
+            A.getServers().get(i).setIdleConsumption(B.getServers().get(i).getIdleConsumption());
+            A.getServers().get(i).bladeType = B.getServers().get(i).bladeType;
+            A.getServers().get(i).setServerID(numOfServerSoFar);
             numOfServerSoFar++;
         }
     }
@@ -232,7 +232,7 @@ public final class DataCenter {
         double maxTemp = 0;
         for (int i = 0; i < m; i++) {
             double temp = chassisSet.get(i).power();
-            // if(chassisSet.get(i).servers.get(0).currentCPU!=0)
+            // if(chassisSet.get(i).getServers().get(0).currentCPU!=0)
             // System.out.println(chassisSet.get(i).servers.get(0).currentCPU +"
             // \ttime ="+Main.localTime +" \t chassi
             // id="+chassisSet.get(i).chassisID );
@@ -335,10 +335,22 @@ public final class DataCenter {
     }
 
     public BladeServer getServer(int i) {
-        return chassisSet.get(getChasisIndex(i)).servers.get(getServerIndex(i));
+        return chassisSet.get(getChasisIndex(i)).getServers().get(getServerIndex(i));
     }
 
     public BladeServer getServer(int indexChassis, int indexServer) {
-        return chassisSet.get(indexChassis).servers.get(indexServer);
+        return chassisSet.get(indexChassis).getServers().get(indexServer);
+    }
+
+    public List<Chassis> getChassisSet() {
+        return chassisSet;
+    }
+
+    public void setChassisSet(List<Chassis> chassisSet) {
+        this.chassisSet = chassisSet;
+    }
+
+    public double getTotalPowerConsumption() {
+        return totalPowerConsumption;
     }
 }

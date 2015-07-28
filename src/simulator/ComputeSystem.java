@@ -29,7 +29,7 @@ public class ComputeSystem extends GeneralSystem {
     int totalJob = 0;// , totalFinishedJob=0;
     int minNode, maxNode;
     double inputTime;
-    public boolean blocked = false;
+    private boolean blocked = false;
     File f;
     int predictNumberofNode;
     int priority;
@@ -62,7 +62,7 @@ public class ComputeSystem extends GeneralSystem {
             }
             j = new BatchJob(environment, dataCenter);
         }
-        if (!blocked) {
+        if (!isBlocked()) {
             // feeds jobs from waiting list to servers as much as possible
             getFromWaitinglist();
             for (int temp = 0; temp < getComputeNodeList().size(); temp++) {
@@ -75,11 +75,11 @@ public class ComputeSystem extends GeneralSystem {
             // "+numberOfFinishedJob+"\t LocalTime="+Main.localTime);
         }
         // if is blocked and was not belocked before make it blocked
-        if (blocked && !allNodesAreBlocked()) {
+        if (isBlocked() && !allNodesAreBlocked()) {
             makeSystemaBlocked();
         }
 
-        if (!blocked) {
+        if (!isBlocked()) {
             getAM().monitor();
             getAM().analysis(0);
         }
@@ -328,5 +328,13 @@ public class ComputeSystem extends GeneralSystem {
         computeSystem.getResourceAllocation().initialResourceAloc(computeSystem);
         computeSystem.setAM(new ComputeSystemAM(computeSystem, environment));
         return computeSystem;
+    }
+
+    public boolean isBlocked() {
+        return blocked;
+    }
+
+    public void setBlocked(boolean blocked) {
+        this.blocked = blocked;
     }
 }

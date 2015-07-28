@@ -15,7 +15,7 @@ import simulator.schedulers.FifoScheduler;
 
 public class EnterpriseSystem extends GeneralSystem {
 
-    public List<EnterpriseApp> applicationList;
+    private List<EnterpriseApp> applicationList;
     private Simulator.Environment environment;
 
     private EnterpriseSystem(String config, Simulator.Environment environment, DataCenter dataCenter) {
@@ -29,6 +29,10 @@ public class EnterpriseSystem extends GeneralSystem {
         setScheduler(new FifoScheduler());
     }
 
+    public List<EnterpriseApp> getApplications() {
+        return applicationList;
+    }
+    
     public boolean checkForViolation() {
         for (int i = 0; i < applicationList.size(); i++) {
             if (applicationList.get(i).getSLAviolation() > 0) {

@@ -32,9 +32,9 @@ public class ApplicationAM extends GeneralAM {
         getPercentageOfComputingPwr();
         /// Check if its neighborhood are not happy to see if it can help or
         /// not!
-        for (int i = 0; i < sys.applicationList.size(); i++) {
+        for (int i = 0; i < sys.getApplications().size(); i++) {
             if (sys.getAM().getRecForCoop()[i] == 1) {
-                if (app.numberOfWaitingJobs() < sys.applicationList.get(i).numberOfWaitingJobs()) {// this
+                if (app.numberOfWaitingJobs() < sys.getApplications().get(i).numberOfWaitingJobs()) {// this
                     // app
                     // can
                     // generously
@@ -262,20 +262,20 @@ public class ApplicationAM extends GeneralAM {
         // }
         BladeServer temp = new BladeServer(0, environment);
         temp = app.getComputeNodeList().get(index);
-        temp.setSLAPercentage(sys.applicationList.get(targetApp).getSLAPercentage());
-        temp.setTimeTreshold(sys.applicationList.get(targetApp).getTimeTreshold());
+        temp.setSLAPercentage(sys.getApplications().get(targetApp).getSLAPercentage());
+        temp.setTimeTreshold(sys.getApplications().get(targetApp).getTimeTreshold());
         temp.setMips(1.4);
         temp.setReady(1);
-        sys.applicationList.get(targetApp).getComputeNodeList().add(temp);
+        sys.getApplications().get(targetApp).getComputeNodeList().add(temp);
         app.getComputeNodeList().remove(index);
         System.out.println("app:\t" + app.getID() + " ----------> :\t\t " + targetApp + "\t\t@:"
                 + environment.getCurrentLocalTime() + "\tRunning target node= "
-                + sys.applicationList.get(targetApp).numberofRunningNode() + "\tRunning this node= "
+                + sys.getApplications().get(targetApp).numberofRunningNode() + "\tRunning this node= "
                 + app.numberofRunningNode() + "\tstrtgy= " + StrategyWsitch);
         StrategyWsitch = Simulator.StrategyEnum.SLA;
         return true;
     }
-
+    
     public double getUtil() {
         return util;
     }

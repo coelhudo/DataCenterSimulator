@@ -3,6 +3,8 @@ package simulator.tests;
 import static org.junit.Assert.*;
 
 import java.io.IOException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import org.junit.Test;
 
@@ -30,7 +32,7 @@ public class SimulatorTest {
             final int expectedNumberMessagesFromSystemToNodes = 198253;
             assertEquals(expectedNumberMessagesFromSystemToNodes, results.getNumberOfMessagesFromSystemToNodes());
         } catch (IOException e) {
-            e.printStackTrace();
+            Logger.getLogger(SimulatorTest.class.getName()).log(Level.SEVERE, "Something went wrong during the test", e);
         }
     }
 
