@@ -107,7 +107,7 @@ public class Simulator {
     public Simulator() {
     }
 
-    private void initialize(String config) {
+    public void initialize(String config) {
         DataCenterBuilder dataCenterBuilder = new DataCenterBuilder(environment);
         dataCenterBuilder.buildLogicalDataCenter(config);
 
