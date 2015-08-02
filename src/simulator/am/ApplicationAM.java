@@ -1,13 +1,17 @@
 package simulator.am;
 
-import simulator.physical.BladeServer;
+import java.util.logging.Logger;
+
 import simulator.EnterpriseApp;
 import simulator.EnterpriseSystem;
 import simulator.Simulator;
 import simulator.jobs.EnterpriseJob;
+import simulator.physical.BladeServer;
 
 public class ApplicationAM extends GeneralAM {
 
+    private static final Logger LOGGER = Logger.getLogger(ApplicationAM.class.getName());
+    
     EnterpriseSystem sys;
     EnterpriseApp app;// =new application(null, null);
     static int violationInEpoch = 0;
@@ -63,7 +67,7 @@ public class ApplicationAM extends GeneralAM {
         // U= a x+ b y a=b=1
         setUtil(x + app.getSLAviolation());
         // util=sigmoid(util);
-        // System.out.println(util);
+        // LOGGER.info(util);
     }
 
     public double getPercentageOfComputingPwr() {
@@ -103,13 +107,13 @@ public class ApplicationAM extends GeneralAM {
             app.setSLAviolation((int) Math.ceil(tmp * 100.0 / totalJob) - 100 + percentage);
             // app.NumofViolation=app.NumofViolation+app.SLAviolation;
             app.setNumofViolation(app.getNumofViolation() + 1);
-            // System.out.println("SLA violation Application\t"+app.SLAviolation
+            // LOGGER.info("SLA violation Application\t"+app.SLAviolation
             // + Main.localTime);
         }
         accumulativeSLA = accumulativeSLA + app.getSLAviolation();
         sys.getAM().SlaApps[app.getID()] = sys.getAM().SlaApps[app.getID()] + accumulativeSLA;
         // cpAccumu=cpAccumu+app.SLAviolation;
-        // System.out.println("ACCCUMU \t"+accumulativeSLA);
+        // LOGGER.info("ACCCUMU \t"+accumulativeSLA);
     }
 
     @Override
@@ -141,7 +145,7 @@ public class ApplicationAM extends GeneralAM {
             // Policy 4: if SLA violation then unshrink active server
             for (int j = 0; j < app.getComputeNodeList().size() && tedad > 0; j++) {
                 if (app.getComputeNodeList().get(j).getReady() == -1) {
-                    // System.out.println("Application:SLA" +app.id +"\tActive
+                    // LOGGER.info("Application:SLA" +app.id +"\tActive
                     // one Server!\t\t "+"Number of runinng:
                     // "+app.numberofRunningNode());
                     app.getComputeNodeList().get(j).setReady(1);
@@ -175,7 +179,7 @@ public class ApplicationAM extends GeneralAM {
                         && app.getComputeNodeList().get(j).getCurrentCPU() == 0) {
                     // System.out.print("App:GR " +app.id);
                     app.getComputeNodeList().get(j).makeItIdle(new EnterpriseJob());
-                    // System.out.println("\tIdle\t\t\t\t\t@:"+Main.localTime+"\tNumber
+                    // LOGGER.info("\tIdle\t\t\t\t\t@:"+Main.localTime+"\tNumber
                     // of running== "+app.numberofRunningNode());
                     environment.updateNumberOfMessagesFromDataCenterToSystem();
                 }
@@ -193,7 +197,7 @@ public class ApplicationAM extends GeneralAM {
             int tedad = app.numberofIdleNode() / 2;
             for (int j = 0; j < app.getComputeNodeList().size() && tedad > 0; j++) {
                 if (app.getComputeNodeList().get(j).getReady() == -1) {
-                    System.out.println("App GR: " + app.getID() + "\tactive a Server!\t\t @"
+                    LOGGER.info("App GR: " + app.getID() + "\tactive a Server!\t\t @"
                             + environment.getCurrentLocalTime() + "\tNumber of runinng:  " + app.numberofRunningNode());
                     app.getComputeNodeList().get(j).setReady(1);
                     app.getComputeNodeList().get(j).setMips(1.4);
@@ -212,7 +216,7 @@ public class ApplicationAM extends GeneralAM {
         // return;
         //// if(!sys.isThereFreeNodeforApp())
         //// return;
-        //// System.out.println("there is no node available in system! ");
+        //// LOGGER.info("there is no node available in system! ");
         //
         // if(!app.isThereIdleNode()
         // ||(sys.AM.compPwrApps[app.id]/(Main.epochSideApp*2*sys.applicationList.get(app.id).ComputeNodeList.size())>=0.5))//
@@ -256,7 +260,7 @@ public class ApplicationAM extends GeneralAM {
         // AMEnterpriseSys temp2=(AMEnterpriseSys)sys.AM;
         // if(temp2.allocationVector[targetApp]<0)
         // {
-        // System.out.println("no need
+        // LOGGER.info("no need
         // pitttttttttttttttttttttttttttttttttttttttttttttttttttttttty");
         // return;
         // }
@@ -268,7 +272,7 @@ public class ApplicationAM extends GeneralAM {
         temp.setReady(1);
         sys.getApplications().get(targetApp).getComputeNodeList().add(temp);
         app.getComputeNodeList().remove(index);
-        System.out.println("app:\t" + app.getID() + " ----------> :\t\t " + targetApp + "\t\t@:"
+        LOGGER.info("app:\t" + app.getID() + " ----------> :\t\t " + targetApp + "\t\t@:"
                 + environment.getCurrentLocalTime() + "\tRunning target node= "
                 + sys.getApplications().get(targetApp).numberofRunningNode() + "\tRunning this node= "
                 + app.numberofRunningNode() + "\tstrtgy= " + StrategyWsitch);

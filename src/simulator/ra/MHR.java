@@ -5,11 +5,12 @@
 package simulator.ra;
 
 import java.util.List;
-import simulator.physical.BladeServer;
-import simulator.physical.DataCenter;
+
 import simulator.EnterpriseSystem;
 import simulator.InteractiveSystem;
 import simulator.Simulator.Environment;
+import simulator.physical.BladeServer;
+import simulator.physical.DataCenter;
 
 /**
  *

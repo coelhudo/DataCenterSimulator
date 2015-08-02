@@ -1,10 +1,5 @@
 package simulator;
 
-import simulator.physical.BladeServer;
-import simulator.physical.DataCenter;
-import simulator.am.ApplicationAM;
-import simulator.jobs.EnterpriseJob;
-import simulator.schedulers.Scheduler;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
@@ -14,14 +9,25 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
-import org.w3c.dom.*;
+
+import org.w3c.dom.Document;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
+
+import simulator.am.ApplicationAM;
+import simulator.jobs.EnterpriseJob;
+import simulator.physical.BladeServer;
+import simulator.schedulers.Scheduler;
 
 public final class EnterpriseApp {
 
+    private static final Logger LOGGER = Logger.getLogger(EnterpriseApp.class.getName());
+    
     private int id = 0;
     // int usedNode=0;
     private int maxProc = 0;
@@ -110,10 +116,10 @@ public final class EnterpriseApp {
             j.setNumberOfJob(Double.parseDouble(numbers[1]));
             getQueueApp().add(j);
             return 1;
-            // System.out.println("Readed inputTime= " + inputTime + " Job
+            // LOGGER.info("Readed inputTime= " + inputTime + " Job
             // Reqested Time=" + j.startTime+" Total job so far="+ total);
         } catch (IOException ex) {
-            System.out.println("readJOB EXC readJOB false ");
+            LOGGER.info("readJOB EXC readJOB false ");
             Logger.getLogger(Scheduler.class.getName()).log(Level.SEVERE, null, ex);
             return -2;
         }
@@ -130,7 +136,7 @@ public final class EnterpriseApp {
             }
         }
         // ending condition means there is no job in the logfile
-        // System.out.println(" One dispacher !!! in the readWebJob enterprise
+        // LOGGER.info(" One dispacher !!! in the readWebJob enterprise
         // "+retReadLogfile);
         return retReadLogfile;
     }
@@ -194,7 +200,7 @@ public final class EnterpriseApp {
             if (capacityOfNode == 0) {
                 addToresponseArray(jj.getNumberOfJob(),
                         (environment.getCurrentLocalTime() - jj.getArrivalTimeOfJob() + 1));
-                // System.out.println((Main.localTime-wJob.arrivalTimeOfJob+1)*(wJob.numberOfJob)
+                // LOGGER.info((Main.localTime-wJob.arrivalTimeOfJob+1)*(wJob.numberOfJob)
                 // +"\t"+wJob.numberOfJob+"\t q len="+queueLength);
                 beenRunJobs = beenRunJobs + jj.getNumberOfJob();
                 getQueueApp().remove(jj);
@@ -206,7 +212,7 @@ public final class EnterpriseApp {
                         (environment.getCurrentLocalTime() - jj.getArrivalTimeOfJob() + 1));
                 beenRunJobs = beenRunJobs + capacityOfNode + jj.getNumberOfJob();
                 jj.setNumberOfJob(-1 * capacityOfNode);
-                // System.out.println(1000.0*Mips);
+                // LOGGER.info(1000.0*Mips);
                 break;
             }
             if (capacityOfNode > 0) // still we have capacity to run the jobs
@@ -224,7 +230,7 @@ public final class EnterpriseApp {
                     if (capacityOfNode == 0) {
                         addToresponseArray(jj.getNumberOfJob(),
                                 (environment.getCurrentLocalTime() - jj.getArrivalTimeOfJob() + 1));
-                        // System.out.println(wJob.numberOfJob);
+                        // LOGGER.info(wJob.numberOfJob);
                         beenRunJobs = beenRunJobs + jj.getNumberOfJob();
                         getQueueApp().remove(0);
                         break;
@@ -236,13 +242,13 @@ public final class EnterpriseApp {
                                 (environment.getCurrentLocalTime() - jj.getArrivalTimeOfJob() + 1));
                         jj.setNumberOfJob(-1 * capacityOfNode);
                         beenRunJobs = beenRunJobs + copyTedat;
-                        // System.out.println(copyTedat);
+                        // LOGGER.info(copyTedat);
                         break;
                     }
                     if (capacityOfNode > 0) {
                         addToresponseArray(jj.getNumberOfJob(),
                                 (environment.getCurrentLocalTime() - jj.getArrivalTimeOfJob() + 1));
-                        // System.out.println(wJob.numberOfJob);
+                        // LOGGER.info(wJob.numberOfJob);
                         beenRunJobs = beenRunJobs + jj.getNumberOfJob();
                         getQueueApp().remove(0);
                     }
@@ -260,13 +266,13 @@ public final class EnterpriseApp {
             }
             // usedNode=usedNode+ComputeNodeList.size();
         } else if (beenRunJobs < 0) {
-            System.out.println("it is impossible!!!!  Enterprise BoN");
+            LOGGER.info("it is impossible!!!!  Enterprise BoN");
         } else if (beenRunJobs > 0) {
             int k = 0;
             for (k = 0; k < numberofReadyNodes; k++) {
                 int serID = parent.getResourceAllocation().nextServer(getComputeNodeList());
                 if (serID == -2) {
-                    System.out.println("enterPrise BoN : servID =-2\t " + k + "\t" + numberofReadyNodes);
+                    LOGGER.info("enterPrise BoN : servID =-2\t " + k + "\t" + numberofReadyNodes);
                     break;
                 }
                 double CPUspace = (100 - getComputeNodeList().get(serID).getCurrentCPU())
@@ -288,7 +294,7 @@ public final class EnterpriseApp {
                     break;
                 }
             }
-            // System.out.println(k +"\t Running node= "+numberofReadyNodes);
+            // LOGGER.info(k +"\t Running node= "+numberofReadyNodes);
             // usedNode=usedNode+k;
         }
         // AM.monitor();
@@ -326,7 +332,7 @@ public final class EnterpriseApp {
                 break;
             }
         }
-        System.out.println("MIIIIPPPSSS    " + getComputeNodeList().get(i).getMips());
+        LOGGER.info("MIIIIPPPSSS    " + getComputeNodeList().get(i).getMips());
     }
 
     void addToresponseArray(double num, int time) {
@@ -346,11 +352,11 @@ public final class EnterpriseApp {
             doc.getDocumentElement().normalize();
             readFromNode(doc.getDocumentElement(), file.getParent());
         } catch (ParserConfigurationException ex) {
-            Logger.getLogger(DataCenter.class.getName()).log(Level.SEVERE, null, ex);
+            LOGGER.severe(ex.getMessage());
         } catch (SAXException ex) {
-            Logger.getLogger(DataCenter.class.getName()).log(Level.SEVERE, null, ex);
+            LOGGER.severe(ex.getMessage());
         } catch (IOException ex) {
-            Logger.getLogger(DataCenter.class.getName()).log(Level.SEVERE, null, ex);
+            LOGGER.severe(ex.getMessage());
         }
     }
 
@@ -371,7 +377,7 @@ public final class EnterpriseApp {
                         logFile = new File(fileName);
                         bis = new BufferedReader(new InputStreamReader(new FileInputStream(logFile)));
                     } catch (IOException e) {
-                        System.out.println("Uh oh, got an IOException error!" + e.getMessage());
+                        LOGGER.info("Uh oh, got an IOException error!" + e.getMessage());
                     }
                 }
                 if (childNodes.item(i).getNodeName().equalsIgnoreCase("MaxNumberOfRequest")) {
@@ -478,7 +484,7 @@ public final class EnterpriseApp {
      * i=0;i<Main.responseList.size();i++) { meanResponsetime=meanResponsetime+
      * Main.responseList.get(i).responseTime*Main.responseList.get(i).
      * numberOfJob; totalJob+=Main.responseList.get(i).numberOfJob;
-     * //System.out.println("respTime="+serverList.get(i).respTime+
+     * //LOGGER.info("respTime="+serverList.get(i).respTime+
      * "\t TotalJob="+serverList.get(i).totalJob); }
      * 
      * return meanResponsetime;///totalJob; }

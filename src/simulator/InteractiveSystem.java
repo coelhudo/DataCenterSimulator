@@ -1,11 +1,5 @@
 package simulator;
 
-import simulator.physical.BladeServer;
-import simulator.physical.DataCenter;
-import simulator.am.InteractiveSystemAM;
-import simulator.ra.MHR;
-import simulator.schedulers.FifoScheduler;
-import simulator.schedulers.Scheduler;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
@@ -14,10 +8,21 @@ import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import org.w3c.dom.*;
+
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
+
+import simulator.am.InteractiveSystemAM;
+import simulator.physical.BladeServer;
+import simulator.physical.DataCenter;
+import simulator.ra.MHR;
+import simulator.schedulers.FifoScheduler;
+import simulator.schedulers.Scheduler;
 
 public class InteractiveSystem extends GeneralSystem {
 
+    private static final Logger LOGGER = Logger.getLogger(InteractiveSystem.class.getName());
+    
     private ArrayList<InteractiveUser> UserList;
     private ArrayList<InteractiveUser> waitingQueueWL;
     File logFile;
@@ -146,10 +151,10 @@ public class InteractiveSystem extends GeneralSystem {
             test.setNumberofBasicNode(Integer.parseInt(numbers[7]));
             getWaitingQueueWL().add(test);
             return 1;
-            // System.out.println("Readed inputTime= " + inputTime + " Job
+            // LOGGER.info("Readed inputTime= " + inputTime + " Job
             // Reqested Time=" + j.startTime+" Total job so far="+ total);
         } catch (IOException ex) {
-            System.out.println("readJOB EXC readJOB false ");
+            LOGGER.info("readJOB EXC readJOB false ");
             Logger.getLogger(Scheduler.class.getName()).log(Level.SEVERE, null, ex);
             return -2;
         }
@@ -181,11 +186,11 @@ public class InteractiveSystem extends GeneralSystem {
     // doc.getDocumentElement().normalize();
     // readFromNode(doc.getDocumentElement());
     // } catch (ParserConfigurationException ex) {
-    // Logger.getLogger(DataCenter.class.getName()).log(Level.SEVERE, null, ex);
+    // LOGGER.severe(ex.getMessage());
     // } catch (SAXException ex) {
-    // Logger.getLogger(DataCenter.class.getName()).log(Level.SEVERE, null, ex);
+    // LOGGER.severe(ex.getMessage());
     // } catch (IOException ex) {
-    // Logger.getLogger(DataCenter.class.getName()).log(Level.SEVERE, null, ex);
+    // LOGGER.severe(ex.getMessage());
     // }
     // }
     @Override
@@ -215,7 +220,7 @@ public class InteractiveSystem extends GeneralSystem {
                         logFile = new File(fileName);
                         setBis(new BufferedReader(new InputStreamReader(new FileInputStream(logFile))));
                     } catch (IOException e) {
-                        System.out.println("Uh oh, got an IOException error!" + e.getMessage());
+                        LOGGER.info("Uh oh, got an IOException error!" + e.getMessage());
                     } finally {
                     }
                 }

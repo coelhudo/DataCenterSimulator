@@ -3,6 +3,7 @@ package simulator;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Logger;
 
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
@@ -15,6 +16,8 @@ import simulator.schedulers.FifoScheduler;
 
 public class EnterpriseSystem extends GeneralSystem {
 
+    private static final Logger LOGGER = Logger.getLogger(EnterpriseSystem.class.getName());
+    
     private List<EnterpriseApp> applicationList;
     private Simulator.Environment environment;
 
@@ -84,9 +87,9 @@ public class EnterpriseSystem extends GeneralSystem {
             // re-resourcealocation
             {
                 setNumberofIdleNode(applicationList.get(i).getComputeNodeList().size() + getNumberofIdleNode());
-                System.out.println("Number of violation in " + applicationList.get(i).getID() + "th application=  "
+                LOGGER.info("Number of violation in " + applicationList.get(i).getID() + "th application=  "
                         + applicationList.get(i).getNumofViolation());
-                // System.out.println("application "+i +"is destroyed and there
+                // LOGGER.info("application "+i +"is destroyed and there
                 // are: "+(applicationList.size()-1)+" left");
                 applicationList.get(i).destroyApplication();
                 applicationList.remove(i);

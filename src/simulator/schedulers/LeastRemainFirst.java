@@ -4,10 +4,10 @@
  */
 package simulator.schedulers;
 
+import java.util.List;
+
 import simulator.jobs.BatchJob;
 import simulator.jobs.Job;
-import simulator.schedulers.Scheduler;
-import java.util.List;
 
 /**
  *

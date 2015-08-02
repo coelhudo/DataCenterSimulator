@@ -23,6 +23,8 @@ import simulator.schedulers.Scheduler;
 
 public class ComputeSystem extends GeneralSystem {
 
+    private static final Logger LOGGER = Logger.getLogger(ComputeSystem.class.getName());
+    
     Violation SLAViolationType; // different type of violation:
     // ComputeNodeShortage, DEADLINEPASSED
     ArrayList<BatchJob> waitingList;
@@ -71,7 +73,7 @@ public class ComputeSystem extends GeneralSystem {
             for (int temp = 0; temp < getComputeNodeList().size(); temp++) {
                 numberOfFinishedJob = getComputeNodeList().get(temp).getTotalFinishedJob() + numberOfFinishedJob;
             }
-            // System.out.println("total "+totalJob+ "\t finished Job=
+            // LOGGER.info("total "+totalJob+ "\t finished Job=
             // "+numberOfFinishedJob+"\t LocalTime="+Main.localTime);
         }
         // if is blocked and was not belocked before make it blocked
@@ -83,7 +85,7 @@ public class ComputeSystem extends GeneralSystem {
             getAM().monitor();
             getAM().analysis(0);
         }
-        // System.out.println(Main.localTime +"\t"+totalJob+
+        // LOGGER.info(Main.localTime +"\t"+totalJob+
         // "\t"+numberOfFinishedJob);
         if (numberOfFinishedJob == totalJob) {
             markAsDone();
@@ -129,7 +131,7 @@ public class ComputeSystem extends GeneralSystem {
             int[] listServer = new int[job.getNumOfNode()];
             if (getResourceAllocation().allocateSystemLevelServer(getComputeNodeList(), indexes)[0] == -2) {
                 setSLAviolation(Violation.COMPUTE_NODE_SHORTAGE);
-                // System.out.println("COMPUTE NODE SHORTAGE in
+                // LOGGER.info("COMPUTE NODE SHORTAGE in
                 // getFromWaitingList");
                 return 0; // can not find the bunch of requested node for the
                 // job
@@ -161,7 +163,7 @@ public class ComputeSystem extends GeneralSystem {
             // Check if dealine is missed
             if (environment.getCurrentLocalTime() - job.getStartTime() > job.getDeadline()) {
                 setSLAviolation(Violation.DEADLINEPASSED);
-                // System.out.println("DEADLINE PASSED in getFromWaitingList");
+                // LOGGER.info("DEADLINE PASSED in getFromWaitingList");
             }
             ////////////////////////////
             waitingList.remove(job);
@@ -226,11 +228,11 @@ public class ComputeSystem extends GeneralSystem {
             boolean add = waitingList.add(j);
             // number of jobs which are copied on # of requested nodes
             totalJob = totalJob + 1 /* +Integer.parseInt(numbers[3]) */;
-            // System.out.println("Readed inputTime= " + inputTime + " Job
+            // LOGGER.info("Readed inputTime= " + inputTime + " Job
             // Reqested Time=" + j.startTime+" Total job so far="+ total);
             return add;
         } catch (IOException ex) {
-            System.out.println("readJOB EXC readJOB false ");
+            LOGGER.info("readJOB EXC readJOB false ");
             Logger.getLogger(Scheduler.class.getName()).log(Level.SEVERE, null, ex);
             return false;
         }
@@ -252,7 +254,7 @@ public class ComputeSystem extends GeneralSystem {
                         f = new File(fileName);
                         setBis(new BufferedReader(new InputStreamReader(new FileInputStream(f))));
                     } catch (IOException e) {
-                        System.out.println("Uh oh, got an IOException error!" + e.getMessage());
+                        LOGGER.info("Uh oh, got an IOException error!" + e.getMessage());
                     } finally {
                     }
                 }
@@ -306,7 +308,7 @@ public class ComputeSystem extends GeneralSystem {
                 break;
             }
         }
-        System.out.println("activeone node in compuet system MIIIIPPPSSS    " + getComputeNodeList().get(i).getMips());
+        LOGGER.info("activeone node in compuet system MIIIIPPPSSS    " + getComputeNodeList().get(i).getMips());
     }
 
     double finalized() {

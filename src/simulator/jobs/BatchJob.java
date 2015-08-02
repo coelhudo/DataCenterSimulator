@@ -1,12 +1,15 @@
 package simulator.jobs;
 
+import java.util.logging.Logger;
+
+import simulator.Simulator;
 import simulator.physical.BladeServer;
 import simulator.physical.DataCenter;
 
-import simulator.Simulator;
-
 public class BatchJob extends Job {
 
+    private static final Logger LOGGER = Logger.getLogger(BatchJob.class.getName());
+    
     private double startTime;
     private double exitTime;
     private double deadline;
@@ -62,7 +65,7 @@ public class BatchJob extends Job {
         double waitTime = (environment.getCurrentLocalTime() + 1) - getStartTime();
         // - (int)(reqTime);
         if (waitTime < 0) {
-            System.out.println("Alert: Error in BatchJob\t" + waitTime);
+            LOGGER.info("Alert: Error in BatchJob\t" + waitTime);
         }
 
         BladeServer server = dataCenter.getServer(getListOfServer()[0]);

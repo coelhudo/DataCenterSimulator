@@ -36,7 +36,7 @@ public class InteractiveSystemAM extends GeneralAM {
             // serverProvisioning();
             // kalmanIndex++;
             // int i=ES.applicationList.get(0).occupiedPercentage();
-            // System.out.println("occupied\t"+i);
+            // LOGGER.info("occupied\t"+i);
             // if(i>50)
             // ES.numberOfActiveServ=ES.applicationList.get(0).numberofRunningNode()+1;
             // else
@@ -122,7 +122,7 @@ public class InteractiveSystemAM extends GeneralAM {
                     bishtar = 0;
                 }
                 getAllocationVector()[i] = 1 + bishtar;// +(int)Math.abs((Math.floor((wlkIntens-wkIntensApp)/wlkIntens)));
-                // System.out.println("Switching Strategy in Application =" +i
+                // LOGGER.info("Switching Strategy in Application =" +i
                 // +" to SLA ");
                 IS.getUserList().get(i).getAM().StrategyWsitch = Simulator.StrategyEnum.SLA;// SLA
                 // strategy
@@ -130,13 +130,13 @@ public class InteractiveSystemAM extends GeneralAM {
             // if cpmPwr < 50% & violation is less then release a server
             if (percentCompPwr[i] <= 0.5 && accuSLA[i] == 0) {
                 getAllocationVector()[i] = -1;
-                // System.out.println("Releasing a Server");
+                // LOGGER.info("Releasing a Server");
             }
             // if cpmPwr < 50% & violation is ziyad then nothing no server
             // exchange
             if (percentCompPwr[i] < 0.5 && accuSLA[i] > 0) {
                 getAllocationVector()[i] = 1;
-                // System.out.println("Switching Strategy in Application =" +i
+                // LOGGER.info("Switching Strategy in Application =" +i
                 // +" to SLA ");
                 IS.getUserList().get(i).getAM().StrategyWsitch = Simulator.StrategyEnum.SLA; // SLA
                 // strategy
@@ -148,18 +148,18 @@ public class InteractiveSystemAM extends GeneralAM {
             if (IS.getUserList().get(i).getMinProc() > valNode || IS.getUserList().get(i).getMaxProc() < valNode) {
                 // if(ES.applicationList.get(i).minProc>
                 // ES.applicationList.get(i).ComputeNodeList.size()+allocationVector[i])
-                // System.out.println("error requested less than min in AM
+                // LOGGER.info("error requested less than min in AM
                 // system ");
                 // if(ES.applicationList.get(i).maxProc<
                 // ES.applicationList.get(i).ComputeNodeList.size()+allocationVector[i])
-                // System.out.println("error requested more than maxxxx in AM
+                // LOGGER.info("error requested more than maxxxx in AM
                 // system ");
                 getAllocationVector()[i] = 0;
             }
             requestedNd = requestedNd + getAllocationVector()[i];
         }
         // if(requestedNd>ES.numberofIdleNode)
-        // System.out.println("IN AM system can not provide server reqested=
+        // LOGGER.info("IN AM system can not provide server reqested=
         // "+requestedNd);
     }
     // determining aloc/release vector and active strategy
@@ -189,7 +189,7 @@ public class InteractiveSystemAM extends GeneralAM {
             IS.getUserList().get(i).getAM().StrategyWsitch = Simulator.StrategyEnum.Green; // Green
             // Strategy
             if (accuSLA[i] > 0) {
-                // System.out.println("Switching Strategy in Application =" +i
+                // LOGGER.info("Switching Strategy in Application =" +i
                 // +" to SLA ");
                 IS.getUserList().get(i).getAM().StrategyWsitch = Simulator.StrategyEnum.SLA;// SLA
                 // strategy
@@ -209,7 +209,7 @@ public class InteractiveSystemAM extends GeneralAM {
     // Math.floor(numberOfPredictedReq[kalmanIndex]*5*ES.applicationList.get(0).NumberofBasicNode/
     // ES.applicationList.get(0).MaxNumberOfRequest);
     // if (ES.numberOfActiveServ > ES.numberofNode) {
-    // System.out.println("In ES : is gonna alocate this number of servers:
+    // LOGGER.info("In ES : is gonna alocate this number of servers:
     // "+(ES.numberOfActiveServ-ES.numberofNode));
     // }
     // }

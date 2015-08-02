@@ -1,16 +1,18 @@
 package simulator.am;
 
-import simulator.Simulator.StrategyEnum;
-
 import java.util.List;
+import java.util.logging.Logger;
 
 import simulator.ComputeSystem;
 import simulator.EnterpriseSystem;
 import simulator.InteractiveSystem;
 import simulator.Simulator;
+import simulator.Simulator.StrategyEnum;
 
 public class DataCenterAM extends GeneralAM {
 
+    private static final Logger LOGGER = Logger.getLogger(DataCenterAM.class.getName());
+    
     int[] SoSCS;
     int[] SoSIS;
     int[] SoSES;
@@ -64,11 +66,11 @@ public class DataCenterAM extends GeneralAM {
         for (int i = 0; i < SLAVioCS.length; i++) {
             if (SLAVioCS[i] > 0 && computeSystems.get(i).getAM().strategy == Simulator.StrategyEnum.Green) {
                 computeSystems.get(i).getAM().strategy = Simulator.StrategyEnum.SLA;
-                System.out.println(
+                LOGGER.info(
                         "AM in DC Switch HPC system: " + i + " to SLA  @  " + environment.getCurrentLocalTime());
             }
             if (SLAVioCS[i] == 0 && computeSystems.get(i).getAM().strategy == Simulator.StrategyEnum.SLA) {
-                System.out.println(
+                LOGGER.info(
                         "AM in DC Switch HPC system: " + i + "  to Green @  " + environment.getCurrentLocalTime());
                 computeSystems.get(i).getAM().strategy = Simulator.StrategyEnum.Green;
             }
@@ -84,18 +86,18 @@ public class DataCenterAM extends GeneralAM {
         {
             computeSystems.get(0).setBlocked(false);
             computeSystems.get(0).makeSystemaUnBlocked();
-            System.out.println("unblocked a system@ time : \t" + environment.getCurrentLocalTime());
+            LOGGER.info("unblocked a system@ time : \t" + environment.getCurrentLocalTime());
         }
         if (isSlowDownFromCooler()) {
             if (!computeSystems.get(0).isBlocked()) {
                 computeSystems.get(0).setBlocked(true);
                 setBlockTimer(120);
-                System.out.println("A system is blocked and we have this # of systems:  " + computeSystems.size()
+                LOGGER.info("A system is blocked and we have this # of systems:  " + computeSystems.size()
                         + "@ time= \t" + environment.getCurrentLocalTime());
                 // Every system should work in Greeeen
                 computeSystems.get(1).getAM().strategy = Simulator.StrategyEnum.Green;
             } else {
-                System.out.println("AM in data center level : HPC system is already blocked nothing can do here @: "
+                LOGGER.info("AM in data center level : HPC system is already blocked nothing can do here @: "
                         + environment.getCurrentLocalTime());
             }
         }

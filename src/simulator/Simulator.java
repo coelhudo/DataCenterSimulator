@@ -6,6 +6,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.util.List;
+import java.util.logging.FileHandler;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -13,7 +14,8 @@ import simulator.physical.DataCenter;
 
 public class Simulator {
 
-    // FIXME: now this is with a lot of responsabilities. Need to break this
+    private static final Logger LOGGER = Logger.getLogger(Simulator.class.getName());
+    // FIXME: now this is with a lot of responsibilities. Need to break this
     // down.
     public class Environment {
         private int localTime = 1;
@@ -88,7 +90,7 @@ public class Simulator {
     private void run() throws IOException {
         ///////////////////////
         while (!anySystem()) {
-            // System.out.println("--"+Main.localTime);
+            // LOGGER.info("--"+Main.localTime);
             allSystemRunACycle();
             allSystemCalculatePwr();
             datacenter.calculatePower();
@@ -121,7 +123,7 @@ public class Simulator {
             SLALogI = new OutputStreamWriter(new FileOutputStream(new File("slaViolLogI.txt")));
             SLALogH = new OutputStreamWriter(new FileOutputStream(new File("slaViolLogH.txt")));
         } catch (IOException e) {
-            System.out.println("Uh oh, got an IOException error!" + e.getMessage());
+            LOGGER.warning("Uh oh, got an IOException error!" + e.getMessage());
         } finally {
         }
 
@@ -135,12 +137,11 @@ public class Simulator {
 
     private Environment environment = new Environment();
     private final int EPOCH_APP = 60;
-    private int epochSys = 120, epochSideApp = 120;
-    private List<ResponseTime> responseArray;
+    //private int epochSys = 120, epochSideApp = 120;
+    //private List<ResponseTime> responseArray;
     private List<InteractiveSystem> interactiveSystems;
     private List<EnterpriseSystem> enterpriseSystems;
     private List<ComputeSystem> computeSystems;
-    private double[] peakEstimate;
     private OutputStreamWriter SLALogE = null;
     private OutputStreamWriter SLALogI = null;
     private OutputStreamWriter SLALogH = null;
@@ -227,31 +228,32 @@ public class Simulator {
     }
 
     public static void main(String[] args) throws IOException {
+        FileHandler logFile = new FileHandler("log.txt");
+        LOGGER.addHandler(logFile);
+        
         Simulator simulator = new Simulator();
         SimulationResults results = simulator.execute();
-        // System.out.println("Total JOBs= "+CS.totalJob);
-        System.out.println("Total energy Consumption= " + results.getTotalPowerConsumption());
-        System.out.println("LocalTime= " + results.getLocalTime());
-        System.out.println("Mean Power Consumption= " + results.getTotalPowerConsumption() / results.getLocalTime());
-        System.out.println("Over RED\t " + results.getOverRedTemperatureNumber() + "\t# of Messages DC to sys= "
+        // LOGGER.info("Total JOBs= "+CS.totalJob);
+        LOGGER.info("Total energy Consumption= " + results.getTotalPowerConsumption());
+        LOGGER.info("LocalTime= " + results.getLocalTime());
+        LOGGER.info("Mean Power Consumption= " + results.getTotalPowerConsumption() / results.getLocalTime());
+        LOGGER.info("Over RED\t " + results.getOverRedTemperatureNumber() + "\t# of Messages DC to sys= "
                 + results.getNumberOfMessagesFromDataCenterToSystem() + "\t# of Messages sys to nodes= "
                 + results.getNumberOfMessagesFromSystemToNodes());
     }
 
     public SimulationResults execute() throws IOException {
         initialize("configs/DC_Logic.xml");
-        System.out.println("------------------------------------------");
-        System.out.println("Systems start running");
-        System.out.println("------------------------------------------");
+        LOGGER.info("Systems start running");
         run();
-        System.out.println("------------------------------------------");
         csFinalize();
+        LOGGER.info("Simulation finished");
         return new SimulationResults(this);
     }
 
     void csFinalize() {
         for (int i = 0; i < computeSystems.size(); i++) {
-            System.out.println("Total Response Time in CS " + i + "th CS = " + computeSystems.get(i).finalized());
+            LOGGER.info("Total Response Time in CS " + i + "th CS = " + computeSystems.get(i).finalized());
         }
         try {
             datacenter.shutDownDC();
@@ -272,12 +274,11 @@ public class Simulator {
             if (!enterpriseSystems.get(i).isDone()) {
                 retValue = false;
             } else {
-                System.out.println("--------------------------------------");
-                System.out.println("finishing Time EnterSys: " + enterpriseSystems.get(i).getName() + " at time: "
+                LOGGER.info("finishing Time EnterSys: " + enterpriseSystems.get(i).getName() + " at time: "
                         + environment.getCurrentLocalTime());
-                System.out.println("Computing Power Consumed by  " + enterpriseSystems.get(i).getName() + " is: "
+                LOGGER.info("Computing Power Consumed by  " + enterpriseSystems.get(i).getName() + " is: "
                         + enterpriseSystems.get(i).getPower());
-                // System.out.println("Number of violation:
+                // LOGGER.info("Number of violation:
                 // "+ES.get(i).accumolatedViolation);
 
                 enterpriseSystems.remove(i);
@@ -288,12 +289,11 @@ public class Simulator {
             if (!interactiveSystems.get(i).isDone()) {
                 retValue = false;
             } else {
-                System.out.println("--------------------------------------");
-                System.out.println("finishing Time Interactive sys:  " + interactiveSystems.get(i).getName()
+                LOGGER.info("finishing Time Interactive sys:  " + interactiveSystems.get(i).getName()
                         + " at time: " + environment.getCurrentLocalTime());
-                System.out.println(
+                LOGGER.info(
                         "Interactive sys: Number of violation: " + interactiveSystems.get(i).getAccumolatedViolation());
-                System.out.println("Computing Power Consumed by  " + interactiveSystems.get(i).getName() + " is: "
+                LOGGER.info("Computing Power Consumed by  " + interactiveSystems.get(i).getName() + " is: "
                         + interactiveSystems.get(i).getPower());
                 interactiveSystems.remove(i);
                 i--;
@@ -306,12 +306,11 @@ public class Simulator {
             if (!computeSystems.get(i).isDone()) {
                 retValue = false; // means still we have work to do
             } else {
-                System.out.println("--------------------------------------");
-                System.out.println("finishing Time HPC_Sys:  " + computeSystems.get(i).getName() + " at time: "
+                LOGGER.info("finishing Time HPC_Sys:  " + computeSystems.get(i).getName() + " at time: "
                         + environment.getCurrentLocalTime());
-                System.out.println("Total Response Time= " + computeSystems.get(i).finalized());
-                System.out.println("Number of violation HPC : " + computeSystems.get(i).getAccumolatedViolation());
-                System.out.println("Computing Power Consumed by  " + computeSystems.get(i).getName() + " is: "
+                LOGGER.info("Total Response Time= " + computeSystems.get(i).finalized());
+                LOGGER.info("Number of violation HPC : " + computeSystems.get(i).getAccumolatedViolation());
+                LOGGER.info("Computing Power Consumed by  " + computeSystems.get(i).getName() + " is: "
                         + computeSystems.get(i).getPower());
                 computeSystems.remove(i);
                 i--;
@@ -328,7 +327,7 @@ public class Simulator {
     // f = new File("Z:\\PWMNG\\peakEstimation3times.txt");
     // bis = new BufferedReader(new InputStreamReader(new FileInputStream(f)));
     // } catch (IOException e) {
-    // System.out.println("Uh oh, got an IOException error!" + e.getMessage());
+    // LOGGER.info("Uh oh, got an IOException error!" + e.getMessage());
     // } finally {
     // }
     // try {
@@ -339,12 +338,12 @@ public class Simulator {
     // String[] numbers= new String[1];
     // numbers = line.trim().split(" ");
     // peakEstimate[i++] = Double.parseDouble(numbers[0]);
-    // //System.out.println("Readed inputTime= " + inputTime + " Job Reqested
+    // //LOGGER.info("Readed inputTime= " + inputTime + " Job Reqested
     // Time=" + j.startTime+" Total job so far="+ total);
     // line = bis.readLine();
     // }
     // } catch (IOException ex) {
-    // System.out.println("readJOB EXC readJOB false ");
+    // LOGGER.info("readJOB EXC readJOB false ");
     // Logger.getLogger(Scheduler.class.getName()).log(Level.SEVERE, null, ex);
     // }
     // }
@@ -358,15 +357,15 @@ public class Simulator {
      * ///////////////////////////////////////////////////////////////////////
      * int suc=0; if(times>=70) return; double peak=peakEstimate[times]; int
      * numberOfidleServer=webSet1.ComputeNodeList.size()-(int)Math.ceil(peak/
-     * 1000); //System.out.println(numberOfidleServer); if(numberOfidleServer<0)
+     * 1000); //LOGGER.info(numberOfidleServer); if(numberOfidleServer<0)
      * return; for(int j=0;j<numberOfidleServer;j++)
      * if(webSet1.ComputeNodeList.get(j).queueLength==0) { suc++;
      * webSet1.ComputeNodeList.get(j).ready=-1;
      * webSet1.ComputeNodeList.get(j).currentCPU=0;
-     * webSet1.ComputeNodeList.get(j).Mips=1; } else {System.out.println(
+     * webSet1.ComputeNodeList.get(j).Mips=1; } else {LOGGER.info(
      * "In Coordinator and else   ");numberOfidleServer++;} //border ra jabeja
      * mikonim //if(suc==numberOfidleServer)
-     * System.out.println(numberOfidleServer+"\t suc= "+suc); } public void
+     * LOGGER.info(numberOfidleServer+"\t suc= "+suc); } public void
      * addToresponseArray(double num,int time) { responseTime t= new
      * responseTime(); t.numberOfJob=num; t.responseTime=time;
      * responseArray.add(t); return; }

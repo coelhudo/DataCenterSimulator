@@ -1,6 +1,5 @@
 package simulator.physical;
 
-import simulator.am.DataCenterAM;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
@@ -13,15 +12,23 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
-import org.w3c.dom.*;
+
+import org.w3c.dom.Document;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
+
 import simulator.Simulator;
+import simulator.am.DataCenterAM;
 
 public final class DataCenter {
 
+    private static final Logger LOGGER = Logger.getLogger(DataCenter.class.getName());
+    
     private int overRed = 0;
     private double totalPowerConsumption = 0;
     private Cooler cooler1 = new Cooler();
@@ -46,7 +53,7 @@ public final class DataCenter {
         try {
             fos = new FileOutputStream(destinationFile);
         } catch (FileNotFoundException ex) {
-            Logger.getLogger(DataCenter.class.getName()).log(Level.SEVERE, null, ex);
+            LOGGER.severe(ex.getMessage());
         }
         this.environment = environment;
         oos = new OutputStreamWriter(fos);
@@ -74,11 +81,11 @@ public final class DataCenter {
             readFromNode(doc.getDocumentElement(), path);
 
         } catch (ParserConfigurationException ex) {
-            Logger.getLogger(DataCenter.class.getName()).log(Level.SEVERE, null, ex);
+            LOGGER.severe(ex.getMessage());
         } catch (SAXException ex) {
-            Logger.getLogger(DataCenter.class.getName()).log(Level.SEVERE, null, ex);
+            LOGGER.severe(ex.getMessage());
         } catch (IOException ex) {
-            Logger.getLogger(DataCenter.class.getName()).log(Level.SEVERE, null, ex);
+            LOGGER.severe(ex.getMessage());
         }
 
     }
@@ -131,7 +138,7 @@ public final class DataCenter {
                 }
             }
             if (i == BSTemp.size()) {
-                System.out.println("DataCenter.java");
+                LOGGER.info("DataCenter.java");
             }
             ch.getServers().get(j).setFrequencyLevel(new double[BSTemp.get(i).getFrequencyLevel().length]);
             ch.getServers().get(j).setPowerBusy(new double[BSTemp.get(i).getPowerBusy().length]);
@@ -186,7 +193,7 @@ public final class DataCenter {
                     }
                 }
                 if (k == CHSTemp.size()) {
-                    System.out.println("ERORE IN CONFIG FILE DATACENTE.java");
+                    LOGGER.info("ERORE IN CONFIG FILE DATACENTE.java");
                 }
                 Chassis ch1 = new Chassis(numbOfSofarChassis + kk, environment);
                 cloneChassis(ch1, CHSTemp.get(k));
@@ -233,22 +240,22 @@ public final class DataCenter {
         for (int i = 0; i < m; i++) {
             double temp = chassisSet.get(i).power();
             // if(chassisSet.get(i).getServers().get(0).currentCPU!=0)
-            // System.out.println(chassisSet.get(i).servers.get(0).currentCPU +"
+            // LOGGER.info(chassisSet.get(i).servers.get(0).currentCPU +"
             // \ttime ="+Main.localTime +" \t chassi
             // id="+chassisSet.get(i).chassisID );
 
             try {
                 oos.write((int) temp + "\t");
             } catch (IOException ex) {
-                Logger.getLogger(DataCenter.class.getName()).log(Level.SEVERE, null, ex);
+                LOGGER.severe(ex.getMessage());
             }
             computingPower = computingPower + temp;
         }
-        // System.out.println("in betweeeeeen");
+        // LOGGER.info("in betweeeeeen");
         for (int i = 0; i < m; i++) {
             for (int j = 0; j < m; j++) {
                 temprature[i] = temprature[i] + D[i][j] * chassisSet.get(j).power();
-                // System.out.println(chassis_list[i]);
+                // LOGGER.info(chassis_list[i]);
             }
         }
         maxTemp = temprature[0];
@@ -257,10 +264,10 @@ public final class DataCenter {
                 maxTemp = temprature[i];
             }
         }
-        // System.out.println(maxTepm);
+        // LOGGER.info(maxTepm);
         maxTemp = redTemperature - maxTemp;
         if (maxTemp <= 0) {
-            // System.out.println("maxTem less than 0000 " + maxTemp);
+            // LOGGER.info("maxTem less than 0000 " + maxTemp);
             am.setSlowDownFromCooler(true);
             overRed++;
 
@@ -269,13 +276,13 @@ public final class DataCenter {
         }
         double cop = cooler1.getCOP(maxTemp);
         try {
-            // System.out.println(((int)(Pcomp*(1+1.0/COP)))+"\t"+(int)Pcomp+"\t"+localTime);
+            // LOGGER.info(((int)(Pcomp*(1+1.0/COP)))+"\t"+(int)Pcomp+"\t"+localTime);
             // oos.write(Integer.toString((int)
             // (Pcomp*(1+1.0/COP)))+"\t"+Integer.toString((int)Pcomp)+"\t"+localTime+"\t"+perc[0]+"\t"+perc[1]+"\t"+perc[2]+"\n");
             oos.write(((int) (computingPower * (1 + 1.0 / cop))) + "\t" + (int) computingPower + "\t"
                     + environment.getCurrentLocalTime() + "\n");
             totalPowerConsumption = totalPowerConsumption + computingPower * (1 + 1.0 / cop);
-            // System.out.println(totalPowerConsumption);
+            // LOGGER.info(totalPowerConsumption);
         } catch (IOException ex) {
             Logger.getLogger(Package.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -294,7 +301,7 @@ public final class DataCenter {
             File f = new File(DFileName);
             bis = new BufferedReader(new InputStreamReader(new FileInputStream(f)));
         } catch (IOException e) {
-            System.out.println("Uh oh, got an IOException error!" + e.getMessage());
+            LOGGER.info("Uh oh, got an IOException error!" + e.getMessage());
 
         } finally {
         }
@@ -318,8 +325,8 @@ public final class DataCenter {
                     }
                 }
             } catch (IOException ex) {
-                System.out.println("readJOB EXC readJOB false ");
-                Logger.getLogger(DataCenter.class.getName()).log(Level.SEVERE, null, ex);
+                LOGGER.info("readJOB EXC readJOB false ");
+                LOGGER.severe(ex.getMessage());
                 return false;
             }
         }

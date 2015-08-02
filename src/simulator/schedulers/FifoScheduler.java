@@ -4,8 +4,8 @@
  */
 package simulator.schedulers;
 
-import simulator.schedulers.Scheduler;
 import java.util.List;
+
 import simulator.jobs.Job;
 
 /**

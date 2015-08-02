@@ -1,9 +1,5 @@
 package simulator;
 
-import simulator.physical.BladeServer;
-import simulator.am.IteractiveUserAM;
-import simulator.jobs.InteractiveJob;
-import simulator.schedulers.Scheduler;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
@@ -14,8 +10,14 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import simulator.am.IteractiveUserAM;
+import simulator.jobs.InteractiveJob;
+import simulator.physical.BladeServer;
+import simulator.schedulers.Scheduler;
+
 public class InteractiveUser {
 
+    private static final Logger LOGGER = Logger.getLogger(InteractiveSystem.class.getName());
     int arrivalTime;
     private int maxProc = 0;
     private int minProc = 0;
@@ -69,7 +71,7 @@ public class InteractiveUser {
                 logFile = new File(logFileName);
                 bis = new BufferedReader(new InputStreamReader(new FileInputStream(logFile)));
             } catch (IOException e) {
-                System.out.println("Uh oh, got an IOException error!" + e.getMessage());
+                LOGGER.warning("Uh oh, got an IOException error!" + e.getMessage());
             } finally {
             }
         }
@@ -89,10 +91,10 @@ public class InteractiveUser {
             j.setNumberOfJob(Double.parseDouble(numbers[1]) * 50);
             getQueueWL().add(j);
             return 1;
-            // System.out.println("Readed inputTime= " + inputTime + " Job
+            // LOGGER.info("Readed inputTime= " + inputTime + " Job
             // Reqested Time=" + j.startTime+" Total job so far="+ total);
         } catch (IOException ex) {
-            System.out.println("readJOB EXC readJOB false ");
+            LOGGER.warning("readJOB EXC readJOB false ");
             Logger.getLogger(Scheduler.class.getName()).log(Level.SEVERE, null, ex);
             return -2;
         }
@@ -118,7 +120,7 @@ public class InteractiveUser {
             }
         }
         // ending condition means there is no job in the logfile
-        // System.out.println(" One dispacher !!! in the readWebJob interactive
+        // LOGGER.info(" One dispacher !!! in the readWebJob interactive
         // "+retReadLogfile);
         return retReadLogfile;
     }
@@ -162,7 +164,7 @@ public class InteractiveUser {
             if (capacityOfNode == 0) {
                 addToresponseArray(jj.getNumberOfJob(),
                         (environment.getCurrentLocalTime() - jj.getArrivalTimeOfJob() + 1));
-                // System.out.println((Main.localTime-wJob.arrivalTimeOfJob+1)*(wJob.numberOfJob)
+                // LOGGER.info((Main.localTime-wJob.arrivalTimeOfJob+1)*(wJob.numberOfJob)
                 // +"\t"+wJob.numberOfJob+"\t q len="+queueLength);
                 beenRunJobs = beenRunJobs + jj.getNumberOfJob();
                 getQueueWL().remove(jj);
@@ -174,7 +176,7 @@ public class InteractiveUser {
                         (environment.getCurrentLocalTime() - jj.getArrivalTimeOfJob() + 1));
                 beenRunJobs = beenRunJobs + capacityOfNode + jj.getNumberOfJob();
                 jj.setNumberOfJob(-1 * capacityOfNode);
-                // System.out.println(1000.0*Mips);
+                // LOGGER.info(1000.0*Mips);
                 break;
             }
             if (capacityOfNode > 0) // still we have capacity to run the jobs
@@ -191,7 +193,7 @@ public class InteractiveUser {
                     if (capacityOfNode == 0) {
                         addToresponseArray(jj.getNumberOfJob(),
                                 (environment.getCurrentLocalTime() - jj.getArrivalTimeOfJob() + 1));
-                        // System.out.println(wJob.numberOfJob);
+                        // LOGGER.info(wJob.numberOfJob);
                         beenRunJobs = beenRunJobs + jj.getNumberOfJob();
                         getQueueWL().remove(0);
                         break;
@@ -203,13 +205,13 @@ public class InteractiveUser {
                                 (environment.getCurrentLocalTime() - jj.getArrivalTimeOfJob() + 1));
                         jj.setNumberOfJob(-1 * capacityOfNode);
                         beenRunJobs = beenRunJobs + copyTedat;
-                        // System.out.println(copyTedat);
+                        // LOGGER.info(copyTedat);
                         break;
                     }
                     if (capacityOfNode > 0) {
                         addToresponseArray(jj.getNumberOfJob(),
                                 (environment.getCurrentLocalTime() - jj.getArrivalTimeOfJob() + 1));
-                        // System.out.println(wJob.numberOfJob);
+                        // LOGGER.info(wJob.numberOfJob);
                         beenRunJobs = beenRunJobs + jj.getNumberOfJob();
                         getQueueWL().remove(0);
                     }
@@ -225,13 +227,13 @@ public class InteractiveUser {
             }
             usedNode = usedNode + getComputeNodeList().size();
         } else if (beenRunJobs < 0) {
-            System.out.println("it is impossible!!!!  webbased BoN");
+            LOGGER.warning("it is impossible!!!!  webbased BoN");
         } else if (beenRunJobs > 0) {
             int k = 0;
             for (k = 0; k < numberofReadyNodes; k++) {
                 int serID = parent.getResourceAllocation().nextServer(getComputeNodeList());
                 if (serID == -2) {
-                    System.out.println("enterPrise BoN : servID =-2\t " + k + "\t" + numberofReadyNodes);
+                    LOGGER.info("enterPrise BoN : servID =-2\t " + k + "\t" + numberofReadyNodes);
                     break;
                 }
                 double CPUspace = (100 - getComputeNodeList().get(serID).getCurrentCPU())
@@ -253,7 +255,7 @@ public class InteractiveUser {
                     break;
                 }
             }
-            // System.out.println(k +"\t Running node= "+numberofReadyNodes);
+            // LOGGER.info(k +"\t Running node= "+numberofReadyNodes);
             usedNode = usedNode + k;
         }
         getAM().monitor();
@@ -291,7 +293,7 @@ public class InteractiveUser {
                 } // bahs
                 else {
                     getComputeNodeList().get(i).setReady(0);
-                    // System.out.println("queulength in SetReady FLag:
+                    // LOGGER.info("queulength in SetReady FLag:
                     // "+ComputeNodeList.get(i).queueLength);
                 }
             }
@@ -351,7 +353,7 @@ public class InteractiveUser {
                 break;
             }
         }
-        System.out.println("MIIIIPPPSSS    " + getComputeNodeList().get(i).getMips());
+        LOGGER.info("MIIIIPPPSSS    " + getComputeNodeList().get(i).getMips());
     }
 
     public double numberOfWaitingJobs() {

@@ -1,23 +1,24 @@
 package simulator;
 
-import simulator.physical.BladeServer;
-import simulator.physical.DataCenter;
-import simulator.am.GeneralAM;
-import simulator.ra.ResourceAllocation;
-import simulator.schedulers.Scheduler;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.logging.Level;
 import java.util.logging.Logger;
+
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
+
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.xml.sax.SAXException;
+
+import simulator.am.GeneralAM;
+import simulator.physical.BladeServer;
+import simulator.ra.ResourceAllocation;
+import simulator.schedulers.Scheduler;
 
 /**
  *
@@ -25,6 +26,8 @@ import org.xml.sax.SAXException;
  */
 public class GeneralSystem {
 
+    private static final Logger LOGGER = Logger.getLogger(GeneralSystem.class.getName());
+    
     private String name;
     private ResourceAllocation resourceAllocation;
     private Scheduler scheduler;
@@ -67,11 +70,11 @@ public class GeneralSystem {
             doc.getDocumentElement().normalize();
             readFromNode(doc.getDocumentElement(), path);
         } catch (ParserConfigurationException ex) {
-            Logger.getLogger(DataCenter.class.getName()).log(Level.SEVERE, null, ex);
+            LOGGER.severe(ex.getMessage());
         } catch (SAXException ex) {
-            Logger.getLogger(DataCenter.class.getName()).log(Level.SEVERE, null, ex);
+            LOGGER.severe(ex.getMessage());
         } catch (IOException ex) {
-            Logger.getLogger(DataCenter.class.getName()).log(Level.SEVERE, null, ex);
+            LOGGER.severe(ex.getMessage());
         }
     }
 

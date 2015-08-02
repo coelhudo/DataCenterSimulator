@@ -62,7 +62,7 @@ public class Chassis {
             pw = pw + servers.get(i).getPower();
         }
         // pw=(cpus*a/100)+w*servers.size();
-        // System.out.println("powercost= " + (int)pw+"\t"+cpus);
+        // LOGGER.info("powercost= " + (int)pw+"\t"+cpus);
         return pw;
     }
 

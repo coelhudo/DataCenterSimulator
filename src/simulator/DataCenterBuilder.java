@@ -4,7 +4,6 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javax.xml.parsers.DocumentBuilder;
@@ -20,6 +19,8 @@ import simulator.physical.DataCenter;
 
 public class DataCenterBuilder {
 
+    private static final Logger LOGGER = Logger.getLogger(DataCenterBuilder.class.getName());
+    
     private DataCenter dataCenter;
     private List<InteractiveSystem> interactiveSystems = new ArrayList<InteractiveSystem>();
     private List<EnterpriseSystem> enterpriseSystems = new ArrayList<EnterpriseSystem>();
@@ -55,11 +56,11 @@ public class DataCenterBuilder {
             }
 
         } catch (ParserConfigurationException ex) {
-            Logger.getLogger(DataCenter.class.getName()).log(Level.SEVERE, null, ex);
+            LOGGER.severe(ex.getMessage());
         } catch (SAXException ex) {
-            Logger.getLogger(DataCenter.class.getName()).log(Level.SEVERE, null, ex);
+            LOGGER.severe(ex.getMessage());
         } catch (IOException ex) {
-            Logger.getLogger(DataCenter.class.getName()).log(Level.SEVERE, null, ex);
+            LOGGER.severe(ex.getMessage());
         }
     }
 
@@ -88,24 +89,24 @@ public class DataCenterBuilder {
                     String fileName = path + "/" + nodiLst.item(i).getChildNodes().item(0).getNodeValue().trim();
                     switch (whichSystem) {
                     case 1:
-                        System.out.println("------------------------------------------");
-                        System.out.println("Initialization of Enterprise System Name=" + name);
+                        LOGGER.info("------------------------------------------");
+                        LOGGER.info("Initialization of Enterprise System Name=" + name);
                         EnterpriseSystem ES1 = EnterpriseSystem.Create(fileName, environment, dataCenter);
                         ES1.setName(name);
                         getEnterpriseSystems().add(ES1);
                         whichSystem = -1;
                         break;
                     case 2:
-                        System.out.println("------------------------------------------");
-                        System.out.println("Initialization of Interactive System Name=" + name);
+                        LOGGER.info("------------------------------------------");
+                        LOGGER.info("Initialization of Interactive System Name=" + name);
                         InteractiveSystem wb1 = InteractiveSystem.Create(fileName, environment, dataCenter);
                         wb1.setName(name);
                         getInteractiveSystems().add(wb1);
                         whichSystem = -1;
                         break;
                     case 3:
-                        System.out.println("------------------------------------------");
-                        System.out.println("Initialization of HPC System Name=" + name);
+                        LOGGER.info("------------------------------------------");
+                        LOGGER.info("Initialization of HPC System Name=" + name);
                         ComputeSystem CP = ComputeSystem.Create(fileName, environment, dataCenter);
                         CP.setName(name);
                         getComputeSystems().add(CP);

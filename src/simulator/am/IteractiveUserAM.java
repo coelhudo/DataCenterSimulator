@@ -1,13 +1,17 @@
 package simulator.am;
 
-import simulator.physical.BladeServer;
+import java.util.logging.Logger;
+
 import simulator.InteractiveSystem;
 import simulator.InteractiveUser;
 import simulator.Simulator;
 import simulator.jobs.EnterpriseJob;
+import simulator.physical.BladeServer;
 
 public class IteractiveUserAM extends GeneralAM {
 
+    private static final Logger LOGGER = Logger.getLogger(IteractiveUserAM.class.getName());
+    
     InteractiveUser User;
     InteractiveSystem sys;
     double util = 0;
@@ -46,7 +50,7 @@ public class IteractiveUserAM extends GeneralAM {
         // U= a x+ b y a=b=1
         util = x + User.getSLAviolation();
         // util=sigmoid(util);
-        // System.out.println(util);
+        // LOGGER.info(util);
     }
 
     public double getPercentageOfComputingPwr() {
@@ -93,7 +97,7 @@ public class IteractiveUserAM extends GeneralAM {
             // Policy 4: if SLA violation then unshrink active server
             for (int j = 0; j < User.getComputeNodeList().size() && tedad > 0; j++) {
                 if (User.getComputeNodeList().get(j).getReady() == -1) {
-                    // System.out.println("Application:SLA" +app.id +"\tActive
+                    // LOGGER.info("Application:SLA" +app.id +"\tActive
                     // one Server!\t\t "+"Number of runinng:
                     // "+app.numberofRunningNode());
                     User.getComputeNodeList().get(j).setReady(1);
@@ -126,7 +130,7 @@ public class IteractiveUserAM extends GeneralAM {
                         && User.getComputeNodeList().get(j).getCurrentCPU() == 0) {
                     // System.out.print("App:GR " +app.id);
                     User.getComputeNodeList().get(j).makeItIdle(new EnterpriseJob());
-                    // System.out.println("\tIdle\t\t\t\t\t@:"+Main.localTime+"\tNumber
+                    // LOGGER.info("\tIdle\t\t\t\t\t@:"+Main.localTime+"\tNumber
                     // of running== "+app.numberofRunningNode());
                 }
             }
@@ -143,7 +147,7 @@ public class IteractiveUserAM extends GeneralAM {
             int tedad = User.numberofIdleNode() / 2;
             for (int j = 0; j < User.getComputeNodeList().size() && tedad > 0; j++) {
                 if (User.getComputeNodeList().get(j).getReady() == -1) {
-                    System.out.println(
+                    LOGGER.info(
                             "USer GR: " + User.getID() + "\tactive a Server!\t\t @" + environment.getCurrentLocalTime()
                                     + "\tNumber of runinng:  " + User.numberofRunningNode());
                     User.getComputeNodeList().get(j).setReady(1);
@@ -162,7 +166,7 @@ public class IteractiveUserAM extends GeneralAM {
         // return;
         //// if(!sys.isThereFreeNodeforApp())
         //// return;
-        //// System.out.println("there is no node available in system! ");
+        //// LOGGER.info("there is no node available in system! ");
         //
         // if(!app.isThereIdleNode()
         // ||(sys.AM.compPwrApps[app.id]/(Main.epochSideApp*2*sys.applicationList.get(app.id).ComputeNodeList.size())>=0.5))//
@@ -206,7 +210,7 @@ public class IteractiveUserAM extends GeneralAM {
         // AMEnterpriseSys temp2=(AMEnterpriseSys)sys.AM;
         // if(temp2.allocationVector[targetApp]<0)
         // {
-        // System.out.println("no need
+        // LOGGER.info("no need
         // pitttttttttttttttttttttttttttttttttttttttttttttttttttttttty");
         // return;
         // }
@@ -217,7 +221,7 @@ public class IteractiveUserAM extends GeneralAM {
         temp.setReady(1);
         sys.getUserList().get(targetUsr).getComputeNodeList().add(temp);
         User.getComputeNodeList().remove(index);
-        System.out.println("User :\t" + User.getID() + " ----------> :\t\t " + targetUsr + "\t\t@:"
+        LOGGER.info("User :\t" + User.getID() + " ----------> :\t\t " + targetUsr + "\t\t@:"
                 + environment.getCurrentLocalTime() + "\tRunning target node= "
                 + sys.getUserList().get(targetUsr).numberofRunningNode() + "\tRunning this node= "
                 + User.numberofRunningNode() + "\tstrtgy= " + StrategyWsitch);

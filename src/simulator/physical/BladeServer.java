@@ -2,19 +2,23 @@
 //Ready in web based workload is not set correctly, check it out!
 package simulator.physical;
 
-import simulator.jobs.BatchJob;
-import simulator.jobs.EnterpriseJob;
-import simulator.jobs.InteractiveJob;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Logger;
 
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
-import simulator.Simulator;
+
 import simulator.ResponseTime;
+import simulator.Simulator;
+import simulator.jobs.BatchJob;
+import simulator.jobs.EnterpriseJob;
+import simulator.jobs.InteractiveJob;
 
 public class BladeServer {
 
+    private static final Logger LOGGER = Logger.getLogger(BladeServer.class.getName());
+    
     private List<ResponseTime> responseList;
     private List<ResponseTime> responseListWeb;
     private int dependency = 0;
@@ -101,13 +105,13 @@ public class BladeServer {
         int j;
         cpu = getCurrentCPU();
         // if(cpu!=0)
-        // System.out.println(cpu +" \ttime ="+Main.localTime +" \t chassi
+        // LOGGER.info(cpu +" \ttime ="+Main.localTime +" \t chassi
         // id="+chassisID );
-        // if(servers.get(i).currentCPU==100) System.out.println(chassisID);
+        // if(servers.get(i).currentCPU==100) LOGGER.info(chassisID);
         mips = getMips();
         if (mips == 0) {
             pw = pw + getIdleConsumption();
-            System.out.println("MIPS Zero!!!!");
+            LOGGER.info("MIPS Zero!!!!");
         } else {
             for (j = 0; j < 3; j++) {
                 if (getFrequencyLevel()[j] == mips) {
@@ -125,7 +129,7 @@ public class BladeServer {
             {
                 a = 0;
                 w = getIdleConsumption();
-                // System.out.println(Main.localTime);
+                // LOGGER.info(Main.localTime);
             }
             pw = pw + a * cpu / 100 + w;
 
@@ -195,12 +199,12 @@ public class BladeServer {
                 return i; // statrs from 1 not zero!
             }
         }
-        System.out.println("wrong frequency level !! ");
+        LOGGER.info("wrong frequency level !! ");
         return -1;
     }
 
     public int increaseFrequency() {
-        // System.out.println("MIIIPPSSS "+Mips);
+        // LOGGER.info("MIIIPPSSS "+Mips);
         if (getCurrentFreqLevel() == 2) {
             return 0;
         } else {
@@ -213,14 +217,14 @@ public class BladeServer {
             environment.updateNumberOfMessagesFromDataCenterToSystem();
         }
         if (getMips() == 0) {
-            System.out.println("Mipss sefr shoodd!!!");
+            LOGGER.info("Mipss sefr shoodd!!!");
         }
         return 1;
     }
 
     public int decreaseFrequency() {
-        // System.out.println("Decreasing frequency");
-        if (getCurrentFreqLevel() == 0) {// System.out.println("Minimum
+        // LOGGER.info("Decreasing frequency");
+        if (getCurrentFreqLevel() == 0) {// LOGGER.info("Minimum
             // Frequency Level ~~~ ");
             return 0;
         } else {
@@ -228,7 +232,7 @@ public class BladeServer {
             environment.updateNumberOfMessagesFromDataCenterToSystem();
         }
         if (getMips() == 0) {
-            System.out.println("Mipss sefr shoodd!!!");
+            LOGGER.info("Mipss sefr shoodd!!!");
         }
         return 1;
     }
@@ -246,7 +250,7 @@ public class BladeServer {
             return 0;
         }
         share = getMips() / num;// second freqcuency level!
-        // System.out.println("Share "+share);
+        // LOGGER.info("Share "+share);
         share_t = share;
         int ret_done = 0;
         while (index < num) { // index<activeBatchList.size()
@@ -281,7 +285,7 @@ public class BladeServer {
             if (getActiveBatchList().get(i).getIsChangedThisTime() == 0) {
                 // ret_done=done(i,share/activeBatchList.get(i).utilization);
                 if ((share / getActiveBatchList().get(i).getUtilization()) > 1) {
-                    System.out.println("share more than one!\t" + share_t + "\t" + share + "\t"
+                    LOGGER.info("share more than one!\t" + share_t + "\t" + share + "\t"
                             + getActiveBatchList().get(i).getUtilization() + "\t" + environment.getCurrentLocalTime());
                 }
                 getActiveBatchList().get(i).setIsChangedThisTime(1);
@@ -297,7 +301,7 @@ public class BladeServer {
         // Inja be nazaram /MIPS ham mikhad ke sad beshe fek konam MIPS ro dar
         // nazar nagereftam!
         setCurrentCPU(100.0 * tempCpu / getMips());
-        // System.out.println("CPU= " + currentCPU +"num= "+num);
+        // LOGGER.info("CPU= " + currentCPU +"num= "+num);
         setReady();
         setDependency();
         return 1;
@@ -313,7 +317,7 @@ public class BladeServer {
         int serverIndex = getServerID();
         ki = job.getThisNodeIndex(serverIndex);
         if (share == 0) {
-            System.out.println(
+            LOGGER.info(
                     "In DONE share== zero00000000000000000000000000000000000000oo,revise the code  need some work!");
             job.setExitTime(environment.getCurrentLocalTime());
             getActiveBatchList().remove(tmp--);
@@ -321,7 +325,7 @@ public class BladeServer {
             return 1;
         }
         if (ki == -1) {
-            System.out.println("Blade server is wrong in BladeServer!!!");
+            LOGGER.info("Blade server is wrong in BladeServer!!!");
         }
         // setRemainAllNodes(tmp, share);
         job.getRemain()[ki] = job.getRemain()[ki] - share;
@@ -661,12 +665,12 @@ public class BladeServer {
  * double getMeanResTimeLastEpoch() {
  * 
  * if(resTimeEpoch==0) //the first time in { resTimeEpoch=respTime;
- * totalJobEpoch=totalJob-queueLength; //System.out.println(
+ * totalJobEpoch=totalJob-queueLength; //LOGGER.info(
  * "First   Last Epoch   "+respTime+ totalJobEpoch+"\t"+chassisID);
  * if(totalJobEpoch>0) return respTime/totalJobEpoch; else return 0; } else {
  * double tempTime=respTime-resTimeEpoch; double
  * tempJob=totalJob-queueLength-totalJobEpoch; resTimeEpoch=respTime;
- * totalJobEpoch=totalJob-queueLength; //System.out.println(
+ * totalJobEpoch=totalJob-queueLength; //LOGGER.info(
  * "in get MeanResponse Last Epoch   "+ tempTime/tempJob+"\t"+chassisID);
  * if(tempJob!=0) return tempTime/tempJob; else return 0; } }
  */

@@ -1,10 +1,14 @@
 package simulator.am;
 
+import java.util.logging.Logger;
+
 import simulator.ComputeSystem;
 import simulator.Simulator;
 
 public class ComputeSystemAM extends GeneralAM {
 
+    private static final Logger LOGGER = Logger.getLogger(ComputeSystemAM.class.getName());
+    
     ComputeSystem CS;
     protected Simulator.Environment environment;
 
@@ -55,7 +59,7 @@ public class ComputeSystemAM extends GeneralAM {
             int tedad = 0;
             for (int i = 0; i < CS.getComputeNodeList().size(); i++) {
                 if (CS.getComputeNodeList().get(i).getReady() == -1) {
-                    System.out.println("CSys GR: " + "\tactive a Server!\t\t @" + environment.getCurrentLocalTime()
+                    LOGGER.info("CSys GR: " + "\tactive a Server!\t\t @" + environment.getCurrentLocalTime()
                             + "\tNumber of runinng:  " + CS.numberofRunningNode());
                     CS.getComputeNodeList().get(i).setReady(1);
                     CS.getComputeNodeList().get(i).setMips(1.4);

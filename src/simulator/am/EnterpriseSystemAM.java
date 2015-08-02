@@ -1,10 +1,14 @@
 package simulator.am;
 
+import java.util.logging.Logger;
+
 import simulator.EnterpriseSystem;
 import simulator.Simulator;
 
 public class EnterpriseSystemAM extends GeneralAM {
 
+    private static final Logger LOGGER = Logger.getLogger(EnterpriseSystemAM.class.getName());
+    
     EnterpriseSystem ES;
     static int kalmanIndex = 0;
     double[] percentCompPwr;
@@ -39,7 +43,7 @@ public class EnterpriseSystemAM extends GeneralAM {
             // serverProvisioning();
             // kalmanIndex++;
             // int i=ES.getApplications().get(0).occupiedPercentage();
-            // System.out.println("occupied\t"+i);
+            // LOGGER.info("occupied\t"+i);
             // if(i>50)
             // ES.numberOfActiveServ=ES.getApplications().get(0).numberofRunningNode()+1;
             // else
@@ -132,7 +136,7 @@ public class EnterpriseSystemAM extends GeneralAM {
                     bishtar = 0;
                 }
                 allocationVector[i] = 1 + bishtar;// +(int)Math.abs((Math.floor((wlkIntens-wkIntensApp)/wlkIntens)));
-                // System.out.println("Switching Strategy in Application =" +i
+                // LOGGER.info("Switching Strategy in Application =" +i
                 // +" to SLA ");
                 ES.getApplications().get(i).getAM().StrategyWsitch = Simulator.StrategyEnum.SLA;// SLA
                 // strategy
@@ -140,13 +144,13 @@ public class EnterpriseSystemAM extends GeneralAM {
             // if cpmPwr < 50% & violation is less then release a server
             if (percentCompPwr[i] <= 0.5 && accuSLA[i] == 0) {
                 allocationVector[i] = -1;
-                System.out.println("Releasing a Server");
+                LOGGER.info("Releasing a Server");
             }
             // if cpmPwr < 50% & violation is ziyad then nothing no server
             // exchange
             if (percentCompPwr[i] < 0.5 && accuSLA[i] > 0) {
                 allocationVector[i] = 1;
-                // System.out.println("Switching Strategy in Application =" +i
+                // LOGGER.info("Switching Strategy in Application =" +i
                 // +" to SLA ");
                 ES.getApplications().get(i).getAM().StrategyWsitch = Simulator.StrategyEnum.SLA; // SLA
                 // strategy
@@ -158,18 +162,18 @@ public class EnterpriseSystemAM extends GeneralAM {
             if (ES.getApplications().get(i).getMinProc() > valNode || ES.getApplications().get(i).getMaxProc() < valNode) {
                 // if(ES.getApplications().get(i).minProc>
                 // ES.getApplications().get(i).ComputeNodeList.size()+allocationVector[i])
-                // System.out.println("error requested less than min in AM
+                // LOGGER.info("error requested less than min in AM
                 // system ");
                 // if(ES.getApplications().get(i).maxProc<
                 // ES.getApplications().get(i).ComputeNodeList.size()+allocationVector[i])
-                // System.out.println("error requested more than maxxxx in AM
+                // LOGGER.info("error requested more than maxxxx in AM
                 // system ");
                 allocationVector[i] = 0;
             }
             requestedNd = requestedNd + allocationVector[i];
         }
         // if(requestedNd>ES.numberofIdleNode)
-        // System.out.println("IN AM system can not provide server reqested=
+        // LOGGER.info("IN AM system can not provide server reqested=
         // "+requestedNd);
     }
     // determining aloc/release vector and active strategy
@@ -199,7 +203,7 @@ public class EnterpriseSystemAM extends GeneralAM {
             ES.getApplications().get(i).getAM().StrategyWsitch = Simulator.StrategyEnum.Green; // Green
             // Strategy
             if (accuSLA[i] > 0) {
-                // System.out.println("Switching Strategy in Application =" +i
+                // LOGGER.info("Switching Strategy in Application =" +i
                 // +" to SLA ");
                 ES.getApplications().get(i).getAM().StrategyWsitch = Simulator.StrategyEnum.SLA;// SLA
                 // strategy
@@ -219,7 +223,7 @@ public class EnterpriseSystemAM extends GeneralAM {
                 .floor(numberOfPredictedReq[kalmanIndex] * 5 * ES.getApplications().get(0).getNumberofBasicNode()
                         / ES.getApplications().get(0).getMaxNumberOfRequest()));
         if (ES.getNumberOfActiveServ() > ES.getNumberofNode()) {
-            System.out.println("In ES : is gonna alocate this number of servers: "
+            LOGGER.info("In ES : is gonna alocate this number of servers: "
                     + (ES.getNumberOfActiveServ() - ES.getNumberofNode()));
         }
     }
@@ -237,7 +241,7 @@ public class EnterpriseSystemAM extends GeneralAM {
                 ES.getApplications().get(i).getAM().StrategyWsitch = Simulator.StrategyEnum.SLA;// SLA
                 // strategy
                 allocationVector[i] = 1;
-                // System.out.println("allocate system!!!!! ");
+                // LOGGER.info("allocate system!!!!! ");
             }
             if (sigmoid(queueLengthApps[i]) < 0.5 && accuSLA[i] > 0) {
                 ES.getApplications().get(i).getAM().StrategyWsitch = Simulator.StrategyEnum.SLA;// SLA
@@ -245,7 +249,7 @@ public class EnterpriseSystemAM extends GeneralAM {
             }
             if (sigmoid(queueLengthApps[i]) <= 0.5 && accuSLA[i] == 0) {
                 allocationVector[i] = -1;
-                // System.out.println("Resleasing in system!!!!! ");
+                // LOGGER.info("Resleasing in system!!!!! ");
             }
         }
         int requestedNd = 0;
@@ -254,18 +258,18 @@ public class EnterpriseSystemAM extends GeneralAM {
             if (ES.getApplications().get(i).getMinProc() > valNode || ES.getApplications().get(i).getMaxProc() < valNode) {
                 // if(ES.getApplications().get(i).minProc>
                 // ES.getApplications().get(i).ComputeNodeList.size()+allocationVector[i])
-                // System.out.println("error requested less than min in AM
+                // LOGGER.info("error requested less than min in AM
                 // system ");
                 // if(ES.getApplications().get(i).maxProc<
                 // ES.getApplications().get(i).ComputeNodeList.size()+allocationVector[i])
-                // System.out.println("error requested more than maxxxx in AM
+                // LOGGER.info("error requested more than maxxxx in AM
                 // system ");
                 allocationVector[i] = 0;
             }
             requestedNd = requestedNd + allocationVector[i];
         }
         // if(requestedNd>ES.numberofIdleNode)
-        // System.out.println("IN AM system can not provide server reqested=
+        // LOGGER.info("IN AM system can not provide server reqested=
         // "+requestedNd);
     }
 }
