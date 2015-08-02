@@ -102,10 +102,8 @@ public class InteractiveUser {
     // reset all working node ready flag and CPU utilization
 
     void resetReadyFlag() {
-        int i;
-        for (i = 0; i < getComputeNodeList().size(); i++) {
-            getComputeNodeList().get(i).setCurrentCPU(0);
-            getComputeNodeList().get(i).setReady(1);
+        for (BladeServer bladeServer : getComputeNodeList()) {
+            bladeServer.setReady(1);
         }
     }
 
@@ -145,11 +143,9 @@ public class InteractiveUser {
         double CPUpercentage = 0;
         int numberofReadyNodes = 0;
         double beenRunJobs = 0; // number of jobs have been run so far
-        int i = 0;
-        for (i = 0; i < getComputeNodeList().size(); i++) {
-            if (getComputeNodeList().get(i).getReady() == 1) {
-                CPUpercentage = (100.0 - getComputeNodeList().get(i).getCurrentCPU())
-                        * getComputeNodeList().get(i).getMips() + CPUpercentage;
+        for (BladeServer bladeServer : getComputeNodeList()) {
+            if (bladeServer.getReady() == 1) {
+                CPUpercentage = (100.0 - bladeServer.getCurrentCPU()) * bladeServer.getMips() + CPUpercentage;
                 numberofReadyNodes++;
             }
         }
@@ -221,9 +217,9 @@ public class InteractiveUser {
         }
         if (capacityOfNode_COPY == beenRunJobs) // we're done all our capacity
         {
-            for (int k = 0; k < getComputeNodeList().size(); k++) {
-                getComputeNodeList().get(k).setCurrentCPU(100);
-                getComputeNodeList().get(k).setReady(0);
+            for (BladeServer bladeServer : getComputeNodeList()) {
+                bladeServer.setCurrentCPU(100);
+                bladeServer.setReady(0);
             }
             usedNode = usedNode + getComputeNodeList().size();
         } else if (beenRunJobs < 0) {
@@ -279,20 +275,20 @@ public class InteractiveUser {
     }
 
     void setReadyFlag() {
-        for (int i = 0; i < getComputeNodeList().size(); i++) {
-            if (getComputeNodeList().get(i).getReady() != -1) // -1 : means this
+        for (BladeServer bladeServer : getComputeNodeList()) {
+            if (bladeServer.getReady() != -1) // -1 : means this
             // server is
             // idle not so
             // as to compute
             // its idle
             // power
             {
-                if (getComputeNodeList().get(i).getWebBasedList().isEmpty()) {
-                    getComputeNodeList().get(i).setReady(1);
-                    getComputeNodeList().get(i).setCurrentCPU(0);
+                if (bladeServer.getWebBasedList().isEmpty()) {
+                    bladeServer.setReady(1);
+                    bladeServer.setCurrentCPU(0);
                 } // bahs
                 else {
-                    getComputeNodeList().get(i).setReady(0);
+                    bladeServer.setReady(0);
                     // LOGGER.info("queulength in SetReady FLag:
                     // "+ComputeNodeList.get(i).queueLength);
                 }
@@ -305,8 +301,8 @@ public class InteractiveUser {
     }
 
     void destroyWLBundle() throws IOException {
-        for (int i = 0; i < getComputeNodeList().size(); i++) {
-            getComputeNodeList().get(i).restart();
+        for (BladeServer bladeServer : getComputeNodeList()) {
+            bladeServer.restart();
         }
 
         bis.close();
@@ -314,8 +310,8 @@ public class InteractiveUser {
 
     public int numberofRunningNode() {
         int cnt = 0;
-        for (int i = 0; i < getComputeNodeList().size(); i++) {
-            if (getComputeNodeList().get(i).getReady() > -1) {
+        for (BladeServer bladeServer : getComputeNodeList()) {
+            if (bladeServer.getReady() > -1) {
                 cnt++;
             }
         }
@@ -324,14 +320,15 @@ public class InteractiveUser {
 
     public int numberofIdleNode() {
         int cnt = 0;
-        for (int i = 0; i < getComputeNodeList().size(); i++) {
-            if (getComputeNodeList().get(i).getReady() == -1) {
+        for (BladeServer bladeServer : getComputeNodeList()) {
+            if (bladeServer.getReady() == -1) {
                 cnt++;
             }
         }
         return cnt;
     }
 
+    //FIXME: why return index instead instance?
     public int myFirstIdleNode() {
         for (int i = 0; i < getComputeNodeList().size(); i++) {
             if (getComputeNodeList().get(i).getReady() == -1) {
@@ -358,9 +355,9 @@ public class InteractiveUser {
 
     public double numberOfWaitingJobs() {
         double lenJob = 0;
-        for (int i = 0; i < getQueueWL().size(); i++) {
-            if (getQueueWL().get(i).getArrivalTimeOfJob() <= environment.getCurrentLocalTime()) {
-                lenJob = +getQueueWL().get(i).getNumberOfJob();
+        for (InteractiveJob job : getQueueWL()) {
+            if (job.getArrivalTimeOfJob() <= environment.getCurrentLocalTime()) {
+                lenJob = +job.getNumberOfJob(); //FIXME: += instead of =+
             }
         }
 
@@ -373,16 +370,16 @@ public class InteractiveUser {
         for (i = 0; i < getComputeNodeList().size(); i++) {
             cpu = cpu + getComputeNodeList().get(i).getCurrentCPU();
         }
-        cpu = cpu / i;
+        cpu = cpu / i; //FIXME: why not list.size()? i will always be (size -1)
         return cpu;
     }
 
     public double[] getAveragePwrParam() {
         double[] ret = new double[3];
-        for (int i = 0; i < getComputeNodeList().size(); i++) {
-            ret[0] = ret[0] + getComputeNodeList().get(i).getPwrParam()[0];
-            ret[1] = ret[1] + getComputeNodeList().get(i).getPwrParam()[1];
-            ret[2] = ret[2] + getComputeNodeList().get(i).getPwrParam()[2];
+        for (BladeServer bladeServer : getComputeNodeList()) {
+            ret[0] = ret[0] + bladeServer.getPwrParam()[0];
+            ret[1] = ret[1] + bladeServer.getPwrParam()[1];
+            ret[2] = ret[2] + bladeServer.getPwrParam()[2];
         }
         ret[0] = ret[0] / getComputeNodeList().size();
         ret[1] = ret[1] / getComputeNodeList().size();

@@ -294,8 +294,8 @@ public class BladeServer {
                 // DONE function
             }
         }
-        for (i = 0; i < getActiveBatchList().size(); i++) {
-            getActiveBatchList().get(i).setIsChangedThisTime(0);
+        for (BatchJob job : getActiveBatchList()) {
+            job.setIsChangedThisTime(0);
         }
         // Inja be nazaram /MIPS ham mikhad ke sad beshe fek konam MIPS ro dar
         // nazar nagereftam!
@@ -499,7 +499,7 @@ public class BladeServer {
         Mips = mips;
     }
 
-    public double getRespTime() {
+    public double getResponseTime() {
         return respTime;
     }
 

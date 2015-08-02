@@ -43,8 +43,8 @@ public class InteractiveSystem extends GeneralSystem {
 
     public int numberofAvailableNodetoAlocate() {
         int n = 0;
-        for (int i = 0; i < getComputeNodeList().size(); i++) {
-            if (getComputeNodeList().get(i).getReady() == -2) {
+        for (BladeServer bladeServer : getComputeNodeList()) {
+            if (bladeServer.getReady() == -2) {
                 n++;
             }
         }
@@ -52,8 +52,8 @@ public class InteractiveSystem extends GeneralSystem {
     }
 
     public boolean checkForViolation() {
-        for (int i = 0; i < getUserList().size(); i++) {
-            if (getUserList().get(i).getSLAviolation() > 0) {
+        for (InteractiveUser interactiveUser : getUserList()) {
+            if (interactiveUser.getSLAviolation() > 0) {
                 return true;
             }
         }
@@ -163,8 +163,8 @@ public class InteractiveSystem extends GeneralSystem {
 
     void violationCheckandSet() throws IOException {
         setSLAviolation(0);
-        for (int i = 0; i < getUserList().size(); i++) {
-            setSLAviolation(+getUserList().get(i).getSLAviolation());
+        for (InteractiveUser interactiveUser : getUserList()) {
+            setSLAviolation(+interactiveUser.getSLAviolation()); //FIXME: += instead of just +. Before was =+
         }
         if (getSLAviolation() > 0) {
             environment.logInteractiveViolation(getName(), getSLAviolation());

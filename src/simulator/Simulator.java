@@ -166,18 +166,18 @@ public class Simulator {
     };
 
     public boolean anySysetm() {
-        for (int i = 0; i < enterpriseSystems.size(); i++) {
-            if (!enterpriseSystems.get(i).isDone()) {
+        for (EnterpriseSystem enterpriseSystem : enterpriseSystems) {
+            if (!enterpriseSystem.isDone()) {
                 return false;
             }
         }
-        for (int i = 0; i < interactiveSystems.size(); i++) {
-            if (!interactiveSystems.get(i).isDone()) {
+        for (InteractiveSystem interactiveSytem : interactiveSystems) {
+            if (!interactiveSytem.isDone()) {
                 return false;
             }
         }
-        for (int i = 0; i < computeSystems.size(); i++) {
-            if (!computeSystems.get(i).isDone()) {
+        for (ComputeSystem computeSystem : computeSystems) {
+            if (!computeSystem.isDone()) {
                 return false; // still we have work to do
             }
         }

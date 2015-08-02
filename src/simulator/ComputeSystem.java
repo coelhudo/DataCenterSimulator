@@ -96,8 +96,8 @@ public class ComputeSystem extends GeneralSystem {
     /// returns true if all nodes are blocked
 
     boolean allNodesAreBlocked() {
-        for (int temp = 0; temp < getComputeNodeList().size(); temp++) {
-            if (getComputeNodeList().get(temp).getReady() != -1) {
+        for (BladeServer bladeServer : getComputeNodeList()) {
+            if (bladeServer.getReady() != -1) {
                 return false;
             }
         }
@@ -105,16 +105,15 @@ public class ComputeSystem extends GeneralSystem {
     }
 
     void makeSystemaBlocked() {
-        for (int temp = 0; temp < getComputeNodeList().size(); temp++) {
-            getComputeNodeList().get(temp).setBackUpReady(getComputeNodeList().get(temp).getReady());
-            getComputeNodeList().get(temp).setReady(-1);
-
+        for (BladeServer bladeServer : getComputeNodeList()) {
+            bladeServer.setBackUpReady(bladeServer.getReady());
+            bladeServer.setReady(-1);
         }
     }
 
     public void makeSystemaUnBlocked() {
-        for (int temp = 0; temp < getComputeNodeList().size(); temp++) {
-            getComputeNodeList().get(temp).setReady(getComputeNodeList().get(temp).getBackUpReady());
+        for (BladeServer bladeServer: getComputeNodeList()) {
+            bladeServer.setReady(bladeServer.getBackUpReady());
         }
     }
 
@@ -317,8 +316,8 @@ public class ComputeSystem extends GeneralSystem {
             Logger.getLogger(EnterpriseApp.class.getName()).log(Level.SEVERE, null, ex);
         }
         double totalResponsetime = 0;
-        for (int i = 0; i < getComputeNodeList().size(); i++) {
-            totalResponsetime = totalResponsetime + getComputeNodeList().get(i).getRespTime();
+        for (BladeServer bladeServer : getComputeNodeList()) {
+            totalResponsetime = totalResponsetime + bladeServer.getResponseTime();
 
         }
         return totalResponsetime;

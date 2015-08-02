@@ -69,7 +69,7 @@ public class BatchJob extends Job {
         }
 
         BladeServer server = dataCenter.getServer(getListOfServer()[0]);
-        server.setRespTime(waitTime + server.getRespTime());
+        server.setRespTime(waitTime + server.getResponseTime());
         for (int i = 0; i < getNumOfNode(); i++) {
             server = dataCenter.getServer(getListOfServer()[i]);
             server.getBlockedBatchList().remove(this);

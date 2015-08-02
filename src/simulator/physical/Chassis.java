@@ -45,8 +45,8 @@ public class Chassis {
     
     public boolean isReady() {
         int RDY = 0;
-        for (int i = 0; i < servers.size(); i++) {
-            RDY = RDY + servers.get(i).getReady();
+        for (BladeServer bladeServer : servers) {
+            RDY = RDY + bladeServer.getReady();
         }
         if (RDY == 0) {
             return false;
@@ -57,9 +57,8 @@ public class Chassis {
 
     double power() {
         double pw = 0;
-        int i;
-        for (i = 0; i < servers.size(); i++) {
-            pw = pw + servers.get(i).getPower();
+        for (BladeServer bladeServer : servers) {
+            pw = pw + bladeServer.getPower();
         }
         // pw=(cpus*a/100)+w*servers.size();
         // LOGGER.info("powercost= " + (int)pw+"\t"+cpus);

@@ -53,8 +53,8 @@ public class GeneralSystem {
     }
 
     void calculatePower() {
-        for (int i = 0; i < getComputeNodeList().size(); i++) {
-            setPower(getPower() + getComputeNodeList().get(i).getPower());
+        for (BladeServer bladeServer : getComputeNodeList()) {
+            setPower(getPower() + bladeServer.getPower());
         }
 
     }
