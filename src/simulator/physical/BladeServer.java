@@ -1,4 +1,3 @@
-//Problems to be solved:
 //Ready in web based workload is not set correctly, check it out!
 package simulator.physical;
 
@@ -18,7 +17,7 @@ import simulator.jobs.InteractiveJob;
 public class BladeServer {
 
     private static final Logger LOGGER = Logger.getLogger(BladeServer.class.getName());
-    
+
     private List<ResponseTime> responseList;
     private List<ResponseTime> responseListWeb;
     private int dependency = 0;
@@ -27,7 +26,7 @@ public class BladeServer {
     private double[] powerIdle;
     private double Mips;
     private double idleConsumption;
-    String bladeType;
+    private String bladeType;
     private double respTime = 0;
     private double resTimeEpoch = 0;
     private double currentCPU = 0;
@@ -60,7 +59,7 @@ public class BladeServer {
         // if it is -1 means that it is not put in the proper position yet ID
         // should be set
         setChassisID(chasID);
-        bladeType = new String();
+        setBladeType(new String());
         setCurrentCPU(0);
         setActiveBatchList(new ArrayList<BatchJob>());
         setBlockedBatchList(new ArrayList<BatchJob>());
@@ -377,7 +376,7 @@ public class BladeServer {
                 // Integer.parseInt(childNodes.item(i).getChildNodes().item(0).getNodeValue().trim());
                 // }
                 if (childNodes.item(i).getNodeName().equalsIgnoreCase("BladeType")) {
-                    bladeType = childNodes.item(i).getChildNodes().item(0).getNodeValue().trim();
+                    setBladeType(childNodes.item(i).getChildNodes().item(0).getNodeValue().trim());
                 }
                 if (childNodes.item(i).getNodeName().equalsIgnoreCase("MIPS")) {
                     String str = childNodes.item(i).getChildNodes().item(0).getNodeValue().trim();
@@ -659,18 +658,38 @@ public class BladeServer {
     public void setSLAviolation(boolean sLAviolation) {
         SLAviolation = sLAviolation;
     }
-}
 
-/*
- * double getMeanResTimeLastEpoch() {
- * 
- * if(resTimeEpoch==0) //the first time in { resTimeEpoch=respTime;
- * totalJobEpoch=totalJob-queueLength; //LOGGER.info(
- * "First   Last Epoch   "+respTime+ totalJobEpoch+"\t"+chassisID);
- * if(totalJobEpoch>0) return respTime/totalJobEpoch; else return 0; } else {
- * double tempTime=respTime-resTimeEpoch; double
- * tempJob=totalJob-queueLength-totalJobEpoch; resTimeEpoch=respTime;
- * totalJobEpoch=totalJob-queueLength; //LOGGER.info(
- * "in get MeanResponse Last Epoch   "+ tempTime/tempJob+"\t"+chassisID);
- * if(tempJob!=0) return tempTime/tempJob; else return 0; } }
- */
+    protected String getBladeType() {
+        return bladeType;
+    }
+
+    protected void setBladeType(String bladeType) {
+        this.bladeType = bladeType;
+    }
+
+    /*double getMeanResTimeLastEpoch() {
+
+        if (resTimeEpoch == 0) // the first time in
+        {
+            resTimeEpoch = respTime;
+            totalJobEpoch = totalJob - queueLength;
+            LOGGER.info("First   Last Epoch   " + respTime + totalJobEpoch + "\t" + chassisID);
+            if (totalJobEpoch > 0)
+                return respTime / totalJobEpoch;
+            else
+                return 0;
+        } 
+        else
+        {
+            double tempTime = respTime - resTimeEpoch;
+            double tempJob = totalJob - queueLength - totalJobEpoch;
+            resTimeEpoch = respTime;
+            totalJobEpoch = totalJob - queueLength;
+            LOGGER.info("in get MeanResponse Last Epoch   " + tempTime / tempJob + "\t" + chassisID);
+            if (tempJob != 0)
+                return tempTime / tempJob;
+            else
+                return 0;
+        }
+    }*/
+}

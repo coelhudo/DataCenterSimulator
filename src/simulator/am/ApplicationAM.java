@@ -12,12 +12,12 @@ public class ApplicationAM extends GeneralAM {
 
     private static final Logger LOGGER = Logger.getLogger(ApplicationAM.class.getName());
     
-    EnterpriseSystem sys;
-    EnterpriseApp app;// =new application(null, null);
+    private EnterpriseSystem sys;
+    private EnterpriseApp app;// =new application(null, null);
     static int violationInEpoch = 0;
     private double util = 0;
     private double percnt = 0;
-    int accumulativeSLA = 0;
+    private int accumulativeSLA = 0;
     // int cpAccumu=0;
     Simulator.StrategyEnum StrategyWsitch = Simulator.StrategyEnum.Green;
     Simulator.Environment environment;
@@ -110,8 +110,8 @@ public class ApplicationAM extends GeneralAM {
             // LOGGER.info("SLA violation Application\t"+app.SLAviolation
             // + Main.localTime);
         }
-        accumulativeSLA = accumulativeSLA + app.getSLAviolation();
-        sys.getAM().SlaApps[app.getID()] = sys.getAM().SlaApps[app.getID()] + accumulativeSLA;
+        setAccumulativeSLA(getAccumulativeSLA() + app.getSLAviolation());
+        sys.getAM().SlaApps[app.getID()] = sys.getAM().SlaApps[app.getID()] + getAccumulativeSLA();
         // cpAccumu=cpAccumu+app.SLAviolation;
         // LOGGER.info("ACCCUMU \t"+accumulativeSLA);
     }
@@ -294,5 +294,13 @@ public class ApplicationAM extends GeneralAM {
 
     public void setPercnt(double percnt) {
         this.percnt = percnt;
+    }
+
+    protected int getAccumulativeSLA() {
+        return accumulativeSLA;
+    }
+
+    protected void setAccumulativeSLA(int accumulativeSLA) {
+        this.accumulativeSLA = accumulativeSLA;
     }
 }

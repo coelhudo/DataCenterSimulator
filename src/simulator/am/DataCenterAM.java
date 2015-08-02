@@ -13,12 +13,12 @@ public class DataCenterAM extends GeneralAM {
 
     private static final Logger LOGGER = Logger.getLogger(DataCenterAM.class.getName());
     
-    int[] SoSCS;
-    int[] SoSIS;
-    int[] SoSES;
-    int[] SLAVioES;
-    int[] SLAVioIS;
-    int[] SLAVioCS;
+    private int[] SoSCS;
+    private int[] SoSIS;
+    private int[] SoSES;
+    private int[] SLAVioES;
+    private int[] SLAVioIS;
+    private int[] SLAVioCS;
     private int blockTimer = 0;
     private boolean SlowDownFromCooler = false;
     private List<ComputeSystem> computeSystems;
@@ -45,7 +45,7 @@ public class DataCenterAM extends GeneralAM {
         SLAVioES = new int[enterpriseSystems.size()];
         SLAVioIS = new int[interactiveSystems.size()];
         for (int i = 0; i < computeSystems.size(); i++) {
-            SLAVioCS[i] = computeSystems.get(i).getAM().SLAViolationGen;
+            SLAVioCS[i] = computeSystems.get(i).getAM().getSLAViolationGen();
         }
     }
 

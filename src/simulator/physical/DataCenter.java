@@ -42,7 +42,6 @@ public final class DataCenter {
     private int numOfServerSoFar = 0;
     private double[][] D;
     private DataCenterAM am;
-    ///////////////////////////
     private Simulator.Environment environment;
 
     public DataCenter(String config, Simulator.Environment environment) {
@@ -133,7 +132,7 @@ public final class DataCenter {
         for (int j = 0; j < ch.getServers().size(); j++) {
             int i;
             for (i = 0; i < BSTemp.size(); i++) {
-                if (ch.getServers().get(j).bladeType.trim().equalsIgnoreCase(BSTemp.get(i).bladeType.trim())) {
+                if (ch.getServers().get(j).getBladeType().trim().equalsIgnoreCase(BSTemp.get(i).getBladeType().trim())) {
                     break;
                 }
             }
@@ -150,7 +149,7 @@ public final class DataCenter {
             }
             ch.getServers().get(j).setIdleConsumption(BSTemp.get(i).getIdleConsumption());
             ch.getServers().get(j).setServerID(j);
-            ch.getServers().get(j).bladeType = BSTemp.get(i).bladeType;
+            ch.getServers().get(j).setBladeType(BSTemp.get(i).getBladeType());
         }
 
     }
@@ -188,7 +187,7 @@ public final class DataCenter {
         for (int loop = 0; loop < tedad; loop++) {
             for (kk = 0; kk < tedadinRack[loop]; kk++) {
                 for (k = 0; k < CHSTemp.size(); k++) {
-                    if (s[loop].equalsIgnoreCase(CHSTemp.get(k).chassisType)) {
+                    if (s[loop].equalsIgnoreCase(CHSTemp.get(k).getChassisType())) {
                         break;
                     }
                 }
@@ -226,7 +225,7 @@ public final class DataCenter {
                 A.getServers().get(i).getPowerIdle()[p] = B.getServers().get(i).getPowerIdle()[p];
             }
             A.getServers().get(i).setIdleConsumption(B.getServers().get(i).getIdleConsumption());
-            A.getServers().get(i).bladeType = B.getServers().get(i).bladeType;
+            A.getServers().get(i).setBladeType(B.getServers().get(i).getBladeType());
             A.getServers().get(i).setServerID(numOfServerSoFar);
             numOfServerSoFar++;
         }

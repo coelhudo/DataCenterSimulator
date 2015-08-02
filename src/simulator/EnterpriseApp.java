@@ -42,8 +42,8 @@ public final class EnterpriseApp {
     private int SLAPercentage;
     private int SLAviolation = 0;
     private int NumofViolation = 0;
-    BufferedReader bis = null;
-    File logFile;
+    private BufferedReader bis = null;
+    private File logFile;
     private ApplicationAM AM;
     // EnterpriseSystem mySys; //Application knows in which Sys it is located.
     // initialize in EnterpriseSystem

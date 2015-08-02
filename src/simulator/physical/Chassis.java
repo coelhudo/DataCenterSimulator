@@ -11,9 +11,9 @@ import simulator.Simulator;
 public class Chassis {
 
     private List<BladeServer> servers = new ArrayList<BladeServer>();
-    boolean turnON = true;
+    private boolean turnON = true;
     private int chassisID, rackId;
-    String chassisType = new String();
+    private String chassisType = new String();
     private Simulator.Environment environment;
 
     public Chassis(int idArg, Simulator.Environment environment) {
@@ -76,7 +76,7 @@ public class Chassis {
         for (int i = 0; i < childNodes.getLength(); i++) {
             if (childNodes.item(i).getNodeType() == Node.ELEMENT_NODE) {
                 if (childNodes.item(i).getNodeName().equalsIgnoreCase("ChassisType")) {
-                    chassisType = (childNodes.item(i).getChildNodes().item(0).getNodeValue().trim());
+                    setChassisType((childNodes.item(i).getChildNodes().item(0).getNodeValue().trim()));
                 }
                 if (childNodes.item(i).getNodeName().equalsIgnoreCase("numberOfBladeServer")) {
                     String str = childNodes.item(i).getChildNodes().item(0).getNodeValue().trim();
@@ -100,7 +100,7 @@ public class Chassis {
             for (int k = 0; k < number[j]; k++) {
                 BladeServer bldServ = new BladeServer(-1, environment);
                 // s[j]=s[j].substring(1,s[j].length()-1);
-                bldServ.bladeType = s[j].trim();
+                bldServ.setBladeType(s[j].trim());
                 servers.add(bldServ);
             }
         }
@@ -112,5 +112,13 @@ public class Chassis {
         // bladeServer.readFromNode(childNodes.item(i));
         // servers.add(bladeServer);
         // }
+    }
+
+    protected String getChassisType() {
+        return chassisType;
+    }
+
+    private void setChassisType(String chassisType) {
+        this.chassisType = chassisType;
     }
 }

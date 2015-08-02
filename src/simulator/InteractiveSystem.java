@@ -6,6 +6,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -23,9 +24,9 @@ public class InteractiveSystem extends GeneralSystem {
 
     private static final Logger LOGGER = Logger.getLogger(InteractiveSystem.class.getName());
     
-    private ArrayList<InteractiveUser> UserList;
-    private ArrayList<InteractiveUser> waitingQueueWL;
-    File logFile;
+    private List<InteractiveUser> UserList;
+    private List<InteractiveUser> waitingQueueWL;
+    private File logFile;
     private Simulator.Environment environment;
 
     public InteractiveSystem(String config, Simulator.Environment environment, DataCenter dataCenter) {
@@ -115,8 +116,8 @@ public class InteractiveSystem extends GeneralSystem {
     int readWL() {
         int retReadLogfile = readingLogFile();
         if (!getWaitingQueueWL().isEmpty()) {
-            if (getWaitingQueueWL().get(0).arrivalTime == environment.getCurrentLocalTime()
-                    | getWaitingQueueWL().get(0).arrivalTime < environment.getCurrentLocalTime()) {
+            if (getWaitingQueueWL().get(0).getArrivalTime() == environment.getCurrentLocalTime()
+                    | getWaitingQueueWL().get(0).getArrivalTime() < environment.getCurrentLocalTime()) {
                 return 1;
             } else {
                 return 0;
@@ -140,12 +141,12 @@ public class InteractiveSystem extends GeneralSystem {
                 return -2;
             }
             InteractiveUser test = new InteractiveUser(this, environment);
-            test.arrivalTime = Integer.parseInt(numbers[0]);
+            test.setArrivalTime(Integer.parseInt(numbers[0]));
             test.setMinProc(Integer.parseInt(numbers[1]));
             test.setMaxProc(Integer.parseInt(numbers[2]));
-            test.duration = Double.parseDouble(numbers[3]);
-            test.remain = test.duration; // for now I've not used that!
-            test.logFileName = numbers[4];
+            test.setDuration(Double.parseDouble(numbers[3]));
+            test.setRemain(test.getDuration()); // for now I've not used that!
+            test.setLogFileName(numbers[4]);
             test.setMaxExpectedResTime(Integer.parseInt(numbers[5]));
             test.setMaxNumberOfRequest(Integer.parseInt(numbers[6]));
             test.setNumberofBasicNode(Integer.parseInt(numbers[7]));
@@ -228,7 +229,7 @@ public class InteractiveSystem extends GeneralSystem {
         }
     }
 
-    public ArrayList<InteractiveUser> getUserList() {
+    public List<InteractiveUser> getUserList() {
         return UserList;
     }
 
@@ -236,7 +237,7 @@ public class InteractiveSystem extends GeneralSystem {
         UserList = userList;
     }
 
-    public ArrayList<InteractiveUser> getWaitingQueueWL() {
+    public List<InteractiveUser> getWaitingQueueWL() {
         return waitingQueueWL;
     }
 

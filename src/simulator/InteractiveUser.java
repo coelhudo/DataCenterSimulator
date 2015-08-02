@@ -18,30 +18,30 @@ import simulator.schedulers.Scheduler;
 public class InteractiveUser {
 
     private static final Logger LOGGER = Logger.getLogger(InteractiveSystem.class.getName());
-    int arrivalTime;
+    private int arrivalTime;
     private int maxProc = 0;
     private int minProc = 0;
     private int maxExpectedResTime = 0;
-    double duration;
-    double remain;
+    private double duration;
+    private double remain;
     private int id = 0;
-    String logFileName;
-    File logFile = null;
+    private String logFileName;
+    private File logFile = null;
     private List<BladeServer> ComputeNodeList;
     private List<Integer> ComputeNodeIndex;
     private List<InteractiveJob> queueWL;
     private List<ResponseTime> responseList;
     // jobPlacement placement;
-    BufferedReader bis = null;
+    private BufferedReader bis = null;
     // SLA
     private int SLAviolation = 0;
     private IteractiveUserAM AM;
-    int usedNode = 0;
+    private int usedNode = 0;
     private int MaxNumberOfRequest = 0; // # of Request can be handled by number
     // of basic node which for 100% CPU
     // utilization
     private int NumberofBasicNode = 0;
-    GeneralSystem parent;
+    private GeneralSystem parent;
     private Simulator.Environment environment;
 
     public InteractiveUser(GeneralSystem parent, Simulator.Environment environment) {
@@ -50,7 +50,7 @@ public class InteractiveUser {
         setComputeNodeIndex(new ArrayList<Integer>());
         setQueueWL(new ArrayList<InteractiveJob>());
         setResponseList(new ArrayList<ResponseTime>());
-        logFileName = new String();
+        setLogFileName(new String());
         // placement=new jobPlacement(ComputeNodeList);
         setAM(new IteractiveUserAM((InteractiveSystem) parent, this, environment));
         this.parent = parent;
@@ -68,7 +68,7 @@ public class InteractiveUser {
     int readingLogFile() {
         if (bis == null) {
             try {
-                logFile = new File(logFileName);
+                logFile = new File(getLogFileName());
                 bis = new BufferedReader(new InputStreamReader(new FileInputStream(logFile)));
             } catch (IOException e) {
                 LOGGER.warning("Uh oh, got an IOException error!" + e.getMessage());
@@ -484,5 +484,37 @@ public class InteractiveUser {
 
     public void setNumberofBasicNode(int numberofBasicNode) {
         NumberofBasicNode = numberofBasicNode;
+    }
+
+    int getArrivalTime() {
+        return arrivalTime;
+    }
+
+    void setArrivalTime(int arrivalTime) {
+        this.arrivalTime = arrivalTime;
+    }
+
+    double getDuration() {
+        return duration;
+    }
+
+    void setDuration(double duration) {
+        this.duration = duration;
+    }
+
+    double getRemain() {
+        return remain;
+    }
+
+    void setRemain(double remain) {
+        this.remain = remain;
+    }
+
+    String getLogFileName() {
+        return logFileName;
+    }
+
+    void setLogFileName(String logFileName) {
+        this.logFileName = logFileName;
     }
 }

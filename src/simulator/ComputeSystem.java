@@ -25,16 +25,16 @@ public class ComputeSystem extends GeneralSystem {
 
     private static final Logger LOGGER = Logger.getLogger(ComputeSystem.class.getName());
     
-    Violation SLAViolationType; // different type of violation:
+    private Violation SLAViolationType; // different type of violation:
     // ComputeNodeShortage, DEADLINEPASSED
-    ArrayList<BatchJob> waitingList;
-    int totalJob = 0;// , totalFinishedJob=0;
-    int minNode, maxNode;
-    double inputTime;
+    private List<BatchJob> waitingList;
+    private int totalJob = 0;// , totalFinishedJob=0;
+    private int minNode, maxNode;
+    private double inputTime;
     private boolean blocked = false;
-    File f;
-    int predictNumberofNode;
-    int priority;
+    private File f;
+    private int predictNumberofNode;
+    private int priority;
     private Simulator.Environment environment;
     private DataCenter dataCenter;
 
@@ -73,8 +73,7 @@ public class ComputeSystem extends GeneralSystem {
             for (int temp = 0; temp < getComputeNodeList().size(); temp++) {
                 numberOfFinishedJob = getComputeNodeList().get(temp).getTotalFinishedJob() + numberOfFinishedJob;
             }
-            // LOGGER.info("total "+totalJob+ "\t finished Job=
-            // "+numberOfFinishedJob+"\t LocalTime="+Main.localTime);
+            //LOGGER.info("total "+totalJob+ "\t finished Job= "+numberOfFinishedJob+"\t LocalTime="+Main.localTime);
         }
         // if is blocked and was not belocked before make it blocked
         if (isBlocked() && !allNodesAreBlocked()) {
