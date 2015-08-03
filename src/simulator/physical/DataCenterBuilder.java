@@ -24,18 +24,17 @@ public class DataCenterBuilder {
 
     private static final Logger LOGGER = Logger.getLogger(DataCenterBuilder.class.getName());
 
-    private List<Chassis> chassisSet = new ArrayList<Chassis>();
     private List<BladeServer> BSTemp = new ArrayList<BladeServer>();
     private List<Chassis> CHSTemp = new ArrayList<Chassis>();
 
     private int numbOfSofarChassis = 0;
     private int numOfServerSoFar = 0;
-    private int redTemperature;
     private Environment environment;
-    private double[][] D;
+    private DataCenterPOD dataCenterPOD;
     
     public DataCenterBuilder(String config, Environment environment) {
         this.environment = environment;
+        dataCenterPOD = new DataCenterPOD();
         parseXmlConfig(config);
     }
 
@@ -61,7 +60,7 @@ public class DataCenterBuilder {
     }
 
     void readFromNode(Node node, String path) {
-        chassisSet.clear();
+        dataCenterPOD.clearChassis();
         NodeList childNodes = node.getChildNodes();
         for (int i = 0; i < childNodes.getLength(); i++) {
             if (childNodes.item(i).getNodeType() == Node.ELEMENT_NODE) {
@@ -93,7 +92,7 @@ public class DataCenterBuilder {
                     getDmatrix(DFileName);
                 }
                 if (childNodes.item(i).getNodeName().equalsIgnoreCase("RedTemperature")) {
-                    redTemperature = Integer.parseInt(childNodes.item(i).getChildNodes().item(0).getNodeValue().trim());
+                    dataCenterPOD.setRedTemperature(Integer.parseInt(childNodes.item(i).getChildNodes().item(0).getNodeValue().trim()));
                 }
             }
         }
@@ -146,7 +145,7 @@ public class DataCenterBuilder {
                     ch1.getServers().get(inx).setChassisID(numbOfSofarChassis + kk);
                     ch1.getServers().get(inx).setRackId(rackID);
                 }
-                chassisSet.add(ch1);
+                dataCenterPOD.appendChassis(ch1);
             }
             numbOfSofarChassis += kk;
         }
@@ -204,34 +203,31 @@ public class DataCenterBuilder {
     }
     
     boolean getDmatrix(String DFileName) {
-        int m = chassisSet.size();
-        D = new double[m][m];
         BufferedReader bis = null;
         try {
             File f = new File(DFileName);
             bis = new BufferedReader(new InputStreamReader(new FileInputStream(f)));
         } catch (IOException e) {
             LOGGER.info("Uh oh, got an IOException error!" + e.getMessage());
-
-        } finally {
         }
-        int i = 0, k = 0;
-        for (k = 0; k < m; k++) {
+        
+        final int numberOfChassis = dataCenterPOD.getNumberOfChassis();
+        for (int k = 0; k < numberOfChassis; k++) {
             try {
                 String line = bis.readLine();
                 if (line == null) {
                     return false;
                 }
                 String[] numbers = line.split("\t");
-                if (numbers.length < m) {
+                if (numbers.length < numberOfChassis) {
                     return false;
                 }
-                for (i = 0; i < m; i++) {
+                for (int i = 0; i < numberOfChassis; i++) {
 
                     if (Double.parseDouble(numbers[i]) > 0) {
-                        D[k][i] = 13 * Double.parseDouble(numbers[i]);
+                        dataCenterPOD.setD(k, i, 13 * Double.parseDouble(numbers[i]));
                     } else {
-                        D[k][i] = 0;
+                        dataCenterPOD.setD(k, i, 0);
                     }
                 }
             } catch (IOException ex) {
@@ -243,16 +239,7 @@ public class DataCenterBuilder {
         return true;
     }
 
-    
-    public List<Chassis> getChassis() {
-        return chassisSet;
-    }
-
-    public int getRedTemperature() {
-        return redTemperature;
-    }
-    
-    public double[][] getD() {
-        return D;
+    public DataCenterPOD getDataCenterPOD() {
+        return dataCenterPOD;
     }
 }

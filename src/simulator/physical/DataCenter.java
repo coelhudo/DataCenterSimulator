@@ -28,7 +28,7 @@ public final class DataCenter {
     private DataCenterAM am;
     
     private Environment environment;
-    public DataCenter(DataCenterBuilder builder, Environment environment, Systems systems) {
+    public DataCenter(DataCenterPOD dataCenterPOD, Environment environment, Systems systems) {
         // output file for writing total DC power consumption
         am = new DataCenterAM(environment, systems);
         String s = "out_W.txt";
@@ -41,9 +41,9 @@ public final class DataCenter {
         this.environment = environment;
         oos = new OutputStreamWriter(fos);
         // reading config file to set the parameters
-        chassisSet = builder.getChassis();
-        redTemperature = builder.getRedTemperature();
-        D = builder.getD();
+        chassisSet = dataCenterPOD.getChassis();
+        redTemperature = dataCenterPOD.getRedTemperature();
+        D = dataCenterPOD.getD();
     }
 
     int getServerIndex(int i) {

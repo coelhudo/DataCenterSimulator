@@ -15,6 +15,7 @@ import org.xml.sax.SAXException;
 
 import simulator.physical.DataCenter;
 import simulator.physical.DataCenterBuilder;
+import simulator.physical.DataCenterPOD;
 
 public class SimulatorBuilder {
 
@@ -46,7 +47,9 @@ public class SimulatorBuilder {
                 if (childNodes.item(i).getNodeType() == Node.ELEMENT_NODE) {
                     if (childNodes.item(i).getNodeName().equalsIgnoreCase("layout")) {
                         String DCLayout = path + "/" + childNodes.item(i).getChildNodes().item(0).getNodeValue().trim();
-                        dataCenter = new DataCenter(new DataCenterBuilder(DCLayout, environment), environment, systems);
+                        DataCenterBuilder dataCenterBuilder = new DataCenterBuilder(DCLayout, environment);
+                        DataCenterPOD dataCenterPOD = dataCenterBuilder.getDataCenterPOD();
+                        dataCenter = new DataCenter(dataCenterPOD, environment, systems);
                     }
                     if (childNodes.item(i).getNodeName().equalsIgnoreCase("System")) {
                         NodeList nodiLst = childNodes.item(i).getChildNodes();
