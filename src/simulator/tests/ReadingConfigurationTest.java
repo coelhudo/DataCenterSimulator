@@ -20,7 +20,7 @@ import simulator.physical.DataCenter;
 public class ReadingConfigurationTest {
 
     @Test
-    public void testDataCenterAndSystemsBuilder() {
+    public void testSimulatorBuilder() {
         Simulator simulator = new Simulator();
         simulator.initialize("configs/DC_Logic.xml");
 

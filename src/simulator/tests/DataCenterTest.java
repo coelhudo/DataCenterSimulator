@@ -12,6 +12,7 @@ import simulator.Environment;
 import simulator.Systems;
 import simulator.physical.Chassis;
 import simulator.physical.DataCenter;
+import simulator.physical.DataCenterBuilder;
 
 public class DataCenterTest {
 
@@ -20,18 +21,17 @@ public class DataCenterTest {
     
     @Test
     public void testDataCenterCreation() {
-        final String configurationPath = new String("configs/DC_Logic.xml");
+        final String configurationPath = new String("configs/DC.xml");
         Environment environment = new Environment();
         Systems systems = new Systems(environment);
-        DataCenter dataCenter = new DataCenter(configurationPath, environment, systems);
+        DataCenter dataCenter = new DataCenter(new DataCenterBuilder(configurationPath, environment), environment, systems);
         dataCenter.getAM();
         List<Chassis> chassis = dataCenter.getChassisSet();
-        assertTrue(chassis.isEmpty());
+        assertFalse(chassis.isEmpty());
+        assertEquals(50, chassis.size());
         assertEquals(0, dataCenter.getOverRed());
-        exception.expect(IndexOutOfBoundsException.class);
-        dataCenter.getServer(0);
-        exception.expect(IndexOutOfBoundsException.class);
-        dataCenter.getServer(0, 0);
+        assertNotNull(dataCenter.getServer(0));
+        assertNotNull(dataCenter.getServer(0, 0));
         assertEquals(0.0, dataCenter.getTotalPowerConsumption(), 1.0E8);
         
     }

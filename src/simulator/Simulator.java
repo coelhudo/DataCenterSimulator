@@ -37,7 +37,7 @@ public class Simulator {
     }
 
     public void initialize(String config) {
-        DataCenterBuilder dataCenterBuilder = new DataCenterBuilder(environment, slaViolationLogger);
+        SimulatorBuilder dataCenterBuilder = new SimulatorBuilder(environment, slaViolationLogger);
         dataCenterBuilder.buildLogicalDataCenter(config);
 
         datacenter = dataCenterBuilder.getDataCenter();
