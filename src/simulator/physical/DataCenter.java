@@ -22,7 +22,8 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
-import simulator.Simulator;
+import simulator.Environment;
+import simulator.Systems;
 import simulator.am.DataCenterAM;
 
 public final class DataCenter {
@@ -42,11 +43,12 @@ public final class DataCenter {
     private int numOfServerSoFar = 0;
     private double[][] D;
     private DataCenterAM am;
-    private Simulator.Environment environment;
+    private Environment environment;
+    private Systems systems;
 
-    public DataCenter(String config, Simulator.Environment environment) {
+    public DataCenter(String config, Environment environment, Systems systems) {
         // output file for writing total DC power consumption
-        am = new DataCenterAM(environment);
+        am = new DataCenterAM(environment, systems);
         String s = "out_W.txt";
         File destinationFile = new File(s);
         try {

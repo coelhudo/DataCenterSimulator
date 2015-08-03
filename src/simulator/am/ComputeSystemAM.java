@@ -3,16 +3,16 @@ package simulator.am;
 import java.util.logging.Logger;
 
 import simulator.ComputeSystem;
-import simulator.Simulator;
+import simulator.Environment;
 
 public class ComputeSystemAM extends GeneralAM {
 
     private static final Logger LOGGER = Logger.getLogger(ComputeSystemAM.class.getName());
     
     private ComputeSystem computeSystem;
-    protected Simulator.Environment environment;
+    private Environment environment;
 
-    public ComputeSystemAM(ComputeSystem computeSytem, Simulator.Environment environment) {
+    public ComputeSystemAM(ComputeSystem computeSytem, Environment environment) {
         this.computeSystem = computeSytem;
         this.environment = environment;
     }

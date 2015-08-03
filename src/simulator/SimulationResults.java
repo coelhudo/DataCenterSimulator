@@ -3,7 +3,7 @@ package simulator;
 public class SimulationResults {
 
     private double totalPowerConsumption;
-    private Simulator.Environment environment;
+    private Environment environment;
     private double meanPowerConsumption;
     private int overRedTemperatureNumber;
 

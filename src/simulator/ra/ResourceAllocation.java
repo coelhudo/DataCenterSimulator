@@ -6,10 +6,9 @@ import java.util.logging.Logger;
 
 import simulator.ComputeSystem;
 import simulator.EnterpriseSystem;
+import simulator.Environment;
 import simulator.InteractiveSystem;
 import simulator.InteractiveUser;
-import simulator.Simulator;
-import simulator.Simulator.Environment;
 import simulator.physical.BladeServer;
 import simulator.physical.DataCenter;
 
@@ -36,7 +35,7 @@ public abstract class ResourceAllocation {
         return null;
     }
 
-    public ResourceAllocation(Simulator.Environment environment, DataCenter dataCenter) {
+    public ResourceAllocation(Environment environment, DataCenter dataCenter) {
         this.environment = environment;
         this.dataCenter = dataCenter;
     }

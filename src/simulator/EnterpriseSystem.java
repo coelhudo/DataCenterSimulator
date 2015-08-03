@@ -19,9 +19,9 @@ public class EnterpriseSystem extends GeneralSystem {
     private static final Logger LOGGER = Logger.getLogger(EnterpriseSystem.class.getName());
     
     private List<EnterpriseApp> applicationList;
-    private Simulator.Environment environment;
+    private Environment environment;
 
-    private EnterpriseSystem(String config, Simulator.Environment environment, DataCenter dataCenter) {
+    private EnterpriseSystem(String config, Environment environment, DataCenter dataCenter) {
         this.environment = environment;
         setComputeNodeList(new ArrayList<BladeServer>());
         setComputeNodeIndex(new ArrayList<Integer>());
@@ -135,10 +135,10 @@ public class EnterpriseSystem extends GeneralSystem {
         }
     }
 
-    public static EnterpriseSystem Create(String config, Simulator.Environment environment, DataCenter dataCenter) {
+    public static EnterpriseSystem Create(String config, Environment environment, DataCenter dataCenter, SLAViolationLogger slaViolationLogger) {
         EnterpriseSystem enterpriseSytem = new EnterpriseSystem(config, environment, dataCenter);
         enterpriseSytem.getResourceAllocation().initialResourceAlocator(enterpriseSytem);
-        enterpriseSytem.setAM(new EnterpriseSystemAM(enterpriseSytem, environment));
+        enterpriseSytem.setAM(new EnterpriseSystemAM(enterpriseSytem, environment, slaViolationLogger)); //FIXME: why here the violation is logged by the AM class but not the system class?
 
         return enterpriseSytem;
     }

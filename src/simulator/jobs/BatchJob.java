@@ -2,7 +2,7 @@ package simulator.jobs;
 
 import java.util.logging.Logger;
 
-import simulator.Simulator;
+import simulator.Environment;
 import simulator.physical.BladeServer;
 import simulator.physical.DataCenter;
 
@@ -19,7 +19,7 @@ public class BatchJob extends Job {
     private double[] remain;
     private int numOfNode;
     private int[] listOfServer;
-    private Simulator.Environment environment;
+    private Environment environment;
     private DataCenter dataCenter;
 
     public void setRemainParam(double exp, double ut, int node, int deadln) {
@@ -38,7 +38,7 @@ public class BatchJob extends Job {
         setDeadline(deadln);
     }
 
-    public BatchJob(Simulator.Environment environment, DataCenter dataCenter) {
+    public BatchJob(Environment environment, DataCenter dataCenter) {
         this.environment = environment;
         this.dataCenter = dataCenter;
         setStartTime(0);

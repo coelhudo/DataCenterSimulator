@@ -13,6 +13,7 @@ import simulator.ComputeSystem;
 import simulator.EnterpriseSystem;
 import simulator.InteractiveSystem;
 import simulator.Simulator;
+import simulator.Systems;
 import simulator.am.DataCenterAM;
 import simulator.physical.DataCenter;
 
@@ -24,9 +25,10 @@ public class ReadingConfigurationTest {
         simulator.initialize("configs/DC_Logic.xml");
 
         DataCenter dataCenter = simulator.getDatacenter();
-        List<ComputeSystem> computeSystems = simulator.getEnvironment().getComputeSystems();
-        List<EnterpriseSystem> enterpriseSystems = simulator.getEnvironment().getEnterpriseSystems();
-        List<InteractiveSystem> interactiveSystems = simulator.getEnvironment().getInteractiveSystems();
+        Systems systems = simulator.getSystems();
+        List<ComputeSystem> computeSystems = systems.getComputeSystems();
+        List<EnterpriseSystem> enterpriseSystems = systems.getEnterpriseSystems();
+        List<InteractiveSystem> interactiveSystems = systems.getInteractiveSystems();
 
         assertEquals(0.0, dataCenter.getTotalPowerConsumption(), 1.0E8);
         assertFalse(computeSystems.isEmpty());

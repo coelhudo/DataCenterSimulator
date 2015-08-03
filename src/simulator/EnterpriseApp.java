@@ -52,9 +52,9 @@ public final class EnterpriseApp {
     // utilization
     private int NumberofBasicNode = 0;
     GeneralSystem parent;
-    private Simulator.Environment environment;
+    private Environment environment;
 
-    public EnterpriseApp(String path, Node node, GeneralSystem parent, Simulator.Environment environment) {
+    public EnterpriseApp(String path, Node node, GeneralSystem parent, Environment environment) {
         this.parent = parent;
         this.environment = environment;
         setComputeNodeList(new ArrayList<BladeServer>());

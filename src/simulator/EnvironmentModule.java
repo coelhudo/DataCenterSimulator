@@ -6,6 +6,6 @@ public class EnvironmentModule extends AbstractModule {
 
     @Override
     public void configure() {
-        bind(Simulator.Environment.class);
+        bind(Environment.class);
     }
 }

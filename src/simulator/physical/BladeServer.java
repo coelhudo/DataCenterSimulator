@@ -8,8 +8,8 @@ import java.util.logging.Logger;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
+import simulator.Environment;
 import simulator.ResponseTime;
-import simulator.Simulator;
 import simulator.jobs.BatchJob;
 import simulator.jobs.EnterpriseJob;
 import simulator.jobs.InteractiveJob;
@@ -51,9 +51,9 @@ public class BladeServer {
     private int maxExpectedRes = 0;
     private boolean SLAviolation;
     ////////////////
-    private Simulator.Environment environment;
+    private Environment environment;
 
-    public BladeServer(int chasID, Simulator.Environment environment) {
+    public BladeServer(int chasID, Environment environment) {
         this.environment = environment;
         setRespTime(0);
         // if it is -1 means that it is not put in the proper position yet ID

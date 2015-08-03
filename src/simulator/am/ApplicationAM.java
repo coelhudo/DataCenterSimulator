@@ -4,6 +4,7 @@ import java.util.logging.Logger;
 
 import simulator.EnterpriseApp;
 import simulator.EnterpriseSystem;
+import simulator.Environment;
 import simulator.Simulator;
 import simulator.jobs.EnterpriseJob;
 import simulator.physical.BladeServer;
@@ -20,9 +21,9 @@ public class ApplicationAM extends GeneralAM {
     private int accumulativeSLA = 0;
     // int cpAccumu=0;
     Simulator.StrategyEnum StrategyWsitch = Simulator.StrategyEnum.Green;
-    Simulator.Environment environment;
+    private Environment environment;
 
-    public ApplicationAM(EnterpriseSystem Sys, EnterpriseApp app, Simulator.Environment environment) {
+    public ApplicationAM(EnterpriseSystem Sys, EnterpriseApp app, Environment environment) {
         // dc=dtcenter;
         this.sys = Sys;
         this.app = app;

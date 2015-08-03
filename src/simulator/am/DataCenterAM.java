@@ -5,9 +5,11 @@ import java.util.logging.Logger;
 
 import simulator.ComputeSystem;
 import simulator.EnterpriseSystem;
+import simulator.Environment;
 import simulator.InteractiveSystem;
 import simulator.Simulator;
 import simulator.Simulator.StrategyEnum;
+import simulator.Systems;
 
 public class DataCenterAM extends GeneralAM {
 
@@ -21,16 +23,16 @@ public class DataCenterAM extends GeneralAM {
     private int[] SLAVioCS;
     private int blockTimer = 0;
     private boolean SlowDownFromCooler = false;
+    private Environment environment;
     private List<ComputeSystem> computeSystems;
     private List<EnterpriseSystem> enterpriseSystems;
     private List<InteractiveSystem> interactiveSystems;
-    private Simulator.Environment environment;
 
-    public DataCenterAM(Simulator.Environment environment) {
+    public DataCenterAM(Environment environment, Systems systems) {
         this.environment = environment;
-        this.computeSystems = this.environment.getComputeSystems();
-        this.enterpriseSystems = this.environment.getEnterpriseSystems();
-        this.interactiveSystems = this.environment.getInteractiveSystems();
+        this.computeSystems = systems.getComputeSystems();
+        this.enterpriseSystems = systems.getEnterpriseSystems();
+        this.interactiveSystems = systems.getInteractiveSystems();
     }
 
     @Override

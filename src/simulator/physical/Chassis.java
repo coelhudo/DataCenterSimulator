@@ -6,7 +6,7 @@ import java.util.List;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
-import simulator.Simulator;
+import simulator.Environment;
 
 public class Chassis {
 
@@ -14,9 +14,9 @@ public class Chassis {
     private boolean turnON = true;
     private int chassisID, rackId;
     private String chassisType = new String();
-    private Simulator.Environment environment;
+    private Environment environment;
 
-    public Chassis(int idArg, Simulator.Environment environment) {
+    public Chassis(int idArg, Environment environment) {
         // if it is -1 means this chassis is just a template and not assigned
         // yet
         chassisID = idArg;

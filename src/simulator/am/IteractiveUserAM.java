@@ -2,6 +2,7 @@ package simulator.am;
 
 import java.util.logging.Logger;
 
+import simulator.Environment;
 import simulator.InteractiveSystem;
 import simulator.InteractiveUser;
 import simulator.Simulator;
@@ -20,9 +21,9 @@ public class IteractiveUserAM extends GeneralAM {
     int accumulativeSLA = 0;
     // int cpAccumu=0;
     Simulator.StrategyEnum StrategyWsitch = Simulator.StrategyEnum.Green; // Green
-    Simulator.Environment environment;
+    Environment environment;
 
-    public IteractiveUserAM(InteractiveSystem sys, InteractiveUser usr, Simulator.Environment environment) {
+    public IteractiveUserAM(InteractiveSystem sys, InteractiveUser usr, Environment environment) {
         this.sys = sys;
         this.User = usr;
         this.environment = environment;

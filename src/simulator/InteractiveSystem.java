@@ -27,10 +27,12 @@ public class InteractiveSystem extends GeneralSystem {
     private List<InteractiveUser> UserList;
     private List<InteractiveUser> waitingQueueWL;
     private File logFile;
-    private Simulator.Environment environment;
+    private Environment environment;
+    private SLAViolationLogger slaViolationLogger;
 
-    public InteractiveSystem(String config, Simulator.Environment environment, DataCenter dataCenter) {
+    public InteractiveSystem(String config, Environment environment, DataCenter dataCenter, SLAViolationLogger slaViolationLogger) {
         this.environment = environment;
+        this.slaViolationLogger = slaViolationLogger;
         setComputeNodeList(new ArrayList<BladeServer>());
         setComputeNodeIndex(new ArrayList<Integer>());
         setUserList(new ArrayList<InteractiveUser>());
@@ -167,7 +169,7 @@ public class InteractiveSystem extends GeneralSystem {
             setSLAviolation(+interactiveUser.getSLAviolation()); //FIXME: += instead of just +. Before was =+
         }
         if (getSLAviolation() > 0) {
-            environment.logInteractiveViolation(getName(), getSLAviolation());
+            slaViolationLogger.logInteractiveViolation(getName(), getSLAviolation());
 
             setAccumolatedViolation(getAccumolatedViolation() + 1);
         }
@@ -245,8 +247,8 @@ public class InteractiveSystem extends GeneralSystem {
         this.waitingQueueWL = waitingQueueWL;
     }
 
-    public static InteractiveSystem Create(String config, Simulator.Environment environment, DataCenter dataCenter) {
-        InteractiveSystem interactiveSystem = new InteractiveSystem(config, environment, dataCenter);
+    public static InteractiveSystem Create(String config, Environment environment, DataCenter dataCenter, SLAViolationLogger slaViolationLogger) {
+        InteractiveSystem interactiveSystem = new InteractiveSystem(config, environment, dataCenter, slaViolationLogger);
         interactiveSystem.getResourceAllocation().initialResourceAlocator(interactiveSystem);
         interactiveSystem.setAM(new InteractiveSystemAM(interactiveSystem, environment));
 

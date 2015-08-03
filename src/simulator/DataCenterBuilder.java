@@ -2,8 +2,6 @@ package simulator;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.logging.Logger;
 
 import javax.xml.parsers.DocumentBuilder;
@@ -20,15 +18,16 @@ import simulator.physical.DataCenter;
 public class DataCenterBuilder {
 
     private static final Logger LOGGER = Logger.getLogger(DataCenterBuilder.class.getName());
-    
-    private DataCenter dataCenter;
-    private List<InteractiveSystem> interactiveSystems = new ArrayList<InteractiveSystem>();
-    private List<EnterpriseSystem> enterpriseSystems = new ArrayList<EnterpriseSystem>();
-    private List<ComputeSystem> computeSystems = new ArrayList<ComputeSystem>();
-    private Simulator.Environment environment;
 
-    public DataCenterBuilder(Simulator.Environment environment) {
+    private DataCenter dataCenter;
+    private Environment environment;
+    private SLAViolationLogger slaViolationLogger;
+    private Systems systems;
+
+    public DataCenterBuilder(Environment environment, SLAViolationLogger slaViolationLogger) {
         this.environment = environment;
+        systems = new Systems(this.environment);
+        this.slaViolationLogger = slaViolationLogger;
     }
 
     public void buildLogicalDataCenter(String config) {
@@ -46,7 +45,7 @@ public class DataCenterBuilder {
                 if (childNodes.item(i).getNodeType() == Node.ELEMENT_NODE) {
                     if (childNodes.item(i).getNodeName().equalsIgnoreCase("layout")) {
                         String DCLayout = path + "/" + childNodes.item(i).getChildNodes().item(0).getNodeValue().trim();
-                        dataCenter = new DataCenter(DCLayout, environment);
+                        dataCenter = new DataCenter(DCLayout, environment, systems);
                     }
                     if (childNodes.item(i).getNodeName().equalsIgnoreCase("System")) {
                         NodeList nodiLst = childNodes.item(i).getChildNodes();
@@ -91,25 +90,27 @@ public class DataCenterBuilder {
                     case 1:
                         LOGGER.info("------------------------------------------");
                         LOGGER.info("Initialization of Enterprise System Name=" + name);
-                        EnterpriseSystem ES1 = EnterpriseSystem.Create(fileName, environment, dataCenter);
-                        ES1.setName(name);
-                        getEnterpriseSystems().add(ES1);
+                        EnterpriseSystem enterpriseSystem = EnterpriseSystem.Create(fileName, environment, dataCenter,
+                                slaViolationLogger);
+                        enterpriseSystem.setName(name);
+                        systems.addEnterpriseSystem(enterpriseSystem);
                         whichSystem = -1;
                         break;
                     case 2:
                         LOGGER.info("------------------------------------------");
                         LOGGER.info("Initialization of Interactive System Name=" + name);
-                        InteractiveSystem wb1 = InteractiveSystem.Create(fileName, environment, dataCenter);
-                        wb1.setName(name);
-                        getInteractiveSystems().add(wb1);
+                        InteractiveSystem interactiveSystem = InteractiveSystem.Create(fileName, environment, dataCenter,
+                                slaViolationLogger);
+                        interactiveSystem.setName(name);
+                        systems.addInteractiveSystem(interactiveSystem);
                         whichSystem = -1;
                         break;
                     case 3:
                         LOGGER.info("------------------------------------------");
                         LOGGER.info("Initialization of HPC System Name=" + name);
-                        ComputeSystem CP = ComputeSystem.Create(fileName, environment, dataCenter);
-                        CP.setName(name);
-                        getComputeSystems().add(CP);
+                        ComputeSystem computeSystem = ComputeSystem.Create(fileName, environment, dataCenter, slaViolationLogger);
+                        computeSystem.setName(name);
+                        systems.addComputeSystem(computeSystem);
                         whichSystem = -1;
                         break;
                     }
@@ -122,16 +123,8 @@ public class DataCenterBuilder {
         return dataCenter;
     }
 
-    public List<InteractiveSystem> getInteractiveSystems() {
-        return interactiveSystems;
-    }
-
-    public List<EnterpriseSystem> getEnterpriseSystems() {
-        return enterpriseSystems;
-    }
-
-    public List<ComputeSystem> getComputeSystems() {
-        return computeSystems;
+    public Systems getSystems() {
+        return systems;
     }
 
 }

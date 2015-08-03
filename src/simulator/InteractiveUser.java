@@ -42,9 +42,9 @@ public class InteractiveUser {
     // utilization
     private int NumberofBasicNode = 0;
     private GeneralSystem parent;
-    private Simulator.Environment environment;
+    private Environment environment;
 
-    public InteractiveUser(GeneralSystem parent, Simulator.Environment environment) {
+    public InteractiveUser(GeneralSystem parent, Environment environment) {
         this.environment = environment;
         setComputeNodeList(new ArrayList<BladeServer>());
         setComputeNodeIndex(new ArrayList<Integer>());

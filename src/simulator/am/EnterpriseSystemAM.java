@@ -3,6 +3,8 @@ package simulator.am;
 import java.util.logging.Logger;
 
 import simulator.EnterpriseSystem;
+import simulator.Environment;
+import simulator.SLAViolationLogger;
 import simulator.Simulator;
 
 public class EnterpriseSystemAM extends GeneralAM {
@@ -17,12 +19,14 @@ public class EnterpriseSystemAM extends GeneralAM {
     int lastTime = 0;
     int[] accuSLA;
     double wlkIntens = 0;
-    private Simulator.Environment environment;
+    private Environment environment;
+    private SLAViolationLogger slaViolationLogger;
 
-    public EnterpriseSystemAM(EnterpriseSystem enterpriseSystem, Simulator.Environment environment) {
+    public EnterpriseSystemAM(EnterpriseSystem enterpriseSystem, Environment environment, SLAViolationLogger slaViolationLogger) {
         // super(dtcenter);
         this.enterpriseSystem = enterpriseSystem;
         this.environment = environment;
+        this.slaViolationLogger = slaViolationLogger;
         setRecForCoop(new int[enterpriseSystem.getApplications().size()]);
     }
 
@@ -90,7 +94,7 @@ public class EnterpriseSystemAM extends GeneralAM {
         }
         setSLAViolationGen(enterpriseSystem.getSLAviolation());
         if (enterpriseSystem.getSLAviolation() > 0) {
-            environment.logEnterpriseViolation(enterpriseSystem.getName(), enterpriseSystem.getSLAviolation());
+            slaViolationLogger.logEnterpriseViolation(enterpriseSystem.getName(), enterpriseSystem.getSLAviolation());
             enterpriseSystem.setAccumolatedViolation(enterpriseSystem.getAccumolatedViolation() + 1);
         }
         calcSysUtility();

@@ -1,5 +1,6 @@
 package simulator.am;
 
+import simulator.Environment;
 import simulator.InteractiveSystem;
 import simulator.Simulator;
 
@@ -12,9 +13,9 @@ public class InteractiveSystemAM extends GeneralAM {
     int[] accuSLA;
     double[] queueLengthUsr;
     int lastTime = 0;
-    private Simulator.Environment environment;
+    private Environment environment;
 
-    public InteractiveSystemAM(InteractiveSystem interactiveSystem, Simulator.Environment environment) {
+    public InteractiveSystemAM(InteractiveSystem interactiveSystem, Environment environment) {
         this.interatctiveSystem = interactiveSystem;
         this.environment = environment;
         setRecForCoop(new int[interatctiveSystem.getUserList().size()]);

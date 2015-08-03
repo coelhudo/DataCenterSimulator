@@ -35,12 +35,14 @@ public class ComputeSystem extends GeneralSystem {
     private File f;
     private int predictNumberofNode;
     private int priority;
-    private Simulator.Environment environment;
+    private Environment environment;
+    private SLAViolationLogger slaViolationLogger;
     private DataCenter dataCenter;
 
-    private ComputeSystem(String config, Simulator.Environment environment, DataCenter dataCenter) {
+    private ComputeSystem(String config, Environment environment, DataCenter dataCenter, SLAViolationLogger slaViolationLogger) {
         this.environment = environment;
         this.dataCenter = dataCenter;
+        this.slaViolationLogger = slaViolationLogger;
         setComputeNodeList(new ArrayList<BladeServer>());
         waitingList = new ArrayList<BatchJob>();
         setComputeNodeIndex(new ArrayList<Integer>());
@@ -201,7 +203,7 @@ public class ComputeSystem extends GeneralSystem {
             SLAviolation++;
         }
         if (SLAViolationType != Violation.NOTHING) {
-            environment.logHPCViolation(getName(), SLAViolationType);
+            slaViolationLogger.logHPCViolation(getName(), SLAViolationType);
             setAccumolatedViolation(getAccumolatedViolation() + 1);
         }
     }
@@ -323,8 +325,8 @@ public class ComputeSystem extends GeneralSystem {
         return totalResponsetime;
     }
 
-    public static ComputeSystem Create(String config, Simulator.Environment environment, DataCenter dataCenter) {
-        ComputeSystem computeSystem = new ComputeSystem(config, environment, dataCenter);
+    public static ComputeSystem Create(String config, Environment environment, DataCenter dataCenter, SLAViolationLogger slaViolationLogger) {
+        ComputeSystem computeSystem = new ComputeSystem(config, environment, dataCenter, slaViolationLogger);
         computeSystem.getResourceAllocation().initialResourceAloc(computeSystem);
         computeSystem.setAM(new ComputeSystemAM(computeSystem, environment));
         return computeSystem;
