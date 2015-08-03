@@ -178,22 +178,6 @@ public class EnterpriseSystem extends GeneralSystem {
                     enterpriseApplicationPOD.setSLAPercentage(
                             Integer.parseInt(childNodes.item(i).getChildNodes().item(0).getNodeValue().trim())); //
                 } // We dont have server list now but may be in future we had
-                /*
-                 * if(childNodes.item(i).getNodeName().equalsIgnoreCase(
-                 * "ServerList")) { String str =
-                 * childNodes.item(i).getChildNodes().item(0).getNodeValue().
-                 * trim(); String[] split = str.split(" "); for(int
-                 * j=0;j<split.length;j++) { int
-                 * serverIndex=Integer.parseInt(split[j]); int
-                 * indexChassis=serverIndex/DC.chassisSet.get(0).servers.size();
-                 * int
-                 * indexServer=serverIndex%DC.chassisSet.get(0).servers.size();
-                 * addCompNodetoBundle(DC.chassisSet.get(indexChassis).servers.
-                 * get(indexServer));
-                 * DC.chassisSet.get(indexChassis).servers.get(indexServer).Mips
-                 * =1; DC.chassisSet.get(indexChassis).servers.get(indexServer).
-                 * ready=1; ComputeNodeIndex.add(serverIndex); } }
-                 */
                 if (childNodes.item(i).getNodeName().equalsIgnoreCase("minProcessor")) {
                     enterpriseApplicationPOD.setMinProc(Integer.parseInt(childNodes.item(i).getChildNodes().item(0).getNodeValue().trim()));
                 }
