@@ -10,14 +10,8 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
-
-import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
-import org.xml.sax.SAXException;
 
 import simulator.am.ApplicationAM;
 import simulator.jobs.EnterpriseJob;
@@ -337,24 +331,6 @@ public final class EnterpriseApp {
         t.setNumberOfJob(num);
         t.setResponseTime(time);
         getResponseList().add(t);
-    }
-
-    void parseXmlConfig(String config) {
-        try {
-            DocumentBuilderFactory docBuilderFactory = DocumentBuilderFactory.newInstance();
-            DocumentBuilder docBuilder = docBuilderFactory.newDocumentBuilder();
-            final File file = new File(config);
-            Document doc = docBuilder.parse(file);
-            // normalize text representation
-            doc.getDocumentElement().normalize();
-            readFromNode(doc.getDocumentElement(), file.getParent());
-        } catch (ParserConfigurationException ex) {
-            LOGGER.severe(ex.getMessage());
-        } catch (SAXException ex) {
-            LOGGER.severe(ex.getMessage());
-        } catch (IOException ex) {
-            LOGGER.severe(ex.getMessage());
-        }
     }
 
     void readFromNode(Node node, String path) {
