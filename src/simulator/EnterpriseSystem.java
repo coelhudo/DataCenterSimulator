@@ -1,6 +1,10 @@
 package simulator;
 
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Logger;
@@ -20,6 +24,7 @@ public class EnterpriseSystem extends GeneralSystem {
     
     private List<EnterpriseApp> applicationList;
     private Environment environment;
+    private File logFile;
 
     private EnterpriseSystem(String config, Environment environment, DataCenter dataCenter) {
         this.environment = environment;
@@ -128,12 +133,80 @@ public class EnterpriseSystem extends GeneralSystem {
                 if (childNodes.item(i).getNodeName().equalsIgnoreCase("Scheduler"))
                     ;
                 if (childNodes.item(i).getNodeName().equalsIgnoreCase("EnterpriseApplication")) {
-                    applicationList.add(new EnterpriseApp(path, childNodes.item(i), this, environment));
+                    EnterpriseApplicationPOD enterpriseApplicationPOD = getEnterpriseApplicationPOD(childNodes.item(i), path);
+                    applicationList.add(new EnterpriseApp(enterpriseApplicationPOD, this, environment));
                     applicationList.get(applicationList.size() - 1).parent = this;
                 }
             }
         }
     }
+    
+    EnterpriseApplicationPOD getEnterpriseApplicationPOD(Node node, String path) {
+        getComputeNodeList().clear();
+        EnterpriseApplicationPOD enterpriseApplicationPOD = new EnterpriseApplicationPOD();
+        NodeList childNodes = node.getChildNodes();
+        for (int i = 0; i < childNodes.getLength(); i++) {
+            if (childNodes.item(i).getNodeType() == Node.ELEMENT_NODE) {
+                if (childNodes.item(i).getNodeName().equalsIgnoreCase("id")) {
+                    enterpriseApplicationPOD.setID(Integer.parseInt(childNodes.item(i).getChildNodes().item(0).getNodeValue().trim())); // Id
+                    // of
+                    // the
+                    // application
+                }
+                if (childNodes.item(i).getNodeName().equalsIgnoreCase("EnterpriseApplicationWorkLoad")) {
+                    String fileName = path + "/" + childNodes.item(i).getChildNodes().item(0).getNodeValue().trim();
+                    try {
+                        logFile = new File(fileName);
+                        enterpriseApplicationPOD.setBIS(new BufferedReader(new InputStreamReader(new FileInputStream(logFile))));
+                    } catch (IOException e) {
+                        LOGGER.info("Uh oh, got an IOException error!" + e.getMessage());
+                    }
+                }
+                if (childNodes.item(i).getNodeName().equalsIgnoreCase("MaxNumberOfRequest")) {
+                    enterpriseApplicationPOD.setMaxNumberOfRequest(
+                            Integer.parseInt(childNodes.item(i).getChildNodes().item(0).getNodeValue().trim()));
+                }
+                if (childNodes.item(i).getNodeName().equalsIgnoreCase("NumberofBasicNode")) {
+                    enterpriseApplicationPOD.setNumberofBasicNode(
+                            Integer.parseInt(childNodes.item(i).getChildNodes().item(0).getNodeValue().trim()));
+                }
+                if (childNodes.item(i).getNodeName().equalsIgnoreCase("timeTreshold")) {
+                    enterpriseApplicationPOD.setTimeTreshold(Integer.parseInt(childNodes.item(i).getChildNodes().item(0).getNodeValue().trim())); //
+                    enterpriseApplicationPOD.setMaxExpectedResTime(enterpriseApplicationPOD.getTimeTreshold());
+                }
+                if (childNodes.item(i).getNodeName().equalsIgnoreCase("Percentage")) {
+                    enterpriseApplicationPOD.setSLAPercentage(
+                            Integer.parseInt(childNodes.item(i).getChildNodes().item(0).getNodeValue().trim())); //
+                } // We dont have server list now but may be in future we had
+                /*
+                 * if(childNodes.item(i).getNodeName().equalsIgnoreCase(
+                 * "ServerList")) { String str =
+                 * childNodes.item(i).getChildNodes().item(0).getNodeValue().
+                 * trim(); String[] split = str.split(" "); for(int
+                 * j=0;j<split.length;j++) { int
+                 * serverIndex=Integer.parseInt(split[j]); int
+                 * indexChassis=serverIndex/DC.chassisSet.get(0).servers.size();
+                 * int
+                 * indexServer=serverIndex%DC.chassisSet.get(0).servers.size();
+                 * addCompNodetoBundle(DC.chassisSet.get(indexChassis).servers.
+                 * get(indexServer));
+                 * DC.chassisSet.get(indexChassis).servers.get(indexServer).Mips
+                 * =1; DC.chassisSet.get(indexChassis).servers.get(indexServer).
+                 * ready=1; ComputeNodeIndex.add(serverIndex); } }
+                 */
+                if (childNodes.item(i).getNodeName().equalsIgnoreCase("minProcessor")) {
+                    enterpriseApplicationPOD.setMinProc(Integer.parseInt(childNodes.item(i).getChildNodes().item(0).getNodeValue().trim()));
+                }
+                if (childNodes.item(i).getNodeName().equalsIgnoreCase("maxProcessor")) {
+                    enterpriseApplicationPOD.setMaxProc(Integer.parseInt(childNodes.item(i).getChildNodes().item(0).getNodeValue().trim()));
+                }
+
+            }
+        }
+        
+        return enterpriseApplicationPOD;
+    }
+
 
     public static EnterpriseSystem Create(String config, Environment environment, DataCenter dataCenter, SLAViolationLogger slaViolationLogger) {
         EnterpriseSystem enterpriseSytem = new EnterpriseSystem(config, environment, dataCenter);

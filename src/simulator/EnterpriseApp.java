@@ -1,17 +1,11 @@
 package simulator;
 
 import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
-import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
 
 import simulator.am.ApplicationAM;
 import simulator.jobs.EnterpriseJob;
@@ -37,25 +31,31 @@ public final class EnterpriseApp {
     private int SLAviolation = 0;
     private int NumofViolation = 0;
     private BufferedReader bis = null;
-    private File logFile;
     private ApplicationAM AM;
     // EnterpriseSystem mySys; //Application knows in which Sys it is located.
     // initialize in EnterpriseSystem
-    private int MaxNumberOfRequest = 0; // # of Request can be handled by number
+    private int maxNumberOfRequest = 0; // # of Request can be handled by number
     // of basic node which for 100% CPU
     // utilization
-    private int NumberofBasicNode = 0;
+    private int numberofBasicNode = 0;
     GeneralSystem parent;
     private Environment environment;
 
-    public EnterpriseApp(String path, Node node, GeneralSystem parent, Environment environment) {
+    public EnterpriseApp(EnterpriseApplicationPOD enterpriseApplicationPOD, GeneralSystem parent, Environment environment) {
         this.parent = parent;
         this.environment = environment;
         setComputeNodeList(new ArrayList<BladeServer>());
         setQueueApp(new ArrayList<EnterpriseJob>());
         setResponseList(new ArrayList<ResponseTime>());
         // ComputeNodeIndex=new ArrayList<Integer>();
-        readFromNode(node, path);
+        id = enterpriseApplicationPOD.getID();
+        minProc = enterpriseApplicationPOD.getMinProc();
+        timeTreshold = enterpriseApplicationPOD.getTimeTreshold();
+        SLAPercentage = enterpriseApplicationPOD.getSLAPercentage();
+        maxNumberOfRequest = enterpriseApplicationPOD.getMaxNumberOfRequest(); // # of Request can be handled by number
+        numberofBasicNode = enterpriseApplicationPOD.getNumberofBasicNode();
+        maxExpectedResTime = enterpriseApplicationPOD.getMaxExpectedResTime();
+        bis = enterpriseApplicationPOD.getBIS();
         configSLAallcomputingNode();
         // placement= new jobPlacement(ComputeNodeList) ;
         setAM(new ApplicationAM((EnterpriseSystem) parent, this, environment));
@@ -333,69 +333,6 @@ public final class EnterpriseApp {
         getResponseList().add(t);
     }
 
-    void readFromNode(Node node, String path) {
-        getComputeNodeList().clear();
-        NodeList childNodes = node.getChildNodes();
-        for (int i = 0; i < childNodes.getLength(); i++) {
-            if (childNodes.item(i).getNodeType() == Node.ELEMENT_NODE) {
-                if (childNodes.item(i).getNodeName().equalsIgnoreCase("id")) {
-                    setID(Integer.parseInt(childNodes.item(i).getChildNodes().item(0).getNodeValue().trim())); // Id
-                    // of
-                    // the
-                    // application
-                }
-                if (childNodes.item(i).getNodeName().equalsIgnoreCase("EnterpriseApplicationWorkLoad")) {
-                    String fileName = path + "/" + childNodes.item(i).getChildNodes().item(0).getNodeValue().trim();
-                    try {
-                        logFile = new File(fileName);
-                        bis = new BufferedReader(new InputStreamReader(new FileInputStream(logFile)));
-                    } catch (IOException e) {
-                        LOGGER.info("Uh oh, got an IOException error!" + e.getMessage());
-                    }
-                }
-                if (childNodes.item(i).getNodeName().equalsIgnoreCase("MaxNumberOfRequest")) {
-                    setMaxNumberOfRequest(
-                            Integer.parseInt(childNodes.item(i).getChildNodes().item(0).getNodeValue().trim()));
-                }
-                if (childNodes.item(i).getNodeName().equalsIgnoreCase("NumberofBasicNode")) {
-                    setNumberofBasicNode(
-                            Integer.parseInt(childNodes.item(i).getChildNodes().item(0).getNodeValue().trim()));
-                }
-                if (childNodes.item(i).getNodeName().equalsIgnoreCase("timeTreshold")) {
-                    setTimeTreshold(Integer.parseInt(childNodes.item(i).getChildNodes().item(0).getNodeValue().trim())); //
-                    setMaxExpectedResTime(getTimeTreshold());
-                }
-                if (childNodes.item(i).getNodeName().equalsIgnoreCase("Percentage")) {
-                    setSLAPercentage(
-                            Integer.parseInt(childNodes.item(i).getChildNodes().item(0).getNodeValue().trim())); //
-                } // We dont have server list now but may be in future we had
-                /*
-                 * if(childNodes.item(i).getNodeName().equalsIgnoreCase(
-                 * "ServerList")) { String str =
-                 * childNodes.item(i).getChildNodes().item(0).getNodeValue().
-                 * trim(); String[] split = str.split(" "); for(int
-                 * j=0;j<split.length;j++) { int
-                 * serverIndex=Integer.parseInt(split[j]); int
-                 * indexChassis=serverIndex/DC.chassisSet.get(0).servers.size();
-                 * int
-                 * indexServer=serverIndex%DC.chassisSet.get(0).servers.size();
-                 * addCompNodetoBundle(DC.chassisSet.get(indexChassis).servers.
-                 * get(indexServer));
-                 * DC.chassisSet.get(indexChassis).servers.get(indexServer).Mips
-                 * =1; DC.chassisSet.get(indexChassis).servers.get(indexServer).
-                 * ready=1; ComputeNodeIndex.add(serverIndex); } }
-                 */
-                if (childNodes.item(i).getNodeName().equalsIgnoreCase("minProcessor")) {
-                    setMinProc(Integer.parseInt(childNodes.item(i).getChildNodes().item(0).getNodeValue().trim()));
-                }
-                if (childNodes.item(i).getNodeName().equalsIgnoreCase("maxProcessor")) {
-                    setMaxProc(Integer.parseInt(childNodes.item(i).getChildNodes().item(0).getNodeValue().trim()));
-                }
-
-            }
-        }
-    }
-
     public double getAverageCPUutil() {
         int i = 0;
         double cpu = 0;
@@ -561,18 +498,18 @@ public final class EnterpriseApp {
     }
 
     public int getMaxNumberOfRequest() {
-        return MaxNumberOfRequest;
+        return maxNumberOfRequest;
     }
 
     public void setMaxNumberOfRequest(int maxNumberOfRequest) {
-        MaxNumberOfRequest = maxNumberOfRequest;
+        maxNumberOfRequest = maxNumberOfRequest;
     }
 
     public int getNumberofBasicNode() {
-        return NumberofBasicNode;
+        return numberofBasicNode;
     }
 
     public void setNumberofBasicNode(int numberofBasicNode) {
-        NumberofBasicNode = numberofBasicNode;
+        numberofBasicNode = numberofBasicNode;
     }
 }
