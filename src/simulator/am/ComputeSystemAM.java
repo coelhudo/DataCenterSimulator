@@ -4,6 +4,7 @@ import java.util.logging.Logger;
 
 import simulator.ComputeSystem;
 import simulator.Environment;
+import simulator.physical.BladeServer;
 
 public class ComputeSystemAM extends GeneralAM {
 
@@ -49,20 +50,20 @@ public class ComputeSystemAM extends GeneralAM {
                                   * if(all nodes are busy and this system is not
                                   * blocked) send(SOS, theParent)
                                   */ {
-            for (int i = 0; i < computeSystem.getComputeNodeList().size(); i++) {
-                if (computeSystem.getComputeNodeList().get(i).getReady() == 0) {
-                    computeSystem.getComputeNodeList().get(i).increaseFrequency();
+            for (BladeServer bladeServer : computeSystem.getComputeNodeList()) {
+                if (bladeServer.getReady() == 0) {
+                    bladeServer.increaseFrequency();
                 }
             }
             // Activate just half of sleep nodes
             int hlfNumofSlept = computeSystem.numberofIdleNode() / 2;
             int tedad = 0;
-            for (int i = 0; i < computeSystem.getComputeNodeList().size(); i++) {
-                if (computeSystem.getComputeNodeList().get(i).getReady() == -1) {
+            for (BladeServer bladeServer : computeSystem.getComputeNodeList()) {
+                if (bladeServer.getReady() == -1) {
                     LOGGER.info("CSys GR: " + "\tactive a Server!\t\t @" + environment.getCurrentLocalTime()
                             + "\tNumber of runinng:  " + computeSystem.numberofRunningNode());
-                    computeSystem.getComputeNodeList().get(i).setReady(1);
-                    computeSystem.getComputeNodeList().get(i).setMips(1.4);
+                    bladeServer.setReady(1);
+                    bladeServer.setMips(1.4);
                     environment.updateNumberOfMessagesFromSystemToNodes();
                     tedad++;
                 }
@@ -81,19 +82,18 @@ public class ComputeSystemAM extends GeneralAM {
                                    * ready and is not used make it sleep
                                    */ {
             // Decrease freq. of all nodes
-            for (int i = 0; i < computeSystem.getComputeNodeList().size(); i++) {
-                if (computeSystem.getComputeNodeList().get(i).getReady() > -1) {
-                    computeSystem.getComputeNodeList().get(i).decreaseFrequency();
-
+            for (BladeServer bladeServer : computeSystem.getComputeNodeList()) {
+                if (bladeServer.getReady() > -1) {
+                    bladeServer.decreaseFrequency();
                 }
             }
             // If node is ready and is not used make it sleep
-            for (int i = 0; i < computeSystem.getComputeNodeList().size(); i++) {
-                if (computeSystem.getComputeNodeList().get(i).getActiveBatchList().isEmpty()
-                        && computeSystem.getComputeNodeList().get(i).getBlockedBatchList().isEmpty()
-                        && computeSystem.getComputeNodeList().get(i).getReady() > -1) {
+            for (BladeServer bladeServer : computeSystem.getComputeNodeList()) {
+                if (bladeServer.getActiveBatchList().isEmpty()
+                        && bladeServer.getBlockedBatchList().isEmpty()
+                        && bladeServer.getReady() > -1) {
                     environment.updateNumberOfMessagesFromSystemToNodes();
-                    computeSystem.getComputeNodeList().get(i).setReady(-1);
+                    bladeServer.setReady(-1);
                 }
             }
         }

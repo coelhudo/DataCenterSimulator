@@ -1,17 +1,10 @@
 package simulator;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
-import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
 
 import simulator.am.InteractiveSystemAM;
 import simulator.physical.BladeServer;
@@ -26,11 +19,11 @@ public class InteractiveSystem extends GeneralSystem {
     
     private List<InteractiveUser> UserList;
     private List<InteractiveUser> waitingQueueWL;
-    private File logFile;
     private Environment environment;
     private SLAViolationLogger slaViolationLogger;
 
-    public InteractiveSystem(String config, Environment environment, DataCenter dataCenter, SLAViolationLogger slaViolationLogger) {
+    public InteractiveSystem(SystemPOD systemPOD, Environment environment, DataCenter dataCenter, SLAViolationLogger slaViolationLogger) {
+        super(systemPOD);
         this.environment = environment;
         this.slaViolationLogger = slaViolationLogger;
         setComputeNodeList(new ArrayList<BladeServer>());
@@ -39,8 +32,11 @@ public class InteractiveSystem extends GeneralSystem {
         setWaitingQueueWL(new ArrayList<InteractiveUser>());
         setResourceAllocation(new MHR(this.environment, dataCenter));
         setScheduler(new FifoScheduler());
-        parseXmlConfig(config);
         setSLAviolation(0);
+        setNumberOfNode(systemPOD.getNumberOfNode());
+        setNumberofIdleNode(systemPOD.getNumberOfNode());
+        setBis(systemPOD.getBis());
+        setRackIDs(systemPOD.getRackIDs());
     }
 
     public int numberofAvailableNodetoAlocate() {
@@ -196,40 +192,6 @@ public class InteractiveSystem extends GeneralSystem {
     // LOGGER.severe(ex.getMessage());
     // }
     // }
-    @Override
-    void readFromNode(Node node, String path) {
-        getComputeNodeList().clear();
-        NodeList childNodes = node.getChildNodes();
-        for (int i = 0; i < childNodes.getLength(); i++) {
-            if (childNodes.item(i).getNodeType() == Node.ELEMENT_NODE) {
-                if (childNodes.item(i).getNodeName().equalsIgnoreCase("ComputeNode")) {
-                    setNumberofNode(Integer.parseInt(childNodes.item(i).getChildNodes().item(0).getNodeValue().trim()));
-                    setNumberofIdleNode(getNumberofNode());
-                }
-                if (childNodes.item(i).getNodeName().equalsIgnoreCase("Rack")) {
-                    String str = childNodes.item(i).getChildNodes().item(0).getNodeValue().trim();
-                    String[] split = str.split(",");
-                    for (int j = 0; j < split.length; j++) {
-                        getRackId().add(Integer.parseInt(split[j]));
-                    }
-                }
-                if (childNodes.item(i).getNodeName().equalsIgnoreCase("ResourceAllocationAlg"))
-                    ;
-                if (childNodes.item(i).getNodeName().equalsIgnoreCase("Scheduler"))
-                    ;
-                if (childNodes.item(i).getNodeName().equalsIgnoreCase("WorkLoad")) {
-                    String fileName = path + "/" + childNodes.item(i).getChildNodes().item(0).getNodeValue().trim();
-                    try {
-                        logFile = new File(fileName);
-                        setBis(new BufferedReader(new InputStreamReader(new FileInputStream(logFile))));
-                    } catch (IOException e) {
-                        LOGGER.info("Uh oh, got an IOException error!" + e.getMessage());
-                    } finally {
-                    }
-                }
-            }
-        }
-    }
 
     public List<InteractiveUser> getUserList() {
         return UserList;
@@ -247,8 +209,8 @@ public class InteractiveSystem extends GeneralSystem {
         this.waitingQueueWL = waitingQueueWL;
     }
 
-    public static InteractiveSystem Create(String config, Environment environment, DataCenter dataCenter, SLAViolationLogger slaViolationLogger) {
-        InteractiveSystem interactiveSystem = new InteractiveSystem(config, environment, dataCenter, slaViolationLogger);
+    public static InteractiveSystem Create(SystemPOD systemPOD, Environment environment, DataCenter dataCenter, SLAViolationLogger slaViolationLogger) {
+        InteractiveSystem interactiveSystem = new InteractiveSystem(systemPOD, environment, dataCenter, slaViolationLogger);
         interactiveSystem.getResourceAllocation().initialResourceAlocator(interactiveSystem);
         interactiveSystem.setAM(new InteractiveSystemAM(interactiveSystem, environment));
 

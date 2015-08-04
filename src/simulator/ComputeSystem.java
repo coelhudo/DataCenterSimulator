@@ -1,17 +1,10 @@
 package simulator;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
-import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
 
 import simulator.am.ComputeSystemAM;
 import simulator.jobs.BatchJob;
@@ -32,22 +25,25 @@ public class ComputeSystem extends GeneralSystem {
     private int minNode, maxNode;
     private double inputTime;
     private boolean blocked = false;
-    private File f;
     private int predictNumberofNode;
     private int priority;
     private Environment environment;
     private SLAViolationLogger slaViolationLogger;
     private DataCenter dataCenter;
 
-    private ComputeSystem(String config, Environment environment, DataCenter dataCenter, SLAViolationLogger slaViolationLogger) {
+    private ComputeSystem(SystemPOD systemPOD, Environment environment, DataCenter dataCenter, SLAViolationLogger slaViolationLogger) {
+        super(systemPOD);
         this.environment = environment;
         this.dataCenter = dataCenter;
         this.slaViolationLogger = slaViolationLogger;
         setComputeNodeList(new ArrayList<BladeServer>());
         waitingList = new ArrayList<BatchJob>();
         setComputeNodeIndex(new ArrayList<Integer>());
-        parseXmlConfig(config);
         setScheduler(new LeastRemainFirst());
+        setBis(systemPOD.getBis());
+        setNumberOfNode(systemPOD.getNumberOfNode());
+        priority = ((ComputeSystemPOD) systemPOD).getPriority();
+        setRackIDs(systemPOD.getRackIDs());
         // placement=new jobPlacement(ComputeNodeList);
         setResourceAllocation(new MHR(this.environment, this.dataCenter));
         totalJob = 0;
@@ -238,43 +234,7 @@ public class ComputeSystem extends GeneralSystem {
         }
     }
 
-    @Override
-    void readFromNode(Node node, String path) {
-        // if (ComputeNodeList.size()>0) ComputeNodeList.clear();
-        NodeList childNodes = node.getChildNodes();
-        for (int i = 0; i < childNodes.getLength(); i++) {
-            if (childNodes.item(i).getNodeType() == Node.ELEMENT_NODE) {
-                if (childNodes.item(i).getNodeName().equalsIgnoreCase("ResourceAllocationAlg"))
-                    ;
-                if (childNodes.item(i).getNodeName().equalsIgnoreCase("Scheduler"))
-                    ; // TODO
-                if (childNodes.item(i).getNodeName().equalsIgnoreCase("Workload")) {
-                    String fileName = path + "/" + childNodes.item(i).getChildNodes().item(0).getNodeValue().trim();
-                    try {
-                        f = new File(fileName);
-                        setBis(new BufferedReader(new InputStreamReader(new FileInputStream(f))));
-                    } catch (IOException e) {
-                        LOGGER.info("Uh oh, got an IOException error!" + e.getMessage());
-                    } finally {
-                    }
-                }
-                if (childNodes.item(i).getNodeName().equalsIgnoreCase("ComputeNode")) {
-                    setNumberofNode(Integer.parseInt(childNodes.item(i).getChildNodes().item(0).getNodeValue().trim()));
-                }
-                if (childNodes.item(i).getNodeName().equalsIgnoreCase("Priority")) {
-                    priority = Integer.parseInt(childNodes.item(i).getChildNodes().item(0).getNodeValue().trim());
-                }
-                if (childNodes.item(i).getNodeName().equalsIgnoreCase("Rack")) {
-                    String str = childNodes.item(i).getChildNodes().item(0).getNodeValue().trim();
-                    String[] split = str.split(",");
-                    for (int j = 0; j < split.length; j++) {
-                        getRackId().add(Integer.parseInt(split[j]));
-                    }
-                }
-            }
-        }
-    }
-
+    
     List<Integer> getindexSet() {
         return getComputeNodeIndex();
     }
@@ -325,8 +285,8 @@ public class ComputeSystem extends GeneralSystem {
         return totalResponsetime;
     }
 
-    public static ComputeSystem Create(String config, Environment environment, DataCenter dataCenter, SLAViolationLogger slaViolationLogger) {
-        ComputeSystem computeSystem = new ComputeSystem(config, environment, dataCenter, slaViolationLogger);
+    public static ComputeSystem Create(SystemPOD systemPOD, Environment environment, DataCenter dataCenter, SLAViolationLogger slaViolationLogger) {
+        ComputeSystem computeSystem = new ComputeSystem(systemPOD, environment, dataCenter, slaViolationLogger);
         computeSystem.getResourceAllocation().initialResourceAloc(computeSystem);
         computeSystem.setAM(new ComputeSystemAM(computeSystem, environment));
         return computeSystem;

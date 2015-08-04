@@ -52,10 +52,8 @@ public class ReadingConfigurationTest {
         assertEquals(35, computeSystem.numberofRunningNode()); //FIXME: is this correct? Check Active (below) vs Running
         assertEquals(0, computeSystem.numberofIdleNode());
         assertEquals(0, computeSystem.getNumberOfActiveServ());
-        assertEquals(35, computeSystem.getNumberofNode());
+        assertEquals(35, computeSystem.getNumberOfNode());
         assertEquals(0.0, computeSystem.getPower(), 1.0E8);
-        assertFalse(computeSystem.getRackId().isEmpty());
-        assertEquals(7, computeSystem.getRackId().size());
         assertEquals(0, computeSystem.getSLAviolation());
         assertFalse(computeSystem.isBlocked());
         assertNotEquals(null, computeSystem.getResourceAllocation());
@@ -71,10 +69,8 @@ public class ReadingConfigurationTest {
         assertEquals(8, enterpriseSystem.getComputeNodeList().size());
         assertEquals(0, enterpriseSystem.getAccumolatedViolation());
         assertEquals(0, enterpriseSystem.getNumberOfActiveServ());
-        assertEquals(8, enterpriseSystem.getNumberofNode());
+        assertEquals(8, enterpriseSystem.getNumberOfNode());
         assertEquals(0.0, enterpriseSystem.getPower(), 1.0E8);
-        assertFalse(enterpriseSystem.getRackId().isEmpty());
-        assertEquals(2, enterpriseSystem.getRackId().size());
         assertEquals(0, enterpriseSystem.getSLAviolation());
         assertNotEquals(null, enterpriseSystem.getResourceAllocation());
         assertNotEquals(null, enterpriseSystem.getScheduler());

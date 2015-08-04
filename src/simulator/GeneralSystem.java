@@ -1,19 +1,8 @@
 package simulator;
 
 import java.io.BufferedReader;
-import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.logging.Logger;
-
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
-
-import org.w3c.dom.Document;
-import org.w3c.dom.Node;
-import org.xml.sax.SAXException;
 
 import simulator.am.GeneralAM;
 import simulator.physical.BladeServer;
@@ -26,16 +15,14 @@ import simulator.schedulers.Scheduler;
  */
 public class GeneralSystem {
 
-    private static final Logger LOGGER = Logger.getLogger(GeneralSystem.class.getName());
-    
     private String name;
     private ResourceAllocation resourceAllocation;
     private Scheduler scheduler;
     private int numberofIdleNode = 0; // idle is change in allocation function
-    private int numberofNode;
-    private List<Integer> rackId = new ArrayList<Integer>();
-    private List<BladeServer> ComputeNodeList;
-    private List<Integer> ComputeNodeIndex;
+    private int numberOfNode;
+    private List<Integer> rackIDs;
+    private List<BladeServer> computeNodeList;
+    private List<Integer> computeNodeIndex;
     private BufferedReader bis = null;
     protected int SLAviolation;
     private boolean sysIsDone = false;
@@ -44,12 +31,13 @@ public class GeneralSystem {
     private int accumolatedViolation = 0;
     private int numberOfActiveServ = 0;
 
+    public GeneralSystem(SystemPOD systemPOD) {
+        rackIDs = systemPOD.getRackIDs();
+    }
+    
     public void addComputeNodeToSys(BladeServer b) {
         b.restart();
-        getComputeNodeList().add(b);
-    }
-
-    void readFromNode(Node node, String path) {
+        appendBladeServerIntoComputeNodeList(b);
     }
 
     void calculatePower() {
@@ -57,25 +45,6 @@ public class GeneralSystem {
             setPower(getPower() + bladeServer.getPower());
         }
 
-    }
-
-    void parseXmlConfig(String config) {
-        try {
-            DocumentBuilderFactory docBuilderFactory = DocumentBuilderFactory.newInstance();
-            DocumentBuilder docBuilder = docBuilderFactory.newDocumentBuilder();
-            final File file = new File(config);
-            Document doc = docBuilder.parse(file);
-            String path = file.getParent();
-            // normalize text representation
-            doc.getDocumentElement().normalize();
-            readFromNode(doc.getDocumentElement(), path);
-        } catch (ParserConfigurationException ex) {
-            LOGGER.severe(ex.getMessage());
-        } catch (SAXException ex) {
-            LOGGER.severe(ex.getMessage());
-        } catch (IOException ex) {
-            LOGGER.severe(ex.getMessage());
-        }
     }
 
     public String getName() {
@@ -110,36 +79,36 @@ public class GeneralSystem {
         this.numberofIdleNode = numberofIdleNode;
     }
 
-    public int getNumberofNode() {
-        return numberofNode;
+    public int getNumberOfNode() {
+        return numberOfNode;
     }
 
-    public void setNumberofNode(int numberofNode) {
-        this.numberofNode = numberofNode;
+    protected void setNumberOfNode(int numberOfNode) {
+        this.numberOfNode = numberOfNode;
     }
-
-    public List<Integer> getRackId() {
-        return rackId;
-    }
-
-    public void setRackId(ArrayList<Integer> rackId) {
-        this.rackId = rackId;
-    }
-
+    
     public List<BladeServer> getComputeNodeList() {
-        return ComputeNodeList;
+        return computeNodeList;
     }
 
     public void setComputeNodeList(ArrayList<BladeServer> computeNodeList) {
-        ComputeNodeList = computeNodeList;
+        this.computeNodeList = computeNodeList;
+    }
+    
+    public void appendBladeServerIntoComputeNodeList(BladeServer bladeServer) {
+        computeNodeList.add(bladeServer);
     }
 
     public List<Integer> getComputeNodeIndex() {
-        return ComputeNodeIndex;
+        return computeNodeIndex;
     }
 
     public void setComputeNodeIndex(ArrayList<Integer> computeNodeIndex) {
-        ComputeNodeIndex = computeNodeIndex;
+        this.computeNodeIndex = computeNodeIndex;
+    }
+    
+    public void appendBladeServerIndexIntoComputeNodeIndex(Integer index) {
+        computeNodeIndex.add(index);
     }
 
     public BufferedReader getBis() {
@@ -196,5 +165,13 @@ public class GeneralSystem {
 
     public void setNumberOfActiveServ(int numberOfActiveServ) {
         this.numberOfActiveServ = numberOfActiveServ;
+    }
+
+    public List<Integer> getRackIDs() {
+        return rackIDs;
+    }
+    
+    protected void setRackIDs(List<Integer> rackIDs) {
+        this.rackIDs = rackIDs;
     }
 }

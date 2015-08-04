@@ -93,7 +93,9 @@ public class SimulatorBuilder {
                     switch (whichSystem) {
                     case 1:
                         LOGGER.info("Initialization of Enterprise System Name=" + name);
-                        EnterpriseSystem enterpriseSystem = EnterpriseSystem.Create(fileName, environment, dataCenter,
+                        SystemBuilder enterpriseSystemBuilder = new EnterpriseSystemBuilder(fileName);
+                        SystemPOD enterpriseSystemPOD = enterpriseSystemBuilder.build();
+                        EnterpriseSystem enterpriseSystem = EnterpriseSystem.Create(enterpriseSystemPOD, environment, dataCenter,
                                 slaViolationLogger);
                         enterpriseSystem.setName(name);
                         systems.addEnterpriseSystem(enterpriseSystem);
@@ -101,7 +103,9 @@ public class SimulatorBuilder {
                         break;
                     case 2:
                         LOGGER.info("Initialization of Interactive System Name=" + name);
-                        InteractiveSystem interactiveSystem = InteractiveSystem.Create(fileName, environment, dataCenter,
+                        SystemBuilder interactiveSystemBuilder = new InteractiveSystemBuilder(fileName);
+                        SystemPOD interactiveSystemPOD = interactiveSystemBuilder.build();                
+                        InteractiveSystem interactiveSystem = InteractiveSystem.Create(interactiveSystemPOD, environment, dataCenter,
                                 slaViolationLogger);
                         interactiveSystem.setName(name);
                         systems.addInteractiveSystem(interactiveSystem);
@@ -109,7 +113,9 @@ public class SimulatorBuilder {
                         break;
                     case 3:
                         LOGGER.info("Initialization of HPC System Name=" + name);
-                        ComputeSystem computeSystem = ComputeSystem.Create(fileName, environment, dataCenter, slaViolationLogger);
+                        SystemBuilder computeSystemBuilder = new ComputeSystemBuilder(fileName);
+                        SystemPOD computeSystemPOD = computeSystemBuilder.build();                
+                        ComputeSystem computeSystem = ComputeSystem.Create(computeSystemPOD, environment, dataCenter, slaViolationLogger);
                         computeSystem.setName(name);
                         systems.addComputeSystem(computeSystem);
                         whichSystem = -1;

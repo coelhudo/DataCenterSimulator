@@ -502,7 +502,7 @@ public final class EnterpriseApp {
     }
 
     public void setMaxNumberOfRequest(int maxNumberOfRequest) {
-        maxNumberOfRequest = maxNumberOfRequest;
+        this.maxNumberOfRequest = maxNumberOfRequest;
     }
 
     public int getNumberofBasicNode() {
@@ -510,6 +510,6 @@ public final class EnterpriseApp {
     }
 
     public void setNumberofBasicNode(int numberofBasicNode) {
-        numberofBasicNode = numberofBasicNode;
+        this.numberofBasicNode = numberofBasicNode;
     }
 }

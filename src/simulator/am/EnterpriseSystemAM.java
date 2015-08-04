@@ -226,9 +226,9 @@ public class EnterpriseSystemAM extends GeneralAM {
         enterpriseSystem.setNumberOfActiveServ((int) Math
                 .floor(numberOfPredictedReq[kalmanIndex] * 5 * enterpriseSystem.getApplications().get(0).getNumberofBasicNode()
                         / enterpriseSystem.getApplications().get(0).getMaxNumberOfRequest()));
-        if (enterpriseSystem.getNumberOfActiveServ() > enterpriseSystem.getNumberofNode()) {
+        if (enterpriseSystem.getNumberOfActiveServ() > enterpriseSystem.getNumberOfNode()) {
             LOGGER.info("In ES : is gonna alocate this number of servers: "
-                    + (enterpriseSystem.getNumberOfActiveServ() - enterpriseSystem.getNumberofNode()));
+                    + (enterpriseSystem.getNumberOfActiveServ() - enterpriseSystem.getNumberOfNode()));
         }
     }
 

@@ -1,10 +1,13 @@
 package simulator.tests;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
 
 import java.util.List;
 
 import org.junit.Test;
+
 import simulator.Environment;
 import simulator.Systems;
 import simulator.physical.Chassis;
