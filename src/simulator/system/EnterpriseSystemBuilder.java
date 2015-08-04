@@ -10,6 +10,10 @@ import java.util.logging.Logger;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
+import simulator.Environment;
+import simulator.SLAViolationLogger;
+import simulator.physical.DataCenter;
+
 public class EnterpriseSystemBuilder extends SystemBuilder {
     
     private static final Logger LOGGER = Logger.getLogger(EnterpriseSystemBuilder.class.getName());
@@ -96,6 +100,15 @@ public class EnterpriseSystemBuilder extends SystemBuilder {
         }
         
         return enterpriseApplicationPOD;
+    }
+
+    @Override
+    public GeneralSystem build(String name, DataCenter dataCenter, Environment environment, SLAViolationLogger slaViolationLogger) {
+        SystemPOD enterpriseSystemPOD = getSystemPOD();
+        GeneralSystem enterpriseSystem = EnterpriseSystem.Create(enterpriseSystemPOD, environment, dataCenter,
+                slaViolationLogger);
+        enterpriseSystem.setName(name);
+        return enterpriseSystem;
     }
 
 }

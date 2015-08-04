@@ -23,7 +23,6 @@ import simulator.system.EnterpriseSystemBuilder;
 import simulator.system.InteractiveSystem;
 import simulator.system.InteractiveSystemBuilder;
 import simulator.system.SystemBuilder;
-import simulator.system.SystemPOD;
 import simulator.system.Systems;
 
 public class SimulatorBuilder {
@@ -32,12 +31,12 @@ public class SimulatorBuilder {
 
     private DataCenter dataCenter;
     private Environment environment;
-    private SLAViolationLogger slaViolationLogger;
     private Systems systems;
+    private SLAViolationLogger slaViolationLogger;
 
     public SimulatorBuilder(Environment environment, SLAViolationLogger slaViolationLogger) {
         this.environment = environment;
-        systems = new Systems(this.environment);
+        this.systems = new Systems(this.environment);
         this.slaViolationLogger = slaViolationLogger;
     }
 
@@ -103,30 +102,22 @@ public class SimulatorBuilder {
                     case 1:
                         LOGGER.info("Initialization of Enterprise System Name=" + name);
                         SystemBuilder enterpriseSystemBuilder = new EnterpriseSystemBuilder(fileName);
-                        SystemPOD enterpriseSystemPOD = enterpriseSystemBuilder.build();
-                        EnterpriseSystem enterpriseSystem = EnterpriseSystem.Create(enterpriseSystemPOD, environment, dataCenter,
-                                slaViolationLogger);
-                        enterpriseSystem.setName(name);
-                        systems.addEnterpriseSystem(enterpriseSystem);
+                        systems.addEnterpriseSystem((EnterpriseSystem) enterpriseSystemBuilder.build(name, dataCenter,
+                                environment, slaViolationLogger));
                         whichSystem = -1;
                         break;
                     case 2:
                         LOGGER.info("Initialization of Interactive System Name=" + name);
                         SystemBuilder interactiveSystemBuilder = new InteractiveSystemBuilder(fileName);
-                        SystemPOD interactiveSystemPOD = interactiveSystemBuilder.build();                
-                        InteractiveSystem interactiveSystem = InteractiveSystem.Create(interactiveSystemPOD, environment, dataCenter,
-                                slaViolationLogger);
-                        interactiveSystem.setName(name);
-                        systems.addInteractiveSystem(interactiveSystem);
+                        systems.addInteractiveSystem((InteractiveSystem) interactiveSystemBuilder.build(name, dataCenter,
+                                environment, slaViolationLogger));
                         whichSystem = -1;
                         break;
                     case 3:
                         LOGGER.info("Initialization of HPC System Name=" + name);
                         SystemBuilder computeSystemBuilder = new ComputeSystemBuilder(fileName);
-                        SystemPOD computeSystemPOD = computeSystemBuilder.build();                
-                        ComputeSystem computeSystem = ComputeSystem.Create(computeSystemPOD, environment, dataCenter, slaViolationLogger);
-                        computeSystem.setName(name);
-                        systems.addComputeSystem(computeSystem);
+                        systems.addComputeSystem((ComputeSystem) computeSystemBuilder.build(name, dataCenter,
+                                environment, slaViolationLogger));
                         whichSystem = -1;
                         break;
                     }

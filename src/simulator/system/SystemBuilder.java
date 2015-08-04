@@ -12,6 +12,10 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.xml.sax.SAXException;
 
+import simulator.Environment;
+import simulator.SLAViolationLogger;
+import simulator.physical.DataCenter;
+
 public abstract class SystemBuilder {
 
     private static final Logger LOGGER = Logger.getLogger(GeneralSystem.class.getName());
@@ -22,7 +26,9 @@ public abstract class SystemBuilder {
         this.configurationFile = configurationFile;
     }
     
-    public SystemPOD build() {
+    public abstract GeneralSystem build(String name, DataCenter dataCenter, Environment environment, SLAViolationLogger slaViolationLogger);
+    
+    protected SystemPOD getSystemPOD() {
         SystemPOD systemPOD = null;
         try {
             DocumentBuilderFactory docBuilderFactory = DocumentBuilderFactory.newInstance();
