@@ -11,7 +11,6 @@ import simulator.Environment;
 public class Chassis {
 
     private List<BladeServer> servers = new ArrayList<BladeServer>();
-    private boolean turnON = true;
     private int chassisID, rackId;
     private String chassisType = new String();
     private Environment environment;
@@ -25,10 +24,6 @@ public class Chassis {
     
     public List<BladeServer> getServers() {
         return servers;
-    }
-
-    public void turnIt(boolean tag) {
-        turnON = tag;
     }
     
     public int getRackID() {

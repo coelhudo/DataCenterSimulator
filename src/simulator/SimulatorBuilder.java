@@ -104,23 +104,21 @@ public class SimulatorBuilder {
                         SystemBuilder enterpriseSystemBuilder = new EnterpriseSystemBuilder(fileName);
                         systems.addEnterpriseSystem((EnterpriseSystem) enterpriseSystemBuilder.build(name, dataCenter,
                                 environment, slaViolationLogger));
-                        whichSystem = -1;
                         break;
                     case 2:
                         LOGGER.info("Initialization of Interactive System Name=" + name);
                         SystemBuilder interactiveSystemBuilder = new InteractiveSystemBuilder(fileName);
                         systems.addInteractiveSystem((InteractiveSystem) interactiveSystemBuilder.build(name, dataCenter,
                                 environment, slaViolationLogger));
-                        whichSystem = -1;
                         break;
                     case 3:
                         LOGGER.info("Initialization of HPC System Name=" + name);
                         SystemBuilder computeSystemBuilder = new ComputeSystemBuilder(fileName);
                         systems.addComputeSystem((ComputeSystem) computeSystemBuilder.build(name, dataCenter,
                                 environment, slaViolationLogger));
-                        whichSystem = -1;
                         break;
                     }
+                    whichSystem = -1;
                 }
             }
         }

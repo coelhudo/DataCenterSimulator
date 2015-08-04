@@ -12,7 +12,7 @@ import simulator.system.InteractiveUser;
 public class IteractiveUserAM extends GeneralAM {
 
     private static final Logger LOGGER = Logger.getLogger(IteractiveUserAM.class.getName());
-    
+
     InteractiveUser User;
     InteractiveSystem sys;
     double util = 0;
@@ -43,8 +43,7 @@ public class IteractiveUserAM extends GeneralAM {
     }
 
     public void localUtilCal() {
-        double CPU = User.getAverageCPUutil(); // average CPU utilization of
-        // nodes
+        double CPU = User.getAverageCPUUtilization();
         double[] pwr = User.getAveragePwrParam();
         double x = CPU * (pwr[0] - pwr[1]) / 100 + User.numberofIdleNode() * pwr[2]
                 + User.numberofRunningNode() * pwr[1];
@@ -65,7 +64,7 @@ public class IteractiveUserAM extends GeneralAM {
             }
         }
         percnt = percnt + levels[0] + 2 * levels[1] + 3 * levels[2];
-        sys.getAM().getCompPwrApps()[User.getID()] = sys.getAM().getCompPwrApps()[User.getID()] + levels[0]
+        sys.getAM().getCompPowerApps()[User.getID()] = sys.getAM().getCompPowerApps()[User.getID()] + levels[0]
                 + 2 * levels[1] + 3 * levels[2];
         return percnt;
     }
@@ -87,10 +86,8 @@ public class IteractiveUserAM extends GeneralAM {
 
         if (violationInEpoch > 0) {
             for (int j = 0; j < User.getComputeNodeList().size(); j++) {
-                if (User.getComputeNodeList().get(j).getReady() != -1) // except
-                // idle
-                // nodes
-                {
+                if (User.getComputeNodeList().get(j).getReady() != -1) {
+                    // except idle nodes
                     User.getComputeNodeList().get(j).increaseFrequency();
                 }
             }

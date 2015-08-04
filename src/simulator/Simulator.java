@@ -116,7 +116,6 @@ public class Simulator {
 
         Simulator simulator = new Simulator();
         SimulationResults results = simulator.execute();
-        // LOGGER.info("Total JOBs= "+CS.totalJob);
         LOGGER.info("Total energy Consumption= " + results.getTotalPowerConsumption());
         LOGGER.info("LocalTime= " + results.getLocalTime());
         LOGGER.info("Mean Power Consumption= " + results.getTotalPowerConsumption() / results.getLocalTime());

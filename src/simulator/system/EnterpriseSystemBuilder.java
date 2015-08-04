@@ -24,7 +24,6 @@ public class EnterpriseSystemBuilder extends SystemBuilder {
     
     protected SystemPOD readFromNode(Node node, String path) {
         SystemPOD systemPOD = new EnterpriseSystemPOD();
-        //getComputeNodeList().clear();
         NodeList childNodes = node.getChildNodes();
         for (int i = 0; i < childNodes.getLength(); i++) {
             if (childNodes.item(i).getNodeType() == Node.ELEMENT_NODE) {
@@ -53,7 +52,6 @@ public class EnterpriseSystemBuilder extends SystemBuilder {
     }
     
     EnterpriseApplicationPOD getEnterpriseApplicationPOD(Node node, String path) {
-        //getComputeNodeList().clear();
         EnterpriseApplicationPOD enterpriseApplicationPOD = new EnterpriseApplicationPOD();
         NodeList childNodes = node.getChildNodes();
         for (int i = 0; i < childNodes.getLength(); i++) {

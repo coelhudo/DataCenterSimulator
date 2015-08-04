@@ -12,19 +12,17 @@ import simulator.system.EnterpriseSystem;
 public class ApplicationAM extends GeneralAM {
 
     private static final Logger LOGGER = Logger.getLogger(ApplicationAM.class.getName());
-    
+
     private EnterpriseSystem sys;
-    private EnterpriseApp app;// =new application(null, null);
+    private EnterpriseApp app;
     static int violationInEpoch = 0;
     private double util = 0;
     private double percnt = 0;
     private int accumulativeSLA = 0;
-    // int cpAccumu=0;
     Simulator.StrategyEnum StrategyWsitch = Simulator.StrategyEnum.Green;
     private Environment environment;
 
     public ApplicationAM(EnterpriseSystem Sys, EnterpriseApp app, Environment environment) {
-        // dc=dtcenter;
         this.sys = Sys;
         this.app = app;
         this.environment = environment;
@@ -82,7 +80,7 @@ public class ApplicationAM extends GeneralAM {
             }
         }
         setPercnt(getPercnt() + levels[0] + 2 * levels[1] + 3 * levels[2]);
-        sys.getAM().getCompPwrApps()[app.getID()] = sys.getAM().getCompPwrApps()[app.getID()] + levels[0]
+        sys.getAM().getCompPowerApps()[app.getID()] = sys.getAM().getCompPowerApps()[app.getID()] + levels[0]
                 + 2 * levels[1] + 3 * levels[2];
         return getPercnt();
     }
@@ -100,20 +98,18 @@ public class ApplicationAM extends GeneralAM {
             totalJob = totalJob + app.getResponseList().get(j).getNumberOfJob();
         }
         app.getResponseList().clear();
-        if ((tmp * 100.0 / totalJob) > (100.0 - percentage)) // SLAviolation:
-        // percentage of
-        // jobs have
-        // violation
-        {
+        if ((tmp * 100.0 / totalJob) > (100.0 - percentage)) {
+            // SLAviolation:
+            // percentage of
+            // jobs have
+            // violation
             app.setSLAviolation((int) Math.ceil(tmp * 100.0 / totalJob) - 100 + percentage);
-            // app.NumofViolation=app.NumofViolation+app.SLAviolation;
             app.setNumofViolation(app.getNumofViolation() + 1);
             // LOGGER.info("SLA violation Application\t"+app.SLAviolation
             // + Main.localTime);
         }
         setAccumulativeSLA(getAccumulativeSLA() + app.getSLAviolation());
         sys.getAM().SlaApps[app.getID()] = sys.getAM().SlaApps[app.getID()] + getAccumulativeSLA();
-        // cpAccumu=cpAccumu+app.SLAviolation;
         // LOGGER.info("ACCCUMU \t"+accumulativeSLA);
     }
 
@@ -134,12 +130,9 @@ public class ApplicationAM extends GeneralAM {
         }
 
         if (violationInEpoch > 0) {
-            for (int j = 0; j < app.getComputeNodeList().size(); j++) {
-                if (app.getComputeNodeList().get(j).getReady() != -1) // except
-                // idle
-                // nodes
-                {
-                    app.getComputeNodeList().get(j).increaseFrequency();
+            for (BladeServer bladeServer : app.getComputeNodeList()) {
+                if (bladeServer.getReady() != -1) {
+                    bladeServer.increaseFrequency();
                 }
             }
             int tedad = app.getComputeNodeList().size();
@@ -167,9 +160,9 @@ public class ApplicationAM extends GeneralAM {
         }
         // Policy 1: if no SLA violation then decrease frequency
         if (violationInEpoch == 0) {
-            for (int j = 0; j < app.getComputeNodeList().size(); j++) {
-                if (app.getComputeNodeList().get(j).getReady() != -1) {
-                    app.getComputeNodeList().get(j).decreaseFrequency();
+            for (BladeServer bladeServer : app.getComputeNodeList()) {
+                if (bladeServer.getReady() != -1) {
+                    bladeServer.decreaseFrequency();
                 }
             }
             // Policy 3: if no SLA violation then Shrink active server
@@ -178,7 +171,6 @@ public class ApplicationAM extends GeneralAM {
                     & app.numberofRunningNode() > (app.getMinProc() + 1); j++) {
                 if (app.getComputeNodeList().get(j).getReady() == 1
                         && app.getComputeNodeList().get(j).getCurrentCPU() == 0) {
-                    // System.out.print("App:GR " +app.id);
                     app.getComputeNodeList().get(j).makeItIdle(new EnterpriseJob());
                     // LOGGER.info("\tIdle\t\t\t\t\t@:"+Main.localTime+"\tNumber
                     // of running== "+app.numberofRunningNode());
@@ -188,9 +180,9 @@ public class ApplicationAM extends GeneralAM {
         }
         // Policy 2: If SLA is violated then increase frequency of the nodes
         if (violationInEpoch > 0) {
-            for (int j = 0; j < app.getComputeNodeList().size(); j++) {
-                if (app.getComputeNodeList().get(j).getReady() == 0) {
-                    app.getComputeNodeList().get(j).increaseFrequency();
+            for (BladeServer bladeServer : app.getComputeNodeList()) {
+                if (bladeServer.getReady() == 0) {
+                    bladeServer.increaseFrequency();
                 }
             }
             // Policy 4: if SLA violation then unshrink active server half of
@@ -253,9 +245,9 @@ public class ApplicationAM extends GeneralAM {
         if (index == -2) {
             return false;
         }
-        if (app.getComputeNodeList().size() == 1) /// *app.minProc*/ ||
-        /// sys.applicationList.get(targetApp).ComputeNodeList.size()==sys.applicationList.get(targetApp).maxProc)
-        {
+        if (app.getComputeNodeList().size() == 1) {
+            /// *app.minProc*/ ||
+            /// sys.applicationList.get(targetApp).ComputeNodeList.size()==sys.applicationList.get(targetApp).maxProc)
             return false;
         }
         // AMEnterpriseSys temp2=(AMEnterpriseSys)sys.AM;
@@ -280,7 +272,7 @@ public class ApplicationAM extends GeneralAM {
         StrategyWsitch = Simulator.StrategyEnum.SLA;
         return true;
     }
-    
+
     public double getUtil() {
         return util;
     }

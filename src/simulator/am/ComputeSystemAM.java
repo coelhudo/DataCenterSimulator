@@ -9,7 +9,7 @@ import simulator.system.ComputeSystem;
 public class ComputeSystemAM extends GeneralAM {
 
     private static final Logger LOGGER = Logger.getLogger(ComputeSystemAM.class.getName());
-    
+
     private ComputeSystem computeSystem;
     private Environment environment;
 
@@ -28,7 +28,9 @@ public class ComputeSystemAM extends GeneralAM {
         int[] levels = { 0, 0, 0 };
         int index = 0;
         for (int j = 0; j < computeSystem.getComputeNodeList().size(); j++) {
-            if (computeSystem.getComputeNodeList().get(j).getReady() != -1) // it is idle
+            if (computeSystem.getComputeNodeList().get(j).getReady() != -1) // it
+                                                                            // is
+                                                                            // idle
             {
                 index = computeSystem.getComputeNodeList().get(j).getCurrentFreqLevel();
                 levels[index]++;
@@ -44,12 +46,12 @@ public class ComputeSystemAM extends GeneralAM {
 
     void analysisGreen() {
 
-        if (getSLAViolationGen() > 0) /*
-                                  * Increase freq. of just fully utilized CPU
-                                  * nodes Activate just half of sleep nodes
-                                  * if(all nodes are busy and this system is not
-                                  * blocked) send(SOS, theParent)
-                                  */ {
+        if (getSLAViolationGen() > 0) {
+            /*
+             * Increase freq. of just fully utilized CPU nodes Activate just
+             * half of sleep nodes if(all nodes are busy and this system is not
+             * blocked) send(SOS, theParent)
+             */
             for (BladeServer bladeServer : computeSystem.getComputeNodeList()) {
                 if (bladeServer.getReady() == 0) {
                     bladeServer.increaseFrequency();
@@ -77,10 +79,11 @@ public class ComputeSystemAM extends GeneralAM {
             // !CS.blocked)
             // DataCenter.theDataCenter.AM.SoSCS[CS.priority]=1;
         }
-        if (getSLAViolationGen() == 0) /*
-                                   * Decrease freq. of all nodes If node is
-                                   * ready and is not used make it sleep
-                                   */ {
+        if (getSLAViolationGen() == 0) {
+            /*
+             * Decrease freq. of all nodes If node is ready and is not used make
+             * it sleep
+             */
             // Decrease freq. of all nodes
             for (BladeServer bladeServer : computeSystem.getComputeNodeList()) {
                 if (bladeServer.getReady() > -1) {
@@ -89,8 +92,7 @@ public class ComputeSystemAM extends GeneralAM {
             }
             // If node is ready and is not used make it sleep
             for (BladeServer bladeServer : computeSystem.getComputeNodeList()) {
-                if (bladeServer.getActiveBatchList().isEmpty()
-                        && bladeServer.getBlockedBatchList().isEmpty()
+                if (bladeServer.getActiveBatchList().isEmpty() && bladeServer.getBlockedBatchList().isEmpty()
                         && bladeServer.getReady() > -1) {
                     environment.updateNumberOfMessagesFromSystemToNodes();
                     bladeServer.setReady(-1);

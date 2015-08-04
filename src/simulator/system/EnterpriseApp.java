@@ -17,7 +17,7 @@ import simulator.schedulers.Scheduler;
 public final class EnterpriseApp {
 
     private static final Logger LOGGER = Logger.getLogger(EnterpriseApp.class.getName());
-    
+
     private int id = 0;
     // int usedNode=0;
     private int maxProc = 0;
@@ -43,7 +43,8 @@ public final class EnterpriseApp {
     GeneralSystem parent;
     private Environment environment;
 
-    public EnterpriseApp(EnterpriseApplicationPOD enterpriseApplicationPOD, GeneralSystem parent, Environment environment) {
+    public EnterpriseApp(EnterpriseApplicationPOD enterpriseApplicationPOD, GeneralSystem parent,
+            Environment environment) {
         this.parent = parent;
         this.environment = environment;
         setComputeNodeList(new ArrayList<BladeServer>());
@@ -54,7 +55,14 @@ public final class EnterpriseApp {
         minProc = enterpriseApplicationPOD.getMinProc();
         timeTreshold = enterpriseApplicationPOD.getTimeTreshold();
         SLAPercentage = enterpriseApplicationPOD.getSLAPercentage();
-        maxNumberOfRequest = enterpriseApplicationPOD.getMaxNumberOfRequest(); // # of Request can be handled by number
+        maxNumberOfRequest = enterpriseApplicationPOD.getMaxNumberOfRequest(); // #
+                                                                               // of
+                                                                               // Request
+                                                                               // can
+                                                                               // be
+                                                                               // handled
+                                                                               // by
+                                                                               // number
         numberofBasicNode = enterpriseApplicationPOD.getNumberofBasicNode();
         maxExpectedResTime = enterpriseApplicationPOD.getMaxExpectedResTime();
         bis = enterpriseApplicationPOD.getBIS();
@@ -67,7 +75,7 @@ public final class EnterpriseApp {
         double lenJob = 0;
         for (EnterpriseJob job : getQueueApp()) {
             if (job.getArrivalTimeOfJob() <= environment.getCurrentLocalTime()) {
-                lenJob = +job.getNumberOfJob(); //FIXME: += instead of = + 
+                lenJob = +job.getNumberOfJob(); // FIXME: += instead of = +
             }
         }
 
@@ -228,9 +236,8 @@ public final class EnterpriseApp {
                         getQueueApp().remove(0);
                         break;
                     }
-                    if (capacityOfNode < 0) // there are more jobs than
-                    // 1000.0*MIPS
-                    {
+                    if (capacityOfNode < 0) {
+                        // there are more jobs than 1000.0*MIPS
                         addToresponseArray(copyTedat,
                                 (environment.getCurrentLocalTime() - jj.getArrivalTimeOfJob() + 1));
                         jj.setNumberOfJob(-1 * capacityOfNode);
@@ -376,7 +383,7 @@ public final class EnterpriseApp {
         return false;
     }
 
-    //FIXME: why get index instead of the instance?
+    // FIXME: why get index instead of the instance?
     public int myFirstIdleNode() {
         for (int i = 0; i < getComputeNodeList().size(); i++) {
             if (getComputeNodeList().get(i).getReady() == -1) {
@@ -397,8 +404,8 @@ public final class EnterpriseApp {
      * i=0;i<Main.responseList.size();i++) { meanResponsetime=meanResponsetime+
      * Main.responseList.get(i).responseTime*Main.responseList.get(i).
      * numberOfJob; totalJob+=Main.responseList.get(i).numberOfJob;
-     * //LOGGER.info("respTime="+serverList.get(i).respTime+
-     * "\t TotalJob="+serverList.get(i).totalJob); }
+     * //LOGGER.info("respTime="+serverList.get(i).respTime+ "\t TotalJob="
+     * +serverList.get(i).totalJob); }
      * 
      * return meanResponsetime;///totalJob; }
      */

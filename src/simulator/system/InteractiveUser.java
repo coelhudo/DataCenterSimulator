@@ -29,8 +29,8 @@ public class InteractiveUser {
     private int id = 0;
     private String logFileName;
     private File logFile = null;
-    private List<BladeServer> ComputeNodeList;
-    private List<Integer> ComputeNodeIndex;
+    private List<BladeServer> computeNodeList;
+    private List<Integer> computeNodeIndex;
     private List<InteractiveJob> queueWL;
     private List<ResponseTime> responseList;
     // jobPlacement placement;
@@ -39,10 +39,10 @@ public class InteractiveUser {
     private int SLAviolation = 0;
     private IteractiveUserAM AM;
     private int usedNode = 0;
-    private int MaxNumberOfRequest = 0; // # of Request can be handled by number
+    private int maxNumberOfRequest = 0; // # of Request can be handled by number
     // of basic node which for 100% CPU
     // utilization
-    private int NumberofBasicNode = 0;
+    private int numberofBasicNode = 0;
     private GeneralSystem parent;
     private Environment environment;
 
@@ -177,8 +177,9 @@ public class InteractiveUser {
                 // LOGGER.info(1000.0*Mips);
                 break;
             }
-            if (capacityOfNode > 0) // still we have capacity to run the jobs
-            {
+            if (capacityOfNode > 0) {
+                // still we have capacity to run the jobs
+
                 addToresponseArray(jj.getNumberOfJob(),
                         (environment.getCurrentLocalTime() - jj.getArrivalTimeOfJob() + 1));
                 beenRunJobs = beenRunJobs + jj.getNumberOfJob();
@@ -196,9 +197,8 @@ public class InteractiveUser {
                         getQueueWL().remove(0);
                         break;
                     }
-                    if (capacityOfNode < 0) // there are more jobs than
-                    // 1000.0*MIPS
-                    {
+                    if (capacityOfNode < 0) {
+                        // there are more jobs than 1000.0*MIPS
                         addToresponseArray(copyTedat,
                                 (environment.getCurrentLocalTime() - jj.getArrivalTimeOfJob() + 1));
                         jj.setNumberOfJob(-1 * capacityOfNode);
@@ -213,9 +213,9 @@ public class InteractiveUser {
                         beenRunJobs = beenRunJobs + jj.getNumberOfJob();
                         getQueueWL().remove(0);
                     }
-                } // end while
+                }
                 break;
-            } // end if
+            }
         }
         if (capacityOfNode_COPY == beenRunJobs) // we're done all our capacity
         {
@@ -278,13 +278,13 @@ public class InteractiveUser {
 
     void setReadyFlag() {
         for (BladeServer bladeServer : getComputeNodeList()) {
-            if (bladeServer.getReady() != -1) // -1 : means this
-            // server is
-            // idle not so
-            // as to compute
-            // its idle
-            // power
-            {
+            if (bladeServer.getReady() != -1) {
+             // -1 : means this
+                // server is
+                // idle not so
+                // as to compute
+                // its idle
+                // power
                 if (bladeServer.getWebBasedList().isEmpty()) {
                     bladeServer.setReady(1);
                     bladeServer.setCurrentCPU(0);
@@ -330,7 +330,7 @@ public class InteractiveUser {
         return cnt;
     }
 
-    //FIXME: why return index instead instance?
+    // FIXME: why return index instead instance?
     public int myFirstIdleNode() {
         for (int i = 0; i < getComputeNodeList().size(); i++) {
             if (getComputeNodeList().get(i).getReady() == -1) {
@@ -359,20 +359,20 @@ public class InteractiveUser {
         double lenJob = 0;
         for (InteractiveJob job : getQueueWL()) {
             if (job.getArrivalTimeOfJob() <= environment.getCurrentLocalTime()) {
-                lenJob = +job.getNumberOfJob(); //FIXME: += instead of =+
+                lenJob = +job.getNumberOfJob(); // FIXME: += instead of =+
             }
         }
 
         return lenJob;
     }
 
-    public double getAverageCPUutil() {
+    public double getAverageCPUUtilization() {
         int i = 0;
         double cpu = 0;
         for (i = 0; i < getComputeNodeList().size(); i++) {
             cpu = cpu + getComputeNodeList().get(i).getCurrentCPU();
         }
-        cpu = cpu / i; //FIXME: why not list.size()? i will always be (size -1)
+        cpu = cpu / i; // FIXME: why not list.size()? i will always be (size -1)
         return cpu;
     }
 
@@ -422,19 +422,19 @@ public class InteractiveUser {
     }
 
     public List<BladeServer> getComputeNodeList() {
-        return ComputeNodeList;
+        return computeNodeList;
     }
 
     private void setComputeNodeList(List<BladeServer> computeNodeList) {
-        ComputeNodeList = computeNodeList;
+        this.computeNodeList = computeNodeList;
     }
 
     public List<Integer> getComputeNodeIndex() {
-        return ComputeNodeIndex;
+        return computeNodeIndex;
     }
 
     private void setComputeNodeIndex(List<Integer> computeNodeIndex) {
-        ComputeNodeIndex = computeNodeIndex;
+        this.computeNodeIndex = computeNodeIndex;
     }
 
     public List<InteractiveJob> getQueueWL() {
@@ -470,19 +470,19 @@ public class InteractiveUser {
     }
 
     public int getMaxNumberOfRequest() {
-        return MaxNumberOfRequest;
+        return maxNumberOfRequest;
     }
 
     public void setMaxNumberOfRequest(int maxNumberOfRequest) {
-        MaxNumberOfRequest = maxNumberOfRequest;
+        this.maxNumberOfRequest = maxNumberOfRequest;
     }
 
     public int getNumberofBasicNode() {
-        return NumberofBasicNode;
+        return numberofBasicNode;
     }
 
     public void setNumberofBasicNode(int numberofBasicNode) {
-        NumberofBasicNode = numberofBasicNode;
+        this.numberofBasicNode = numberofBasicNode;
     }
 
     int getArrivalTime() {

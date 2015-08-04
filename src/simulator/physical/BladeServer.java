@@ -43,14 +43,12 @@ public class BladeServer {
     private int totalFinishedJob = 0;
     private int serverID;
     private int rackId;
-    // SLA Parameters
     // Application Bundle
     private int timeTreshold = 0;
     private int SLAPercentage;
     // WorkLoad Bundle
     private int maxExpectedRes = 0;
     private boolean SLAviolation;
-    ////////////////
     private Environment environment;
 
     public BladeServer(int chasID, Environment environment) {
@@ -119,13 +117,9 @@ public class BladeServer {
             }
             w = getPowerIdle()[j];
             a = getPowerBusy()[j] - w;
-            if (getReady() == -1 | getReady() == -2 | getReady() == -3) // if
-            // the
-            // server
-            // is in
-            // idle
-            // state
-            {
+            if (getReady() == -1 | getReady() == -2 | getReady() == -3) {
+                // if the server is in idle state
+
                 a = 0;
                 w = getIdleConsumption();
                 // LOGGER.info(Main.localTime);
@@ -667,29 +661,18 @@ public class BladeServer {
         this.bladeType = bladeType;
     }
 
-    /*double getMeanResTimeLastEpoch() {
-
-        if (resTimeEpoch == 0) // the first time in
-        {
-            resTimeEpoch = respTime;
-            totalJobEpoch = totalJob - queueLength;
-            LOGGER.info("First   Last Epoch   " + respTime + totalJobEpoch + "\t" + chassisID);
-            if (totalJobEpoch > 0)
-                return respTime / totalJobEpoch;
-            else
-                return 0;
-        } 
-        else
-        {
-            double tempTime = respTime - resTimeEpoch;
-            double tempJob = totalJob - queueLength - totalJobEpoch;
-            resTimeEpoch = respTime;
-            totalJobEpoch = totalJob - queueLength;
-            LOGGER.info("in get MeanResponse Last Epoch   " + tempTime / tempJob + "\t" + chassisID);
-            if (tempJob != 0)
-                return tempTime / tempJob;
-            else
-                return 0;
-        }
-    }*/
+    /*
+     * double getMeanResTimeLastEpoch() {
+     * 
+     * if (resTimeEpoch == 0) // the first time in { resTimeEpoch = respTime;
+     * totalJobEpoch = totalJob - queueLength; LOGGER.info(
+     * "First   Last Epoch   " + respTime + totalJobEpoch + "\t" + chassisID);
+     * if (totalJobEpoch > 0) return respTime / totalJobEpoch; else return 0; }
+     * else { double tempTime = respTime - resTimeEpoch; double tempJob =
+     * totalJob - queueLength - totalJobEpoch; resTimeEpoch = respTime;
+     * totalJobEpoch = totalJob - queueLength; LOGGER.info(
+     * "in get MeanResponse Last Epoch   " + tempTime / tempJob + "\t" +
+     * chassisID); if (tempJob != 0) return tempTime / tempJob; else return 0; }
+     * }
+     */
 }

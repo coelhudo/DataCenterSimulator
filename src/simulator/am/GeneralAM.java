@@ -28,7 +28,7 @@ public abstract class GeneralAM {
         this.recForCoop = recForCoop;
     }
 
-    public double[] getCompPwrApps() {
+    public double[] getCompPowerApps() {
         return compPwrApps;
     }
 

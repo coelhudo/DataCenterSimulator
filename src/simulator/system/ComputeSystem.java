@@ -24,11 +24,9 @@ public class ComputeSystem extends GeneralSystem {
     private Violation SLAViolationType; // different type of violation:
     // ComputeNodeShortage, DEADLINEPASSED
     private List<BatchJob> waitingList;
-    private int totalJob = 0;// , totalFinishedJob=0;
-    private int minNode, maxNode;
+    private int totalJob = 0;
     private double inputTime;
     private boolean blocked = false;
-    private int predictNumberofNode;
     private int priority;
     private Environment environment;
     private SLAViolationLogger slaViolationLogger;

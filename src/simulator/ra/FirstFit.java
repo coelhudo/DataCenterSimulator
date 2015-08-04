@@ -39,7 +39,6 @@ public class FirstFit extends ResourceAllocation {
         retValue[0] = -2;
         retValue[1] = -2;
 
-        ////////////////////////
         for (int l = 0; l < chassisList.size(); l++) {
             for (int k = 0; k < dataCenter.getChassisSet().get(chassisList.get(l)).getServers().size(); k++) {
                 if (dataCenter.getChassisSet().get(chassisList.get(l)).getServers().get(k).getReady() == -3) {

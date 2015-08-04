@@ -23,7 +23,6 @@ public class EnterpriseSystemAM extends GeneralAM {
     private SLAViolationLogger slaViolationLogger;
 
     public EnterpriseSystemAM(EnterpriseSystem enterpriseSystem, Environment environment, SLAViolationLogger slaViolationLogger) {
-        // super(dtcenter);
         this.enterpriseSystem = enterpriseSystem;
         this.environment = environment;
         this.slaViolationLogger = slaViolationLogger;
@@ -122,8 +121,7 @@ public class EnterpriseSystemAM extends GeneralAM {
 
     void iterativeAlg() {
         for (int i = 0; i < enterpriseSystem.getApplications().size(); i++) {
-            enterpriseSystem.getApplications().get(i).getAM().StrategyWsitch = Simulator.StrategyEnum.Green; // Green
-            // Strategy
+            enterpriseSystem.getApplications().get(i).getAM().StrategyWsitch = Simulator.StrategyEnum.Green;
             double wkIntensApp;
             wkIntensApp = (double) enterpriseSystem.getApplications().get(i).getNumberofBasicNode()
                     / enterpriseSystem.getApplications().get(i).getMaxNumberOfRequest();
