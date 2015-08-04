@@ -1,4 +1,4 @@
-package simulator;
+package simulator.system;
 
 import java.io.BufferedReader;
 

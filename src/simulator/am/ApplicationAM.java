@@ -2,12 +2,12 @@ package simulator.am;
 
 import java.util.logging.Logger;
 
-import simulator.EnterpriseApp;
-import simulator.EnterpriseSystem;
 import simulator.Environment;
 import simulator.Simulator;
 import simulator.jobs.EnterpriseJob;
 import simulator.physical.BladeServer;
+import simulator.system.EnterpriseApp;
+import simulator.system.EnterpriseSystem;
 
 public class ApplicationAM extends GeneralAM {
 

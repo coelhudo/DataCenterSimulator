@@ -2,9 +2,9 @@ package simulator.am;
 
 import java.util.logging.Logger;
 
-import simulator.ComputeSystem;
 import simulator.Environment;
 import simulator.physical.BladeServer;
+import simulator.system.ComputeSystem;
 
 public class ComputeSystemAM extends GeneralAM {
 

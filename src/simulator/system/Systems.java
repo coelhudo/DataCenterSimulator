@@ -1,10 +1,12 @@
-package simulator;
+package simulator.system;
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Observable;
 import java.util.logging.Logger;
+
+import simulator.Environment;
 
 public class Systems extends Observable {
     

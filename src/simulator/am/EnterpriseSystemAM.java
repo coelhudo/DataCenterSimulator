@@ -2,10 +2,10 @@ package simulator.am;
 
 import java.util.logging.Logger;
 
-import simulator.EnterpriseSystem;
 import simulator.Environment;
 import simulator.SLAViolationLogger;
 import simulator.Simulator;
+import simulator.system.EnterpriseSystem;
 
 public class EnterpriseSystemAM extends GeneralAM {
 

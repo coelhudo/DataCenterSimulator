@@ -1,4 +1,4 @@
-package simulator;
+package simulator.system;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -6,6 +6,8 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import simulator.Environment;
+import simulator.SLAViolationLogger;
 import simulator.am.InteractiveSystemAM;
 import simulator.physical.BladeServer;
 import simulator.physical.DataCenter;

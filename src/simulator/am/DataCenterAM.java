@@ -3,13 +3,13 @@ package simulator.am;
 import java.util.List;
 import java.util.logging.Logger;
 
-import simulator.ComputeSystem;
-import simulator.EnterpriseSystem;
 import simulator.Environment;
-import simulator.InteractiveSystem;
 import simulator.Simulator;
 import simulator.Simulator.StrategyEnum;
-import simulator.Systems;
+import simulator.system.ComputeSystem;
+import simulator.system.EnterpriseSystem;
+import simulator.system.InteractiveSystem;
+import simulator.system.Systems;
 
 public class DataCenterAM extends GeneralAM {
 

@@ -1,8 +1,8 @@
 package simulator.am;
 
 import simulator.Environment;
-import simulator.InteractiveSystem;
 import simulator.Simulator;
+import simulator.system.InteractiveSystem;
 
 public class InteractiveSystemAM extends GeneralAM {
 

@@ -3,11 +3,11 @@ package simulator.am;
 import java.util.logging.Logger;
 
 import simulator.Environment;
-import simulator.InteractiveSystem;
-import simulator.InteractiveUser;
 import simulator.Simulator;
 import simulator.jobs.EnterpriseJob;
 import simulator.physical.BladeServer;
+import simulator.system.InteractiveSystem;
+import simulator.system.InteractiveUser;
 
 public class IteractiveUserAM extends GeneralAM {
 

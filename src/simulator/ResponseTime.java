@@ -29,7 +29,7 @@ public class ResponseTime {
         this.responseTime = responseTime;
     }
 
-    ResponseTime() {
+    public ResponseTime() {
         numberOfJob = 0;
         responseTime = 0;
     }

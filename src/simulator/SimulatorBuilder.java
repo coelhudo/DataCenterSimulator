@@ -16,6 +16,15 @@ import org.xml.sax.SAXException;
 import simulator.physical.DataCenter;
 import simulator.physical.DataCenterBuilder;
 import simulator.physical.DataCenterPOD;
+import simulator.system.ComputeSystem;
+import simulator.system.ComputeSystemBuilder;
+import simulator.system.EnterpriseSystem;
+import simulator.system.EnterpriseSystemBuilder;
+import simulator.system.InteractiveSystem;
+import simulator.system.InteractiveSystemBuilder;
+import simulator.system.SystemBuilder;
+import simulator.system.SystemPOD;
+import simulator.system.Systems;
 
 public class SimulatorBuilder {
 

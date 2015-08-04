@@ -4,15 +4,15 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Logger;
 
-import simulator.ComputeSystem;
-import simulator.EnterpriseApp;
-import simulator.EnterpriseSystem;
 import simulator.Environment;
-import simulator.InteractiveSystem;
-import simulator.InteractiveUser;
 import simulator.physical.BladeServer;
 import simulator.physical.Chassis;
 import simulator.physical.DataCenter;
+import simulator.system.ComputeSystem;
+import simulator.system.EnterpriseApp;
+import simulator.system.EnterpriseSystem;
+import simulator.system.InteractiveSystem;
+import simulator.system.InteractiveUser;
 
 public abstract class ResourceAllocation {
 

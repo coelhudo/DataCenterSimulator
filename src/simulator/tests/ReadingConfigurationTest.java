@@ -9,13 +9,13 @@ import java.util.List;
 
 import org.junit.Test;
 
-import simulator.ComputeSystem;
-import simulator.EnterpriseSystem;
-import simulator.InteractiveSystem;
 import simulator.Simulator;
-import simulator.Systems;
 import simulator.am.DataCenterAM;
 import simulator.physical.DataCenter;
+import simulator.system.ComputeSystem;
+import simulator.system.EnterpriseSystem;
+import simulator.system.InteractiveSystem;
+import simulator.system.Systems;
 
 public class ReadingConfigurationTest {
 

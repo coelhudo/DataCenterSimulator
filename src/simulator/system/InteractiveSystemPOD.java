@@ -1,4 +1,4 @@
-package simulator;
+package simulator.system;
 
 public class InteractiveSystemPOD extends SystemPOD {
     private int numberofIdleNode = 0; // idle is change in allocation function

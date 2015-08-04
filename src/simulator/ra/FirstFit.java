@@ -6,11 +6,11 @@ package simulator.ra;
 
 import java.util.List;
 
-import simulator.EnterpriseSystem;
 import simulator.Environment;
-import simulator.InteractiveSystem;
 import simulator.physical.BladeServer;
 import simulator.physical.DataCenter;
+import simulator.system.EnterpriseSystem;
+import simulator.system.InteractiveSystem;
 
 /**
  *
