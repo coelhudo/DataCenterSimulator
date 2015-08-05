@@ -15,7 +15,7 @@ import simulator.jobs.InteractiveJob;
 import simulator.jobs.Job;
 import simulator.schedulers.LeastRemainFirstScheduler;
 
-public class LeastRemainFirstTest {
+public class LeastRemainFirstSchedulerTest {
 
     @Rule
     public ExpectedException expected = ExpectedException.none();
