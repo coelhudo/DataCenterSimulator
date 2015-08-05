@@ -13,7 +13,7 @@ import simulator.jobs.Job;
  *
  * @author fnorouz
  */
-public class LeastRemainFirst implements Scheduler {
+public class LeastRemainFirstScheduler implements Scheduler {
 
     // FIXME: this was clearly done to work only with BatchJob
     @Override

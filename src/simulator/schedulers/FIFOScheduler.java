@@ -12,7 +12,7 @@ import simulator.jobs.Job;
  *
  * @author fnorouz
  */
-public class FifoScheduler implements Scheduler {
+public class FIFOScheduler implements Scheduler {
 
     @Override
     public Job nextJob(List<? extends Job> queue) {

@@ -12,7 +12,7 @@ import simulator.am.InteractiveSystemAM;
 import simulator.physical.BladeServer;
 import simulator.physical.DataCenter;
 import simulator.ra.MHR;
-import simulator.schedulers.FifoScheduler;
+import simulator.schedulers.FIFOScheduler;
 import simulator.schedulers.Scheduler;
 
 public class InteractiveSystem extends GeneralSystem {
@@ -33,7 +33,7 @@ public class InteractiveSystem extends GeneralSystem {
         setUserList(new ArrayList<InteractiveUser>());
         setWaitingQueueWL(new ArrayList<InteractiveUser>());
         setResourceAllocation(new MHR(this.environment, dataCenter));
-        setScheduler(new FifoScheduler());
+        setScheduler(new FIFOScheduler());
         setSLAviolation(0);
         setNumberOfNode(systemPOD.getNumberOfNode());
         setNumberofIdleNode(systemPOD.getNumberOfNode());

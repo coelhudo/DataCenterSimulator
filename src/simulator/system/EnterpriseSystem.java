@@ -11,7 +11,7 @@ import simulator.am.EnterpriseSystemAM;
 import simulator.physical.BladeServer;
 import simulator.physical.DataCenter;
 import simulator.ra.MHR;
-import simulator.schedulers.FifoScheduler;
+import simulator.schedulers.FIFOScheduler;
 
 public class EnterpriseSystem extends GeneralSystem {
 
@@ -31,7 +31,7 @@ public class EnterpriseSystem extends GeneralSystem {
         setNumberOfNode(systemPOD.getNumberOfNode());
         setRackIDs(systemPOD.getRackIDs());
         loadEnterpriseApplications(systemPOD);
-        setScheduler(new FifoScheduler());
+        setScheduler(new FIFOScheduler());
     }
     
     private void loadEnterpriseApplications(SystemPOD systemPOD) {

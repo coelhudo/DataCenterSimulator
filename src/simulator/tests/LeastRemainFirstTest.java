@@ -13,7 +13,7 @@ import simulator.jobs.BatchJob;
 import simulator.jobs.EnterpriseJob;
 import simulator.jobs.InteractiveJob;
 import simulator.jobs.Job;
-import simulator.schedulers.LeastRemainFirst;
+import simulator.schedulers.LeastRemainFirstScheduler;
 
 public class LeastRemainFirstTest {
 
@@ -22,7 +22,7 @@ public class LeastRemainFirstTest {
 
     @Test
     public void testNextJobWhenTheQueueContainsOnlyOneJob() {
-        LeastRemainFirst leastRemainFirst = new LeastRemainFirst();
+        LeastRemainFirstScheduler leastRemainFirst = new LeastRemainFirstScheduler();
         List<BatchJob> queue = new ArrayList<BatchJob>();
         BatchJob expectedJob = new BatchJob(null, null);
         queue.add(expectedJob);
@@ -32,7 +32,7 @@ public class LeastRemainFirstTest {
     
     @Test
     public void testTwoBatchJobsInTheQueue() {
-        LeastRemainFirst leastRemainFirst = new LeastRemainFirst();
+        LeastRemainFirstScheduler leastRemainFirst = new LeastRemainFirstScheduler();
         List<BatchJob> queue = new ArrayList<BatchJob>();
         BatchJob expectedJob = new BatchJob(null, null);
         queue.add(expectedJob);
@@ -49,7 +49,7 @@ public class LeastRemainFirstTest {
     
     @Test
     public void testChangingReqTimeFromBatchJob() {
-        LeastRemainFirst leastRemainFirst = new LeastRemainFirst();
+        LeastRemainFirstScheduler leastRemainFirst = new LeastRemainFirstScheduler();
         List<BatchJob> queue = new ArrayList<BatchJob>();
         BatchJob expectedJob = new BatchJob(null, null);
         expectedJob.setReqTime(0.1);
@@ -72,7 +72,7 @@ public class LeastRemainFirstTest {
     
     @Test
     public void testRemovingBatchJobFromTheQueue() {
-        LeastRemainFirst leastRemainFirst = new LeastRemainFirst();
+        LeastRemainFirstScheduler leastRemainFirst = new LeastRemainFirstScheduler();
         List<BatchJob> queue = new ArrayList<BatchJob>();
         BatchJob expectedJob = new BatchJob(null, null);
         expectedJob.setReqTime(0.1);
@@ -93,7 +93,7 @@ public class LeastRemainFirstTest {
 
     @Test
     public void testWithEmptyJobQueue() {
-        LeastRemainFirst leastRemainFirst = new LeastRemainFirst();
+        LeastRemainFirstScheduler leastRemainFirst = new LeastRemainFirstScheduler();
         List<BatchJob> queue = new ArrayList<BatchJob>();
         expected.expect(IndexOutOfBoundsException.class);
         leastRemainFirst.nextJob(queue);
@@ -101,7 +101,7 @@ public class LeastRemainFirstTest {
 
     @Test
     public void testWithEnterpriseJob() {
-        LeastRemainFirst leastRemainFirst = new LeastRemainFirst();
+        LeastRemainFirstScheduler leastRemainFirst = new LeastRemainFirstScheduler();
         List<EnterpriseJob> queue = new ArrayList<EnterpriseJob>();
         EnterpriseJob expectedJob = new EnterpriseJob();
         queue.add(expectedJob);
@@ -111,7 +111,7 @@ public class LeastRemainFirstTest {
     
     @Test
     public void testWithInteractiveJob() {
-        LeastRemainFirst leastRemainFirst = new LeastRemainFirst();
+        LeastRemainFirstScheduler leastRemainFirst = new LeastRemainFirstScheduler();
         List<InteractiveJob> queue = new ArrayList<InteractiveJob>();
         InteractiveJob expectedJob = new InteractiveJob();
         queue.add(expectedJob);

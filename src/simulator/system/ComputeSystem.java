@@ -14,7 +14,7 @@ import simulator.jobs.BatchJob;
 import simulator.physical.BladeServer;
 import simulator.physical.DataCenter;
 import simulator.ra.MHR;
-import simulator.schedulers.LeastRemainFirst;
+import simulator.schedulers.LeastRemainFirstScheduler;
 import simulator.schedulers.Scheduler;
 
 public class ComputeSystem extends GeneralSystem {
@@ -40,7 +40,7 @@ public class ComputeSystem extends GeneralSystem {
         setComputeNodeList(new ArrayList<BladeServer>());
         waitingList = new ArrayList<BatchJob>();
         setComputeNodeIndex(new ArrayList<Integer>());
-        setScheduler(new LeastRemainFirst());
+        setScheduler(new LeastRemainFirstScheduler());
         setBis(systemPOD.getBis());
         setNumberOfNode(systemPOD.getNumberOfNode());
         priority = ((ComputeSystemPOD) systemPOD).getPriority();
