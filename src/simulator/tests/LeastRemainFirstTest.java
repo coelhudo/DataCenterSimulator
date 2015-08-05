@@ -69,6 +69,27 @@ public class LeastRemainFirstTest {
         assertNotEquals(expectedJob, job);
         assertEquals(otherExpectedJob, job);
     }
+    
+    @Test
+    public void testRemovingBatchJobFromTheQueue() {
+        LeastRemainFirst leastRemainFirst = new LeastRemainFirst();
+        List<BatchJob> queue = new ArrayList<BatchJob>();
+        BatchJob expectedJob = new BatchJob(null, null);
+        expectedJob.setReqTime(0.1);
+        queue.add(expectedJob);
+        BatchJob otherExpectedJob = new BatchJob(null, null);
+        otherExpectedJob.setReqTime(0.2);
+        queue.add(otherExpectedJob);
+        assertNotEquals(expectedJob, otherExpectedJob);
+        
+        Job job = leastRemainFirst.nextJob(queue);
+        assertEquals(expectedJob, job);
+        assertNotEquals(otherExpectedJob, job);
+        
+        queue.remove(expectedJob);
+        job = leastRemainFirst.nextJob(queue);
+        assertEquals(otherExpectedJob, job);
+    }
 
     @Test
     public void testWithEmptyJobQueue() {
