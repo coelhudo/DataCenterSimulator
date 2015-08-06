@@ -1,5 +1,7 @@
-Introduction
-============
+Data Center Simulator
+=====================
+
+# Introduction
 
 The ADCMSim (Autonomic Data Center Management Simulator) provides a
 way to develop, evaluate, and validate Autonomic Computing\[1\] based
@@ -12,8 +14,7 @@ IT infrastructure
 * Autonomic Computing layer to manage Autonomic Managers and its
 configuration and interactions
 
-Architecture
-===========
+# Architecture
 
 Currently three kinds of systems are available for evaluation:
 * Interactive Systems
@@ -34,21 +35,19 @@ The thermal model is based on the one from Arizona State University
 currently used in ADCMSim is one described by Hewlett-Packard (HP)
 laboratories \[3\].
 
-Configuration
-=============
+# Configuration
 
 This project is using [Apache Maven](https://maven.apache.org/) for management.
 
 Current dependencies are listed in the pom.xml file.
 
-# Instruction
+## Instruction
 
 * *mvn compile* to compile :)
 * *mvn exec:java* to execute Simulator Main class
 * *mvn test* to execute units tests (and one integration test)
 
-Publications
-============
+# Publications
 
 The following publications provide more information about the
 principles of the ADCMSim:
