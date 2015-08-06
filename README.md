@@ -1,7 +1,5 @@
-Data Center Simulator
+Data Center Simulator [![Build Status](https://travis-ci.org/coelhudo/DataCenterSimulator.svg?branch=master)](https://travis-ci.org/coelhudo/DataCenterSimulator)
 =====================
-
-![Alt text](https://travis-ci.org/coelhudo/DataCenterSimulator.svg?branch=master)
 
 # Introduction
 
