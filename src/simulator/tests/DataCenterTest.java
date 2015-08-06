@@ -31,7 +31,7 @@ public class DataCenterTest {
         assertEquals(0, dataCenter.getOverRed());
         assertNotNull(dataCenter.getServer(0));
         assertNotNull(dataCenter.getServer(0, 0));
-        assertEquals(0.0, dataCenter.getTotalPowerConsumption(), 1.0E8);
+        assertEquals(0.0, dataCenter.getTotalPowerConsumption(), 1.0E-8);
         
     }
 

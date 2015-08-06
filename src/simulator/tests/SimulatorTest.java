@@ -19,7 +19,7 @@ public class SimulatorTest {
             Simulator simulator = new Simulator();
             SimulationResults results = simulator.execute();
             final double expectedTotalPowerConsumption = 7.555E9;
-            assertEquals(expectedTotalPowerConsumption, results.getTotalPowerConsumption(), 1.0E8);
+            assertEquals(expectedTotalPowerConsumption, results.getTotalPowerConsumption(), 1.0E-8);
             final double expectedLocalTime = 686293.0;
             assertEquals(expectedLocalTime, results.getLocalTime(), 0.01);
             final double meanPowerConsumption = 11008.459326;

@@ -30,7 +30,7 @@ public class ReadingConfigurationTest {
         List<EnterpriseSystem> enterpriseSystems = systems.getEnterpriseSystems();
         List<InteractiveSystem> interactiveSystems = systems.getInteractiveSystems();
 
-        assertEquals(0.0, dataCenter.getTotalPowerConsumption(), 1.0E8);
+        assertEquals(0.0, dataCenter.getTotalPowerConsumption(), 1.0E-8);
         assertFalse(computeSystems.isEmpty());
         assertFalse(enterpriseSystems.isEmpty());
         assertTrue(interactiveSystems.isEmpty());
@@ -53,7 +53,7 @@ public class ReadingConfigurationTest {
         assertEquals(0, computeSystem.numberofIdleNode());
         assertEquals(0, computeSystem.getNumberOfActiveServ());
         assertEquals(35, computeSystem.getNumberOfNode());
-        assertEquals(0.0, computeSystem.getPower(), 1.0E8);
+        assertEquals(0.0, computeSystem.getPower(), 1.0E-8);
         assertEquals(0, computeSystem.getSLAviolation());
         assertFalse(computeSystem.isBlocked());
         assertNotEquals(null, computeSystem.getResourceAllocation());
@@ -70,7 +70,7 @@ public class ReadingConfigurationTest {
         assertEquals(0, enterpriseSystem.getAccumolatedViolation());
         assertEquals(0, enterpriseSystem.getNumberOfActiveServ());
         assertEquals(8, enterpriseSystem.getNumberOfNode());
-        assertEquals(0.0, enterpriseSystem.getPower(), 1.0E8);
+        assertEquals(0.0, enterpriseSystem.getPower(), 1.0E-8);
         assertEquals(0, enterpriseSystem.getSLAviolation());
         assertNotEquals(null, enterpriseSystem.getResourceAllocation());
         assertNotEquals(null, enterpriseSystem.getScheduler());
