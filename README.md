@@ -41,6 +41,12 @@ This project is using [Apache Maven](https://maven.apache.org/) for management.
 
 Current dependencies are listed in the pom.xml file.
 
+# Instruction
+
+* *mvn compile* to compile :)
+* *mvn exec:java* to execute Simulator Main class
+* *mvn test* to execute units tests (and one integration test)
+
 Publications
 ============
 
