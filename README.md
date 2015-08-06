@@ -1,6 +1,8 @@
 Data Center Simulator
 =====================
 
+![Alt text](https://travis-ci.org/coelhudo/DataCenterSimulator.svg?branch=master)
+
 # Introduction
 
 The ADCMSim (Autonomic Data Center Management Simulator) provides a
