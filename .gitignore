@@ -58,3 +58,5 @@ out_W.txt
 slaViolLogE.txt
 slaViolLogH.txt
 slaViolLogI.txt
+/bin/
+/target/

@@ -34,6 +34,13 @@ The thermal model is based on the one from Arizona State University
 currently used in ADCMSim is one described by Hewlett-Packard (HP)
 laboratories \[3\].
 
+Configuration
+=============
+
+This project is using [Apache Maven](https://maven.apache.org/) for management.
+
+Current dependencies are listed in the pom.xml file.
+
 Publications
 ============
 

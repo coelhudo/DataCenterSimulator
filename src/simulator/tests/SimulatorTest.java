@@ -1,6 +1,6 @@
 package simulator.tests;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.*;
 
 import java.io.IOException;
 import java.util.logging.Level;
@@ -18,8 +18,8 @@ public class SimulatorTest {
         try {
             Simulator simulator = new Simulator();
             SimulationResults results = simulator.execute();
-            final double expectedTotalPowerConsumption = 7.555E9;
-            assertEquals(expectedTotalPowerConsumption, results.getTotalPowerConsumption(), 1.0E-8);
+            final double expectedTotalPowerConsumption = 7.555028576875995E9;
+            assertEquals(expectedTotalPowerConsumption, results.getTotalPowerConsumption(), 1.0E-5);
             final double expectedLocalTime = 686293.0;
             assertEquals(expectedLocalTime, results.getLocalTime(), 0.01);
             final double meanPowerConsumption = 11008.459326;

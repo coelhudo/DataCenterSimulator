@@ -49,7 +49,6 @@ public class Simulator {
         datacenter.getAM().setStrategy(StrategyEnum.Green);
         
         class DataCenterAMXunxo implements Observer {
-            @Override
             public void update(Observable o, Object arg) {
                 LOGGER.info("Update Called: executing xunxo that I made (and I'm not proud about it)");
                 datacenter.getAM().resetBlockTimer();
