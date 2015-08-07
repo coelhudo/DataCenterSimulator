@@ -15,7 +15,6 @@ import simulator.jobs.Job;
  */
 public class LeastRemainFirstScheduler implements Scheduler {
 
-    // FIXME: this was clearly done to work only with BatchJob
     public Job nextJob(List<? extends Job> queue) {
         double rem = ((BatchJob) queue.get(0)).getReqTime();
         int index = 0;

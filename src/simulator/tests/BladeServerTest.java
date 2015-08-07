@@ -30,22 +30,18 @@ public class BladeServerTest {
         assertTrue(blockedJobs.isEmpty());
         assertEquals(chassisID, bladeServer.getChassisID());
         assertEquals(0.0, bladeServer.getCurrentCPU(), 1.0E-8);
-        // FIXME: require xml assertEquals(1,
-        // bladeServer.getCurrentFreqLevel());
+        //assertEquals(1,bladeServer.getCurrentFreqLevel());
         assertEquals(0, bladeServer.getDependency());
         List<EnterpriseJob> enterpriseJobs = bladeServer.getEnterprizList();
-        assertTrue(enterpriseJobs.isEmpty());
-        // FIXME: require xml assertEquals(0,
-        // bladeServer.getFrequencyLevel().length);
+        assertTrue(enterpriseJobs.isEmpty()); 
+        //assertEquals(0, bladeServer.getFrequencyLevel().length);
         assertEquals(0.0, bladeServer.getIdleConsumption(), 1.0E-8);
         assertEquals(0, bladeServer.getMaxExpectedRes());
         assertEquals(1.4, bladeServer.getMips(), 1.0E-8);
-        // FIXME: require xml assertEquals(0.0, bladeServer.getPower(), 1.0E-8);
-        // FIXME: require xml assertEquals(0,
-        // bladeServer.getPowerBusy().length);
-        // FIXME: require xml assertEquals(0,
-        // bladeServer.getPowerIdle().length);
-        // FIXME: require xml assertEquals(0, bladeServer.getPwrParam().length);
+        //assertEquals(0.0, bladeServer.getPower(), 1.0E-8);
+        //assertEquals(0, bladeServer.getPowerBusy().length);
+        //assertEquals(0, bladeServer.getPowerIdle().length);
+        //assertEquals(0, bladeServer.getPwrParam().length);
         assertEquals(0.0, bladeServer.getQueueLength(), 1.0E-8);
         assertEquals(0.0, bladeServer.getRackId(), 1.0E-8);
         assertEquals(-3.0, bladeServer.getReady(), 1.0E-8);

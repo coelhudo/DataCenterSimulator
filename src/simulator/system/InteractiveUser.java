@@ -359,7 +359,7 @@ public class InteractiveUser {
         double lenJob = 0;
         for (InteractiveJob job : getQueueWL()) {
             if (job.getArrivalTimeOfJob() <= environment.getCurrentLocalTime()) {
-                lenJob = +job.getNumberOfJob(); // FIXME: += instead of =+
+                lenJob = +job.getNumberOfJob();
             }
         }
 
@@ -372,7 +372,7 @@ public class InteractiveUser {
         for (i = 0; i < getComputeNodeList().size(); i++) {
             cpu = cpu + getComputeNodeList().get(i).getCurrentCPU();
         }
-        cpu = cpu / i; // FIXME: why not list.size()? i will always be (size -1)
+        cpu = cpu / i; // FIXME: why not list.size()? it will always be (size -1)
         return cpu;
     }
 

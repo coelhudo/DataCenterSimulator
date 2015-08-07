@@ -164,7 +164,7 @@ public class InteractiveSystem extends GeneralSystem {
     void violationCheckandSet() throws IOException {
         setSLAviolation(0);
         for (InteractiveUser interactiveUser : getUserList()) {
-            setSLAviolation(+interactiveUser.getSLAviolation()); //FIXME: += instead of just +. Before was =+
+            setSLAviolation(+interactiveUser.getSLAviolation());
         }
         if (getSLAviolation() > 0) {
             slaViolationLogger.logInteractiveViolation(getName(), getSLAviolation());

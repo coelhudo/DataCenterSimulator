@@ -99,7 +99,6 @@ public class Simulator {
     }
 
     public void GetStat() {
-        // FIXME: 50?
         for (int i = 0; i < 50; i++) {
             datacenter.getChassisSet().get(i).getServers().get(0).setReady(-1);
             datacenter.getChassisSet().get(i).getServers().get(0).setMips(1);// 1.04

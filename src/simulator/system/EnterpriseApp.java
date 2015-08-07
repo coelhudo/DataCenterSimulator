@@ -75,7 +75,7 @@ public final class EnterpriseApp {
         double lenJob = 0;
         for (EnterpriseJob job : getQueueApp()) {
             if (job.getArrivalTimeOfJob() <= environment.getCurrentLocalTime()) {
-                lenJob = +job.getNumberOfJob(); // FIXME: += instead of = +
+                lenJob = +job.getNumberOfJob();
             }
         }
 

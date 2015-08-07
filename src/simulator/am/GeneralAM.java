@@ -4,10 +4,8 @@ import simulator.Simulator;
 
 public abstract class GeneralAM {
 
-    // FIXME: find what this means and rename it
     private double[] compPwrApps = new double[256];
     protected double[] SlaApps = new double[256];
-    // FIXME: find what this means and rename it
     private int[] recForCoop;
     private int SLAViolationGen;
     Simulator.StrategyEnum strategy;
