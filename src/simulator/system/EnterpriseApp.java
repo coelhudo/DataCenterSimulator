@@ -23,15 +23,15 @@ public final class EnterpriseApp {
     private int maxProc = 0;
     private int minProc = 0;
     private int maxExpectedResTime = 0;
-    private List<BladeServer> ComputeNodeList;
+    private List<BladeServer> computeNodeList;
     // ArrayList <Integer> ComputeNodeIndex;
     private List<EnterpriseJob> queueApp;
     private List<ResponseTime> responseList;
     // jobPlacement placement;
     private int timeTreshold = 0;
-    private int SLAPercentage;
-    private int SLAviolation = 0;
-    private int NumofViolation = 0;
+    private int slaPercentage;
+    private int slaViolation = 0;
+    private int numOfViolation = 0;
     private BufferedReader bis = null;
     private ApplicationAM AM;
     // EnterpriseSystem mySys; //Application knows in which Sys it is located.
@@ -54,7 +54,7 @@ public final class EnterpriseApp {
         id = enterpriseApplicationPOD.getID();
         minProc = enterpriseApplicationPOD.getMinProc();
         timeTreshold = enterpriseApplicationPOD.getTimeTreshold();
-        SLAPercentage = enterpriseApplicationPOD.getSLAPercentage();
+        slaPercentage = enterpriseApplicationPOD.getSLAPercentage();
         maxNumberOfRequest = enterpriseApplicationPOD.getMaxNumberOfRequest(); // #
                                                                                // of
                                                                                // Request
@@ -443,11 +443,11 @@ public final class EnterpriseApp {
     }
 
     public List<BladeServer> getComputeNodeList() {
-        return ComputeNodeList;
+        return computeNodeList;
     }
 
     public void setComputeNodeList(ArrayList<BladeServer> computeNodeList) {
-        ComputeNodeList = computeNodeList;
+        this.computeNodeList = computeNodeList;
     }
 
     public List<EnterpriseJob> getQueueApp() {
@@ -475,27 +475,27 @@ public final class EnterpriseApp {
     }
 
     public int getSLAPercentage() {
-        return SLAPercentage;
+        return slaPercentage;
     }
 
-    public void setSLAPercentage(int sLAPercentage) {
-        SLAPercentage = sLAPercentage;
+    public void setSLAPercentage(int slaPercentage) {
+        this.slaPercentage = slaPercentage;
     }
 
     public int getNumofViolation() {
-        return NumofViolation;
+        return numOfViolation;
     }
 
-    public void setNumofViolation(int numofViolation) {
-        NumofViolation = numofViolation;
+    public void setNumofViolation(int numOfViolation) {
+        this.numOfViolation = numOfViolation;
     }
 
     public int getSLAviolation() {
-        return SLAviolation;
+        return slaViolation;
     }
 
     public void setSLAviolation(int sLAviolation) {
-        SLAviolation = sLAviolation;
+        slaViolation = sLAviolation;
     }
 
     public ApplicationAM getAM() {

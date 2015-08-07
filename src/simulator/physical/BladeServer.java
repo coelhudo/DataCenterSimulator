@@ -24,7 +24,7 @@ public class BladeServer {
     private double[] frequencyLevel;
     private double[] powerBusy;
     private double[] powerIdle;
-    private double Mips;
+    private double mips;
     private double idleConsumption;
     private String bladeType;
     private double respTime = 0;
@@ -35,10 +35,10 @@ public class BladeServer {
     private double totalJobEpoch = 0;
     private int ready;
     private int backUpReady;
-    private List<BatchJob> activeBatchList;
-    private List<BatchJob> blockedBatchList;
-    private List<EnterpriseJob> EnterprizList;
-    private List<InteractiveJob> WebBasedList;
+    private List<BatchJob> activeBatchJobs;
+    private List<BatchJob> blockedBatchJobs;
+    private List<EnterpriseJob> enterpriseJobs;
+    private List<InteractiveJob> interactiveJobs;
     private int chassisID;
     private int totalFinishedJob = 0;
     private int serverID;
@@ -486,11 +486,11 @@ public class BladeServer {
     }
 
     public double getMips() {
-        return Mips;
+        return mips;
     }
 
     public void setMips(double mips) {
-        Mips = mips;
+        this.mips = mips;
     }
 
     public double getResponseTime() {
@@ -558,35 +558,35 @@ public class BladeServer {
     }
 
     public List<BatchJob> getActiveBatchList() {
-        return activeBatchList;
+        return activeBatchJobs;
     }
 
     public void setActiveBatchList(List<BatchJob> activeBatchList) {
-        this.activeBatchList = activeBatchList;
+        this.activeBatchJobs = activeBatchList;
     }
 
     public List<BatchJob> getBlockedBatchList() {
-        return blockedBatchList;
+        return blockedBatchJobs;
     }
 
     public void setBlockedBatchList(List<BatchJob> blockedBatchList) {
-        this.blockedBatchList = blockedBatchList;
+        this.blockedBatchJobs = blockedBatchList;
     }
 
     public List<EnterpriseJob> getEnterprizList() {
-        return EnterprizList;
+        return enterpriseJobs;
     }
 
-    public void setEnterprizList(List<EnterpriseJob> enterprizList) {
-        EnterprizList = enterprizList;
+    public void setEnterprizList(List<EnterpriseJob> enterpriseJobs) {
+        this.enterpriseJobs = enterpriseJobs;
     }
 
     public List<InteractiveJob> getWebBasedList() {
-        return WebBasedList;
+        return interactiveJobs;
     }
 
     public void setWebBasedList(List<InteractiveJob> webBasedList) {
-        WebBasedList = webBasedList;
+        this.interactiveJobs = webBasedList;
     }
 
     public int getTotalFinishedJob() {
@@ -633,8 +633,8 @@ public class BladeServer {
         return SLAPercentage;
     }
 
-    public void setSLAPercentage(int sLAPercentage) {
-        SLAPercentage = sLAPercentage;
+    public void setSLAPercentage(int slaPercentage) {
+        this.SLAPercentage = slaPercentage;
     }
 
     public int getMaxExpectedRes() {
@@ -649,8 +649,8 @@ public class BladeServer {
         return SLAviolation;
     }
 
-    public void setSLAviolation(boolean sLAviolation) {
-        SLAviolation = sLAviolation;
+    public void setSLAviolation(boolean slaViolation) {
+        this.SLAviolation = slaViolation;
     }
 
     protected String getBladeType() {

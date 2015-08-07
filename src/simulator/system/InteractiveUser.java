@@ -12,7 +12,7 @@ import java.util.logging.Logger;
 
 import simulator.Environment;
 import simulator.ResponseTime;
-import simulator.am.IteractiveUserAM;
+import simulator.am.InteractiveUserAM;
 import simulator.jobs.InteractiveJob;
 import simulator.physical.BladeServer;
 import simulator.schedulers.Scheduler;
@@ -36,8 +36,8 @@ public class InteractiveUser {
     // jobPlacement placement;
     private BufferedReader bis = null;
     // SLA
-    private int SLAviolation = 0;
-    private IteractiveUserAM AM;
+    private int slaViolation = 0;
+    private InteractiveUserAM AM;
     private int usedNode = 0;
     private int maxNumberOfRequest = 0; // # of Request can be handled by number
     // of basic node which for 100% CPU
@@ -54,7 +54,7 @@ public class InteractiveUser {
         setResponseList(new ArrayList<ResponseTime>());
         setLogFileName(new String());
         // placement=new jobPlacement(ComputeNodeList);
-        setAM(new IteractiveUserAM((InteractiveSystem) parent, this, environment));
+        setAM(new InteractiveUserAM((InteractiveSystem) parent, this, environment));
         this.parent = parent;
     }
 
@@ -454,18 +454,18 @@ public class InteractiveUser {
     }
 
     public int getSLAviolation() {
-        return SLAviolation;
+        return slaViolation;
     }
 
-    public void setSLAviolation(int sLAviolation) {
-        SLAviolation = sLAviolation;
+    public void setSLAviolation(int slaViolation) {
+        this.slaViolation = slaViolation;
     }
 
-    public IteractiveUserAM getAM() {
+    public InteractiveUserAM getAM() {
         return AM;
     }
 
-    public void setAM(IteractiveUserAM aM) {
+    public void setAM(InteractiveUserAM aM) {
         AM = aM;
     }
 

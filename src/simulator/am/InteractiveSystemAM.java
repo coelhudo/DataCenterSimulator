@@ -105,7 +105,7 @@ public class InteractiveSystemAM extends GeneralAM {
 
     void iterativeAlg() {
         for (int i = 0; i < interatctiveSystem.getUserList().size(); i++) {
-            interatctiveSystem.getUserList().get(i).getAM().StrategyWsitch = Simulator.StrategyEnum.Green; // Green
+            interatctiveSystem.getUserList().get(i).getAM().currentStrategy = Simulator.StrategyEnum.Green; // Green
             // Strategy
             double wkIntensApp;
             wkIntensApp = (double) interatctiveSystem.getUserList().get(i).getNumberofBasicNode()
@@ -125,7 +125,7 @@ public class InteractiveSystemAM extends GeneralAM {
                 getAllocationVector()[i] = 1 + bishtar;// +(int)Math.abs((Math.floor((wlkIntens-wkIntensApp)/wlkIntens)));
                 // LOGGER.info("Switching Strategy in Application =" +i
                 // +" to SLA ");
-                interatctiveSystem.getUserList().get(i).getAM().StrategyWsitch = Simulator.StrategyEnum.SLA;// SLA
+                interatctiveSystem.getUserList().get(i).getAM().currentStrategy = Simulator.StrategyEnum.SLA;// SLA
                 // strategy
             }
             // if cpmPwr < 50% & violation is less then release a server
@@ -139,7 +139,7 @@ public class InteractiveSystemAM extends GeneralAM {
                 getAllocationVector()[i] = 1;
                 // LOGGER.info("Switching Strategy in Application =" +i
                 // +" to SLA ");
-                interatctiveSystem.getUserList().get(i).getAM().StrategyWsitch = Simulator.StrategyEnum.SLA; // SLA
+                interatctiveSystem.getUserList().get(i).getAM().currentStrategy = Simulator.StrategyEnum.SLA; // SLA
                 // strategy
             }
         }
@@ -187,12 +187,12 @@ public class InteractiveSystemAM extends GeneralAM {
             getAllocationVector()[i] = sugestForAlo[i] - interatctiveSystem.getUserList().get(i).getComputeNodeList().size();
         }
         for (int i = 0; i < interatctiveSystem.getUserList().size(); i++) {
-            interatctiveSystem.getUserList().get(i).getAM().StrategyWsitch = Simulator.StrategyEnum.Green; // Green
+            interatctiveSystem.getUserList().get(i).getAM().currentStrategy = Simulator.StrategyEnum.Green; // Green
             // Strategy
             if (accuSLA[i] > 0) {
                 // LOGGER.info("Switching Strategy in Application =" +i
                 // +" to SLA ");
-                interatctiveSystem.getUserList().get(i).getAM().StrategyWsitch = Simulator.StrategyEnum.SLA;// SLA
+                interatctiveSystem.getUserList().get(i).getAM().currentStrategy = Simulator.StrategyEnum.SLA;// SLA
                 // strategy
             }
         }
