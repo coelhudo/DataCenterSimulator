@@ -12,6 +12,7 @@ import simulator.jobs.BatchJob;
 import simulator.jobs.EnterpriseJob;
 import simulator.jobs.InteractiveJob;
 import simulator.physical.BladeServer;
+import simulator.physical.BladeServerPOD;
 
 public class BladeServerTest {
 
@@ -20,7 +21,8 @@ public class BladeServerTest {
 
         Environment environment = new Environment();
         final int chassisID = 0;
-        BladeServer bladeServer = new BladeServer(chassisID, environment);
+        BladeServerPOD bladeServerPOD = new BladeServerPOD();
+        BladeServer bladeServer = new BladeServer(bladeServerPOD, chassisID, environment);
         List<BatchJob> activeBatchJobs = bladeServer.getActiveBatchList();
         assertTrue(activeBatchJobs.isEmpty());
         assertEquals(0, bladeServer.getBackUpReady());
@@ -36,7 +38,6 @@ public class BladeServerTest {
         assertEquals(0.0, bladeServer.getIdleConsumption(), 1.0E-8);
         assertEquals(0, bladeServer.getMaxExpectedRes());
         assertEquals(1.4, bladeServer.getMips(), 1.0E-8);
-        //assertEquals(0.0, bladeServer.getPower(), 1.0E-8);
         //assertEquals(0, bladeServer.getPowerBusy().length);
         //assertEquals(0, bladeServer.getPowerIdle().length);
         //assertEquals(0, bladeServer.getPwrParam().length);
@@ -61,14 +62,20 @@ public class BladeServerTest {
 
     }
     
-    /*@Test
-    public void testGetPower() {
+    @Test
+    public void testGetPowerAfterCreation() {
         Environment environment = new Environment();
         final int chassisID = 0;
-        BladeServer bladeServer = new BladeServer(chassisID, environment);
-        bladeServer.getPower();
+        BladeServerPOD bladeServerPOD = new BladeServerPOD();
+        bladeServerPOD.setFrequencyLevel(new double[3]);
+        bladeServerPOD.setPowerBusy(new double[4]);
+        bladeServerPOD.setPowerIdle(new double[4]);
+        
+        BladeServer bladeServer = new BladeServer(bladeServerPOD, chassisID, environment);
+        assertEquals(0.0, bladeServer.getPower(), 1.0E-8);
     }
     
+    /*
     @Test
     public void testRestart() {
         fail("Green in coverage, implement!");

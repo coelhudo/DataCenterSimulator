@@ -92,9 +92,10 @@ public class Chassis {
         }
         for (int j = 0; j < tedad; j++) {
             for (int k = 0; k < number[j]; k++) {
-                BladeServer bldServ = new BladeServer(-1, environment);
+                BladeServerPOD bladeServerPOD = new BladeServerPOD();
+                bladeServerPOD.setBladeType(s[j].trim());
+                BladeServer bldServ = new BladeServer(bladeServerPOD, -1, environment);
                 // s[j]=s[j].substring(1,s[j].length()-1);
-                bldServ.setBladeType(s[j].trim());
                 servers.add(bldServ);
             }
         }

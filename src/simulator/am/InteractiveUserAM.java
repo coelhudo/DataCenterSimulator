@@ -212,7 +212,7 @@ public class InteractiveUserAM extends GeneralAM {
         // pitttttttttttttttttttttttttttttttttttttttttttttttttttttttty");
         // return;
         // }
-        BladeServer temp = new BladeServer(0, environment);
+        BladeServer temp = new BladeServer(null, 0, environment);
         temp = user.getComputeNodeList().get(index);
         temp.setMaxExpectedRes(sys.getUserList().get(targetUsr).getMaxExpectedResTime());
         temp.setMips(1.4);

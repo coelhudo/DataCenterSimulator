@@ -257,7 +257,7 @@ public class ApplicationAM extends GeneralAM {
         // pitttttttttttttttttttttttttttttttttttttttttttttttttttttttty");
         // return;
         // }
-        BladeServer temp = new BladeServer(0, environment);
+        BladeServer temp = new BladeServer(null, 0, environment);
         temp = app.getComputeNodeList().get(index);
         temp.setSLAPercentage(sys.getApplications().get(targetApp).getSLAPercentage());
         temp.setTimeTreshold(sys.getApplications().get(targetApp).getTimeTreshold());

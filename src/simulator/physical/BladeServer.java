@@ -51,13 +51,19 @@ public class BladeServer {
     private boolean SLAviolation;
     private Environment environment;
 
-    public BladeServer(int chasID, Environment environment) {
+        
+    public BladeServer(BladeServerPOD bladeServerPOD, int chasID, Environment environment) {
         this.environment = environment;
         setRespTime(0);
         // if it is -1 means that it is not put in the proper position yet ID
         // should be set
         setChassisID(chasID);
-        setBladeType(new String());
+        serverID = bladeServerPOD.getServerID();
+        bladeType = bladeServerPOD.getBladeType();
+        powerBusy = bladeServerPOD.getPowerBusy();
+        powerIdle = bladeServerPOD.getPowerIdle();
+        frequencyLevel = bladeServerPOD.getFrequencyLevel();
+        idleConsumption = bladeServerPOD.getIdleConsumption();
         setCurrentCPU(0);
         setActiveBatchList(new ArrayList<BatchJob>());
         setBlockedBatchList(new ArrayList<BatchJob>());
@@ -76,6 +82,16 @@ public class BladeServer {
         setSLAviolation(false);
         setMips(1.4);
     }
+    
+    public void changeInternals(BladeServerPOD bladeServerPOD) {
+        serverID = bladeServerPOD.getServerID();
+        bladeType = bladeServerPOD.getBladeType();
+        powerBusy = bladeServerPOD.getPowerBusy();
+        powerIdle = bladeServerPOD.getPowerIdle();
+        frequencyLevel = bladeServerPOD.getFrequencyLevel();
+        idleConsumption = bladeServerPOD.getIdleConsumption();
+    }
+    
     // Transaction system
 
     public void configSLAparameter(int time, int percentage) {
@@ -91,9 +107,9 @@ public class BladeServer {
     public double[] getPwrParam() {
         double[] ret = new double[3];
         int i = getCurrentFreqLevel();
-        ret[0] = getPowerBusy()[i];
-        ret[1] = getPowerIdle()[i];
-        ret[2] = getIdleConsumption();
+        ret[0] = powerBusy[i];
+        ret[1] = powerIdle[i];
+        ret[2] = idleConsumption;
         return ret;
     }
 
@@ -107,21 +123,21 @@ public class BladeServer {
         // if(servers.get(i).currentCPU==100) LOGGER.info(chassisID);
         mips = getMips();
         if (mips == 0) {
-            pw = pw + getIdleConsumption();
+            pw = pw + idleConsumption;
             LOGGER.info("MIPS Zero!!!!");
         } else {
             for (j = 0; j < 3; j++) {
-                if (getFrequencyLevel()[j] == mips) {
+                if (frequencyLevel[j] == mips) {
                     break;
                 }
             }
-            w = getPowerIdle()[j];
-            a = getPowerBusy()[j] - w;
+            w = powerIdle[j];
+            a = powerBusy[j] - w;
             if (getReady() == -1 | getReady() == -2 | getReady() == -3) {
                 // if the server is in idle state
 
                 a = 0;
-                w = getIdleConsumption();
+                w = idleConsumption;
                 // LOGGER.info(Main.localTime);
             }
             pw = pw + a * cpu / 100 + w;
@@ -152,7 +168,7 @@ public class BladeServer {
     public void makeItIdle(EnterpriseJob jj) {
         // System.out.print("\tIdle\t\t\t\t\t@:"+Main.localTime);
         setReady(-1);
-        setMips(getFrequencyLevel()[0]);
+        setMips(frequencyLevel[0]);
     }
 
     public void feedWork(InteractiveJob j) {
@@ -187,8 +203,8 @@ public class BladeServer {
     }
 
     public int getCurrentFreqLevel() {
-        for (int i = 0; i < getFrequencyLevel().length; i++) {
-            if (getMips() == getFrequencyLevel()[i]) {
+        for (int i = 0; i < frequencyLevel.length; i++) {
+            if (getMips() == frequencyLevel[i]) {
                 return i; // statrs from 1 not zero!
             }
         }
@@ -201,7 +217,7 @@ public class BladeServer {
         if (getCurrentFreqLevel() == 2) {
             return 0;
         } else {
-            setMips(getFrequencyLevel()[getCurrentFreqLevel() + 1]); // getCurrentFrequency
+            setMips(frequencyLevel[getCurrentFreqLevel() + 1]); // getCurrentFrequency
             // already
             // increased
             // the
@@ -221,7 +237,7 @@ public class BladeServer {
             // Frequency Level ~~~ ");
             return 0;
         } else {
-            setMips(getFrequencyLevel()[getCurrentFreqLevel() - 1]);
+            setMips(frequencyLevel[getCurrentFreqLevel() - 1]);
             environment.updateNumberOfMessagesFromDataCenterToSystem();
         }
         if (getMips() == 0) {
@@ -360,7 +376,8 @@ public class BladeServer {
         }
     }
 
-    void readFromNode(Node node) {
+    static BladeServerPOD readFromNode(Node node) {
+        BladeServerPOD bladeServerPOD = new BladeServerPOD();
         NodeList childNodes = node.getChildNodes();
         for (int i = 0; i < childNodes.getLength(); i++) {
             if (childNodes.item(i).getNodeType() == Node.ELEMENT_NODE) {
@@ -370,39 +387,41 @@ public class BladeServer {
                 // Integer.parseInt(childNodes.item(i).getChildNodes().item(0).getNodeValue().trim());
                 // }
                 if (childNodes.item(i).getNodeName().equalsIgnoreCase("BladeType")) {
-                    setBladeType(childNodes.item(i).getChildNodes().item(0).getNodeValue().trim());
+                    bladeServerPOD.setBladeType(childNodes.item(i).getChildNodes().item(0).getNodeValue().trim());
                 }
                 if (childNodes.item(i).getNodeName().equalsIgnoreCase("MIPS")) {
                     String str = childNodes.item(i).getChildNodes().item(0).getNodeValue().trim();
                     String[] split = str.split(" ");
-                    setFrequencyLevel(new double[split.length]);
+                    bladeServerPOD.setFrequencyLevel(new double[split.length]);
                     for (int j = 0; j < split.length; j++) {
-                        setFrequencyLevelAt(j, Double.parseDouble(split[j]));
+                        bladeServerPOD.setFrequencyLevelAt(j, Double.parseDouble(split[j]));
                     }
                 }
                 if (childNodes.item(i).getNodeName().equalsIgnoreCase("FullyLoaded")) {
                     String str = childNodes.item(i).getChildNodes().item(0).getNodeValue().trim();
                     String[] split = str.split(" ");
-                    setPowerBusy(new double[split.length]);
+                    bladeServerPOD.setPowerBusy(new double[split.length]);
                     for (int j = 0; j < split.length; j++) {
-                        setPowerBusyAt(j, Double.parseDouble(split[j]));
+                        bladeServerPOD.setPowerBusyAt(j, Double.parseDouble(split[j]));
                     }
                 }
                 if (childNodes.item(i).getNodeName().equalsIgnoreCase("Idle")) {
                     String str = childNodes.item(i).getChildNodes().item(0).getNodeValue().trim();
                     String[] split = str.split(" ");
-                    setPowerIdle(new double[split.length]);
+                    bladeServerPOD.setPowerIdle(new double[split.length]);
                     for (int j = 0; j < split.length; j++) {
-                        setPowerIdleAt(j, Double.parseDouble(split[j]));
+                        bladeServerPOD.setPowerIdleAt(j, Double.parseDouble(split[j]));
                     }
                 }
                 if (childNodes.item(i).getNodeName().equalsIgnoreCase("Standby")) {
-                    setIdleConsumption(
+                    bladeServerPOD.setIdleConsumption(
                             Double.parseDouble(childNodes.item(i).getChildNodes().item(0).getNodeValue().trim()));
 
                 }
             }
         }
+        
+        return bladeServerPOD;
     }
     // void addToresponseArray(double num,int time)
     // {
@@ -451,54 +470,6 @@ public class BladeServer {
 
     public void setDependency(int dependency) {
         this.dependency = dependency;
-    }
-
-    public double[] getFrequencyLevel() {
-        return frequencyLevel;
-    }
-    
-    public void setFrequencyLevelAt(int index, double frequenceLevel) {
-        assert(this.frequencyLevel.length != 0);
-        this.frequencyLevel[index] = frequenceLevel;
-    }
-
-    public void setFrequencyLevel(double[] frequencyLevel) {
-        this.frequencyLevel = frequencyLevel;
-    }
-
-    public double[] getPowerBusy() {
-        return powerBusy;
-    }
-    
-    public void setPowerBusyAt(int index, double powerBusy)
-    {
-        assert(this.powerBusy.length != 0);
-        this.powerBusy[index] = powerBusy;
-    }
-
-    public void setPowerBusy(double[] powerBusy) {
-        this.powerBusy = powerBusy;
-    }
-
-    public double[] getPowerIdle() {
-        return powerIdle;
-    }
-    
-    public void setPowerIdleAt(int index, double powerIdle) {
-        assert(this.powerIdle.length != 0);
-        this.powerIdle[index] = powerIdle;
-    }
-
-    public void setPowerIdle(double[] powerIdle) {
-        this.powerIdle = powerIdle;
-    }
-
-    public double getIdleConsumption() {
-        return idleConsumption;
-    }
-
-    public void setIdleConsumption(double idleConsumption) {
-        this.idleConsumption = idleConsumption;
     }
 
     public double getMips() {
@@ -625,10 +596,6 @@ public class BladeServer {
         return serverID;
     }
 
-    public void setServerID(int serverID) {
-        this.serverID = serverID;
-    }
-
     public int getRackId() {
         return rackId;
     }
@@ -668,13 +635,37 @@ public class BladeServer {
     public void setSLAviolation(boolean slaViolation) {
         this.SLAviolation = slaViolation;
     }
-
-    protected String getBladeType() {
+    
+    public String getBladeType() {
         return bladeType;
     }
 
-    protected void setBladeType(String bladeType) {
-        this.bladeType = bladeType;
+    public double getFrequencyLevelAt(int index) {
+        return frequencyLevel[index];
+    }
+    
+    public int getNumberOfFrequencyLevel() {
+        return frequencyLevel.length;
+    }
+
+    public double getPowerBusyAt(int index) {
+        return powerBusy[index];
+    }
+
+    public int getNumberOfPowerBusy() {
+        return powerBusy.length;
+    }
+    
+    public double getPowerIdleAt(int index) {
+        return powerIdle[index];
+    }
+    
+    public int getNumberOfPowerIdle() {
+        return powerIdle.length;
+    }
+
+    public double getIdleConsumption() {
+        return idleConsumption;
     }
 
     /*
