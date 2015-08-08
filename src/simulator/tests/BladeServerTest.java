@@ -66,19 +66,13 @@ public class BladeServerTest {
         Environment environment = new Environment();
         final int chassisID = 0;
         BladeServerPOD bladeServerPOD = new BladeServerPOD();
-        bladeServerPOD.setFrequencyLevel(new double[3]);
+        bladeServerPOD.setFrequencyLevel(new double[1]);
         final double frequency = 1.4;
         bladeServerPOD.setFrequencyLevelAt(0, frequency);
-        bladeServerPOD.setFrequencyLevelAt(1, frequency);
-        bladeServerPOD.setFrequencyLevelAt(2, frequency);
-        bladeServerPOD.setPowerBusy(new double[3]);
+        bladeServerPOD.setPowerBusy(new double[1]);
         bladeServerPOD.setPowerBusyAt(0, 100.0);
-        bladeServerPOD.setPowerBusyAt(1, 100.0);
-        bladeServerPOD.setPowerBusyAt(2, 100.0);
-        bladeServerPOD.setPowerIdle(new double[3]);
+        bladeServerPOD.setPowerIdle(new double[1]);
         bladeServerPOD.setPowerIdleAt(0, 50);
-        bladeServerPOD.setPowerIdleAt(1, 50);
-        bladeServerPOD.setPowerIdleAt(2, 50);
         
         BladeServer bladeServer = new BladeServer(bladeServerPOD, chassisID, environment);
         bladeServer.setCurrentCPU(50);
