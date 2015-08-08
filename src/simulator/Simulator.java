@@ -100,7 +100,7 @@ public class Simulator {
 
     public void GetStat() {
         for (int i = 0; i < 50; i++) {
-            datacenter.getChassisSet().get(i).getServers().get(0).setReady(-1);
+            datacenter.getChassisSet().get(i).getServers().get(0).setStatusAsIdle();
             datacenter.getChassisSet().get(i).getServers().get(0).setMips(1);// 1.04
                                                                              // 1.4;
             datacenter.getChassisSet().get(i).getServers().get(0).setCurrentCPU(100);

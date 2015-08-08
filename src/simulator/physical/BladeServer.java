@@ -18,6 +18,10 @@ public class BladeServer {
 
     private static final Logger LOGGER = Logger.getLogger(BladeServer.class.getName());
 
+    private enum BladeServerStatus {
+        NOT_ASSIGNED_TO_ANY_SYSTEM, NOT_ASSIGNED_TO_ANY_APPLICATION, IDLE, RUNNING_NORMAL, RUNNING_BUSY
+    }
+
     private List<ResponseTime> responseList;
     private List<ResponseTime> responseListWeb;
     private int dependency = 0;
@@ -33,8 +37,8 @@ public class BladeServer {
     private double queueLength;
     private double totalJob = 0;
     private double totalJobEpoch = 0;
-    private int ready;
-    private int backUpReady;
+    private BladeServerStatus ready;
+    private BladeServerStatus savedReady;
     private List<BatchJob> activeBatchJobs;
     private List<BatchJob> blockedBatchJobs;
     private List<EnterpriseJob> enterpriseJobs;
@@ -51,7 +55,6 @@ public class BladeServer {
     private boolean SLAviolation;
     private Environment environment;
 
-        
     public BladeServer(BladeServerPOD bladeServerPOD, int chasID, Environment environment) {
         this.environment = environment;
         setRespTime(0);
@@ -77,12 +80,12 @@ public class BladeServer {
         // -1 idle
         // 0 or 1 is ready or not just the matter of CPU utilization over 100%
         // or not
-        setReady(-3);
+        setStatusAsNotAssignedToAnySystem();
         setTotalFinishedJob(0);
         setSLAviolation(false);
         setMips(1.4);
     }
-    
+
     public void changeInternals(BladeServerPOD bladeServerPOD) {
         serverID = bladeServerPOD.getServerID();
         bladeType = bladeServerPOD.getBladeType();
@@ -91,7 +94,7 @@ public class BladeServer {
         frequencyLevel = bladeServerPOD.getFrequencyLevel();
         idleConsumption = bladeServerPOD.getIdleConsumption();
     }
-    
+
     // Transaction system
 
     public void configSLAparameter(int time, int percentage) {
@@ -155,7 +158,7 @@ public class BladeServer {
         setWebBasedList(new ArrayList<InteractiveJob>());
         setQueueLength(0);
         ///// check
-        setReady(-1);
+        setStatusAsIdle();
         setTotalFinishedJob(0);
         setMips(1.4);
         setResTimeEpoch(0);
@@ -167,7 +170,7 @@ public class BladeServer {
 
     public void makeItIdle(EnterpriseJob jj) {
         // System.out.print("\tIdle\t\t\t\t\t@:"+Main.localTime);
-        setReady(-1);
+        setStatusAsIdle();
         setMips(frequencyLevel[0]);
     }
 
@@ -253,7 +256,7 @@ public class BladeServer {
         int i = 0;
         double share = 0, share_t = 0, extraShare = 0;
         if (num == 0) {
-            setReady(1);
+            setStatusAsRunningNormal();
             setDependency();
             setCurrentCPU(0);
             return 0;
@@ -370,9 +373,9 @@ public class BladeServer {
             tmp = tmp + getActiveBatchList().get(i).getUtilization();
         }
         if (tmp >= treshold) {
-            ready = 0;
+            setStatusAsRunningBusy();
         } else {
-            ready = 1;
+            setStatusAsRunningNormal();
         }
     }
 
@@ -420,7 +423,7 @@ public class BladeServer {
                 }
             }
         }
-        
+
         return bladeServerPOD;
     }
     // void addToresponseArray(double num,int time)
@@ -529,19 +532,56 @@ public class BladeServer {
     }
 
     public int getReady() {
-        return ready;
+        int status = -4;
+        switch (ready) {
+        case NOT_ASSIGNED_TO_ANY_SYSTEM:
+            status = -3;
+            break;
+
+        case NOT_ASSIGNED_TO_ANY_APPLICATION:
+            status = -2;
+            break;
+        case IDLE:
+            status = -1;
+            break;
+        case RUNNING_NORMAL:
+            status = 1;
+            break;
+        case RUNNING_BUSY:
+            status = 0;
+            break;
+        }
+        
+        assert(status != -4);
+        return status;
     }
 
-    public void setReady(int ready) {
-        this.ready = ready;
+    private void setStatusAsNotAssignedToAnySystem() {
+        this.ready = BladeServerStatus.NOT_ASSIGNED_TO_ANY_SYSTEM;
+    }
+    
+    public void setStatusAsNotAssignedToAnyApplication() {
+        this.ready = BladeServerStatus.NOT_ASSIGNED_TO_ANY_APPLICATION;
+    }
+    
+    public void setStatusAsIdle() {
+        this.ready = BladeServerStatus.IDLE;
+    }
+    
+    public void setStatusAsRunningNormal() {
+        this.ready = BladeServerStatus.RUNNING_NORMAL;
+    }
+    
+    public void setStatusAsRunningBusy() {
+        this.ready = BladeServerStatus.RUNNING_BUSY;
     }
 
-    public int getBackUpReady() {
-        return backUpReady;
+    public void restoreStatus() {
+        this.ready = savedReady;
     }
 
-    public void setBackUpReady(int backUpReady) {
-        this.backUpReady = backUpReady;
+    public void saveStatus() {
+        this.savedReady = this.ready;
     }
 
     public List<BatchJob> getActiveBatchList() {
@@ -635,7 +675,7 @@ public class BladeServer {
     public void setSLAviolation(boolean slaViolation) {
         this.SLAviolation = slaViolation;
     }
-    
+
     public String getBladeType() {
         return bladeType;
     }
@@ -643,7 +683,7 @@ public class BladeServer {
     public double getFrequencyLevelAt(int index) {
         return frequencyLevel[index];
     }
-    
+
     public int getNumberOfFrequencyLevel() {
         return frequencyLevel.length;
     }
@@ -655,11 +695,11 @@ public class BladeServer {
     public int getNumberOfPowerBusy() {
         return powerBusy.length;
     }
-    
+
     public double getPowerIdleAt(int index) {
         return powerIdle[index];
     }
-    
+
     public int getNumberOfPowerIdle() {
         return powerIdle.length;
     }

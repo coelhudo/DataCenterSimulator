@@ -105,7 +105,7 @@ public class InteractiveUser {
 
     void resetReadyFlag() {
         for (BladeServer bladeServer : getComputeNodeList()) {
-            bladeServer.setReady(1);
+            bladeServer.setStatusAsRunningNormal();
         }
     }
 
@@ -221,7 +221,7 @@ public class InteractiveUser {
         {
             for (BladeServer bladeServer : getComputeNodeList()) {
                 bladeServer.setCurrentCPU(100);
-                bladeServer.setReady(0);
+                bladeServer.setStatusAsRunningBusy();
             }
             usedNode = usedNode + getComputeNodeList().size();
         } else if (beenRunJobs < 0) {
@@ -239,7 +239,7 @@ public class InteractiveUser {
                 double reqSpace = (int) Math
                         .ceil(CPUspace * getMaxNumberOfRequest() / (getNumberofBasicNode() * 100.0));
                 getComputeNodeList().get(serID).setCurrentCPU(100);
-                getComputeNodeList().get(serID).setReady(0);
+                getComputeNodeList().get(serID).setStatusAsRunningBusy();
                 beenRunJobs = beenRunJobs - reqSpace;
                 if (beenRunJobs == 0) {
                     k++;
@@ -248,7 +248,7 @@ public class InteractiveUser {
                 if (beenRunJobs < 0) {
                     getComputeNodeList().get(serID)
                             .setCurrentCPU((int) Math.ceil((reqSpace + beenRunJobs) * 100 / reqSpace));
-                    getComputeNodeList().get(serID).setReady(1);
+                    getComputeNodeList().get(serID).setStatusAsRunningNormal();
                     k++;
                     break;
                 }
@@ -286,11 +286,11 @@ public class InteractiveUser {
                 // its idle
                 // power
                 if (bladeServer.getWebBasedList().isEmpty()) {
-                    bladeServer.setReady(1);
+                    bladeServer.setStatusAsRunningNormal();
                     bladeServer.setCurrentCPU(0);
                 } // bahs
                 else {
-                    bladeServer.setReady(0);
+                    bladeServer.setStatusAsRunningBusy();
                     // LOGGER.info("queulength in SetReady FLag:
                     // "+ComputeNodeList.get(i).queueLength);
                 }
@@ -348,7 +348,7 @@ public class InteractiveUser {
         for (i = 0; i < getComputeNodeList().size(); i++) {
             if (getComputeNodeList().get(i).getReady() == -1) {
                 getComputeNodeList().get(i).restart();
-                getComputeNodeList().get(i).setReady(1);
+                getComputeNodeList().get(i).setStatusAsRunningNormal();
                 break;
             }
         }

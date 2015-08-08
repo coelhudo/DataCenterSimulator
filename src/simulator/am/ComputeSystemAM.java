@@ -64,7 +64,7 @@ public class ComputeSystemAM extends GeneralAM {
                 if (bladeServer.getReady() == -1) {
                     LOGGER.info("CSys GR: " + "\tactive a Server!\t\t @" + environment.getCurrentLocalTime()
                             + "\tNumber of runinng:  " + computeSystem.numberofRunningNode());
-                    bladeServer.setReady(1);
+                    bladeServer.setStatusAsRunningNormal();
                     bladeServer.setMips(1.4);
                     environment.updateNumberOfMessagesFromSystemToNodes();
                     tedad++;
@@ -95,7 +95,7 @@ public class ComputeSystemAM extends GeneralAM {
                 if (bladeServer.getActiveBatchList().isEmpty() && bladeServer.getBlockedBatchList().isEmpty()
                         && bladeServer.getReady() > -1) {
                     environment.updateNumberOfMessagesFromSystemToNodes();
-                    bladeServer.setReady(-1);
+                    bladeServer.setStatusAsIdle();
                 }
             }
         }
@@ -114,7 +114,7 @@ public class ComputeSystemAM extends GeneralAM {
                 }
                 if (computeSystem.getComputeNodeList().get(i).getReady() == -1) {
                     environment.updateNumberOfMessagesFromSystemToNodes();
-                    computeSystem.getComputeNodeList().get(i).setReady(1);
+                    computeSystem.getComputeNodeList().get(i).setStatusAsRunningNormal();
                 }
             }
             // if(all nodes are busy and this system is not blocked) send(SOS,

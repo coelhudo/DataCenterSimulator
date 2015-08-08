@@ -83,7 +83,7 @@ public abstract class ResourceAllocation {
                     ES.getApplications().get(i).getComputeNodeList().remove(indexi);
                     final BladeServer server = dataCenter.getServer(indexChassis,
                             findServerInChasis(indexChassis, indexServer));
-                    server.setReady(-2);
+                    server.setStatusAsNotAssignedToAnyApplication();
                     server.setSLAPercentage(0);
                     server.setTimeTreshold(0);
                     /////
@@ -118,7 +118,7 @@ public abstract class ResourceAllocation {
                         // //need to think about that!
                         // now the node is assinged to a application and is
                         // ready!
-                        server.setReady(1);
+                        server.setStatusAsRunningNormal();
                         server.setSLAPercentage(ES.getApplications().get(i).getSLAPercentage());
                         server.setTimeTreshold(ES.getApplications().get(i).getTimeTreshold());
                         LOGGER.info("Alloc: to app:" + i + "\t#of comp Node="
@@ -176,7 +176,7 @@ public abstract class ResourceAllocation {
                         // now the node is assinged to a application and is
                         // ready!
 
-                        server.setReady(1);
+                        server.setStatusAsRunningNormal();
                         server.setSLAPercentage(enterpriseSystem.getApplications().get(0).getSLAPercentage());
                         server.setTimeTreshold(enterpriseSystem.getApplications().get(0).getTimeTreshold());
                         enterpriseSystem.setNumberofIdleNode(enterpriseSystem.getNumberofIdleNode() - 1);
@@ -224,7 +224,7 @@ public abstract class ResourceAllocation {
             // this node is in this CS nodelist but it is not assigned to any
             // job yet!
             // in Allocation module ready flag will be changed to 1
-            server.setReady(1);
+            server.setStatusAsRunningNormal();
             computeSystem.appendBladeServerIndexIntoComputeNodeIndex(serverIndex[1]);
             LOGGER.info("HPC System: ChassisID=" + indexChassis + "  & Server id = " + indexServer);
         }
@@ -246,7 +246,7 @@ public abstract class ResourceAllocation {
         // this node is in this CS nodelist but it is not assigned to any job
         // yet!
         // in Allocation module ready flag will be changed to 1
-        server.setReady(1);
+        server.setStatusAsRunningNormal();
         computeSystem.appendBladeServerIndexIntoComputeNodeIndex(serverIndex[1]);
         LOGGER.info("HPC System: ChassisID=" + indexChassis + "  & Server id = " + indexServer);
     }
@@ -282,7 +282,7 @@ public abstract class ResourceAllocation {
             // this node is in this ES nodelist but it is not assigned to any
             // application yet!
             // in Allocation module ready flag will be changed to 1
-            server.setReady(-2);
+            server.setStatusAsNotAssignedToAnyApplication();
             enterpriseSystem.appendBladeServerIndexIntoComputeNodeIndex(serverIndex[1]);
             LOGGER.info("Enterprise System: ChassisID=" + indexChassis + "  & Server id = " + indexServer);
         }
@@ -301,7 +301,7 @@ public abstract class ResourceAllocation {
                 // ES.getApplications().get(i).ComputeNodeIndex.add(indexChassis);
                 // //need to think about that!
                 // now the node is assinged to a application and is ready!
-                server.setReady(1);
+                server.setStatusAsRunningNormal();
                 server.setSLAPercentage(enterpriseApplication.getSLAPercentage());
                 server.setTimeTreshold(enterpriseApplication.getTimeTreshold());
                 // LOGGER.info("Allocating compute node to the Enterprise
@@ -357,7 +357,7 @@ public abstract class ResourceAllocation {
             // this node is in this WS nodelist but it is not assigned to any
             // workload yet!
             // in Allocation module ready flag will be changed to 1
-            server.setReady(-2);
+            server.setStatusAsNotAssignedToAnyApplication();
             interactiveSystem.appendBladeServerIndexIntoComputeNodeIndex(serverIndex[1]);
         }
     }
@@ -398,7 +398,7 @@ public abstract class ResourceAllocation {
             final BladeServer server = dataCenter.getServer(indexChassis, serverId);
             test.addCompNodetoBundle(server);
             test.getComputeNodeIndex().add(serverId);
-            server.setReady(1);
+            server.setStatusAsRunningNormal();
             server.configSLAparameter(test.getMaxExpectedResTime());
             WS.setNumberofIdleNode(WS.getNumberofIdleNode() - 1);
             LOGGER.info("Allocating compute node to Inter. User: Chassis#" + indexChassis
@@ -454,7 +454,7 @@ public abstract class ResourceAllocation {
                     IS.getUserList().get(i).getComputeNodeList().remove(indexi);
                     final BladeServer server = dataCenter.getServer(indexChassis,
                             findServerInChasis(indexChassis, indexServer));
-                    server.setReady(-2);
+                    server.setStatusAsNotAssignedToAnyApplication();
                     server.setSLAPercentage(0);
                     server.setTimeTreshold(0);
                     /////
@@ -489,7 +489,7 @@ public abstract class ResourceAllocation {
                         // //need to think about that!
                         // now the node is assinged to a application and is
                         // ready!
-                        server.setReady(1);
+                        server.setStatusAsRunningNormal();
                         server.setTimeTreshold(IS.getUserList().get(i).getMaxExpectedResTime());
                         LOGGER.info("Alloc: to User:" + i + "\t#of comp Node="
                                 + IS.getUserList().get(i).getComputeNodeList().size() + "\tsys Rdy to aloc="

@@ -105,14 +105,14 @@ public class ComputeSystem extends GeneralSystem {
 
     void makeSystemaBlocked() {
         for (BladeServer bladeServer : getComputeNodeList()) {
-            bladeServer.setBackUpReady(bladeServer.getReady());
-            bladeServer.setReady(-1);
+            bladeServer.saveStatus();
+            bladeServer.setStatusAsNotAssignedToAnyApplication();
         }
     }
 
     public void makeSystemaUnBlocked() {
         for (BladeServer bladeServer: getComputeNodeList()) {
-            bladeServer.setReady(bladeServer.getBackUpReady());
+            bladeServer.restoreStatus();
         }
     }
 
@@ -265,7 +265,7 @@ public class ComputeSystem extends GeneralSystem {
         for (i = 0; i < getComputeNodeList().size(); i++) {
             if (getComputeNodeList().get(i).getReady() == -1) {
                 getComputeNodeList().get(i).restart();
-                getComputeNodeList().get(i).setReady(1);
+                getComputeNodeList().get(i).setStatusAsRunningNormal();
                 break;
             }
         }

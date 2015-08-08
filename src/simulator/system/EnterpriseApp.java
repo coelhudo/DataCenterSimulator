@@ -95,7 +95,7 @@ public final class EnterpriseApp {
 
     public void removeCompNodeFromBundle(BladeServer bladeServer) {
         bladeServer.restart();
-        bladeServer.setReady(-2);
+        bladeServer.setStatusAsNotAssignedToAnyApplication();
         getComputeNodeList().remove(bladeServer);
     }
     /*
@@ -158,7 +158,7 @@ public final class EnterpriseApp {
                 // change
                 // it
                 bladeServer.setCurrentCPU(0);
-                bladeServer.setReady(1);
+                bladeServer.setStatusAsRunningNormal();
             }
         }
     }
@@ -261,7 +261,7 @@ public final class EnterpriseApp {
             for (BladeServer bladeServer : getComputeNodeList()) {
                 if (bladeServer.getReady() == 1) {
                     bladeServer.setCurrentCPU(100);
-                    bladeServer.setReady(0);
+                    bladeServer.setStatusAsRunningBusy();
                 }
             }
             // usedNode=usedNode+ComputeNodeList.size();
@@ -280,7 +280,7 @@ public final class EnterpriseApp {
                 double reqSpace = (int) Math
                         .ceil(CPUspace * getMaxNumberOfRequest() / (getNumberofBasicNode() * 100.0));
                 getComputeNodeList().get(serID).setCurrentCPU(100);
-                getComputeNodeList().get(serID).setReady(0);
+                getComputeNodeList().get(serID).setStatusAsRunningBusy();
                 beenRunJobs = beenRunJobs - reqSpace;
                 if (beenRunJobs == 0) {
                     k++;
@@ -289,7 +289,7 @@ public final class EnterpriseApp {
                 if (beenRunJobs < 0) {
                     getComputeNodeList().get(serID)
                             .setCurrentCPU((int) Math.ceil((reqSpace + beenRunJobs) * 100 / reqSpace));
-                    getComputeNodeList().get(serID).setReady(1);
+                    getComputeNodeList().get(serID).setStatusAsRunningNormal();
                     k++;
                     break;
                 }
@@ -328,7 +328,7 @@ public final class EnterpriseApp {
         for (i = 0; i < getComputeNodeList().size(); i++) {
             if (getComputeNodeList().get(i).getReady() == -1) {
                 getComputeNodeList().get(i).restart();
-                getComputeNodeList().get(i).setReady(1);
+                getComputeNodeList().get(i).setStatusAsRunningNormal();
                 break;
             }
         }
@@ -368,8 +368,7 @@ public final class EnterpriseApp {
     void destroyApplication() throws IOException {
         for (BladeServer bladeServer : getComputeNodeList()) {
             bladeServer.restart();
-            bladeServer.setReady(-2); // ready to be assinged to
-            // other application
+            bladeServer.setStatusAsNotAssignedToAnyApplication();
         }
         bis.close();
     }

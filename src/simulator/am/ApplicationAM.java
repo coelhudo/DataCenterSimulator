@@ -142,7 +142,7 @@ public class ApplicationAM extends GeneralAM {
                     // LOGGER.info("Application:SLA" +app.id +"\tActive
                     // one Server!\t\t "+"Number of runinng:
                     // "+app.numberofRunningNode());
-                    app.getComputeNodeList().get(j).setReady(1);
+                    app.getComputeNodeList().get(j).setStatusAsRunningNormal();
                     app.getComputeNodeList().get(j).setMips(1.4);
                     tedad--;
                     environment.updateNumberOfMessagesFromDataCenterToSystem();
@@ -192,7 +192,7 @@ public class ApplicationAM extends GeneralAM {
                 if (app.getComputeNodeList().get(j).getReady() == -1) {
                     LOGGER.info("App GR: " + app.getID() + "\tactive a Server!\t\t @"
                             + environment.getCurrentLocalTime() + "\tNumber of runinng:  " + app.numberofRunningNode());
-                    app.getComputeNodeList().get(j).setReady(1);
+                    app.getComputeNodeList().get(j).setStatusAsRunningNormal();
                     app.getComputeNodeList().get(j).setMips(1.4);
                     tedad--;
                     environment.updateNumberOfMessagesFromDataCenterToSystem();
@@ -262,7 +262,7 @@ public class ApplicationAM extends GeneralAM {
         temp.setSLAPercentage(sys.getApplications().get(targetApp).getSLAPercentage());
         temp.setTimeTreshold(sys.getApplications().get(targetApp).getTimeTreshold());
         temp.setMips(1.4);
-        temp.setReady(1);
+        temp.setStatusAsRunningNormal();
         sys.getApplications().get(targetApp).getComputeNodeList().add(temp);
         app.getComputeNodeList().remove(index);
         LOGGER.info("app:\t" + app.getID() + " ----------> :\t\t " + targetApp + "\t\t@:"

@@ -25,7 +25,6 @@ public class BladeServerTest {
         BladeServer bladeServer = new BladeServer(bladeServerPOD, chassisID, environment);
         List<BatchJob> activeBatchJobs = bladeServer.getActiveBatchList();
         assertTrue(activeBatchJobs.isEmpty());
-        assertEquals(0, bladeServer.getBackUpReady());
         List<BatchJob> blockedJobs = bladeServer.getBlockedBatchList();
         assertTrue(blockedJobs.isEmpty());
         assertEquals(chassisID, bladeServer.getChassisID());
@@ -68,11 +67,25 @@ public class BladeServerTest {
         final int chassisID = 0;
         BladeServerPOD bladeServerPOD = new BladeServerPOD();
         bladeServerPOD.setFrequencyLevel(new double[3]);
-        bladeServerPOD.setPowerBusy(new double[4]);
-        bladeServerPOD.setPowerIdle(new double[4]);
+        final double frequency = 1.4;
+        bladeServerPOD.setFrequencyLevelAt(0, frequency);
+        bladeServerPOD.setFrequencyLevelAt(1, frequency);
+        bladeServerPOD.setFrequencyLevelAt(2, frequency);
+        bladeServerPOD.setPowerBusy(new double[3]);
+        bladeServerPOD.setPowerBusyAt(0, 100.0);
+        bladeServerPOD.setPowerBusyAt(1, 100.0);
+        bladeServerPOD.setPowerBusyAt(2, 100.0);
+        bladeServerPOD.setPowerIdle(new double[3]);
+        bladeServerPOD.setPowerIdleAt(0, 50);
+        bladeServerPOD.setPowerIdleAt(1, 50);
+        bladeServerPOD.setPowerIdleAt(2, 50);
         
         BladeServer bladeServer = new BladeServer(bladeServerPOD, chassisID, environment);
-        assertEquals(0.0, bladeServer.getPower(), 1.0E-8);
+        bladeServer.setCurrentCPU(50);
+        bladeServer.setStatusAsRunningBusy();
+        assertEquals(0, bladeServer.getReady());
+        assertEquals(frequency, bladeServer.getMips(), 1.0E-8);
+        assertEquals(75.0, bladeServer.getPower(), 1.0E-8);
     }
     
     /*

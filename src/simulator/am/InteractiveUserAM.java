@@ -98,7 +98,7 @@ public class InteractiveUserAM extends GeneralAM {
                     // LOGGER.info("Application:SLA" +app.id +"\tActive
                     // one Server!\t\t "+"Number of runinng:
                     // "+app.numberofRunningNode());
-                    user.getComputeNodeList().get(j).setReady(1);
+                    user.getComputeNodeList().get(j).setStatusAsRunningNormal();
                     user.getComputeNodeList().get(j).setMips(1.4);
                     tedad--;
                 }
@@ -148,7 +148,7 @@ public class InteractiveUserAM extends GeneralAM {
                     LOGGER.info(
                             "USer GR: " + user.getID() + "\tactive a Server!\t\t @" + environment.getCurrentLocalTime()
                                     + "\tNumber of runinng:  " + user.numberofRunningNode());
-                    user.getComputeNodeList().get(j).setReady(1);
+                    user.getComputeNodeList().get(j).setStatusAsRunningNormal();
                     user.getComputeNodeList().get(j).setMips(1.4);
                     tedad--;
                 }
@@ -216,7 +216,7 @@ public class InteractiveUserAM extends GeneralAM {
         temp = user.getComputeNodeList().get(index);
         temp.setMaxExpectedRes(sys.getUserList().get(targetUsr).getMaxExpectedResTime());
         temp.setMips(1.4);
-        temp.setReady(1);
+        temp.setStatusAsRunningNormal();
         sys.getUserList().get(targetUsr).getComputeNodeList().add(temp);
         user.getComputeNodeList().remove(index);
         LOGGER.info("User :\t" + user.getID() + " ----------> :\t\t " + targetUsr + "\t\t@:"
