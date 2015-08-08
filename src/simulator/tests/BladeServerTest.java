@@ -1,8 +1,6 @@
 package simulator.tests;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 import java.util.List;
 
@@ -62,5 +60,66 @@ public class BladeServerTest {
         assertFalse(bladeServer.isSLAviolation());
 
     }
+    
+    /*@Test
+    public void testGetPower() {
+        Environment environment = new Environment();
+        final int chassisID = 0;
+        BladeServer bladeServer = new BladeServer(chassisID, environment);
+        bladeServer.getPower();
+    }
+    
+    @Test
+    public void testRestart() {
+        fail("Green in coverage, implement!");
+    }
+    
+    @Test
+    public void testFeedWork() {
+        fail("Green in coverage, implement!");
+    }
+    
+    @Test
+    public void testGetCurrentFreqLevel() {
+        fail("Green in coverage, implement!");
+    }
+    
+    @Test
+    public void testIncreaseFrequency() {
+        fail("Green in coverage, implement!");
+    }
+    
+    @Test
+    public void testDecreaseFrequency() {
+        fail("Green in coverage, implement!");
+    }
+    
+    @Test
+    public void testRun() {
+        fail("Green in coverage, implement!");
+    }
+    
+    @Test
+    public void testDone() {
+        fail("Green in coverage, implement!");
+    }
+    
+    @Test
+    public void testSetDependency() {
+        fail("Green in coverage, implement!");
+    }
+    
+    @Test
+    public void testSetRead() {
+        fail("Green in coverage, implement!");
+    }
+    
+    @Test
+    public void testReadFromNode() {
+        fail("Green in coverage, this is wrong, need to be moved to another place!");
+    }*/
+    
+    
+    
 
 }

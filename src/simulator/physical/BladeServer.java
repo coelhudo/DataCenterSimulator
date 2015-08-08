@@ -377,7 +377,7 @@ public class BladeServer {
                     String[] split = str.split(" ");
                     setFrequencyLevel(new double[split.length]);
                     for (int j = 0; j < split.length; j++) {
-                        getFrequencyLevel()[j] = Double.parseDouble(split[j]);
+                        setFrequencyLevelAt(j, Double.parseDouble(split[j]));
                     }
                 }
                 if (childNodes.item(i).getNodeName().equalsIgnoreCase("FullyLoaded")) {
@@ -385,7 +385,7 @@ public class BladeServer {
                     String[] split = str.split(" ");
                     setPowerBusy(new double[split.length]);
                     for (int j = 0; j < split.length; j++) {
-                        getPowerBusy()[j] = Double.parseDouble(split[j]);
+                        setPowerBusyAt(j, Double.parseDouble(split[j]));
                     }
                 }
                 if (childNodes.item(i).getNodeName().equalsIgnoreCase("Idle")) {
@@ -393,7 +393,7 @@ public class BladeServer {
                     String[] split = str.split(" ");
                     setPowerIdle(new double[split.length]);
                     for (int j = 0; j < split.length; j++) {
-                        getPowerIdle()[j] = Double.parseDouble(split[j]);
+                        setPowerIdleAt(j, Double.parseDouble(split[j]));
                     }
                 }
                 if (childNodes.item(i).getNodeName().equalsIgnoreCase("Standby")) {
@@ -456,6 +456,11 @@ public class BladeServer {
     public double[] getFrequencyLevel() {
         return frequencyLevel;
     }
+    
+    public void setFrequencyLevelAt(int index, double frequenceLevel) {
+        assert(this.frequencyLevel.length != 0);
+        this.frequencyLevel[index] = frequenceLevel;
+    }
 
     public void setFrequencyLevel(double[] frequencyLevel) {
         this.frequencyLevel = frequencyLevel;
@@ -464,6 +469,12 @@ public class BladeServer {
     public double[] getPowerBusy() {
         return powerBusy;
     }
+    
+    public void setPowerBusyAt(int index, double powerBusy)
+    {
+        assert(this.powerBusy.length != 0);
+        this.powerBusy[index] = powerBusy;
+    }
 
     public void setPowerBusy(double[] powerBusy) {
         this.powerBusy = powerBusy;
@@ -471,6 +482,11 @@ public class BladeServer {
 
     public double[] getPowerIdle() {
         return powerIdle;
+    }
+    
+    public void setPowerIdleAt(int index, double powerIdle) {
+        assert(this.powerIdle.length != 0);
+        this.powerIdle[index] = powerIdle;
     }
 
     public void setPowerIdle(double[] powerIdle) {
