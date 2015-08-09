@@ -120,10 +120,6 @@ public class BladeServer {
         double pw = 0, w = 0, a = 0, cpu = 0, mips = 0;
         int j;
         cpu = getCurrentCPU();
-        // if(cpu!=0)
-        // LOGGER.info(cpu +" \ttime ="+Main.localTime +" \t chassi
-        // id="+chassisID );
-        // if(servers.get(i).currentCPU==100) LOGGER.info(chassisID);
         mips = getMips();
         if (mips == 0) {
             pw = pw + idleConsumption;
@@ -532,7 +528,7 @@ public class BladeServer {
     }
 
     public int getReady() {
-        int status = -4;
+        int status = 0;
         switch (ready) {
         case NOT_ASSIGNED_TO_ANY_SYSTEM:
             status = -3;
@@ -550,8 +546,11 @@ public class BladeServer {
         case RUNNING_BUSY:
             status = 0;
             break;
+        default:
+            status = -4;
+            break;
         }
-        
+
         assert(status != -4);
         return status;
     }
@@ -559,19 +558,19 @@ public class BladeServer {
     private void setStatusAsNotAssignedToAnySystem() {
         this.ready = BladeServerStatus.NOT_ASSIGNED_TO_ANY_SYSTEM;
     }
-    
+
     public void setStatusAsNotAssignedToAnyApplication() {
         this.ready = BladeServerStatus.NOT_ASSIGNED_TO_ANY_APPLICATION;
     }
-    
+
     public void setStatusAsIdle() {
         this.ready = BladeServerStatus.IDLE;
     }
-    
+
     public void setStatusAsRunningNormal() {
         this.ready = BladeServerStatus.RUNNING_NORMAL;
     }
-    
+
     public void setStatusAsRunningBusy() {
         this.ready = BladeServerStatus.RUNNING_BUSY;
     }

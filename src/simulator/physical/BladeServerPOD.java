@@ -35,7 +35,6 @@ public class BladeServerPOD {
     }
 
     public void setFrequencyLevel(double[] frequencyLevel) {
-        assert(frequencyLevel.length >= 3);
         this.frequencyLevel = frequencyLevel;
     }
 
