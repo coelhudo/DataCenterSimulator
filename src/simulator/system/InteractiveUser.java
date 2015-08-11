@@ -90,7 +90,7 @@ public class InteractiveUser {
             }
             InteractiveJob j = new InteractiveJob();
             j.setArrivalTimeOfJob(Integer.parseInt(numbers[0]));
-            j.setNumberOfJob(Double.parseDouble(numbers[1]) * 50);
+            j.setNumberOfJob(Integer.parseInt(numbers[1]) * 50);
             getQueueWL().add(j);
             return 1;
             // LOGGER.info("Readed inputTime= " + inputTime + " Job
@@ -151,9 +151,9 @@ public class InteractiveUser {
                 numberofReadyNodes++;
             }
         }
-        double capacityOfNode = (int) Math
+        int capacityOfNode = (int) Math
                 .ceil((getMaxNumberOfRequest() * CPUpercentage) / (getNumberofBasicNode() * 100.0));
-        double capacityOfNode_COPY = capacityOfNode;
+        int capacityOfNode_COPY = capacityOfNode;
         InteractiveJob jj = new InteractiveJob();
         // jj=queueWL.get(0);
         jj = (InteractiveJob) parent.getScheduler().nextJob(getQueueWL());
@@ -285,7 +285,7 @@ public class InteractiveUser {
                 // as to compute
                 // its idle
                 // power
-                if (bladeServer.getWebBasedList().isEmpty()) {
+                if (bladeServer.getInteractiveList().isEmpty()) {
                     bladeServer.setStatusAsRunningNormal();
                     bladeServer.setCurrentCPU(0);
                 } // bahs
@@ -355,8 +355,8 @@ public class InteractiveUser {
         LOGGER.info("MIIIIPPPSSS    " + getComputeNodeList().get(i).getMips());
     }
 
-    public double numberOfWaitingJobs() {
-        double lenJob = 0;
+    public int numberOfWaitingJobs() {
+        int lenJob = 0;
         for (InteractiveJob job : getQueueWL()) {
             if (job.getArrivalTimeOfJob() <= environment.getCurrentLocalTime()) {
                 lenJob = +job.getNumberOfJob();

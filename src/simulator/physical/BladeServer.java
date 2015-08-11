@@ -35,7 +35,7 @@ public class BladeServer {
     private double resTimeEpoch = 0;
     private double currentCPU = 0;
     private double queueLength;
-    private double totalJob = 0;
+    private int totalJob = 0;
     private double totalJobEpoch = 0;
     private BladeServerStatus ready;
     private BladeServerStatus savedReady;
@@ -171,13 +171,13 @@ public class BladeServer {
     }
 
     public void feedWork(InteractiveJob j) {
-        double nums = j.getNumberOfJob();
+        int nums = j.getNumberOfJob();
         int time = j.getArrivalTimeOfJob();
         setQueueLength(getQueueLength() + nums);
         InteractiveJob wJob = new InteractiveJob();
         wJob.setArrivalTimeOfJob(time);
         wJob.setNumberOfJob(nums);
-        getWebBasedList().add(wJob);
+        getInteractiveList().add(wJob);
         setTotalJob(getTotalJob() + nums);
     }
     // feeding batch type Job to blade server
@@ -191,13 +191,13 @@ public class BladeServer {
     // feeding webbased type Job to blade server
 
     public void feedWork(EnterpriseJob j) {
-        double nums = j.getNumberOfJob();
+        int nums = j.getNumberOfJob();
         int time = j.getArrivalTimeOfJob();
         setQueueLength(getQueueLength() + nums);
         EnterpriseJob wJob = new EnterpriseJob();
         wJob.setArrivalTimeOfJob(time);
         wJob.setNumberOfJob(nums);
-        getEnterprizList().add(wJob);
+        getEnterpriseList().add(wJob);
         setTotalJob(nums + getTotalJob());
     }
 
@@ -511,11 +511,11 @@ public class BladeServer {
         this.queueLength = queueLength;
     }
 
-    public double getTotalJob() {
+    public int getTotalJob() {
         return totalJob;
     }
 
-    public void setTotalJob(double totalJob) {
+    public void setTotalJob(int totalJob) {
         this.totalJob = totalJob;
     }
 
@@ -599,7 +599,7 @@ public class BladeServer {
         this.blockedBatchJobs = blockedBatchList;
     }
 
-    public List<EnterpriseJob> getEnterprizList() {
+    public List<EnterpriseJob> getEnterpriseList() {
         return enterpriseJobs;
     }
 
@@ -607,7 +607,7 @@ public class BladeServer {
         this.enterpriseJobs = enterpriseJobs;
     }
 
-    public List<InteractiveJob> getWebBasedList() {
+    public List<InteractiveJob> getInteractiveList() {
         return interactiveJobs;
     }
 

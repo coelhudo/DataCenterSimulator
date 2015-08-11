@@ -117,7 +117,7 @@ public final class EnterpriseApp {
             }
             EnterpriseJob j = new EnterpriseJob();
             j.setArrivalTimeOfJob(Integer.parseInt(numbers[0]));
-            j.setNumberOfJob(Double.parseDouble(numbers[1]));
+            j.setNumberOfJob(Integer.parseInt(numbers[1]));
             getQueueApp().add(j);
             return 1;
             // LOGGER.info("Readed inputTime= " + inputTime + " Job
@@ -189,7 +189,7 @@ public final class EnterpriseApp {
                 numberofReadyNodes++;
             }
         }
-        double capacityOfNode = (int) Math
+        int capacityOfNode = (int) Math
                 .ceil((getMaxNumberOfRequest() * CPUpercentage) / (getNumberofBasicNode() * 100.0));
         double capacityOfNode_COPY = capacityOfNode;
         EnterpriseJob jj = new EnterpriseJob();

@@ -2,7 +2,7 @@ package simulator.jobs;
 
 public class EnterpriseJob extends Job {
 
-    private double numberOfJob;
+    private int numberOfJob;
     private int arrivalTimeOfJob;
 
     public EnterpriseJob() {
@@ -10,11 +10,11 @@ public class EnterpriseJob extends Job {
         setArrivalTimeOfJob(0);
     }
 
-    public double getNumberOfJob() {
+    public int getNumberOfJob() {
         return numberOfJob;
     }
 
-    public void setNumberOfJob(double numberOfJob) {
+    public void setNumberOfJob(int numberOfJob) {
         this.numberOfJob = numberOfJob;
     }
 
