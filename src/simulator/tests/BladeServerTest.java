@@ -104,19 +104,19 @@ public class BladeServerTest {
         List<BatchJob> activeBacthJobs = new ArrayList<BatchJob>();
         activeBacthJobs.add(null);
         bladeServer.setActiveBatchList(activeBacthJobs);
-        
+
         List<BatchJob> blockedBacthJobs = new ArrayList<BatchJob>();
         blockedBacthJobs.add(null);
         bladeServer.setBlockedBatchList(blockedBacthJobs);
-        
+
         List<EnterpriseJob> enterpriseJobs = new ArrayList<EnterpriseJob>();
         enterpriseJobs.add(null);
         bladeServer.setEnterprizList(enterpriseJobs);
-        
+
         List<InteractiveJob> interactiveJobs = new ArrayList<InteractiveJob>();
         interactiveJobs.add(null);
         bladeServer.setWebBasedList(interactiveJobs);
-        
+
         bladeServer.setQueueLength(1.0);
         bladeServer.setStatusAsRunningBusy();
         bladeServer.setTotalFinishedJob(10);
@@ -140,7 +140,7 @@ public class BladeServerTest {
         assertNotEquals(0.0, bladeServer.getTotalJob(), 1.0E-8);
         assertNotEquals(0.0, bladeServer.getTotalJobEpoch(), 1.0E-8);
         assertTrue(bladeServer.isSLAviolation());
-        
+
         bladeServer.restart();
 
         assertEquals(0.0, bladeServer.getResponseTime(), 1.0E-8);
@@ -159,10 +159,30 @@ public class BladeServerTest {
         assertFalse(bladeServer.isSLAviolation());
     }
 
+    @Test
+    public void testFeedWork() {
+        BladeServer bladeServer = new BladeServer(bladeServerPOD, chassisID, environment);
+ 
+        assertTrue(bladeServer.getActiveBatchList().isEmpty());
+        assertTrue(bladeServer.getBlockedBatchList().isEmpty());
+        assertTrue(bladeServer.getEnterprizList().isEmpty());
+        assertTrue(bladeServer.getWebBasedList().isEmpty());
+        assertEquals(-3, bladeServer.getReady());
+        assertEquals(0, bladeServer.getDependency());
+        assertEquals(0, bladeServer.getTotalJob(), 1.0E-8);
+        
+        BatchJob batchJob = new BatchJob(environment, null);
+        bladeServer.feedWork(batchJob);
+        
+        assertFalse(bladeServer.getActiveBatchList().isEmpty());
+        assertTrue(bladeServer.getBlockedBatchList().isEmpty());
+        assertTrue(bladeServer.getEnterprizList().isEmpty());
+        assertTrue(bladeServer.getWebBasedList().isEmpty());
+        assertEquals(1, bladeServer.getReady());
+        assertEquals(0, bladeServer.getDependency());
+        assertEquals(1, bladeServer.getTotalJob(), 1.0E-8);
+    }
     /*
-     * @Test public void testFeedWork() { fail("Green in coverage, implement!");
-     * }
-     * 
      * @Test public void testGetCurrentFreqLevel() { fail(
      * "Green in coverage, implement!"); }
      * 
