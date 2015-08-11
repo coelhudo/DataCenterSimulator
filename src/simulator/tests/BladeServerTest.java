@@ -21,6 +21,7 @@ public class BladeServerTest {
     final int chassisID = 0;
     BladeServerPOD bladeServerPOD;
     final double frequency = 1.4;
+    BladeServer bladeServer;
 
     @Before
     public void setUp() {
@@ -33,18 +34,18 @@ public class BladeServerTest {
         bladeServerPOD.setPowerBusyAt(0, 100.0);
         bladeServerPOD.setPowerIdle(new double[1]);
         bladeServerPOD.setPowerIdleAt(0, 50.0);
+        bladeServer = new BladeServer(bladeServerPOD, chassisID, environment);
     }
-    
+
     @Test
     public void testBladeServerCreation() {
-        BladeServer bladeServer = new BladeServer(bladeServerPOD, chassisID, environment);
         List<BatchJob> activeBatchJobs = bladeServer.getActiveBatchList();
         assertTrue(activeBatchJobs.isEmpty());
         List<BatchJob> blockedJobs = bladeServer.getBlockedBatchList();
         assertTrue(blockedJobs.isEmpty());
         assertEquals(chassisID, bladeServer.getChassisID());
         assertEquals(0.0, bladeServer.getCurrentCPU(), 1.0E-8);
-        assertEquals(0,bladeServer.getCurrentFreqLevel());
+        assertEquals(0, bladeServer.getCurrentFreqLevel());
         assertEquals(0, bladeServer.getDependency());
         List<EnterpriseJob> enterpriseJobs = bladeServer.getEnterpriseList();
         assertTrue(enterpriseJobs.isEmpty());
@@ -78,7 +79,6 @@ public class BladeServerTest {
 
     @Test
     public void testGetPowerRunningBusy() {
-        BladeServer bladeServer = new BladeServer(bladeServerPOD, chassisID, environment);
         bladeServer.setCurrentCPU(50);
         bladeServer.setStatusAsRunningBusy();
         assertEquals(0, bladeServer.getReady());
@@ -92,8 +92,6 @@ public class BladeServerTest {
 
     @Test
     public void testRestart() {
-        BladeServer bladeServer = new BladeServer(bladeServerPOD, chassisID, environment);
-
         bladeServer.setRespTime(10);
         bladeServer.setCurrentCPU(10);
 
@@ -157,8 +155,6 @@ public class BladeServerTest {
 
     @Test
     public void testFeedBatchJobWork() {
-        BladeServer bladeServer = new BladeServer(bladeServerPOD, chassisID, environment);
- 
         assertTrue(bladeServer.getActiveBatchList().isEmpty());
         assertTrue(bladeServer.getBlockedBatchList().isEmpty());
         assertTrue(bladeServer.getEnterpriseList().isEmpty());
@@ -166,10 +162,10 @@ public class BladeServerTest {
         assertEquals(-3, bladeServer.getReady());
         assertEquals(0, bladeServer.getDependency());
         assertEquals(0, bladeServer.getTotalJob());
-        
+
         BatchJob batchJob = new BatchJob(environment, null);
         bladeServer.feedWork(batchJob);
-        
+
         assertFalse(bladeServer.getActiveBatchList().isEmpty());
         assertTrue(bladeServer.getBlockedBatchList().isEmpty());
         assertTrue(bladeServer.getEnterpriseList().isEmpty());
@@ -178,11 +174,9 @@ public class BladeServerTest {
         assertEquals(0, bladeServer.getDependency());
         assertEquals(1, bladeServer.getTotalJob());
     }
-    
+
     @Test
     public void testFeedInteractiveJobWork() {
-        BladeServer bladeServer = new BladeServer(bladeServerPOD, chassisID, environment);
- 
         assertTrue(bladeServer.getActiveBatchList().isEmpty());
         assertTrue(bladeServer.getBlockedBatchList().isEmpty());
         assertTrue(bladeServer.getEnterpriseList().isEmpty());
@@ -191,22 +185,22 @@ public class BladeServerTest {
         assertEquals(0, bladeServer.getDependency());
         assertEquals(0, bladeServer.getTotalJob());
         assertEquals(0, bladeServer.getQueueLength());
-        
+
         InteractiveJob interactiveJob = new InteractiveJob();
-        
+
         final int numberOfJobsInInteractiveJob = 10;
         final int arrivalTime = 40;
         interactiveJob.setNumberOfJob(numberOfJobsInInteractiveJob);
         interactiveJob.setArrivalTimeOfJob(arrivalTime);
-        
+
         bladeServer.feedWork(interactiveJob);
-        
+
         List<InteractiveJob> interactiveJobs = bladeServer.getInteractiveList();
         assertTrue(bladeServer.getActiveBatchList().isEmpty());
         assertTrue(bladeServer.getBlockedBatchList().isEmpty());
         assertTrue(bladeServer.getEnterpriseList().isEmpty());
         assertFalse(interactiveJobs.isEmpty());
-        
+
         assertEquals(-3, bladeServer.getReady());
         assertEquals(0, bladeServer.getDependency());
         assertEquals(numberOfJobsInInteractiveJob, bladeServer.getTotalJob());
@@ -214,30 +208,28 @@ public class BladeServerTest {
         assertEquals(arrivalTime, job.getArrivalTimeOfJob());
         assertEquals(numberOfJobsInInteractiveJob, bladeServer.getQueueLength());
     }
-    
+
     @Test
     public void testFeedEnterpriseJobWork() {
-        BladeServer bladeServer = new BladeServer(bladeServerPOD, chassisID, environment);
- 
         assertTrue(bladeServer.getActiveBatchList().isEmpty());
         assertTrue(bladeServer.getBlockedBatchList().isEmpty());
-        
+
         List<EnterpriseJob> enterpriseJobs = bladeServer.getEnterpriseList();
-        
+
         assertTrue(enterpriseJobs.isEmpty());
         assertTrue(bladeServer.getInteractiveList().isEmpty());
         assertEquals(-3, bladeServer.getReady());
         assertEquals(0, bladeServer.getDependency());
         assertEquals(0, bladeServer.getTotalJob());
         assertEquals(0, bladeServer.getQueueLength());
-        
+
         EnterpriseJob enterpriseJob = new EnterpriseJob();
-       
+
         final int numberOfJobsInInteractiveJob = 10;
         final int arrivalTime = 40;
         enterpriseJob.setNumberOfJob(numberOfJobsInInteractiveJob);
         enterpriseJob.setArrivalTimeOfJob(arrivalTime);
-        
+
         bladeServer.feedWork(enterpriseJob);
 
         assertTrue(bladeServer.getActiveBatchList().isEmpty());
@@ -252,11 +244,36 @@ public class BladeServerTest {
         assertEquals(arrivalTime, job.getArrivalTimeOfJob());
         assertEquals(numberOfJobsInInteractiveJob, bladeServer.getQueueLength());
     }
+
+    @Test
+    public void testGetCurrentFreqLevelWhenItIsNot1_4MIPS() {
+        bladeServerPOD.setFrequencyLevelAt(0, 1.8);
+        bladeServer = new BladeServer(bladeServerPOD, chassisID, environment);
+        
+        assertEquals(-1, bladeServer.getCurrentFreqLevel());
+    }
     
+    @Test
+    public void testGetCurrentFreqLevelWhenItIs_4MIPSInTheFirstPosition() {
+        final int expectedIndex = 0;
+        bladeServerPOD.setFrequencyLevelAt(expectedIndex, 1.4);
+        bladeServer = new BladeServer(bladeServerPOD, chassisID, environment);
+        
+        assertEquals(expectedIndex, bladeServer.getCurrentFreqLevel());
+    }
+    
+    @Test
+    public void testGetCurrentFreqLevelWhenItIs_4MIPSInTheLastPosition() {
+        final int expectedIndex = 1;
+        bladeServerPOD.setFrequencyLevel(new double[2]);
+        bladeServerPOD.setFrequencyLevelAt(0, 1.8);
+        bladeServerPOD.setFrequencyLevelAt(expectedIndex, 1.4);
+        bladeServer = new BladeServer(bladeServerPOD, chassisID, environment);
+        
+        assertEquals(expectedIndex, bladeServer.getCurrentFreqLevel());
+    }
+
     /*
-     * @Test public void testGetCurrentFreqLevel() { fail(
-     * "Green in coverage, implement!"); }
-     * 
      * @Test public void testIncreaseFrequency() { fail(
      * "Green in coverage, implement!"); }
      * 
