@@ -160,7 +160,7 @@ public class BladeServerTest {
     }
 
     @Test
-    public void testFeedWork() {
+    public void testFeedBatchJobWork() {
         BladeServer bladeServer = new BladeServer(bladeServerPOD, chassisID, environment);
  
         assertTrue(bladeServer.getActiveBatchList().isEmpty());
@@ -182,6 +182,43 @@ public class BladeServerTest {
         assertEquals(0, bladeServer.getDependency());
         assertEquals(1, bladeServer.getTotalJob());
     }
+    
+    @Test
+    public void testFeedInteractiveJobWork() {
+        BladeServer bladeServer = new BladeServer(bladeServerPOD, chassisID, environment);
+ 
+        assertTrue(bladeServer.getActiveBatchList().isEmpty());
+        assertTrue(bladeServer.getBlockedBatchList().isEmpty());
+        assertTrue(bladeServer.getEnterpriseList().isEmpty());
+        assertTrue(bladeServer.getInteractiveList().isEmpty());
+        assertEquals(-3, bladeServer.getReady());
+        assertEquals(0, bladeServer.getDependency());
+        assertEquals(0, bladeServer.getTotalJob());
+        assertEquals(0, bladeServer.getQueueLength(),1.0E-8);
+        
+        InteractiveJob interactiveJob = new InteractiveJob();
+        
+        final int numberOfJobsInInteractiveJob = 10;
+        final int arrivalTime = 40;
+        interactiveJob.setNumberOfJob(numberOfJobsInInteractiveJob);
+        interactiveJob.setArrivalTimeOfJob(arrivalTime);
+        
+        bladeServer.feedWork(interactiveJob);
+        
+        List<InteractiveJob> interactiveJobs = bladeServer.getInteractiveList();
+        assertTrue(bladeServer.getActiveBatchList().isEmpty());
+        assertTrue(bladeServer.getBlockedBatchList().isEmpty());
+        assertTrue(bladeServer.getEnterpriseList().isEmpty());
+        assertFalse(interactiveJobs.isEmpty());
+        
+        assertEquals(-3, bladeServer.getReady());
+        assertEquals(0, bladeServer.getDependency());
+        assertEquals(numberOfJobsInInteractiveJob, bladeServer.getTotalJob());
+        InteractiveJob job = interactiveJobs.get(0);
+        assertEquals(arrivalTime, job.getArrivalTimeOfJob());
+        assertEquals(numberOfJobsInInteractiveJob, bladeServer.getQueueLength(),1.0E-8);
+    }
+    
     /*
      * @Test public void testGetCurrentFreqLevel() { fail(
      * "Green in coverage, implement!"); }
