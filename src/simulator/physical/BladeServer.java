@@ -34,7 +34,7 @@ public class BladeServer {
     private double respTime = 0;
     private double resTimeEpoch = 0;
     private double currentCPU = 0;
-    private double queueLength;
+    private int queueLength;
     private int totalJob = 0;
     private double totalJobEpoch = 0;
     private BladeServerStatus ready;
@@ -503,11 +503,11 @@ public class BladeServer {
         this.currentCPU = currentCPU;
     }
 
-    public double getQueueLength() {
+    public int getQueueLength() {
         return queueLength;
     }
 
-    public void setQueueLength(double queueLength) {
+    public void setQueueLength(int queueLength) {
         this.queueLength = queueLength;
     }
 

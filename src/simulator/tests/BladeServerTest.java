@@ -117,7 +117,7 @@ public class BladeServerTest {
         interactiveJobs.add(null);
         bladeServer.setWebBasedList(interactiveJobs);
 
-        bladeServer.setQueueLength(1.0);
+        bladeServer.setQueueLength(1);
         bladeServer.setStatusAsRunningBusy();
         bladeServer.setTotalFinishedJob(10);
         bladeServer.setMips(1.8);
@@ -194,7 +194,7 @@ public class BladeServerTest {
         assertEquals(-3, bladeServer.getReady());
         assertEquals(0, bladeServer.getDependency());
         assertEquals(0, bladeServer.getTotalJob());
-        assertEquals(0, bladeServer.getQueueLength(),1.0E-8);
+        assertEquals(0, bladeServer.getQueueLength());
         
         InteractiveJob interactiveJob = new InteractiveJob();
         
@@ -216,7 +216,7 @@ public class BladeServerTest {
         assertEquals(numberOfJobsInInteractiveJob, bladeServer.getTotalJob());
         InteractiveJob job = interactiveJobs.get(0);
         assertEquals(arrivalTime, job.getArrivalTimeOfJob());
-        assertEquals(numberOfJobsInInteractiveJob, bladeServer.getQueueLength(),1.0E-8);
+        assertEquals(numberOfJobsInInteractiveJob, bladeServer.getQueueLength());
     }
     
     /*
