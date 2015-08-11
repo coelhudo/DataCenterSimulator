@@ -170,10 +170,11 @@ public class BladeServer {
         setMips(frequencyLevel[0]);
     }
 
-    public void feedWork(InteractiveJob j) {
-        int nums = j.getNumberOfJob();
-        int time = j.getArrivalTimeOfJob();
+    public void feedWork(InteractiveJob interactiveJob) {
+        int nums = interactiveJob.getNumberOfJob();
+        int time = interactiveJob.getArrivalTimeOfJob();
         setQueueLength(getQueueLength() + nums);
+        // FIXME: Create a clone method for InteractiveJob
         InteractiveJob wJob = new InteractiveJob();
         wJob.setArrivalTimeOfJob(time);
         wJob.setNumberOfJob(nums);
@@ -182,18 +183,19 @@ public class BladeServer {
     }
     // feeding batch type Job to blade server
 
-    public void feedWork(BatchJob job) {
-        getActiveBatchList().add(job);
+    public void feedWork(BatchJob batchJob) {
+        getActiveBatchList().add(batchJob);
         setReady();
         setDependency();
         setTotalJob(getTotalJob() + 1);
     }
     // feeding webbased type Job to blade server
 
-    public void feedWork(EnterpriseJob j) {
-        int nums = j.getNumberOfJob();
-        int time = j.getArrivalTimeOfJob();
+    public void feedWork(EnterpriseJob enterpriseJob) {
+        int nums = enterpriseJob.getNumberOfJob();
+        int time = enterpriseJob.getArrivalTimeOfJob();
         setQueueLength(getQueueLength() + nums);
+        // FIXME: Create a clone method for EnterpriseJob
         EnterpriseJob wJob = new EnterpriseJob();
         wJob.setArrivalTimeOfJob(time);
         wJob.setNumberOfJob(nums);
