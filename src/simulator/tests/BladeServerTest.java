@@ -286,7 +286,7 @@ public class BladeServerTest {
         bladeServerPOD.setFrequencyLevelAt(2, 2.2);
         bladeServer = new BladeServer(bladeServerPOD, chassisID, environment);
         bladeServer.setMips(1.4);
-        
+
         assertEquals(0, bladeServer.getCurrentFreqLevel());
         assertEquals(1.4, bladeServer.getMips(), 1.0E-8);
         assertEquals(0, environment.getNumberOfMessagesFromDataCenterToSystem());
@@ -315,7 +315,7 @@ public class BladeServerTest {
         bladeServerPOD.setFrequencyLevelAt(2, 2.2);
         bladeServer = new BladeServer(bladeServerPOD, chassisID, environment);
         bladeServer.setMips(2.2);
-        
+
         assertEquals(2, bladeServer.getCurrentFreqLevel());
         assertEquals(2.2, bladeServer.getMips(), 1.0E-8);
         assertEquals(0, environment.getNumberOfMessagesFromDataCenterToSystem());
@@ -336,9 +336,23 @@ public class BladeServerTest {
         assertEquals(2, environment.getNumberOfMessagesFromDataCenterToSystem());
     }
 
+    @Test
+    public void testRunBatchJobBelongingToActiveJobs() {
+        BatchJob batchJob = new BatchJob(environment, null);
+
+        assertEquals(-3, bladeServer.getReady());
+        bladeServer.setCurrentCPU(1.0);
+        assertEquals(1.0, bladeServer.getCurrentCPU(), 1.0E-8);
+        bladeServer.setDependency(1);
+        assertEquals(1, bladeServer.getDependency());
+        
+        assertEquals(0, bladeServer.run(batchJob));
+        assertEquals(1, bladeServer.getReady());
+        assertEquals(0.0, bladeServer.getCurrentCPU(), 1.0E-8);
+        assertEquals(0, bladeServer.getDependency());
+    }
+
     /*
-     * @Test public void testRun() { fail("Green in coverage, implement!"); }
-     * 
      * @Test public void testDone() { fail("Green in coverage, implement!"); }
      * 
      * @Test public void testSetDependency() { fail(
