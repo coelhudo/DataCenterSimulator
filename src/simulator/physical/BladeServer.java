@@ -216,7 +216,7 @@ public class BladeServer {
     public int increaseFrequency() {
         // LOGGER.info("MIIIPPSSS "+Mips);
         if (getCurrentFreqLevel() == 2) {
-            return 0;
+            return 0; //FIXME: This should be 2 i think. That's my conclusion based on the behaviour of decreaseFrequency
         } else {
             setMips(frequencyLevel[getCurrentFreqLevel() + 1]); // getCurrentFrequency
             // already

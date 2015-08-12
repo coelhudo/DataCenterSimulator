@@ -246,22 +246,25 @@ public class BladeServerTest {
     }
 
     @Test
-    public void testGetCurrentFreqLevelWhenItIsNot1_4MIPS() {
+    public void testGetCurrentFreqLevelWhenItDiffersFromMips(){
         bladeServerPOD.setFrequencyLevelAt(0, 1.8);
         bladeServer = new BladeServer(bladeServerPOD, chassisID, environment);
-        
+        bladeServer.setMips(1.4);
+
         assertEquals(-1, bladeServer.getCurrentFreqLevel());
     }
-    
+
     @Test
-    public void testGetCurrentFreqLevelWhenItIs_4MIPSInTheFirstPosition() {
+    public void testGetCurrentFreqLevelWhenItEqualsToMips() {
         final int expectedIndex = 0;
-        bladeServerPOD.setFrequencyLevelAt(expectedIndex, 1.4);
+        final double mips = 1.4;
+        bladeServerPOD.setFrequencyLevelAt(expectedIndex, mips);
         bladeServer = new BladeServer(bladeServerPOD, chassisID, environment);
-        
+        bladeServer.setMips(mips);
+
         assertEquals(expectedIndex, bladeServer.getCurrentFreqLevel());
     }
-    
+
     @Test
     public void testGetCurrentFreqLevelWhenItIs_4MIPSInTheLastPosition() {
         final int expectedIndex = 1;
@@ -269,14 +272,38 @@ public class BladeServerTest {
         bladeServerPOD.setFrequencyLevelAt(0, 1.8);
         bladeServerPOD.setFrequencyLevelAt(expectedIndex, 1.4);
         bladeServer = new BladeServer(bladeServerPOD, chassisID, environment);
-        
+
         assertEquals(expectedIndex, bladeServer.getCurrentFreqLevel());
     }
 
+    @Test
+    public void testIncreaseFrequency() {
+        bladeServerPOD.setFrequencyLevel(new double[3]);
+        bladeServerPOD.setFrequencyLevelAt(0, 1.4);
+        bladeServerPOD.setFrequencyLevelAt(1, 1.8);
+        bladeServerPOD.setFrequencyLevelAt(2, 2.2);
+        bladeServer = new BladeServer(bladeServerPOD, chassisID, environment);
+        assertEquals(0, bladeServer.getCurrentFreqLevel());
+        assertEquals(1.4, bladeServer.getMips(), 1.0E-8);
+        assertEquals(0, environment.getNumberOfMessagesFromDataCenterToSystem());
+        
+        assertEquals(1, bladeServer.increaseFrequency());
+        assertEquals(1.8, bladeServer.getMips(), 1.0E-8);
+        assertEquals(1, bladeServer.getCurrentFreqLevel());
+        assertEquals(1, environment.getNumberOfMessagesFromDataCenterToSystem());
+        
+        assertEquals(1, bladeServer.increaseFrequency());
+        assertEquals(2.2, bladeServer.getMips(), 1.0E-8);
+        assertEquals(2, bladeServer.getCurrentFreqLevel());
+        assertEquals(2, environment.getNumberOfMessagesFromDataCenterToSystem());
+        
+        assertEquals(0, bladeServer.increaseFrequency());
+        assertEquals(2, bladeServer.getCurrentFreqLevel());
+        assertEquals(2.2, bladeServer.getMips(), 1.0E-8);
+        assertEquals(2, environment.getNumberOfMessagesFromDataCenterToSystem());   
+    }
+
     /*
-     * @Test public void testIncreaseFrequency() { fail(
-     * "Green in coverage, implement!"); }
-     * 
      * @Test public void testDecreaseFrequency() { fail(
      * "Green in coverage, implement!"); }
      * 
