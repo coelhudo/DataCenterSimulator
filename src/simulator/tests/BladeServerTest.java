@@ -246,7 +246,7 @@ public class BladeServerTest {
     }
 
     @Test
-    public void testGetCurrentFreqLevelWhenItDiffersFromMips(){
+    public void testGetCurrentFreqLevelWhenItDiffersFromMips() {
         bladeServerPOD.setFrequencyLevelAt(0, 1.8);
         bladeServer = new BladeServer(bladeServerPOD, chassisID, environment);
         bladeServer.setMips(1.4);
@@ -268,10 +268,12 @@ public class BladeServerTest {
     @Test
     public void testGetCurrentFreqLevelWhenItIs_4MIPSInTheLastPosition() {
         final int expectedIndex = 1;
+        final double mips = 1.4;
         bladeServerPOD.setFrequencyLevel(new double[2]);
         bladeServerPOD.setFrequencyLevelAt(0, 1.8);
-        bladeServerPOD.setFrequencyLevelAt(expectedIndex, 1.4);
+        bladeServerPOD.setFrequencyLevelAt(expectedIndex, mips);
         bladeServer = new BladeServer(bladeServerPOD, chassisID, environment);
+        bladeServer.setMips(mips);
 
         assertEquals(expectedIndex, bladeServer.getCurrentFreqLevel());
     }
@@ -283,30 +285,58 @@ public class BladeServerTest {
         bladeServerPOD.setFrequencyLevelAt(1, 1.8);
         bladeServerPOD.setFrequencyLevelAt(2, 2.2);
         bladeServer = new BladeServer(bladeServerPOD, chassisID, environment);
+        bladeServer.setMips(1.4);
+        
         assertEquals(0, bladeServer.getCurrentFreqLevel());
         assertEquals(1.4, bladeServer.getMips(), 1.0E-8);
         assertEquals(0, environment.getNumberOfMessagesFromDataCenterToSystem());
-        
+
         assertEquals(1, bladeServer.increaseFrequency());
         assertEquals(1.8, bladeServer.getMips(), 1.0E-8);
         assertEquals(1, bladeServer.getCurrentFreqLevel());
         assertEquals(1, environment.getNumberOfMessagesFromDataCenterToSystem());
-        
+
         assertEquals(1, bladeServer.increaseFrequency());
         assertEquals(2.2, bladeServer.getMips(), 1.0E-8);
         assertEquals(2, bladeServer.getCurrentFreqLevel());
         assertEquals(2, environment.getNumberOfMessagesFromDataCenterToSystem());
-        
+
         assertEquals(0, bladeServer.increaseFrequency());
         assertEquals(2, bladeServer.getCurrentFreqLevel());
         assertEquals(2.2, bladeServer.getMips(), 1.0E-8);
-        assertEquals(2, environment.getNumberOfMessagesFromDataCenterToSystem());   
+        assertEquals(2, environment.getNumberOfMessagesFromDataCenterToSystem());
+    }
+
+    @Test
+    public void testDecreaseFrequency() {
+        bladeServerPOD.setFrequencyLevel(new double[3]);
+        bladeServerPOD.setFrequencyLevelAt(0, 1.4);
+        bladeServerPOD.setFrequencyLevelAt(1, 1.8);
+        bladeServerPOD.setFrequencyLevelAt(2, 2.2);
+        bladeServer = new BladeServer(bladeServerPOD, chassisID, environment);
+        bladeServer.setMips(2.2);
+        
+        assertEquals(2, bladeServer.getCurrentFreqLevel());
+        assertEquals(2.2, bladeServer.getMips(), 1.0E-8);
+        assertEquals(0, environment.getNumberOfMessagesFromDataCenterToSystem());
+
+        assertEquals(1, bladeServer.decreaseFrequency());
+        assertEquals(1.8, bladeServer.getMips(), 1.0E-8);
+        assertEquals(1, bladeServer.getCurrentFreqLevel());
+        assertEquals(1, environment.getNumberOfMessagesFromDataCenterToSystem());
+
+        assertEquals(1, bladeServer.decreaseFrequency());
+        assertEquals(1.4, bladeServer.getMips(), 1.0E-8);
+        assertEquals(0, bladeServer.getCurrentFreqLevel());
+        assertEquals(2, environment.getNumberOfMessagesFromDataCenterToSystem());
+
+        assertEquals(0, bladeServer.decreaseFrequency());
+        assertEquals(0, bladeServer.getCurrentFreqLevel());
+        assertEquals(1.4, bladeServer.getMips(), 1.0E-8);
+        assertEquals(2, environment.getNumberOfMessagesFromDataCenterToSystem());
     }
 
     /*
-     * @Test public void testDecreaseFrequency() { fail(
-     * "Green in coverage, implement!"); }
-     * 
      * @Test public void testRun() { fail("Green in coverage, implement!"); }
      * 
      * @Test public void testDone() { fail("Green in coverage, implement!"); }
