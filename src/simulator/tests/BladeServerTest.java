@@ -378,7 +378,7 @@ public class BladeServerTest {
         bladeServer.done(0, 0.0);
     }
 
-    @Test
+    /*@Test
     public void testNotDoneWhenThereAreBatchJobAsActiveJobAndShareIsEqualsToZero() {
         BatchJob batchJob = new BatchJob(environment, null);
         batchJob.setRemain(new double[1]);

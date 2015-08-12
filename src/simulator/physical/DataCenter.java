@@ -13,7 +13,7 @@ import simulator.Environment;
 import simulator.am.DataCenterAM;
 import simulator.system.Systems;
 
-public final class DataCenter {
+public class DataCenter {
 
     private static final Logger LOGGER = Logger.getLogger(DataCenter.class.getName());
     

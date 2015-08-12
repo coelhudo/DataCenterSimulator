@@ -22,20 +22,20 @@ public class BatchJob extends Job {
     private Environment environment;
     private DataCenter dataCenter;
 
-    public void setRemainParam(double exp, double ut, int node, int deadln) {
-        if (ut < 1) {
+    public void setRemainParam(double remainingTime, double utilization, int numberOfNodes, double deadline) {
+        if (utilization < 1) {
             setUtilization(1);
         } else {
-            setUtilization(ut / 100);
+            setUtilization(utilization / 100);
         }
-        setNumOfNode(node);
+        setNumOfNode(numberOfNodes);
         setListOfServer(new int[getNumOfNode()]);
         setRemain(new double[getNumOfNode()]);
         for (int i = 0; i < getNumOfNode(); i++) {
-            getRemain()[i] = exp;
+            getRemain()[i] = remainingTime;
         }
-        setReqTime(exp);
-        setDeadline(deadln);
+        setReqTime(remainingTime);
+        setDeadline(deadline);
     }
 
     public BatchJob(Environment environment, DataCenter dataCenter) {
@@ -50,20 +50,17 @@ public class BatchJob extends Job {
     }
 
     public boolean allDone() {
-        int i;
-        for (i = 0; i < getNumOfNode(); i++) {
+        for (int i = 0; i < getNumOfNode(); i++) {
             if (getRemain()[i] > 0) {
                 return false;
             }
         }
         return true;
-
     }
 
     public void jobFinished() {
         setExitTime(environment.getCurrentLocalTime());
         double waitTime = (environment.getCurrentLocalTime() + 1) - getStartTime();
-        // - (int)(reqTime);
         if (waitTime < 0) {
             LOGGER.info("Alert: Error in BatchJob\t" + waitTime);
         }
@@ -77,8 +74,7 @@ public class BatchJob extends Job {
     }
 
     public int getThisNodeIndex(int serverIndex) {
-        int ki;
-        for (ki = 0; ki < getRemain().length; ki++) {
+        for (int ki = 0; ki < getRemain().length; ki++) {
             if (getServerIndexAt(ki) == serverIndex) {
                 return ki;
             }
@@ -106,7 +102,7 @@ public class BatchJob extends Job {
         return deadline;
     }
 
-    public void setDeadline(double deadline) {
+    private void setDeadline(double deadline) {
         this.deadline = deadline;
     }
 
@@ -130,7 +126,7 @@ public class BatchJob extends Job {
         return utilization;
     }
 
-    public void setUtilization(double utilization) {
+    private void setUtilization(double utilization) {
         this.utilization = utilization;
     }
 
@@ -138,7 +134,7 @@ public class BatchJob extends Job {
         return remain;
     }
 
-    public void setRemain(double[] remain) {
+    private void setRemain(double[] remain) {
         this.remain = remain;
     }
 
@@ -146,7 +142,7 @@ public class BatchJob extends Job {
         return numOfNode;
     }
 
-    public void setNumOfNode(int numOfNode) {
+    private void setNumOfNode(int numOfNode) {
         this.numOfNode = numOfNode;
     }
 
