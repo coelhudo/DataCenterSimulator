@@ -5,7 +5,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.ExpectedException;
 
 import simulator.Environment;
 import simulator.ResponseTime;
@@ -22,6 +24,9 @@ public class BladeServerTest {
     BladeServerPOD bladeServerPOD;
     final double frequency = 1.4;
     BladeServer bladeServer;
+
+    @Rule
+    public ExpectedException expectedException = ExpectedException.none();
 
     @Before
     public void setUp() {
@@ -337,7 +342,7 @@ public class BladeServerTest {
     }
 
     @Test
-    public void testRunBatchJobBelongingToActiveJobs() {
+    public void testRunBatchJobNotBelongingToActiveJobs() {
         BatchJob batchJob = new BatchJob(environment, null);
 
         assertEquals(-3, bladeServer.getReady());
@@ -345,7 +350,7 @@ public class BladeServerTest {
         assertEquals(1.0, bladeServer.getCurrentCPU(), 1.0E-8);
         bladeServer.setDependency(1);
         assertEquals(1, bladeServer.getDependency());
-        
+
         assertEquals(0, bladeServer.run(batchJob));
         assertEquals(1, bladeServer.getReady());
         assertEquals(0.0, bladeServer.getCurrentCPU(), 1.0E-8);
@@ -353,11 +358,68 @@ public class BladeServerTest {
     }
 
     /*
-     * @Test public void testDone() { fail("Green in coverage, implement!"); }
+     * @Test public void testRunBatchJobBelongingToActiveJobs() { BatchJob
+     * batchJob = new BatchJob(environment, null); batchJob.setRemain(new
+     * double[1]); bladeServer.feedWork(batchJob);
      * 
-     * @Test public void testSetDependency() { fail(
-     * "Green in coverage, implement!"); }
+     * assertEquals(1, bladeServer.getReady()); bladeServer.setCurrentCPU(1.0);
+     * assertEquals(1.0, bladeServer.getCurrentCPU(), 1.0E-8);
+     * bladeServer.setDependency(1); assertEquals(1,
+     * bladeServer.getDependency());
      * 
+     * assertEquals(0, bladeServer.run(batchJob)); assertEquals(1,
+     * bladeServer.getReady()); assertEquals(0.0, bladeServer.getCurrentCPU(),
+     * 1.0E-8); assertEquals(0, bladeServer.getDependency()); }
+     */
+
+    @Test
+    public void testDoneWhenThereAreNoBatchJobsAsActiveJobs() {
+        expectedException.expect(IndexOutOfBoundsException.class);
+        bladeServer.done(0, 0.0);
+    }
+
+    @Test
+    public void testNotDoneWhenThereAreBatchJobAsActiveJobAndShareIsEqualsToZero() {
+        BatchJob batchJob = new BatchJob(environment, null);
+        batchJob.setRemain(new double[1]);
+        batchJob.setListOfServer(new int[1]);
+        bladeServer.feedWork(batchJob);
+        
+        assertFalse(bladeServer.getActiveBatchList().isEmpty());
+        assertTrue(bladeServer.getBlockedBatchList().isEmpty());
+        assertEquals(0.0, batchJob.getExitTime(), 1.0E-8);
+        assertEquals(0, bladeServer.getTotalFinishedJob());
+        
+        final double share = 0.0;
+        assertEquals(1, bladeServer.done(0, share));
+        
+        assertTrue(bladeServer.getBlockedBatchList().isEmpty());
+        assertTrue(bladeServer.getActiveBatchList().isEmpty());
+        assertEquals(1.0, batchJob.getExitTime(), 1.0E-8);
+        assertEquals(0, bladeServer.getTotalFinishedJob());
+    }
+    
+    /*@Test
+    public void testNotDoneWhenBatchJobRemainLessThanZero() {
+        BatchJob batchJob = new BatchJob(environment, null);
+        double[] remain = {0.0};
+        batchJob.setRemain(remain);
+        batchJob.setListOfServer(new int[1]);
+        bladeServer.feedWork(batchJob);
+        
+        assertFalse(bladeServer.getActiveBatchList().isEmpty());
+        assertTrue(bladeServer.getBlockedBatchList().isEmpty());
+        assertEquals(0.0, batchJob.getExitTime(), 1.0E-8);
+        
+        final double share = -1.0;
+        assertEquals(0, bladeServer.done(0, share));
+        
+        assertFalse(bladeServer.getBlockedBatchList().isEmpty());
+        assertTrue(bladeServer.getActiveBatchList().isEmpty());
+        assertEquals(1.0, batchJob.getExitTime(), 1.0E-8);
+    }*/
+
+    /*
      * @Test public void testSetRead() { fail("Green in coverage, implement!");
      * }
      * 

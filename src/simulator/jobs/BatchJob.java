@@ -68,10 +68,10 @@ public class BatchJob extends Job {
             LOGGER.info("Alert: Error in BatchJob\t" + waitTime);
         }
 
-        BladeServer server = dataCenter.getServer(getListOfServer()[0]);
+        BladeServer server = dataCenter.getServer(getServerIndexAt(0));
         server.setRespTime(waitTime + server.getResponseTime());
         for (int i = 0; i < getNumOfNode(); i++) {
-            server = dataCenter.getServer(getListOfServer()[i]);
+            server = dataCenter.getServer(getServerIndexAt(i));
             server.getBlockedBatchList().remove(this);
         }
 
@@ -81,7 +81,7 @@ public class BatchJob extends Job {
     public int getThisNodeIndex(int serverIndex) {
         int ki;
         for (ki = 0; ki < getRemain().length; ki++) {
-            if (getListOfServer()[ki] == serverIndex) {
+            if (getServerIndexAt(ki) == serverIndex) {
                 return ki;
             }
         }
@@ -152,8 +152,9 @@ public class BatchJob extends Job {
         this.numOfNode = numOfNode;
     }
 
-    public int[] getListOfServer() {
-        return listOfServer;
+    public int getServerIndexAt(int index) {
+        assert(listOfServer != null && listOfServer.length > index);
+        return listOfServer[index];
     }
 
     public void setListOfServer(int[] listOfServer) {
