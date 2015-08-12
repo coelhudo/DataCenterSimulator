@@ -399,10 +399,10 @@ public class BladeServerTest {
         assertEquals(0, bladeServer.getTotalFinishedJob());
     }
     
-    /*@Test
-    public void testNotDoneWhenBatchJobRemainLessThanZero() {
+    @Test
+    public void testDoneWhenBatchJobRemainGreaterThanZero() {
         BatchJob batchJob = new BatchJob(environment, null);
-        double[] remain = {0.0};
+        double[] remain = {1.5};
         batchJob.setRemain(remain);
         batchJob.setListOfServer(new int[1]);
         bladeServer.feedWork(batchJob);
@@ -411,13 +411,10 @@ public class BladeServerTest {
         assertTrue(bladeServer.getBlockedBatchList().isEmpty());
         assertEquals(0.0, batchJob.getExitTime(), 1.0E-8);
         
-        final double share = -1.0;
+        final double share = 1.0;
         assertEquals(0, bladeServer.done(0, share));
-        
-        assertFalse(bladeServer.getBlockedBatchList().isEmpty());
-        assertTrue(bladeServer.getActiveBatchList().isEmpty());
-        assertEquals(1.0, batchJob.getExitTime(), 1.0E-8);
-    }*/
+        assertEquals(0.5, batchJob.getRemain()[0], 1.0E-8);
+    }
 
     /*
      * @Test public void testSetRead() { fail("Green in coverage, implement!");

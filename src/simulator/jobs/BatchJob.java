@@ -9,7 +9,7 @@ import simulator.physical.DataCenter;
 public class BatchJob extends Job {
 
     private static final Logger LOGGER = Logger.getLogger(BatchJob.class.getName());
-    
+
     private double startTime;
     private double exitTime;
     private double deadline;
@@ -74,8 +74,6 @@ public class BatchJob extends Job {
             server = dataCenter.getServer(getServerIndexAt(i));
             server.getBlockedBatchList().remove(this);
         }
-
-        return;
     }
 
     public int getThisNodeIndex(int serverIndex) {
