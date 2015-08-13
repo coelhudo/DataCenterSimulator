@@ -1,6 +1,7 @@
 package simulator.tests;
 
 import static org.junit.Assert.*;
+import static org.mockito.Mockito.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -168,8 +169,8 @@ public class BladeServerTest {
         assertEquals(0, bladeServer.getDependency());
         assertEquals(0, bladeServer.getTotalJob());
 
-        BatchJob batchJob = new BatchJob(environment, null);
-        bladeServer.feedWork(batchJob);
+        BatchJob mockBatchJob = mock(BatchJob.class);
+        bladeServer.feedWork(mockBatchJob);
 
         assertFalse(bladeServer.getActiveBatchList().isEmpty());
         assertTrue(bladeServer.getBlockedBatchList().isEmpty());
@@ -343,7 +344,7 @@ public class BladeServerTest {
 
     @Test
     public void testRunBatchJobNotBelongingToActiveJobs() {
-        BatchJob batchJob = new BatchJob(environment, null);
+        BatchJob batchJob = mock(BatchJob.class);
 
         assertEquals(-3, bladeServer.getReady());
         bladeServer.setCurrentCPU(1.0);
@@ -378,27 +379,24 @@ public class BladeServerTest {
         bladeServer.done(0, 0.0);
     }
 
-    /*@Test
+    @Test
     public void testNotDoneWhenThereAreBatchJobAsActiveJobAndShareIsEqualsToZero() {
-        BatchJob batchJob = new BatchJob(environment, null);
-        batchJob.setRemain(new double[1]);
-        batchJob.setListOfServer(new int[1]);
-        bladeServer.feedWork(batchJob);
+        BatchJob mockedBatchJob = mock(BatchJob.class);
+        bladeServer.feedWork(mockedBatchJob);
         
         assertFalse(bladeServer.getActiveBatchList().isEmpty());
         assertTrue(bladeServer.getBlockedBatchList().isEmpty());
-        assertEquals(0.0, batchJob.getExitTime(), 1.0E-8);
         assertEquals(0, bladeServer.getTotalFinishedJob());
         
         final double share = 0.0;
         assertEquals(1, bladeServer.done(0, share));
         
-        assertTrue(bladeServer.getBlockedBatchList().isEmpty());
         assertTrue(bladeServer.getActiveBatchList().isEmpty());
-        assertEquals(1.0, batchJob.getExitTime(), 1.0E-8);
+        assertTrue(bladeServer.getBlockedBatchList().isEmpty());
+        verify(mockedBatchJob).setExitTime(1.0);
         assertEquals(0, bladeServer.getTotalFinishedJob());
     }
-    
+    /*
     @Test
     public void testDoneWhenBatchJobRemainGreaterThanZero() {
         BatchJob batchJob = new BatchJob(environment, null);
