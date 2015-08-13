@@ -251,7 +251,6 @@ public class BladeServer {
     public int run(BatchJob j) {
         double tempCpu = 0;
         int num = getActiveBatchList().size(), index = 0, index_1 = 0, rmpart = 0;
-        int i = 0;
         double share = 0, share_t = 0, extraShare = 0;
         if (num == 0) {
             setStatusAsRunningNormal();
@@ -265,7 +264,7 @@ public class BladeServer {
         int ret_done = 0;
         while (index < num) { // index<activeBatchList.size()
             index_1 = index;
-            for (i = 0; i < getActiveBatchList().size(); i++) {
+            for (int i = 0; i < getActiveBatchList().size(); i++) {
                 if (getActiveBatchList().get(i).getUtilization() <= share
                         & getActiveBatchList().get(i).getIsChangedThisTime() == 0) {
                     extraShare = extraShare + share - getActiveBatchList().get(i).getUtilization();
@@ -277,8 +276,8 @@ public class BladeServer {
                     // i=i-done(i,activeBatchList.get(i).utilization);
                 }
             }
-            for (i = 0; i < getActiveBatchList().size(); i++) {
-                if (getActiveBatchList().get(i).getIsChangedThisTime() == 0) {
+            for (BatchJob batchJob : getActiveBatchList()) {
+                if (batchJob.getIsChangedThisTime() == 0) {
                     rmpart++;
                 }
             }
@@ -291,7 +290,7 @@ public class BladeServer {
                 break;
             }
         }
-        for (i = 0; i < getActiveBatchList().size(); i++) {
+        for (int i = 0; i < getActiveBatchList().size(); i++) {
             if (getActiveBatchList().get(i).getIsChangedThisTime() == 0) {
                 // ret_done=done(i,share/activeBatchList.get(i).utilization);
                 if ((share / getActiveBatchList().get(i).getUtilization()) > 1) {
@@ -305,6 +304,7 @@ public class BladeServer {
                 // DONE function
             }
         }
+        
         for (BatchJob job : getActiveBatchList()) {
             job.setIsChangedThisTime(0);
         }
