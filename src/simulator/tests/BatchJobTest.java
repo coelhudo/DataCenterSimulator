@@ -36,10 +36,10 @@ public class BatchJobTest {
     @Test
     public void testSetRemainParameters() {
         BatchJob batchJob = new BatchJob(mockedEnvironment, mockedDataCenter);
-        batchJob.setRemainParam(10, 50, 100, 5.0);
+        batchJob.setRemainParam(10.0, 50, 100, 5.0);
         assertEquals(0.5, batchJob.getUtilization(), 1.0E-8);
         assertEquals(100, batchJob.getNumOfNode());
-        assertEquals(100, batchJob.getRemain().length);
+        assertEquals(10.0, batchJob.getRemainAt(99), 1.0E-8);
         assertEquals(5.0, batchJob.getDeadline(), 1.0E-8);
     }
 

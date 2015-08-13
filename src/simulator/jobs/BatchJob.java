@@ -32,7 +32,7 @@ public class BatchJob extends Job {
         setListOfServer(new int[getNumOfNode()]);
         setRemain(new double[getNumOfNode()]);
         for (int i = 0; i < getNumOfNode(); i++) {
-            getRemain()[i] = remainingTime;
+            setRemainAt(i, remainingTime);
         }
         setReqTime(remainingTime);
         setDeadline(deadline);
@@ -51,7 +51,7 @@ public class BatchJob extends Job {
 
     public boolean allDone() {
         for (int i = 0; i < getNumOfNode(); i++) {
-            if (getRemain()[i] > 0) {
+            if (getRemainAt(i) > 0) {
                 return false;
             }
         }
@@ -74,12 +74,16 @@ public class BatchJob extends Job {
     }
 
     public int getThisNodeIndex(int serverIndex) {
-        for (int ki = 0; ki < getRemain().length; ki++) {
+        for (int ki = 0; ki < getRemainLength(); ki++) {
             if (getServerIndexAt(ki) == serverIndex) {
                 return ki;
             }
         }
         return -1;
+    }
+
+    public int getRemainLength() {
+        return remain.length;
     }
 
     public double getStartTime() {
@@ -130,8 +134,12 @@ public class BatchJob extends Job {
         this.utilization = utilization;
     }
 
-    public double[] getRemain() {
-        return remain;
+    public double getRemainAt(int index) {
+        return remain[index];
+    }
+    
+    public void setRemainAt(int index, double remainValue) {
+        remain[index] = remainValue;
     }
 
     private void setRemain(double[] remain) {

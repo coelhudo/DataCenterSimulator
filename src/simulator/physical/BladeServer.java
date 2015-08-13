@@ -337,8 +337,8 @@ public class BladeServer {
             LOGGER.info("Blade server is wrong in BladeServer!!!");
         }
         // setRemainAllNodes(tmp, share);
-        job.getRemain()[ki] = job.getRemain()[ki] - share;
-        if (job.getRemain()[ki] <= 0) {
+        job.setRemainAt(ki, job.getRemainAt(ki) - share);
+        if (job.getRemainAt(ki) <= 0) {
             getBlockedBatchList().add(job);
             getActiveBatchList().get(tmp).setIsChangedThisTime(0);
             getActiveBatchList().remove(job);// still exsits in other nodes
