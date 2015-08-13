@@ -427,7 +427,64 @@ public class BladeServerTest {
         
         verifyNoMoreInteractions(mockedBatchJob);        
     }
+    
+    @Test
+    public void testDoneWhenBatchJobRemainLessOrEqualZeroAndJobNotAllDone() {
+        BatchJob mockedBatchJob = mock(BatchJob.class);
+        bladeServer.feedWork(mockedBatchJob);
 
+        assertFalse(bladeServer.getActiveBatchList().isEmpty());
+        assertTrue(bladeServer.getBlockedBatchList().isEmpty());
+
+        when(mockedBatchJob.getRemainLength()).thenReturn(1);
+        when(mockedBatchJob.getThisNodeIndex(0)).thenReturn(0);
+        when(mockedBatchJob.getRemainAt(0)).thenReturn(1.0, 0.0);
+        when(mockedBatchJob.allDone()).thenReturn(false);
+        
+        final double share = 1.0;
+        assertEquals(0, bladeServer.done(0, share));
+        
+        verify(mockedBatchJob).getUtilization();
+        verify(mockedBatchJob).getThisNodeIndex(0);
+        verify(mockedBatchJob).setRemainAt(0, 0.0);
+        verify(mockedBatchJob).setIsChangedThisTime(0);
+        verify(mockedBatchJob, times(2)).getRemainAt(0);
+        verify(mockedBatchJob).allDone();
+        
+        verifyNoMoreInteractions(mockedBatchJob);        
+    }
+
+    @Test
+    public void testDoneWhenBatchJobRemainLessOrEqualZeroAndJobAllDone() {
+        BatchJob mockedBatchJob = mock(BatchJob.class);
+        bladeServer.feedWork(mockedBatchJob);
+
+        assertFalse(bladeServer.getActiveBatchList().isEmpty());
+        assertTrue(bladeServer.getBlockedBatchList().isEmpty());
+        
+        assertEquals(0, bladeServer.getTotalFinishedJob());
+
+        when(mockedBatchJob.getRemainLength()).thenReturn(1);
+        when(mockedBatchJob.getThisNodeIndex(0)).thenReturn(0);
+        when(mockedBatchJob.getRemainAt(0)).thenReturn(1.0, 0.0);
+        when(mockedBatchJob.allDone()).thenReturn(true);
+        
+        final double share = 1.0;
+        assertEquals(1, bladeServer.done(0, share));
+        
+        verify(mockedBatchJob).getUtilization();
+        verify(mockedBatchJob).getThisNodeIndex(0);
+        verify(mockedBatchJob).setRemainAt(0, 0.0);
+        verify(mockedBatchJob).setIsChangedThisTime(0);
+        verify(mockedBatchJob, times(2)).getRemainAt(0);
+        verify(mockedBatchJob).allDone();
+        verify(mockedBatchJob).jobFinished();
+        
+        assertEquals(1, bladeServer.getTotalFinishedJob());
+        
+        verifyNoMoreInteractions(mockedBatchJob);        
+    }
+    
     /*
      * @Test public void testSetRead() { fail("Green in coverage, implement!");
      * }
