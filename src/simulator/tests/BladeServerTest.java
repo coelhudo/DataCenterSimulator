@@ -13,12 +13,10 @@ import static org.mockito.Mockito.when;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.hamcrest.Matcher;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
-import org.mockito.AdditionalMatchers;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Matchers;
 
@@ -619,11 +617,4 @@ public class BladeServerTest {
         
         verifyNoMoreInteractions(mockedBatchJob);
     }
-    
-    /*
-     * @Test public void testReadFromNode() { fail(
-     * "Green in coverage, this is wrong, need to be moved to another place!");
-     * }
-     */
-
 }

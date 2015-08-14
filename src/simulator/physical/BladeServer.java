@@ -5,9 +5,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Logger;
 
-import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
-
 import simulator.Environment;
 import simulator.ResponseTime;
 import simulator.jobs.BatchJob;
@@ -378,54 +375,7 @@ public class BladeServer {
             setStatusAsRunningNormal();
         }
     }
-
-    static BladeServerPOD readFromNode(Node node) {
-        BladeServerPOD bladeServerPOD = new BladeServerPOD();
-        NodeList childNodes = node.getChildNodes();
-        for (int i = 0; i < childNodes.getLength(); i++) {
-            if (childNodes.item(i).getNodeType() == Node.ELEMENT_NODE) {
-                // if(childNodes.item(i).getNodeName().equalsIgnoreCase("ID"))
-                // {
-                // serverID =
-                // Integer.parseInt(childNodes.item(i).getChildNodes().item(0).getNodeValue().trim());
-                // }
-                if (childNodes.item(i).getNodeName().equalsIgnoreCase("BladeType")) {
-                    bladeServerPOD.setBladeType(childNodes.item(i).getChildNodes().item(0).getNodeValue().trim());
-                }
-                if (childNodes.item(i).getNodeName().equalsIgnoreCase("MIPS")) {
-                    String str = childNodes.item(i).getChildNodes().item(0).getNodeValue().trim();
-                    String[] split = str.split(" ");
-                    bladeServerPOD.setFrequencyLevel(new double[split.length]);
-                    for (int j = 0; j < split.length; j++) {
-                        bladeServerPOD.setFrequencyLevelAt(j, Double.parseDouble(split[j]));
-                    }
-                }
-                if (childNodes.item(i).getNodeName().equalsIgnoreCase("FullyLoaded")) {
-                    String str = childNodes.item(i).getChildNodes().item(0).getNodeValue().trim();
-                    String[] split = str.split(" ");
-                    bladeServerPOD.setPowerBusy(new double[split.length]);
-                    for (int j = 0; j < split.length; j++) {
-                        bladeServerPOD.setPowerBusyAt(j, Double.parseDouble(split[j]));
-                    }
-                }
-                if (childNodes.item(i).getNodeName().equalsIgnoreCase("Idle")) {
-                    String str = childNodes.item(i).getChildNodes().item(0).getNodeValue().trim();
-                    String[] split = str.split(" ");
-                    bladeServerPOD.setPowerIdle(new double[split.length]);
-                    for (int j = 0; j < split.length; j++) {
-                        bladeServerPOD.setPowerIdleAt(j, Double.parseDouble(split[j]));
-                    }
-                }
-                if (childNodes.item(i).getNodeName().equalsIgnoreCase("Standby")) {
-                    bladeServerPOD.setIdleConsumption(
-                            Double.parseDouble(childNodes.item(i).getChildNodes().item(0).getNodeValue().trim()));
-
-                }
-            }
-        }
-
-        return bladeServerPOD;
-    }
+    
     // void addToresponseArray(double num,int time)
     // {
     // responseTime t= new responseTime();

@@ -66,7 +66,7 @@ public class DataCenterBuilder {
             if (childNodes.item(i).getNodeType() == Node.ELEMENT_NODE) {
                 if (childNodes.item(i).getNodeName().equalsIgnoreCase("BladeServer")) {
                     
-                    BladeServerPOD bladeServerPOD = BladeServer.readFromNode(childNodes.item(i));
+                    BladeServerPOD bladeServerPOD = bladeServerParser(childNodes.item(i));
                     BladeServer bs = new BladeServer(bladeServerPOD, -1, environment);
                     BSTemp.add(bs);
                 }
@@ -242,6 +242,54 @@ public class DataCenterBuilder {
             }
         }
         return true;
+    }
+    
+    static BladeServerPOD bladeServerParser(Node node) {
+        BladeServerPOD bladeServerPOD = new BladeServerPOD();
+        NodeList childNodes = node.getChildNodes();
+        for (int i = 0; i < childNodes.getLength(); i++) {
+            if (childNodes.item(i).getNodeType() == Node.ELEMENT_NODE) {
+                // if(childNodes.item(i).getNodeName().equalsIgnoreCase("ID"))
+                // {
+                // serverID =
+                // Integer.parseInt(childNodes.item(i).getChildNodes().item(0).getNodeValue().trim());
+                // }
+                if (childNodes.item(i).getNodeName().equalsIgnoreCase("BladeType")) {
+                    bladeServerPOD.setBladeType(childNodes.item(i).getChildNodes().item(0).getNodeValue().trim());
+                }
+                if (childNodes.item(i).getNodeName().equalsIgnoreCase("MIPS")) {
+                    String str = childNodes.item(i).getChildNodes().item(0).getNodeValue().trim();
+                    String[] split = str.split(" ");
+                    bladeServerPOD.setFrequencyLevel(new double[split.length]);
+                    for (int j = 0; j < split.length; j++) {
+                        bladeServerPOD.setFrequencyLevelAt(j, Double.parseDouble(split[j]));
+                    }
+                }
+                if (childNodes.item(i).getNodeName().equalsIgnoreCase("FullyLoaded")) {
+                    String str = childNodes.item(i).getChildNodes().item(0).getNodeValue().trim();
+                    String[] split = str.split(" ");
+                    bladeServerPOD.setPowerBusy(new double[split.length]);
+                    for (int j = 0; j < split.length; j++) {
+                        bladeServerPOD.setPowerBusyAt(j, Double.parseDouble(split[j]));
+                    }
+                }
+                if (childNodes.item(i).getNodeName().equalsIgnoreCase("Idle")) {
+                    String str = childNodes.item(i).getChildNodes().item(0).getNodeValue().trim();
+                    String[] split = str.split(" ");
+                    bladeServerPOD.setPowerIdle(new double[split.length]);
+                    for (int j = 0; j < split.length; j++) {
+                        bladeServerPOD.setPowerIdleAt(j, Double.parseDouble(split[j]));
+                    }
+                }
+                if (childNodes.item(i).getNodeName().equalsIgnoreCase("Standby")) {
+                    bladeServerPOD.setIdleConsumption(
+                            Double.parseDouble(childNodes.item(i).getChildNodes().item(0).getNodeValue().trim()));
+
+                }
+            }
+        }
+
+        return bladeServerPOD;
     }
 
     public DataCenterPOD getDataCenterPOD() {

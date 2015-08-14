@@ -74,7 +74,6 @@ public class InteractiveUser {
                 bis = new BufferedReader(new InputStreamReader(new FileInputStream(logFile)));
             } catch (IOException e) {
                 LOGGER.warning("Uh oh, got an IOException error!" + e.getMessage());
-            } finally {
             }
         }
         try {
