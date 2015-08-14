@@ -365,28 +365,30 @@ public class BladeServerTest {
     public void testRunBatchJobBelongingToActiveJobs() {
         BatchJob mockedBatchJob = mock(BatchJob.class);
         bladeServer.feedWork(mockedBatchJob);
-
+        
         assertEquals(1, bladeServer.getReady());
         bladeServer.setCurrentCPU(1.0);
         assertEquals(1.0, bladeServer.getCurrentCPU(), 1.0E-8);
         bladeServer.setDependency(1);
         assertEquals(1, bladeServer.getDependency());
+        assertEquals(1.4, bladeServer.getMips(), 1.0E-8);
 
-        when(mockedBatchJob.getRemainAt(0)).thenReturn(1.0);
-        
+        when(mockedBatchJob.getRemainAt(0)).thenReturn(5.0,3.6);
+        when(mockedBatchJob.getUtilization()).thenReturn(1.0);
+        when(mockedBatchJob.getIsChangedThisTime()).thenReturn(0, 1);
+         
         assertEquals(1, bladeServer.run(mockedBatchJob));
         
-        assertEquals(1, bladeServer.getReady());
-        assertEquals(200.0, bladeServer.getCurrentCPU(), 1.0E-8); //XXX: 200 of CPU? What this means?
+        assertEquals(0, bladeServer.getReady());
+        assertEquals(71.42857, bladeServer.getCurrentCPU(), 1.0E-5);
         
-        verify(mockedBatchJob, times(8)).getUtilization();
+        verify(mockedBatchJob, times(5)).getUtilization();
         verify(mockedBatchJob, times(3)).getIsChangedThisTime();
-        verify(mockedBatchJob, times(2)).setIsChangedThisTime(1);
+        verify(mockedBatchJob).setIsChangedThisTime(1);
         verify(mockedBatchJob).setIsChangedThisTime(0);
-        verify(mockedBatchJob, times(2)).getThisNodeIndex(0);
-        verify(mockedBatchJob).setRemainAt(0, -0.3999999999999999);
-        verify(mockedBatchJob, times(4)).getRemainAt(0);
-        verify(mockedBatchJob).setRemainAt(0, Double.NEGATIVE_INFINITY); //XXX: Is this right?
+        verify(mockedBatchJob).getThisNodeIndex(0);
+        verify(mockedBatchJob).setRemainAt(0, 3.6);
+        verify(mockedBatchJob, times(2)).getRemainAt(0);
         
         verifyNoMoreInteractions(mockedBatchJob);
     }

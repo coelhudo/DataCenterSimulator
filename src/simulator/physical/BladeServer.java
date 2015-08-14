@@ -292,13 +292,17 @@ public class BladeServer {
         }
         for (int i = 0; i < getActiveBatchList().size(); i++) {
             if (getActiveBatchList().get(i).getIsChangedThisTime() == 0) {
-                // ret_done=done(i,share/activeBatchList.get(i).utilization);
-                if ((share / getActiveBatchList().get(i).getUtilization()) > 1) {
+                final double utilization = getActiveBatchList().get(i).getUtilization();
+                final double shareUtilizationRatio = share / utilization;
+                if(shareUtilizationRatio == Double.NEGATIVE_INFINITY || shareUtilizationRatio == Double.POSITIVE_INFINITY)
+                    throw new ArithmeticException("Division by Zero");
+                
+                if (shareUtilizationRatio > 1) {
                     LOGGER.info("share more than one!\t" + share_t + "\t" + share + "\t"
-                            + getActiveBatchList().get(i).getUtilization() + "\t" + environment.getCurrentLocalTime());
+                            + utilization + "\t" + environment.getCurrentLocalTime());
                 }
                 getActiveBatchList().get(i).setIsChangedThisTime(1);
-                ret_done = done(i, share / getActiveBatchList().get(i).getUtilization());
+                ret_done = done(i, shareUtilizationRatio);
                 tempCpu = tempCpu + share;
                 i = i - ret_done; // if a job has been removed (finished) in
                 // DONE function
