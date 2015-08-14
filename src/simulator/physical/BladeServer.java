@@ -315,7 +315,6 @@ public class BladeServer {
         // Inja be nazaram /MIPS ham mikhad ke sad beshe fek konam MIPS ro dar
         // nazar nagereftam!
         setCurrentCPU(100.0 * tempCpu / getMips());
-        // LOGGER.info("CPU= " + currentCPU +"num= "+num);
         setReady();
         setDependency();
         return 1;

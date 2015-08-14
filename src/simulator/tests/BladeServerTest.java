@@ -1,14 +1,26 @@
 package simulator.tests;
 
-import static org.junit.Assert.*;
-import static org.mockito.Mockito.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotEquals;
+import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
+import static org.mockito.Mockito.when;
+
 import java.util.ArrayList;
 import java.util.List;
 
+import org.hamcrest.Matcher;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
+import org.mockito.AdditionalMatchers;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Matchers;
 
 import simulator.Environment;
 import simulator.ResponseTime;
@@ -388,6 +400,71 @@ public class BladeServerTest {
         verify(mockedBatchJob).setIsChangedThisTime(0);
         verify(mockedBatchJob).getThisNodeIndex(0);
         verify(mockedBatchJob).setRemainAt(0, 3.6);
+        verify(mockedBatchJob, times(2)).getRemainAt(0);
+        
+        verifyNoMoreInteractions(mockedBatchJob);
+    }
+    
+    @Test
+    public void testRunBatchJobArithmeticExceptionThrown() {
+        BatchJob mockedBatchJob = mock(BatchJob.class);
+        bladeServer.feedWork(mockedBatchJob);
+        
+        assertEquals(1, bladeServer.getReady());
+        bladeServer.setCurrentCPU(1.0);
+        assertEquals(1.0, bladeServer.getCurrentCPU(), 1.0E-8);
+        bladeServer.setDependency(1);
+        assertEquals(1, bladeServer.getDependency());
+        assertEquals(1.4, bladeServer.getMips(), 1.0E-8);
+
+        when(mockedBatchJob.getRemainAt(0)).thenReturn(5.0,3.6);
+        when(mockedBatchJob.getUtilization()).thenReturn(0.0);
+        when(mockedBatchJob.getIsChangedThisTime()).thenReturn(1,1,0);
+         
+        expectedException.expect(ArithmeticException.class);
+        assertEquals(1, bladeServer.run(mockedBatchJob));
+        
+        verify(mockedBatchJob, times(5)).getUtilization();
+        verify(mockedBatchJob, times(3)).getIsChangedThisTime();
+        verify(mockedBatchJob).setIsChangedThisTime(1);
+        verify(mockedBatchJob).setIsChangedThisTime(0);
+        verify(mockedBatchJob).getThisNodeIndex(0);
+        verify(mockedBatchJob).setRemainAt(0, 3.6);
+        verify(mockedBatchJob, times(2)).getRemainAt(0);
+        
+        verifyNoMoreInteractions(mockedBatchJob);
+    }
+    
+    @Test
+    public void testRunBatchJobWithJobsStillActive() {
+        BatchJob mockedBatchJob = mock(BatchJob.class);
+        bladeServer.feedWork(mockedBatchJob);
+        
+        assertEquals(1, bladeServer.getReady());
+        bladeServer.setCurrentCPU(1.0);
+        assertEquals(1.0, bladeServer.getCurrentCPU(), 1.0E-8);
+        bladeServer.setDependency(1);
+        assertEquals(1, bladeServer.getDependency());
+        assertEquals(1.4, bladeServer.getMips(), 1.0E-8);
+
+        when(mockedBatchJob.getRemainAt(0)).thenReturn(5.0);
+        when(mockedBatchJob.getUtilization()).thenReturn(0.1);
+        when(mockedBatchJob.getIsChangedThisTime()).thenReturn(1,1,0);
+         
+        assertEquals(1, bladeServer.run(mockedBatchJob));
+        
+        assertEquals(1, bladeServer.getReady());
+        assertEquals(100, bladeServer.getCurrentCPU(), 1.0E-5);
+        
+        verify(mockedBatchJob, times(4)).getUtilization();
+        verify(mockedBatchJob, times(3)).getIsChangedThisTime();
+        verify(mockedBatchJob).setIsChangedThisTime(1);
+        verify(mockedBatchJob).setIsChangedThisTime(0);
+        verify(mockedBatchJob).getThisNodeIndex(0);
+        final ArgumentCaptor<Double> captor = ArgumentCaptor.forClass(Double.class);
+        verify(mockedBatchJob).setRemainAt(Matchers.eq(0), captor.capture());
+        assertEquals(-8.99, captor.getValue(), 0.01);
+        
         verify(mockedBatchJob, times(2)).getRemainAt(0);
         
         verifyNoMoreInteractions(mockedBatchJob);
