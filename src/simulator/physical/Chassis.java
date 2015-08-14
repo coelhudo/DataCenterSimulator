@@ -44,13 +44,11 @@ public class Chassis {
         }
     }
 
-    double power() {
+    public double power() {
         double pw = 0;
         for (BladeServer bladeServer : servers) {
             pw = pw + bladeServer.getPower();
         }
-        // pw=(cpus*a/100)+w*servers.size();
-        // LOGGER.info("powercost= " + (int)pw+"\t"+cpus);
         return pw;
     }
 
