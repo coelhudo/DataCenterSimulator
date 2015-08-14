@@ -377,7 +377,7 @@ public class BladeServerTest {
     public void testRunBatchJobBelongingToActiveJobs() {
         BatchJob mockedBatchJob = mock(BatchJob.class);
         bladeServer.feedWork(mockedBatchJob);
-        
+
         assertEquals(1, bladeServer.getReady());
         bladeServer.setCurrentCPU(1.0);
         assertEquals(1.0, bladeServer.getCurrentCPU(), 1.0E-8);
@@ -385,15 +385,15 @@ public class BladeServerTest {
         assertEquals(1, bladeServer.getDependency());
         assertEquals(1.4, bladeServer.getMips(), 1.0E-8);
 
-        when(mockedBatchJob.getRemainAt(0)).thenReturn(5.0,3.6);
+        when(mockedBatchJob.getRemainAt(0)).thenReturn(5.0, 3.6);
         when(mockedBatchJob.getUtilization()).thenReturn(1.0);
         when(mockedBatchJob.getIsChangedThisTime()).thenReturn(0, 1);
-         
+
         assertEquals(1, bladeServer.run(mockedBatchJob));
-        
+
         assertEquals(0, bladeServer.getReady());
         assertEquals(71.42857, bladeServer.getCurrentCPU(), 1.0E-5);
-        
+
         verify(mockedBatchJob, times(5)).getUtilization();
         verify(mockedBatchJob, times(3)).getIsChangedThisTime();
         verify(mockedBatchJob).setIsChangedThisTime(1);
@@ -401,15 +401,15 @@ public class BladeServerTest {
         verify(mockedBatchJob).getThisNodeIndex(0);
         verify(mockedBatchJob).setRemainAt(0, 3.6);
         verify(mockedBatchJob, times(2)).getRemainAt(0);
-        
+
         verifyNoMoreInteractions(mockedBatchJob);
     }
-    
+
     @Test
     public void testRunBatchJobArithmeticExceptionThrown() {
         BatchJob mockedBatchJob = mock(BatchJob.class);
         bladeServer.feedWork(mockedBatchJob);
-        
+
         assertEquals(1, bladeServer.getReady());
         bladeServer.setCurrentCPU(1.0);
         assertEquals(1.0, bladeServer.getCurrentCPU(), 1.0E-8);
@@ -417,13 +417,13 @@ public class BladeServerTest {
         assertEquals(1, bladeServer.getDependency());
         assertEquals(1.4, bladeServer.getMips(), 1.0E-8);
 
-        when(mockedBatchJob.getRemainAt(0)).thenReturn(5.0,3.6);
+        when(mockedBatchJob.getRemainAt(0)).thenReturn(5.0, 3.6);
         when(mockedBatchJob.getUtilization()).thenReturn(0.0);
-        when(mockedBatchJob.getIsChangedThisTime()).thenReturn(1,1,0);
-         
+        when(mockedBatchJob.getIsChangedThisTime()).thenReturn(1, 1, 0);
+
         expectedException.expect(ArithmeticException.class);
         assertEquals(1, bladeServer.run(mockedBatchJob));
-        
+
         verify(mockedBatchJob, times(5)).getUtilization();
         verify(mockedBatchJob, times(3)).getIsChangedThisTime();
         verify(mockedBatchJob).setIsChangedThisTime(1);
@@ -431,15 +431,15 @@ public class BladeServerTest {
         verify(mockedBatchJob).getThisNodeIndex(0);
         verify(mockedBatchJob).setRemainAt(0, 3.6);
         verify(mockedBatchJob, times(2)).getRemainAt(0);
-        
+
         verifyNoMoreInteractions(mockedBatchJob);
     }
-    
+
     @Test
     public void testRunBatchJobWithJobsStillActive() {
         BatchJob mockedBatchJob = mock(BatchJob.class);
         bladeServer.feedWork(mockedBatchJob);
-        
+
         assertEquals(1, bladeServer.getReady());
         bladeServer.setCurrentCPU(1.0);
         assertEquals(1.0, bladeServer.getCurrentCPU(), 1.0E-8);
@@ -449,13 +449,13 @@ public class BladeServerTest {
 
         when(mockedBatchJob.getRemainAt(0)).thenReturn(5.0);
         when(mockedBatchJob.getUtilization()).thenReturn(0.1);
-        when(mockedBatchJob.getIsChangedThisTime()).thenReturn(1,1,0);
-         
+        when(mockedBatchJob.getIsChangedThisTime()).thenReturn(1, 1, 0);
+
         assertEquals(1, bladeServer.run(mockedBatchJob));
-        
+
         assertEquals(1, bladeServer.getReady());
         assertEquals(100, bladeServer.getCurrentCPU(), 1.0E-5);
-        
+
         verify(mockedBatchJob, times(4)).getUtilization();
         verify(mockedBatchJob, times(3)).getIsChangedThisTime();
         verify(mockedBatchJob).setIsChangedThisTime(1);
@@ -464,9 +464,9 @@ public class BladeServerTest {
         final ArgumentCaptor<Double> captor = ArgumentCaptor.forClass(Double.class);
         verify(mockedBatchJob).setRemainAt(Matchers.eq(0), captor.capture());
         assertEquals(-8.99, captor.getValue(), 0.01);
-        
+
         verify(mockedBatchJob, times(2)).getRemainAt(0);
-        
+
         verifyNoMoreInteractions(mockedBatchJob);
     }
 
@@ -579,10 +579,48 @@ public class BladeServerTest {
         verifyNoMoreInteractions(mockedBatchJob);
     }
 
+    @Test
+    public void testSetReadyAsRunningNormalWhenThereAreNoActiveJobs() {
+        bladeServer.setReady();
+        assertTrue(bladeServer.getActiveBatchList().isEmpty());
+        assertEquals(1, bladeServer.getReady());
+    }
+    
+    @Test
+    public void testSetReadyAsRunningNormalWhenThereAreActiveJobsAndUtilizationLessThanThreshold() {
+        BatchJob mockedBatchJob = mock(BatchJob.class);
+        bladeServer.feedWork(mockedBatchJob);
+        final double lessThanThreshold = 0.99999;
+        when(mockedBatchJob.getUtilization()).thenReturn(lessThanThreshold);
+        
+        bladeServer.setReady();
+        
+        assertFalse(bladeServer.getActiveBatchList().isEmpty());
+        assertEquals(1, bladeServer.getReady());
+        
+        verify(mockedBatchJob, times(2)).getUtilization();
+        
+        verifyNoMoreInteractions(mockedBatchJob);
+    }
+    
+    @Test
+    public void testSetReadyAsRunningBusyWhenThereAreActiveJobsAndUtilizationGreaterThanThreshold() {
+        BatchJob mockedBatchJob = mock(BatchJob.class);
+        bladeServer.feedWork(mockedBatchJob);
+        final double greaterThanThreshold = 1.000001;
+        when(mockedBatchJob.getUtilization()).thenReturn(greaterThanThreshold);
+        
+        bladeServer.setReady();
+        
+        assertFalse(bladeServer.getActiveBatchList().isEmpty());
+        assertEquals(0, bladeServer.getReady());
+        
+        verify(mockedBatchJob, times(2)).getUtilization();
+        
+        verifyNoMoreInteractions(mockedBatchJob);
+    }
+    
     /*
-     * @Test public void testSetRead() { fail("Green in coverage, implement!");
-     * }
-     * 
      * @Test public void testReadFromNode() { fail(
      * "Green in coverage, this is wrong, need to be moved to another place!");
      * }
