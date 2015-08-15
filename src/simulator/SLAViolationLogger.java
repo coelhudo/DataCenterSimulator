@@ -1,6 +1,6 @@
 package simulator;
 
-import simulator.physical.ActivitiesLogger;
+import simulator.utils.ActivitiesLogger;
 
 public class SLAViolationLogger {
     private ActivitiesLogger entepriseSLALoggerViolation = null;

@@ -13,7 +13,6 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
-import simulator.physical.ActivitiesLogger;
 import simulator.physical.DataCenter;
 import simulator.physical.DataCenterBuilder;
 import simulator.physical.DataCenterPOD;
@@ -25,6 +24,7 @@ import simulator.system.InteractiveSystem;
 import simulator.system.InteractiveSystemBuilder;
 import simulator.system.SystemBuilder;
 import simulator.system.Systems;
+import simulator.utils.ActivitiesLogger;
 
 public class SimulatorBuilder {
 

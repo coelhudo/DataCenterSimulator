@@ -8,12 +8,12 @@ import java.util.List;
 import org.junit.Test;
 
 import simulator.Environment;
-import simulator.physical.ActivitiesLogger;
 import simulator.physical.Chassis;
 import simulator.physical.DataCenter;
 import simulator.physical.DataCenterBuilder;
 import simulator.physical.DataCenterPOD;
 import simulator.system.Systems;
+import simulator.utils.ActivitiesLogger;
 
 public class DataCenterTest {
 

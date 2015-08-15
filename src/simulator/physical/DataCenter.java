@@ -5,6 +5,7 @@ import java.util.List;
 import simulator.Environment;
 import simulator.am.DataCenterAM;
 import simulator.system.Systems;
+import simulator.utils.ActivitiesLogger;
 
 public class DataCenter {
 
