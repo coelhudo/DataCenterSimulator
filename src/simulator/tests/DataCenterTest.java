@@ -25,7 +25,6 @@ public class DataCenterTest {
         DataCenterPOD dataCenterPOD = dataCenterBuilder.getDataCenterPOD();
         ActivitiesLogger mockedActivitiesLogger = mock(ActivitiesLogger.class);
         DataCenter dataCenter = new DataCenter(dataCenterPOD, mockedActivitiesLogger, mockedEnvironment, mockedSystems);
-        dataCenter.getAM();
         List<Chassis> chassis = dataCenter.getChassisSet();
         assertFalse(chassis.isEmpty());
         assertEquals(50, chassis.size());
