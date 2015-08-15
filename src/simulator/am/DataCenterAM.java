@@ -15,7 +15,7 @@ public class DataCenterAM extends GeneralAM {
 
     private int[] SLAVioCS;
     private int blockTimer = 0;
-    private boolean SlowDownFromCooler = false;
+    private boolean slowDownFromCooler = false;
     private Environment environment;
     private List<ComputeSystem> computeSystems;
 
@@ -116,10 +116,10 @@ public class DataCenterAM extends GeneralAM {
     }
 
     public boolean isSlowDownFromCooler() {
-        return SlowDownFromCooler;
+        return slowDownFromCooler;
     }
 
     public void setSlowDownFromCooler(boolean slowDownFromCooler) {
-        SlowDownFromCooler = slowDownFromCooler;
+        this.slowDownFromCooler = slowDownFromCooler;
     }
 }

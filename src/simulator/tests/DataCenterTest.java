@@ -1,8 +1,6 @@
 package simulator.tests;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
 
 import java.util.List;
@@ -36,12 +34,13 @@ public class DataCenterTest {
     }
     
     @Test 
-    public void testCalculatePower() {
+    public void testCalculatePowerSlowingDownFromCooler() {
         DataCenterPOD dataCenterPOD = new DataCenterPOD();
         Chassis mockedChassis = mock(Chassis.class);
         when(mockedChassis.power()).thenReturn(150.0);
         dataCenterPOD.appendChassis(mockedChassis);
         dataCenterPOD.setD(0, 0, 200.0);
+        dataCenterPOD.setRedTemperature(0);
         
         Environment mockedEnvironment = mock(Environment.class);
         Systems mockedSystems = mock(Systems.class);
@@ -50,6 +49,30 @@ public class DataCenterTest {
         dataCenter.calculatePower();
         
         assertEquals(150.00002450, dataCenter.getTotalPowerConsumption(), 1.0E-8);
+        assertTrue(dataCenter.getAM().isSlowDownFromCooler());
+        
+        verify(mockedChassis, times(2)).power();
+        
+        verifyNoMoreInteractions(mockedChassis);
+    }
+    
+    @Test 
+    public void testCalculatePowerNotSlowingDownFromCooler() {
+        DataCenterPOD dataCenterPOD = new DataCenterPOD();
+        Chassis mockedChassis = mock(Chassis.class);
+        when(mockedChassis.power()).thenReturn(1.0);
+        dataCenterPOD.appendChassis(mockedChassis);
+        dataCenterPOD.setD(0, 0, 1.0);
+        dataCenterPOD.setRedTemperature(10);
+        
+        Environment mockedEnvironment = mock(Environment.class);
+        Systems mockedSystems = mock(Systems.class);
+        DataCenter dataCenter = new DataCenter(dataCenterPOD, mockedEnvironment, mockedSystems);
+        
+        dataCenter.calculatePower();
+        
+        assertEquals(1.9842, dataCenter.getTotalPowerConsumption(), 1.0E-4);
+        assertFalse(dataCenter.getAM().isSlowDownFromCooler());
         
         verify(mockedChassis, times(2)).power();
         
