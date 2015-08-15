@@ -1,57 +1,37 @@
 package simulator;
 
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.OutputStreamWriter;
-import java.util.logging.Logger;
+import simulator.physical.ActivitiesLogger;
 
 public class SLAViolationLogger {
-    private static final Logger LOGGER = Logger.getLogger(SLAViolationLogger.class.getName());
-
-    private OutputStreamWriter entepriseSLALoggerViolation = null;
-    private OutputStreamWriter interactiveSLALoggerViolation = null;
-    private OutputStreamWriter computeSLALoggerViolation = null;
+    private ActivitiesLogger entepriseSLALoggerViolation = null;
+    private ActivitiesLogger interactiveSLALoggerViolation = null;
+    private ActivitiesLogger computeSLALoggerViolation = null;
     private Environment environment;
 
     public SLAViolationLogger(Environment environment) {
         this.environment = environment;
 
-        try {
-            entepriseSLALoggerViolation = new OutputStreamWriter(new FileOutputStream(new File("slaViolLogE.txt")));
-            interactiveSLALoggerViolation = new OutputStreamWriter(new FileOutputStream(new File("slaViolLogI.txt")));
-            computeSLALoggerViolation = new OutputStreamWriter(new FileOutputStream(new File("slaViolLogH.txt")));
-        } catch (IOException e) {
-            LOGGER.warning("Uh oh, got an IOException error!" + e.getMessage());
-        }
+        entepriseSLALoggerViolation = new ActivitiesLogger("slaViolLogE.txt");
+        interactiveSLALoggerViolation = new ActivitiesLogger("slaViolLogI.txt");
+        computeSLALoggerViolation = new ActivitiesLogger("slaViolLogH.txt");
     }
 
     public void logHPCViolation(String name, Violation slaViolation) {
-        try {
-            computeSLALoggerViolation.write(name + "\t" + environment.getCurrentLocalTime() + "\t" + slaViolation + "\n");
-        } catch (IOException ex) {
-            LOGGER.severe(ex.getMessage());
-        }
+        computeSLALoggerViolation.write(name + "\t" + environment.getCurrentLocalTime() + "\t" + slaViolation + "\n");
     }
 
     public void logEnterpriseViolation(String name, int slaViolationNum) {
-        try {
-            entepriseSLALoggerViolation.write(name + "\t" + environment.getCurrentLocalTime() + "\t" + slaViolationNum + "\n");
-        } catch (IOException ex) {
-            LOGGER.severe(ex.getMessage());
-        }
+        entepriseSLALoggerViolation
+                .write(name + "\t" + environment.getCurrentLocalTime() + "\t" + slaViolationNum + "\n");
     }
 
     public void logInteractiveViolation(String name, int slaViolation) {
-        try {
-            interactiveSLALoggerViolation.write(name + "\t" + environment.getCurrentLocalTime() + "\t" + slaViolation + "\n");
-        } catch (IOException ex) {
-            LOGGER.severe(ex.getMessage());
-        }
+
+        interactiveSLALoggerViolation
+                .write(name + "\t" + environment.getCurrentLocalTime() + "\t" + slaViolation + "\n");
     }
-    
-    
-    public void finish() throws IOException {
+
+    public void finish() {
         entepriseSLALoggerViolation.close();
         computeSLALoggerViolation.close();
         interactiveSLALoggerViolation.close();

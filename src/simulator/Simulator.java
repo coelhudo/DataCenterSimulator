@@ -1,11 +1,9 @@
 package simulator;
 
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.Observable;
 import java.util.Observer;
 import java.util.logging.FileHandler;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import simulator.physical.DataCenter;
@@ -47,14 +45,14 @@ public class Simulator {
         // set the overal policy here
         // Data Center is green!
         datacenter.getAM().setStrategy(StrategyEnum.Green);
-        
+
         class DataCenterAMXunxo implements Observer {
             public void update(Observable o, Object arg) {
                 LOGGER.info("Update Called: executing xunxo that I made (and I'm not proud about it)");
                 datacenter.getAM().resetBlockTimer();
             }
         }
-        
+
         systems.addObserver(new DataCenterAMXunxo());
         // CS.get(0).AM.strtg=strategyEnum.SLA;
         // CS.get(1).AM.strtg=strategyEnum.Green;
@@ -133,20 +131,13 @@ public class Simulator {
 
     void csFinalize() {
         systems.logTotalResponseTimeComputeSystem();
-        try {
-            datacenter.shutDownDC();
-            slaViolationLogger.finish();
-        } catch (FileNotFoundException ex) {
-            Logger.getLogger(Simulator.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (IOException ex) {
-            Logger.getLogger(Simulator.class.getName()).log(Level.SEVERE, null, ex);
-        }
-
+        datacenter.shutDownDC();
+        slaViolationLogger.finish();
     }
 
     public boolean areSystemsDone() {
         return systems.removeJobsThatAreDone();
-        
+
     }
     // void getPeakEstimate()
     // {

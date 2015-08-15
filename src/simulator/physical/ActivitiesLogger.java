@@ -14,15 +14,14 @@ public class ActivitiesLogger {
 
     private static final Logger LOGGER = Logger.getLogger(ActivitiesLogger.class.getName());
 
-    public ActivitiesLogger(String logFileName) {
-        String s = logFileName;
-        File destinationFile = new File(s);
+    public ActivitiesLogger(String logFileName) {       
+        File destinationFile = new File(logFileName);
         try {
             fos = new FileOutputStream(destinationFile);
+            oos = new OutputStreamWriter(fos);
         } catch (FileNotFoundException ex) {
             LOGGER.severe(ex.getMessage());
         }
-        oos = new OutputStreamWriter(fos);
     }
 
     public void close() {
