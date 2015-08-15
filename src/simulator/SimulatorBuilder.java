@@ -13,6 +13,7 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
+import simulator.physical.ActivitiesLogger;
 import simulator.physical.DataCenter;
 import simulator.physical.DataCenterBuilder;
 import simulator.physical.DataCenterPOD;
@@ -57,7 +58,8 @@ public class SimulatorBuilder {
                         String DCLayout = path + "/" + childNodes.item(i).getChildNodes().item(0).getNodeValue().trim();
                         DataCenterBuilder dataCenterBuilder = new DataCenterBuilder(DCLayout, environment);
                         DataCenterPOD dataCenterPOD = dataCenterBuilder.getDataCenterPOD();
-                        dataCenter = new DataCenter(dataCenterPOD, environment, systems);
+                        ActivitiesLogger activitiesLogger = new ActivitiesLogger("out_W.txt");
+                        dataCenter = new DataCenter(dataCenterPOD, activitiesLogger, environment, systems);
                     }
                     if (childNodes.item(i).getNodeName().equalsIgnoreCase("System")) {
                         NodeList nodiLst = childNodes.item(i).getChildNodes();

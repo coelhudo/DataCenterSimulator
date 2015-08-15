@@ -8,6 +8,7 @@ import java.util.List;
 import org.junit.Test;
 
 import simulator.Environment;
+import simulator.physical.ActivitiesLogger;
 import simulator.physical.Chassis;
 import simulator.physical.DataCenter;
 import simulator.physical.DataCenterBuilder;
@@ -18,11 +19,12 @@ public class DataCenterTest {
 
     @Test
     public void testDataCenterCreation() {
-        Environment environment = new Environment();
-        Systems systems = new Systems(environment);
-        DataCenterBuilder dataCenterBuilder = new DataCenterBuilder("configs/DC.xml", environment);
+        Environment mockedEnvironment = mock(Environment.class);
+        Systems mockedSystems = mock(Systems.class);
+        DataCenterBuilder dataCenterBuilder = new DataCenterBuilder("configs/DC.xml", mockedEnvironment);
         DataCenterPOD dataCenterPOD = dataCenterBuilder.getDataCenterPOD();
-        DataCenter dataCenter = new DataCenter(dataCenterPOD, environment, systems);
+        ActivitiesLogger mockedActivitiesLogger = mock(ActivitiesLogger.class);
+        DataCenter dataCenter = new DataCenter(dataCenterPOD, mockedActivitiesLogger, mockedEnvironment, mockedSystems);
         dataCenter.getAM();
         List<Chassis> chassis = dataCenter.getChassisSet();
         assertFalse(chassis.isEmpty());
@@ -31,6 +33,8 @@ public class DataCenterTest {
         assertNotNull(dataCenter.getServer(0));
         assertNotNull(dataCenter.getServer(0, 0));
         assertEquals(0.0, dataCenter.getTotalPowerConsumption(), 1.0E-8);
+        
+        verifyNoMoreInteractions(mockedActivitiesLogger, mockedEnvironment, mockedEnvironment);
     }
     
     @Test 
@@ -44,7 +48,8 @@ public class DataCenterTest {
         
         Environment mockedEnvironment = mock(Environment.class);
         Systems mockedSystems = mock(Systems.class);
-        DataCenter dataCenter = new DataCenter(dataCenterPOD, mockedEnvironment, mockedSystems);
+        ActivitiesLogger mockedActivitiesLogger = mock(ActivitiesLogger.class);
+        DataCenter dataCenter = new DataCenter(dataCenterPOD, mockedActivitiesLogger, mockedEnvironment, mockedSystems);
         
         dataCenter.calculatePower();
         
@@ -53,7 +58,12 @@ public class DataCenterTest {
         
         verify(mockedChassis, times(2)).power();
         
-        verifyNoMoreInteractions(mockedChassis);
+        verify(mockedChassis, times(2)).power();
+        verify(mockedActivitiesLogger, times(2)).write(anyString());
+        verify(mockedEnvironment).getCurrentLocalTime();
+        verify(mockedSystems).getComputeSystems();
+        
+        verifyNoMoreInteractions(mockedChassis, mockedActivitiesLogger, mockedEnvironment, mockedSystems);        
     }
     
     @Test 
@@ -67,7 +77,8 @@ public class DataCenterTest {
         
         Environment mockedEnvironment = mock(Environment.class);
         Systems mockedSystems = mock(Systems.class);
-        DataCenter dataCenter = new DataCenter(dataCenterPOD, mockedEnvironment, mockedSystems);
+        ActivitiesLogger mockedActivitiesLogger = mock(ActivitiesLogger.class);
+        DataCenter dataCenter = new DataCenter(dataCenterPOD, mockedActivitiesLogger, mockedEnvironment, mockedSystems);
         
         dataCenter.calculatePower();
         
@@ -75,8 +86,11 @@ public class DataCenterTest {
         assertFalse(dataCenter.getAM().isSlowDownFromCooler());
         
         verify(mockedChassis, times(2)).power();
+        verify(mockedActivitiesLogger, times(2)).write(anyString());
+        verify(mockedEnvironment).getCurrentLocalTime();
+        verify(mockedSystems).getComputeSystems();
         
-        verifyNoMoreInteractions(mockedChassis);
+        verifyNoMoreInteractions(mockedChassis, mockedActivitiesLogger, mockedEnvironment, mockedSystems);
     }
 
 }

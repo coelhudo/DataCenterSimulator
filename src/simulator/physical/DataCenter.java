@@ -1,12 +1,6 @@
 package simulator.physical;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.OutputStreamWriter;
 import java.util.List;
-import java.util.logging.Logger;
 
 import simulator.Environment;
 import simulator.am.DataCenterAM;
@@ -14,33 +8,22 @@ import simulator.system.Systems;
 
 public class DataCenter {
 
-    private static final Logger LOGGER = Logger.getLogger(DataCenter.class.getName());
-
     private int overRed = 0;
     private double totalPowerConsumption = 0;
     private Cooler cooler1 = new Cooler();
     private List<Chassis> chassisSet;
     private int redTemperature;
-    private FileOutputStream fos;
-    private OutputStreamWriter oos;
     private double[][] D;
     private DataCenterAM am;
+    private ActivitiesLogger activitiesLogger;
 
     private Environment environment;
 
-    public DataCenter(DataCenterPOD dataCenterPOD, Environment environment, Systems systems) {
-        // output file for writing total DC power consumption
+    public DataCenter(DataCenterPOD dataCenterPOD, ActivitiesLogger activitiesLogger, Environment environment,
+            Systems systems) {
+        this.activitiesLogger = activitiesLogger;
         am = new DataCenterAM(environment, systems);
-        String s = "out_W.txt";
-        File destinationFile = new File(s);
-        try {
-            fos = new FileOutputStream(destinationFile);
-        } catch (FileNotFoundException ex) {
-            LOGGER.severe(ex.getMessage());
-        }
         this.environment = environment;
-        oos = new OutputStreamWriter(fos);
-        // reading config file to set the parameters
         chassisSet = dataCenterPOD.getChassis();
         redTemperature = dataCenterPOD.getRedTemperature();
         D = dataCenterPOD.getD();
@@ -60,11 +43,7 @@ public class DataCenter {
         double[] temprature = new double[m];
         for (int i = 0; i < m; i++) {
             double temp = chassisSet.get(i).power();
-            try {
-                oos.write((int) temp + "\t");
-            } catch (IOException ex) {
-                LOGGER.severe(ex.getMessage());
-            }
+            activitiesLogger.write((int) temp + "\t");
             computingPower = computingPower + temp;
         }
         for (int i = 0; i < m; i++) {
@@ -72,7 +51,7 @@ public class DataCenter {
                 temprature[i] = temprature[i] + D[i][j] * chassisSet.get(j).power();
             }
         }
-        
+
         double maxTemp = temprature[0];
         for (int i = 0; i < m; i++) {
             if (maxTemp < temprature[i]) {
@@ -92,18 +71,13 @@ public class DataCenter {
 
         final double cop = cooler1.getCOP(maxTemp);
 
-        try {
-            oos.write(((int) (computingPower * (1 + 1.0 / cop))) + "\t" + (int) computingPower + "\t"
-                    + environment.getCurrentLocalTime() + "\n");
-            totalPowerConsumption = totalPowerConsumption + computingPower * (1 + 1.0 / cop);
-        } catch (IOException ex) {
-            LOGGER.severe(ex.getMessage());
-        }
+        activitiesLogger.write(((int) (computingPower * (1 + 1.0 / cop))) + "\t" + (int) computingPower + "\t"
+                + environment.getCurrentLocalTime() + "\n");
+        totalPowerConsumption = totalPowerConsumption + computingPower * (1 + 1.0 / cop);
     }
 
-    public void shutDownDC() throws FileNotFoundException, IOException {
-        oos.close();
-        fos.close();
+    public void shutDownDC() {
+        activitiesLogger.close();
     }
 
     public DataCenterAM getAM() {
