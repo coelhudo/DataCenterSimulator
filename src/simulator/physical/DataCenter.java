@@ -6,7 +6,6 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.util.List;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import simulator.Environment;
@@ -16,7 +15,7 @@ import simulator.system.Systems;
 public class DataCenter {
 
     private static final Logger LOGGER = Logger.getLogger(DataCenter.class.getName());
-    
+
     private int overRed = 0;
     private double totalPowerConsumption = 0;
     private Cooler cooler1 = new Cooler();
@@ -26,8 +25,9 @@ public class DataCenter {
     private OutputStreamWriter oos;
     private double[][] D;
     private DataCenterAM am;
-    
+
     private Environment environment;
+
     public DataCenter(DataCenterPOD dataCenterPOD, Environment environment, Systems systems) {
         // output file for writing total DC power consumption
         am = new DataCenterAM(environment, systems);
@@ -46,11 +46,11 @@ public class DataCenter {
         D = dataCenterPOD.getD();
     }
 
-    int getServerIndex(int i) {
+    private int getServerIndex(int i) {
         return i % chassisSet.get(0).getServers().size();
     }
 
-    int getChasisIndex(int i) {
+    private int getChasisIndex(int i) {
         return i / chassisSet.get(0).getServers().size();
     }
 
@@ -58,14 +58,8 @@ public class DataCenter {
         int m = chassisSet.size();
         double computingPower = 0;
         double[] temprature = new double[m];
-        double maxTemp = 0;
         for (int i = 0; i < m; i++) {
             double temp = chassisSet.get(i).power();
-            // if(chassisSet.get(i).getServers().get(0).currentCPU!=0)
-            // LOGGER.info(chassisSet.get(i).servers.get(0).currentCPU +"
-            // \ttime ="+Main.localTime +" \t chassi
-            // id="+chassisSet.get(i).chassisID );
-
             try {
                 oos.write((int) temp + "\t");
             } catch (IOException ex) {
@@ -73,40 +67,37 @@ public class DataCenter {
             }
             computingPower = computingPower + temp;
         }
-        // LOGGER.info("in betweeeeeen");
         for (int i = 0; i < m; i++) {
             for (int j = 0; j < m; j++) {
                 temprature[i] = temprature[i] + D[i][j] * chassisSet.get(j).power();
-                // LOGGER.info(chassis_list[i]);
             }
         }
-        maxTemp = temprature[0];
+        
+        double maxTemp = temprature[0];
         for (int i = 0; i < m; i++) {
             if (maxTemp < temprature[i]) {
                 maxTemp = temprature[i];
             }
         }
-        // LOGGER.info(maxTepm);
+
         maxTemp = redTemperature - maxTemp;
+
         if (maxTemp <= 0) {
-            // LOGGER.info("maxTem less than 0000 " + maxTemp);
             am.setSlowDownFromCooler(true);
             overRed++;
 
         } else {
             am.setSlowDownFromCooler(false);
         }
-        double cop = cooler1.getCOP(maxTemp);
+
+        final double cop = cooler1.getCOP(maxTemp);
+
         try {
-            // LOGGER.info(((int)(Pcomp*(1+1.0/COP)))+"\t"+(int)Pcomp+"\t"+localTime);
-            // oos.write(Integer.toString((int)
-            // (Pcomp*(1+1.0/COP)))+"\t"+Integer.toString((int)Pcomp)+"\t"+localTime+"\t"+perc[0]+"\t"+perc[1]+"\t"+perc[2]+"\n");
             oos.write(((int) (computingPower * (1 + 1.0 / cop))) + "\t" + (int) computingPower + "\t"
                     + environment.getCurrentLocalTime() + "\n");
             totalPowerConsumption = totalPowerConsumption + computingPower * (1 + 1.0 / cop);
-            // LOGGER.info(totalPowerConsumption);
         } catch (IOException ex) {
-            Logger.getLogger(Package.class.getName()).log(Level.SEVERE, null, ex);
+            LOGGER.severe(ex.getMessage());
         }
     }
 
@@ -133,10 +124,6 @@ public class DataCenter {
 
     public List<Chassis> getChassisSet() {
         return chassisSet;
-    }
-
-    public void setChassisSet(List<Chassis> chassisSet) {
-        this.chassisSet = chassisSet;
     }
 
     public double getTotalPowerConsumption() {
