@@ -63,8 +63,7 @@ public class ComputeSystemBuilder extends SystemBuilder {
     @Override
     public GeneralSystem build(String name, DataCenter dataCenter, Environment environment, SLAViolationLogger slaViolationLogger) {
         SystemPOD computeSystemPOD = getSystemPOD();                
-        GeneralSystem computeSystem = ComputeSystem.Create(computeSystemPOD, environment, dataCenter, slaViolationLogger);
-        computeSystem.setName(name);
+        GeneralSystem computeSystem = ComputeSystem.Create(name, computeSystemPOD, environment, dataCenter, slaViolationLogger);
         return computeSystem;
     }
 
