@@ -257,13 +257,12 @@ public class ApplicationAM extends GeneralAM {
         // pitttttttttttttttttttttttttttttttttttttttttttttttttttttttty");
         // return;
         // }
-        BladeServer temp = new BladeServer(null, 0, environment);
-        temp = app.getComputeNodeList().get(index);
-        temp.setSLAPercentage(sys.getApplications().get(targetApp).getSLAPercentage());
-        temp.setTimeTreshold(sys.getApplications().get(targetApp).getTimeTreshold());
-        temp.setMips(1.4);
-        temp.setStatusAsRunningNormal();
-        sys.getApplications().get(targetApp).getComputeNodeList().add(temp);
+        BladeServer bladeServer = app.getComputeNodeList().get(index);
+        bladeServer.setSLAPercentage(sys.getApplications().get(targetApp).getSLAPercentage());
+        bladeServer.setTimeTreshold(sys.getApplications().get(targetApp).getTimeTreshold());
+        bladeServer.setMips(1.4);
+        bladeServer.setStatusAsRunningNormal();
+        sys.getApplications().get(targetApp).getComputeNodeList().add(bladeServer);
         app.getComputeNodeList().remove(index);
         LOGGER.info("app:\t" + app.getID() + " ----------> :\t\t " + targetApp + "\t\t@:"
                 + environment.getCurrentLocalTime() + "\tRunning target node= "

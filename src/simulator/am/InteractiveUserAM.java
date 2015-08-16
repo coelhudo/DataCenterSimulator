@@ -212,12 +212,11 @@ public class InteractiveUserAM extends GeneralAM {
         // pitttttttttttttttttttttttttttttttttttttttttttttttttttttttty");
         // return;
         // }
-        BladeServer temp = new BladeServer(null, 0, environment);
-        temp = user.getComputeNodeList().get(index);
-        temp.setMaxExpectedRes(sys.getUserList().get(targetUsr).getMaxExpectedResTime());
-        temp.setMips(1.4);
-        temp.setStatusAsRunningNormal();
-        sys.getUserList().get(targetUsr).getComputeNodeList().add(temp);
+        BladeServer bladeServer = user.getComputeNodeList().get(index);
+        bladeServer.setMaxExpectedRes(sys.getUserList().get(targetUsr).getMaxExpectedResTime());
+        bladeServer.setMips(1.4);
+        bladeServer.setStatusAsRunningNormal();
+        sys.getUserList().get(targetUsr).getComputeNodeList().add(bladeServer);
         user.getComputeNodeList().remove(index);
         LOGGER.info("User :\t" + user.getID() + " ----------> :\t\t " + targetUsr + "\t\t@:"
                 + environment.getCurrentLocalTime() + "\tRunning target node= "

@@ -143,7 +143,7 @@ public class InteractiveUser {
         }
         double CPUpercentage = 0;
         int numberofReadyNodes = 0;
-        double beenRunJobs = 0; // number of jobs have been run so far
+        int beenRunJobs = 0; // number of jobs have been run so far
         for (BladeServer bladeServer : getComputeNodeList()) {
             if (bladeServer.getReady() == 1) {
                 CPUpercentage = (100.0 - bladeServer.getCurrentCPU()) * bladeServer.getMips() + CPUpercentage;
@@ -186,7 +186,7 @@ public class InteractiveUser {
                 while (!getQueueWL().isEmpty()) {
                     // jj=queueWL.get(0);
                     jj = (InteractiveJob) parent.getScheduler().nextJob(getQueueWL());
-                    double copyTedat = capacityOfNode;
+                    int copyTedat = capacityOfNode;
                     capacityOfNode = capacityOfNode - jj.getNumberOfJob();
                     if (capacityOfNode == 0) {
                         addToresponseArray(jj.getNumberOfJob(),
@@ -235,7 +235,7 @@ public class InteractiveUser {
                 }
                 double CPUspace = (100 - getComputeNodeList().get(serID).getCurrentCPU())
                         * getComputeNodeList().get(serID).getMips();
-                double reqSpace = (int) Math
+                int reqSpace = (int) Math
                         .ceil(CPUspace * getMaxNumberOfRequest() / (getNumberofBasicNode() * 100.0));
                 getComputeNodeList().get(serID).setCurrentCPU(100);
                 getComputeNodeList().get(serID).setStatusAsRunningBusy();
@@ -246,7 +246,7 @@ public class InteractiveUser {
                 }
                 if (beenRunJobs < 0) {
                     getComputeNodeList().get(serID)
-                            .setCurrentCPU((int) Math.ceil((reqSpace + beenRunJobs) * 100 / reqSpace));
+                            .setCurrentCPU(Math.ceil((reqSpace + beenRunJobs) * 100.0 / reqSpace));
                     getComputeNodeList().get(serID).setStatusAsRunningNormal();
                     k++;
                     break;
