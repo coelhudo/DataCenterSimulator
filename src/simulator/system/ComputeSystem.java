@@ -266,6 +266,7 @@ public class ComputeSystem extends GeneralSystem {
         } catch (IOException ex) {
             Logger.getLogger(EnterpriseApp.class.getName()).log(Level.SEVERE, null, ex);
         }
+        
         double totalResponsetime = 0;
         for (BladeServer bladeServer : getComputeNodeList()) {
             totalResponsetime = totalResponsetime + bladeServer.getResponseTime();
