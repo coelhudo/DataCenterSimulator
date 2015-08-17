@@ -46,10 +46,10 @@ public class BladeServer {
     private int rackId;
     // Application Bundle
     private int timeTreshold = 0;
-    private int SLAPercentage;
+    private int slaPercentage;
     // WorkLoad Bundle
     private int maxExpectedRes = 0;
-    private boolean SLAviolation;
+    private boolean slaViolation;
     private Environment environment;
 
     public BladeServer(BladeServerPOD bladeServerPOD, int chasID, Environment environment) {
@@ -606,11 +606,11 @@ public class BladeServer {
     }
 
     public int getSLAPercentage() {
-        return SLAPercentage;
+        return slaPercentage;
     }
 
     public void setSLAPercentage(int slaPercentage) {
-        this.SLAPercentage = slaPercentage;
+        this.slaPercentage = slaPercentage;
     }
 
     public int getMaxExpectedRes() {
@@ -622,11 +622,11 @@ public class BladeServer {
     }
 
     public boolean isSLAviolation() {
-        return SLAviolation;
+        return slaViolation;
     }
 
     public void setSLAviolation(boolean slaViolation) {
-        this.SLAviolation = slaViolation;
+        this.slaViolation = slaViolation;
     }
 
     public String getBladeType() {

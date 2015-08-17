@@ -59,7 +59,6 @@ public class MHR extends ResourceAllocation {
         retValue[0] = -2;
         retValue[1] = -2;
 
-        ////////////////////////
         for (int j = powIndex.length - 1; j >= 0; j--) {
             int l = 0;
             for (l = 0; l < chassisList.size(); l++) {
@@ -104,8 +103,7 @@ public class MHR extends ResourceAllocation {
         int k = powIndex.length - 1;
         for (; k >= 0 && j < list.length; k--) {
             for (i = 0; i < computeNodeList.size(); i++) {
-                if (computeNodeList.get(i).getReady() == 1 && powIndex[k] == computeNodeList.get(i).getChassisID()) // &
-                // ComputeNodeList.get(i).activeBatchList.size()==0)
+                if (computeNodeList.get(i).getReady() == 1 && powIndex[k] == computeNodeList.get(i).getChassisID())
                 {
                     list[j++] = i;
                     if (j == list.length) {
@@ -114,7 +112,6 @@ public class MHR extends ResourceAllocation {
                 }
             }
         }
-        // }
 
         return list;
     }

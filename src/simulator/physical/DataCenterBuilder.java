@@ -7,6 +7,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javax.xml.parsers.DocumentBuilder;
@@ -24,8 +25,8 @@ public class DataCenterBuilder {
 
     private static final Logger LOGGER = Logger.getLogger(DataCenterBuilder.class.getName());
 
-    private List<BladeServer> BSTemp = new ArrayList<BladeServer>();
-    private List<Chassis> CHSTemp = new ArrayList<Chassis>();
+    private List<BladeServer> bladeServers = new ArrayList<BladeServer>();
+    private List<Chassis> chassis = new ArrayList<Chassis>();
 
     private int numbOfSofarChassis = 0;
     private int numOfServerSoFar = 0;
@@ -50,11 +51,11 @@ public class DataCenterBuilder {
             parseDataCenter(doc.getDocumentElement(), path);
 
         } catch (ParserConfigurationException ex) {
-            LOGGER.severe(ex.getMessage());
+            LOGGER.log(Level.SEVERE, this.getClass().getName(), ex);
         } catch (SAXException ex) {
-            LOGGER.severe(ex.getMessage());
+            LOGGER.log(Level.SEVERE, this.getClass().getName(), ex);
         } catch (IOException ex) {
-            LOGGER.severe(ex.getMessage());
+            LOGGER.log(Level.SEVERE, this.getClass().getName(), ex);
         }
 
     }
@@ -64,35 +65,35 @@ public class DataCenterBuilder {
         NodeList childNodes = node.getChildNodes();
         for (int i = 0; i < childNodes.getLength(); i++) {
             if (childNodes.item(i).getNodeType() == Node.ELEMENT_NODE) {
-                if (childNodes.item(i).getNodeName().equalsIgnoreCase("BladeServer")) {
+                if ("BladeServer".equalsIgnoreCase(childNodes.item(i).getNodeName())) {
                     
                     BladeServerPOD bladeServerPOD = bladeServerParser(childNodes.item(i));
                     BladeServer bs = new BladeServer(bladeServerPOD, -1, environment);
-                    BSTemp.add(bs);
+                    bladeServers.add(bs);
                 }
             }
         }
         for (int i = 0; i < childNodes.getLength(); i++) {
             if (childNodes.item(i).getNodeType() == Node.ELEMENT_NODE) {
-                if (childNodes.item(i).getNodeName().equalsIgnoreCase("Chassis")) {
+                if ("Chassis".equalsIgnoreCase(childNodes.item(i).getNodeName())) {
                     ChassisPOD chassisPOD = parseChassis(childNodes.item(i));
                     Chassis chs = new Chassis(chassisPOD, -1);
                     setUpChassis(chs);
-                    CHSTemp.add(chs);
+                    chassis.add(chs);
                 }
             }
         }
         for (int i = 0; i < childNodes.getLength(); i++) {
             if (childNodes.item(i).getNodeType() == Node.ELEMENT_NODE) {
-                if (childNodes.item(i).getNodeName().equalsIgnoreCase("Rack")) {
+                if ("Rack".equalsIgnoreCase(childNodes.item(i).getNodeName())) {
                     setUpRack(childNodes.item(i));
 
                 }
-                if (childNodes.item(i).getNodeName().equalsIgnoreCase("ThermalModel")) {
-                    String DFileName = path + "/" + childNodes.item(i).getChildNodes().item(0).getNodeValue().trim();
-                    getDmatrix(DFileName);
+                if ("ThermalModel".equalsIgnoreCase(childNodes.item(i).getNodeName())) {
+                    String thermalModelFileName = path + "/" + childNodes.item(i).getChildNodes().item(0).getNodeValue().trim();
+                    getDmatrix(thermalModelFileName);
                 }
-                if (childNodes.item(i).getNodeName().equalsIgnoreCase("RedTemperature")) {
+                if ("RedTemperature".equalsIgnoreCase(childNodes.item(i).getNodeName())) {
                     dataCenterPOD.setRedTemperature(Integer.parseInt(childNodes.item(i).getChildNodes().item(0).getNodeValue().trim()));
                 }
             }
@@ -108,10 +109,10 @@ public class DataCenterBuilder {
         NodeList childNodes = node.getChildNodes();
         for (int i = 0; i < childNodes.getLength(); i++) {
             if (childNodes.item(i).getNodeType() == Node.ELEMENT_NODE) {
-                if (childNodes.item(i).getNodeName().equalsIgnoreCase("ChassisType")) {
-                    chassisPOD.setChassisType((childNodes.item(i).getChildNodes().item(0).getNodeValue().trim()));
+                if ("ChassisType".equalsIgnoreCase(childNodes.item(i).getNodeName())) {
+                    chassisPOD.setChassisType(childNodes.item(i).getChildNodes().item(0).getNodeValue().trim());
                 }
-                if (childNodes.item(i).getNodeName().equalsIgnoreCase("numberOfBladeServer")) {
+                if ("numberOfBladeServer".equalsIgnoreCase(childNodes.item(i).getNodeName())) {
                     String str = childNodes.item(i).getChildNodes().item(0).getNodeValue().trim();
                     String[] split = str.split(" ");
                     number = new int[split.length];
@@ -120,9 +121,9 @@ public class DataCenterBuilder {
                     }
                     tedad = number.length;
                 }
-                if (childNodes.item(i).getNodeName().equalsIgnoreCase("BladeType")) {
+                if ("BladeType".equalsIgnoreCase(childNodes.item(i).getNodeName())) {
                     String str = childNodes.item(i).getChildNodes().item(0).getNodeValue().trim();
-                    // s=str.split("\"");
+                    
                     String[] split = str.split(",");
                     s = new String[split.length];
                     System.arraycopy(split, 0, s, 0, split.length);
@@ -158,13 +159,13 @@ public class DataCenterBuilder {
         int i = 0;
         for (i = 0; i < childNodes.getLength(); i++) {
             if (childNodes.item(i).getNodeType() == Node.ELEMENT_NODE) {
-                if (childNodes.item(i).getNodeName().equalsIgnoreCase("ChassisType")) {
+                if ("ChassisType".equalsIgnoreCase(childNodes.item(i).getNodeName())) {
                     String str = childNodes.item(i).getChildNodes().item(0).getNodeValue().trim();
                     String[] split = str.split(" ");
                     s = new String[split.length];
                     System.arraycopy(split, 0, s, 0, split.length);
                 }
-                if (childNodes.item(i).getNodeName().equalsIgnoreCase("NumberOfChassis")) {
+                if ("NumberOfChassis".equalsIgnoreCase(childNodes.item(i).getNodeName())) {
                     String str = childNodes.item(i).getChildNodes().item(0).getNodeValue().trim();
                     String[] split = str.split(" ");
                     tedadinRack = new int[split.length];
@@ -173,7 +174,7 @@ public class DataCenterBuilder {
                     }
                     tedad = tedadinRack.length;
                 }
-                if (childNodes.item(i).getNodeName().equalsIgnoreCase("Rack_ID")) {
+                if ("Rack_ID".equalsIgnoreCase(childNodes.item(i).getNodeName())) {
                     rackID = Integer.parseInt(childNodes.item(i).getChildNodes().item(0).getNodeValue().trim());
                 }
             }
@@ -181,18 +182,18 @@ public class DataCenterBuilder {
         int kk = 0;
         for (int loop = 0; loop < tedad; loop++) {
             for (kk = 0; kk < tedadinRack[loop]; kk++) {
-                for (k = 0; k < CHSTemp.size(); k++) {
-                    if (s[loop].equalsIgnoreCase(CHSTemp.get(k).getChassisType())) {
+                for (k = 0; k < chassis.size(); k++) {
+                    if (s[loop].equalsIgnoreCase(chassis.get(k).getChassisType())) {
                         break;
                     }
                 }
-                if (k == CHSTemp.size()) {
+                if (k == chassis.size()) {
                     LOGGER.info("ERORE IN CONFIG FILE DATACENTE.java");
                 }
                 ChassisPOD chassisPOD = new ChassisPOD();
-                chassisPOD.setChassisType(CHSTemp.get(k).getChassisType());
+                chassisPOD.setChassisType(chassis.get(k).getChassisType());
                 Chassis ch1 = new Chassis(chassisPOD, numbOfSofarChassis + kk);
-                cloneChassis(ch1, CHSTemp.get(k));
+                cloneChassis(ch1, chassis.get(k));
                 ch1.setRackID(rackID);
                 for (BladeServer bladeServer: ch1.getServers()) {
                     bladeServer.setChassisID(numbOfSofarChassis + kk);
@@ -207,33 +208,33 @@ public class DataCenterBuilder {
     void setUpChassis(Chassis ch) {
         for (int j = 0; j < ch.getServers().size(); j++) {
             int i;
-            for (i = 0; i < BSTemp.size(); i++) {
+            for (i = 0; i < bladeServers.size(); i++) {
                 if (ch.getServers().get(j).getBladeType().trim()
-                        .equalsIgnoreCase(BSTemp.get(i).getBladeType().trim())) {
+                        .equalsIgnoreCase(bladeServers.get(i).getBladeType().trim())) {
                     break;
                 }
             }
-            if (i == BSTemp.size()) {
+            if (i == bladeServers.size()) {
                 LOGGER.info("DataCenter.java");
             }
             BladeServerPOD bladeServerPOD = new BladeServerPOD();
-            bladeServerPOD.setFrequencyLevel(new double[BSTemp.get(i).getNumberOfFrequencyLevel()]);
-            bladeServerPOD.setPowerBusy(new double[BSTemp.get(i).getNumberOfPowerBusy()]);
-            bladeServerPOD.setPowerIdle(new double[BSTemp.get(i).getNumberOfPowerIdle()]);
-            for (int p = 0; p < BSTemp.get(i).getNumberOfFrequencyLevel(); p++) {
-                bladeServerPOD.setFrequencyLevelAt(p, BSTemp.get(i).getFrequencyLevelAt(p));
-                bladeServerPOD.setPowerBusyAt(p, BSTemp.get(i).getPowerBusyAt(p));
-                bladeServerPOD.setPowerIdleAt(p, BSTemp.get(i).getPowerIdleAt(p));
+            bladeServerPOD.setFrequencyLevel(new double[bladeServers.get(i).getNumberOfFrequencyLevel()]);
+            bladeServerPOD.setPowerBusy(new double[bladeServers.get(i).getNumberOfPowerBusy()]);
+            bladeServerPOD.setPowerIdle(new double[bladeServers.get(i).getNumberOfPowerIdle()]);
+            for (int p = 0; p < bladeServers.get(i).getNumberOfFrequencyLevel(); p++) {
+                bladeServerPOD.setFrequencyLevelAt(p, bladeServers.get(i).getFrequencyLevelAt(p));
+                bladeServerPOD.setPowerBusyAt(p, bladeServers.get(i).getPowerBusyAt(p));
+                bladeServerPOD.setPowerIdleAt(p, bladeServers.get(i).getPowerIdleAt(p));
             }
-            bladeServerPOD.setIdleConsumption(BSTemp.get(i).getIdleConsumption());
+            bladeServerPOD.setIdleConsumption(bladeServers.get(i).getIdleConsumption());
             bladeServerPOD.setServerID(j);
-            bladeServerPOD.setBladeType(BSTemp.get(i).getBladeType());
+            bladeServerPOD.setBladeType(bladeServers.get(i).getBladeType());
             ch.getServers().get(j).changeInternals(bladeServerPOD);
         }
 
     }
     
-    void cloneChassis(Chassis destiny, Chassis source) // A<--B
+    void cloneChassis(Chassis destiny, Chassis source)
     {
         for (BladeServer bladeServer : source.getServers()) {
             BladeServerPOD bladeServerPOD = new BladeServerPOD();
@@ -258,13 +259,13 @@ public class DataCenterBuilder {
         }
     }
     
-    boolean getDmatrix(String DFileName) {
+    boolean getDmatrix(String matrixDFileName) {
         BufferedReader bis = null;
         try {
-            File f = new File(DFileName);
+            File f = new File(matrixDFileName);
             bis = new BufferedReader(new InputStreamReader(new FileInputStream(f)));
         } catch (IOException e) {
-            LOGGER.info("Uh oh, got an IOException error!" + e.getMessage());
+            LOGGER.log(Level.SEVERE, this.getClass().getName(), e);
         }
         
         final int numberOfChassis = dataCenterPOD.getNumberOfChassis();
@@ -288,7 +289,7 @@ public class DataCenterBuilder {
                 }
             } catch (IOException ex) {
                 LOGGER.info("readJOB EXC readJOB false ");
-                LOGGER.severe(ex.getMessage());
+                LOGGER.log(Level.SEVERE, this.getClass().getName(), ex);
                 return false;
             }
         }
@@ -305,10 +306,10 @@ public class DataCenterBuilder {
                 // serverID =
                 // Integer.parseInt(childNodes.item(i).getChildNodes().item(0).getNodeValue().trim());
                 // }
-                if (childNodes.item(i).getNodeName().equalsIgnoreCase("BladeType")) {
+                if ("BladeType".equalsIgnoreCase(childNodes.item(i).getNodeName())) {
                     bladeServerPOD.setBladeType(childNodes.item(i).getChildNodes().item(0).getNodeValue().trim());
                 }
-                if (childNodes.item(i).getNodeName().equalsIgnoreCase("MIPS")) {
+                if ("MIPS".equalsIgnoreCase(childNodes.item(i).getNodeName())) {
                     String str = childNodes.item(i).getChildNodes().item(0).getNodeValue().trim();
                     String[] split = str.split(" ");
                     bladeServerPOD.setFrequencyLevel(new double[split.length]);
@@ -316,7 +317,7 @@ public class DataCenterBuilder {
                         bladeServerPOD.setFrequencyLevelAt(j, Double.parseDouble(split[j]));
                     }
                 }
-                if (childNodes.item(i).getNodeName().equalsIgnoreCase("FullyLoaded")) {
+                if ("FullyLoaded".equalsIgnoreCase(childNodes.item(i).getNodeName())) {
                     String str = childNodes.item(i).getChildNodes().item(0).getNodeValue().trim();
                     String[] split = str.split(" ");
                     bladeServerPOD.setPowerBusy(new double[split.length]);
@@ -324,7 +325,7 @@ public class DataCenterBuilder {
                         bladeServerPOD.setPowerBusyAt(j, Double.parseDouble(split[j]));
                     }
                 }
-                if (childNodes.item(i).getNodeName().equalsIgnoreCase("Idle")) {
+                if ("Idle".equalsIgnoreCase(childNodes.item(i).getNodeName())) {
                     String str = childNodes.item(i).getChildNodes().item(0).getNodeValue().trim();
                     String[] split = str.split(" ");
                     bladeServerPOD.setPowerIdle(new double[split.length]);
@@ -332,7 +333,7 @@ public class DataCenterBuilder {
                         bladeServerPOD.setPowerIdleAt(j, Double.parseDouble(split[j]));
                     }
                 }
-                if (childNodes.item(i).getNodeName().equalsIgnoreCase("Standby")) {
+                if ("Standby".equalsIgnoreCase(childNodes.item(i).getNodeName())) {
                     bladeServerPOD.setIdleConsumption(
                             Double.parseDouble(childNodes.item(i).getChildNodes().item(0).getNodeValue().trim()));
 
