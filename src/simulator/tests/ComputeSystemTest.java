@@ -152,8 +152,10 @@ public class ComputeSystemTest {
         BladeServer mockedBladeServer = mock(BladeServer.class);
         when(mockedBladeServer.getReady()).thenReturn(1);
         computeSystem.appendBladeServerIntoComputeNodeList(mockedBladeServer);
+        
         assertFalse(computeSystem.runAcycle());
         assertFalse(computeSystem.isDone());
+        
         assertTrue(computeSystem.getComputeNodeIndex().isEmpty());
         assertFalse(computeSystem.getComputeNodeList().isEmpty());
         assertEquals(1, computeSystem.getSLAviolation());
@@ -184,6 +186,124 @@ public class ComputeSystemTest {
 
         verifyNoMoreInteractions(mockedEnvironment, mockedDataCenter, mockedSLAViolationLogger, mockedBufferedReader,
                 mockedBladeServer);
+    }
+    
+    @Test
+    public void testRunACycleWithOneJob() {
+        SystemPOD systemPOD = new ComputeSystemPOD();
+        BufferedReader mockedBufferedReader = mock(BufferedReader.class);
+        try {
+            when(mockedBufferedReader.readLine()).thenReturn("2\t1\t1\t1\t1");
+        } catch (IOException e) {
+            fail("This was not supposed to happen");
+        }
+        systemPOD.setBis(mockedBufferedReader);
+
+        Environment mockedEnvironment = mock(Environment.class);
+        when(mockedEnvironment.getCurrentLocalTime()).thenReturn(1, 3);
+        
+        DataCenter mockedDataCenter = mock(DataCenter.class);
+        SLAViolationLogger mockedSLAViolationLogger = mock(SLAViolationLogger.class);
+        ComputeSystem computeSystem = ComputeSystem.Create("dummy", systemPOD, mockedEnvironment, mockedDataCenter,
+                mockedSLAViolationLogger);
+        BladeServer mockedBladeServer = mock(BladeServer.class);
+        when(mockedBladeServer.getReady()).thenReturn(1);
+        when(mockedBladeServer.getTotalFinishedJob()).thenReturn(1);
+        computeSystem.appendBladeServerIntoComputeNodeList(mockedBladeServer);
+        
+        assertTrue(computeSystem.runAcycle());
+        assertTrue(computeSystem.isDone());
+        
+        assertTrue(computeSystem.getComputeNodeIndex().isEmpty());
+        assertFalse(computeSystem.getComputeNodeList().isEmpty());
+        assertEquals(0, computeSystem.getSLAviolation());
+        assertEquals(0, computeSystem.getNumberOfActiveServ());
+        assertEquals(0, computeSystem.getNumberofIdleNode());
+        assertEquals(0, computeSystem.getNumberOfNode());
+        assertEquals(0.0, computeSystem.getPower(), 1.0E-8);
+        assertEquals(0, computeSystem.getAccumolatedViolation());
+        
+        verify(mockedBladeServer, times(30)).getReady(); // XXX: 30???
+        verify(mockedBladeServer, times(26)).getChassisID(); //XXX: 26????
+        verify(mockedBladeServer).getServerID();
+        verify(mockedBladeServer).feedWork(any(BatchJob.class));
+        verify(mockedBladeServer).setDependency(0);
+        verify(mockedEnvironment, times(3)).getCurrentLocalTime();
+        verify(mockedBladeServer).run(any(BatchJob.class));
+        verify(mockedBladeServer).getTotalFinishedJob();
+        verify(mockedBladeServer).getCurrentFreqLevel();
+
+        verify(mockedEnvironment).localTimeByEpoch();
+        verify(mockedEnvironment).updateNumberOfMessagesFromDataCenterToSystem();
+        verify(mockedEnvironment).updateNumberOfMessagesFromSystemToNodes();
+        
+        try {
+            verify(mockedBufferedReader).readLine();
+        } catch (IOException e) {
+            fail("This was not supposed to happen");
+        }
+
+        verifyNoMoreInteractions(mockedEnvironment, mockedDataCenter, mockedSLAViolationLogger, mockedBufferedReader);
+    }
+    
+    @Test
+    public void testRunACycleWithOneJob_MissingDeadline() {
+        SystemPOD systemPOD = new ComputeSystemPOD();
+        BufferedReader mockedBufferedReader = mock(BufferedReader.class);
+        try {
+            when(mockedBufferedReader.readLine()).thenReturn("2\t1\t1\t1\t1");
+        } catch (IOException e) {
+            fail("This was not supposed to happen");
+        }
+        systemPOD.setBis(mockedBufferedReader);
+
+        Environment mockedEnvironment = mock(Environment.class);
+        when(mockedEnvironment.getCurrentLocalTime()).thenReturn(1, 3, 4);
+        
+        DataCenter mockedDataCenter = mock(DataCenter.class);
+        SLAViolationLogger mockedSLAViolationLogger = mock(SLAViolationLogger.class);
+        ComputeSystem computeSystem = ComputeSystem.Create("dummy", systemPOD, mockedEnvironment, mockedDataCenter,
+                mockedSLAViolationLogger);
+        BladeServer mockedBladeServer = mock(BladeServer.class);
+        when(mockedBladeServer.getReady()).thenReturn(1);
+        when(mockedBladeServer.getTotalFinishedJob()).thenReturn(1);
+        computeSystem.appendBladeServerIntoComputeNodeList(mockedBladeServer);
+        
+        assertTrue(computeSystem.runAcycle());
+        assertTrue(computeSystem.isDone());
+        
+        assertTrue(computeSystem.getComputeNodeIndex().isEmpty());
+        assertFalse(computeSystem.getComputeNodeList().isEmpty());
+        assertEquals(1, computeSystem.getSLAviolation());
+        assertEquals(0, computeSystem.getNumberOfActiveServ());
+        assertEquals(0, computeSystem.getNumberofIdleNode());
+        assertEquals(0, computeSystem.getNumberOfNode());
+        assertEquals(0.0, computeSystem.getPower(), 1.0E-8);
+        assertEquals(1, computeSystem.getAccumolatedViolation());
+        
+        verify(mockedBladeServer, times(31)).getReady(); // XXX: 31???
+        verify(mockedBladeServer, times(26)).getChassisID(); //XXX: 26????
+        verify(mockedBladeServer).getServerID();
+        verify(mockedBladeServer).feedWork(any(BatchJob.class));
+        verify(mockedBladeServer).setDependency(0);
+        verify(mockedEnvironment, times(3)).getCurrentLocalTime();
+        verify(mockedBladeServer).run(any(BatchJob.class));
+        verify(mockedBladeServer).getTotalFinishedJob();
+        verify(mockedBladeServer).getCurrentFreqLevel();
+
+        verify(mockedEnvironment).localTimeByEpoch();
+        verify(mockedEnvironment, times(3)).getCurrentLocalTime();
+        verify(mockedEnvironment).updateNumberOfMessagesFromDataCenterToSystem();
+        
+        try {
+            verify(mockedBufferedReader).readLine();
+        } catch (IOException e) {
+            fail("This was not supposed to happen");
+        }
+        
+        verify(mockedSLAViolationLogger).logHPCViolation("dummy", Violation.DEADLINE_PASSED);
+
+        verifyNoMoreInteractions(mockedEnvironment, mockedDataCenter, mockedSLAViolationLogger, mockedBufferedReader);
     }
 
     /* Methods that are in coverage report */

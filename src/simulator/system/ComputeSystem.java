@@ -79,7 +79,7 @@ public class ComputeSystem extends GeneralSystem {
             getAM().monitor();
             getAM().analysis(0);
         }
-        
+
         if (numberOfFinishedJob == totalJob) {
             markAsDone();
             return true;
@@ -111,10 +111,10 @@ public class ComputeSystem extends GeneralSystem {
         }
     }
 
-    int getFromWaitinglist() {
+    void getFromWaitinglist() {
         setSLAviolation(Violation.NOTHING);
         if (waitingList.isEmpty()) {
-            return 0;
+            return;
         }
         BatchJob job = (BatchJob) (getScheduler().nextJob(waitingList));
         while (job.getStartTime() <= environment.getCurrentLocalTime()) {
@@ -123,10 +123,7 @@ public class ComputeSystem extends GeneralSystem {
             int[] listServer = new int[job.getNumOfNode()];
             if (getResourceAllocation().allocateSystemLevelServer(getComputeNodeList(), indexes)[0] == -2) {
                 setSLAviolation(Violation.COMPUTE_NODE_SHORTAGE);
-                // LOGGER.info("COMPUTE NODE SHORTAGE in
-                // getFromWaitingList");
-                return 0; // can not find the bunch of requested node for the
-                // job
+                return; // can not find the bunch of requested node for the job
             }
             listServer = makeListofServer(indexes);
             for (int i = 0; i < indexes.length; i++) {
@@ -152,19 +149,18 @@ public class ComputeSystem extends GeneralSystem {
                     getComputeNodeList().get(indexes[i]).setDependency(0);
                 }
             }
-            // Check if dealine is missed
+            
             if (environment.getCurrentLocalTime() - job.getStartTime() > job.getDeadline()) {
                 setSLAviolation(Violation.DEADLINE_PASSED);
-                // LOGGER.info("DEADLINE PASSED in getFromWaitingList");
             }
-            ////////////////////////////
+            
             waitingList.remove(job);
             if (waitingList.isEmpty()) {
-                return 0;
+                return;
             }
             job = (BatchJob) (getScheduler().nextJob(waitingList));
         }
-        return 0; // it is not important
+        return; // it is not important
     }
 
     int[] makeListofServer(int[] list) {
@@ -188,11 +184,11 @@ public class ComputeSystem extends GeneralSystem {
         // resourceIsAvailable
         {
             SLAViolationType = Violation.COMPUTE_NODE_SHORTAGE;
-            SLAviolation++;
+            slaViolation++;
         }
         if (flag == Violation.DEADLINE_PASSED) {
             SLAViolationType = Violation.DEADLINE_PASSED;
-            SLAviolation++;
+            slaViolation++;
         }
         if (SLAViolationType != Violation.NOTHING) {
             slaViolationLogger.logHPCViolation(getName(), SLAViolationType);
@@ -217,7 +213,7 @@ public class ComputeSystem extends GeneralSystem {
             batchJob.setRemainParam(Double.parseDouble(numbers[1]), Double.parseDouble(numbers[2]),
                     Integer.parseInt(numbers[3]), Integer.parseInt(numbers[4]));
             batchJob.setStartTime(inputTime);
-           final boolean add = waitingList.add(batchJob);
+            final boolean add = waitingList.add(batchJob);
             // number of jobs which are copied on # of requested nodes
             totalJob = totalJob + 1;
             return add;

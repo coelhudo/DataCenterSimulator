@@ -24,7 +24,7 @@ public class GeneralSystem {
     private List<BladeServer> computeNodeList;
     private List<Integer> computeNodeIndex;
     private BufferedReader bis = null;
-    protected int SLAviolation;
+    protected int slaViolation;
     private boolean sysIsDone = false;
     private double power = 0;
     private GeneralAM am;
@@ -35,9 +35,9 @@ public class GeneralSystem {
         rackIDs = systemPOD.getRackIDs();
     }
     
-    public void addComputeNodeToSys(BladeServer b) {
-        b.restart();
-        appendBladeServerIntoComputeNodeList(b);
+    public void addComputeNodeToSys(BladeServer bladeServer) {
+        bladeServer.restart();
+        appendBladeServerIntoComputeNodeList(bladeServer);
     }
 
     void calculatePower() {
@@ -120,11 +120,11 @@ public class GeneralSystem {
     }
 
     public int getSLAviolation() {
-        return SLAviolation;
+        return slaViolation;
     }
 
-    public void setSLAviolation(int sLAviolation) {
-        SLAviolation = sLAviolation;
+    public void setSLAviolation(int slaViolation) {
+        this.slaViolation = slaViolation;
     }
 
     public boolean isDone() {
