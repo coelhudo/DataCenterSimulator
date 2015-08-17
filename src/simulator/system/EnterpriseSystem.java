@@ -74,16 +74,6 @@ public class EnterpriseSystem extends GeneralSystem {
     }
 
     boolean runAcycle() throws IOException {
-        // if(applicationList.size()>0 & checkForViolation())//&
-        // Main.localTime%Main.epochSys==0)
-        // {
-        // AM.monitor();
-        // AM.analysis(SLAviolation);
-        // AM.planning();
-        // AM.execution();
-        // Main.mesg++;
-        //
-        // }
         int finishedBundle = 0;
         for (int i = 0; i < applicationList.size(); i++) {
             // TODO: if each bundle needs some help should ask and here
@@ -98,18 +88,16 @@ public class EnterpriseSystem extends GeneralSystem {
                 setNumberofIdleNode(applicationList.get(i).getComputeNodeList().size() + getNumberofIdleNode());
                 LOGGER.info("Number of violation in " + applicationList.get(i).getID() + "th application=  "
                         + applicationList.get(i).getNumofViolation());
-                // LOGGER.info("application "+i +"is destroyed and there
-                // are: "+(applicationList.size()-1)+" left");
                 applicationList.get(i).destroyApplication();
                 applicationList.remove(i);
                 finishedBundle++;
             }
         }
         if (finishedBundle > 0) {
-            getResourceAllocation().resourceAloc(this); // Nothing for now!
+            getResourceAllocation().resourceAloc(this);
         }
         if (applicationList.isEmpty()) {
-            markAsDone(); // all done!
+            markAsDone();
             return true;
         } else {
             return false;
