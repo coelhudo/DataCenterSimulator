@@ -342,8 +342,15 @@ public class ComputeSystemTest {
 
             Boolean result = (Boolean) method.invoke(computeSystem, mockedBatchJob);
             assertFalse(result);
-        } catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException | NoSuchMethodException
-                | SecurityException e) {
+        } catch (IllegalAccessException  e) {
+            fail(FAIL_ERROR_MESSAGE);
+        } catch (IllegalArgumentException e) {
+            fail(FAIL_ERROR_MESSAGE);
+        } catch (InvocationTargetException e) {
+            fail(FAIL_ERROR_MESSAGE);
+        } catch (NoSuchMethodException e) {
+            fail(FAIL_ERROR_MESSAGE);
+        } catch (SecurityException e) {
             fail(FAIL_ERROR_MESSAGE);
         }
 
@@ -381,8 +388,15 @@ public class ComputeSystemTest {
 
             Boolean result = (Boolean) method.invoke(computeSystem, mockedBatchJob);
             assertFalse(result);
-        } catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException | NoSuchMethodException
-                | SecurityException e) {
+        } catch (IllegalAccessException  e) {
+            fail(FAIL_ERROR_MESSAGE);
+        } catch (IllegalArgumentException e) {
+            fail(FAIL_ERROR_MESSAGE);
+        } catch (InvocationTargetException e) {
+            fail(FAIL_ERROR_MESSAGE);
+        } catch (NoSuchMethodException e) {
+            fail(FAIL_ERROR_MESSAGE);
+        } catch (SecurityException e) {
             fail(FAIL_ERROR_MESSAGE);
         }
 
@@ -420,8 +434,15 @@ public class ComputeSystemTest {
 
             Boolean result = (Boolean) readJobMethod.invoke(computeSystem, mockedBatchJob);
             assertTrue(result);
-        } catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException | NoSuchMethodException
-                | SecurityException e) {
+        } catch (IllegalAccessException  e) {
+            fail(FAIL_ERROR_MESSAGE);
+        } catch (IllegalArgumentException e) {
+            fail(FAIL_ERROR_MESSAGE);
+        } catch (InvocationTargetException e) {
+            fail(FAIL_ERROR_MESSAGE);
+        } catch (NoSuchMethodException e) {
+            fail(FAIL_ERROR_MESSAGE);
+        } catch (SecurityException e) {
             fail(FAIL_ERROR_MESSAGE);
         }
 
@@ -475,8 +496,15 @@ public class ComputeSystemTest {
             moveWaitingJobsToBladeServerMethod.setAccessible(true);
 
             moveWaitingJobsToBladeServerMethod.invoke(computeSystem);
-        } catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException | NoSuchMethodException
-                | SecurityException e) {
+        } catch (IllegalAccessException  e) {
+            fail(FAIL_ERROR_MESSAGE);
+        } catch (IllegalArgumentException e) {
+            fail(FAIL_ERROR_MESSAGE);
+        } catch (InvocationTargetException e) {
+            fail(FAIL_ERROR_MESSAGE);
+        } catch (NoSuchMethodException e) {
+            fail(FAIL_ERROR_MESSAGE);
+        } catch (SecurityException e) {
             fail(FAIL_ERROR_MESSAGE);
         }
 
@@ -555,7 +583,7 @@ public class ComputeSystemTest {
     }
     
     @Test
-    public void testFinalize() {
+    public void testFinalized() {
         SystemPOD systemPOD = new ComputeSystemPOD();
         BufferedReader mockedBufferedReader = mock(BufferedReader.class);
         systemPOD.setBis(mockedBufferedReader);
@@ -574,10 +602,17 @@ public class ComputeSystemTest {
             Method finalizeMethod = ComputeSystem.class.getDeclaredMethod("finalized");
             finalizeMethod.setAccessible(true);
 
-            double result = (double) finalizeMethod.invoke(computeSystem);
+            Double result = (Double) finalizeMethod.invoke(computeSystem);
             assertEquals(15.0, result, 1.0E-8);
-        } catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException | NoSuchMethodException
-                | SecurityException e) {
+        } catch (IllegalAccessException  e) {
+            fail(FAIL_ERROR_MESSAGE);
+        } catch (IllegalArgumentException e) {
+            fail(FAIL_ERROR_MESSAGE);
+        } catch (InvocationTargetException e) {
+            fail(FAIL_ERROR_MESSAGE);
+        } catch (NoSuchMethodException e) {
+            fail(FAIL_ERROR_MESSAGE);
+        } catch (SecurityException e) {
             fail(FAIL_ERROR_MESSAGE);
         }
 
