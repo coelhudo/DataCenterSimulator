@@ -62,7 +62,7 @@ public class ComputeSystem extends GeneralSystem {
         }
         if (!isBlocked()) {
             // feeds jobs from waiting list to servers as much as possible
-            getFromWaitinglist();
+            moveWaitingJobsToBladeServer();
             for (BladeServer bladeServer : getComputeNodeList()) {
                 bladeServer.run(new BatchJob(environment, dataCenter));
             }
@@ -111,7 +111,7 @@ public class ComputeSystem extends GeneralSystem {
         }
     }
 
-    void getFromWaitinglist() {
+    void moveWaitingJobsToBladeServer() {
         setSLAviolation(Violation.NOTHING);
         if (waitingList.isEmpty()) {
             return;
@@ -149,11 +149,11 @@ public class ComputeSystem extends GeneralSystem {
                     getComputeNodeList().get(indexes[i]).setDependency(0);
                 }
             }
-            
+
             if (environment.getCurrentLocalTime() - job.getStartTime() > job.getDeadline()) {
                 setSLAviolation(Violation.DEADLINE_PASSED);
             }
-            
+
             waitingList.remove(job);
             if (waitingList.isEmpty()) {
                 return;
@@ -213,10 +213,10 @@ public class ComputeSystem extends GeneralSystem {
             batchJob.setRemainParam(Double.parseDouble(numbers[1]), Double.parseDouble(numbers[2]),
                     Integer.parseInt(numbers[3]), Integer.parseInt(numbers[4]));
             batchJob.setStartTime(inputTime);
-            final boolean add = waitingList.add(batchJob);
+            final boolean added = waitingList.add(batchJob);
             // number of jobs which are copied on # of requested nodes
             totalJob = totalJob + 1;
-            return add;
+            return added;
         } catch (IOException ex) {
             LOGGER.info("readJOB EXC readJOB false ");
             Logger.getLogger(Scheduler.class.getName()).log(Level.SEVERE, null, ex);

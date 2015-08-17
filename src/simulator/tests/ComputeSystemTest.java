@@ -7,6 +7,8 @@ import static org.mockito.Mockito.*;
 
 import java.io.BufferedReader;
 import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 
 import simulator.Environment;
 import simulator.SLAViolationLogger;
@@ -19,6 +21,8 @@ import simulator.system.ComputeSystemPOD;
 import simulator.system.SystemPOD;
 
 public class ComputeSystemTest {
+    
+    public static final String FAIL_ERROR_MESSAGE = "This was not supposed to happen";
 
     @Test
     public void testComputeSytemCreation() {
@@ -59,7 +63,7 @@ public class ComputeSystemTest {
         try {
             when(mockedBufferedReader.readLine()).thenReturn(null);
         } catch (IOException e) {
-            fail("This was not supposed to happen");
+            fail(FAIL_ERROR_MESSAGE);
         }
         systemPOD.setBis(mockedBufferedReader);
 
@@ -84,7 +88,7 @@ public class ComputeSystemTest {
         try {
             verify(mockedBufferedReader).readLine();
         } catch (IOException e) {
-            fail("This was not supposed to happen");
+            fail(FAIL_ERROR_MESSAGE);
         }
 
         verifyNoMoreInteractions(mockedEnvironment, mockedDataCenter, mockedSLAViolationLogger, mockedBufferedReader);
@@ -97,7 +101,7 @@ public class ComputeSystemTest {
         try {
             when(mockedBufferedReader.readLine()).thenReturn("2\t1\t1\t1\t1");
         } catch (IOException e) {
-            fail("This was not supposed to happen");
+            fail(FAIL_ERROR_MESSAGE);
         }
         systemPOD.setBis(mockedBufferedReader);
 
@@ -124,7 +128,7 @@ public class ComputeSystemTest {
         try {
             verify(mockedBufferedReader).readLine();
         } catch (IOException e) {
-            fail("This was not supposed to happen");
+            fail(FAIL_ERROR_MESSAGE);
         }
 
         verify(mockedSLAViolationLogger).logHPCViolation("dummy", Violation.COMPUTE_NODE_SHORTAGE);
@@ -139,7 +143,7 @@ public class ComputeSystemTest {
         try {
             when(mockedBufferedReader.readLine()).thenReturn("2\t1\t1\t1\t1");
         } catch (IOException e) {
-            fail("This was not supposed to happen");
+            fail(FAIL_ERROR_MESSAGE);
         }
         systemPOD.setBis(mockedBufferedReader);
 
@@ -180,7 +184,7 @@ public class ComputeSystemTest {
         try {
             verify(mockedBufferedReader).readLine();
         } catch (IOException e) {
-            fail("This was not supposed to happen");
+            fail(FAIL_ERROR_MESSAGE);
         }
         verify(mockedSLAViolationLogger).logHPCViolation("dummy", Violation.DEADLINE_PASSED);
 
@@ -195,7 +199,7 @@ public class ComputeSystemTest {
         try {
             when(mockedBufferedReader.readLine()).thenReturn("2\t1\t1\t1\t1");
         } catch (IOException e) {
-            fail("This was not supposed to happen");
+            fail(FAIL_ERROR_MESSAGE);
         }
         systemPOD.setBis(mockedBufferedReader);
 
@@ -240,10 +244,16 @@ public class ComputeSystemTest {
         try {
             verify(mockedBufferedReader).readLine();
         } catch (IOException e) {
-            fail("This was not supposed to happen");
+            fail(FAIL_ERROR_MESSAGE);
         }
+        
+        verify(mockedBladeServer).decreaseFrequency();
+        verify(mockedBladeServer).getActiveBatchList();
+        verify(mockedBladeServer).getBlockedBatchList();
+        verify(mockedBladeServer).setStatusAsIdle();
 
-        verifyNoMoreInteractions(mockedEnvironment, mockedDataCenter, mockedSLAViolationLogger, mockedBufferedReader);
+        verifyNoMoreInteractions(mockedEnvironment, mockedDataCenter, mockedSLAViolationLogger, mockedBufferedReader,
+                mockedBladeServer);
     }
     
     @Test
@@ -298,16 +308,200 @@ public class ComputeSystemTest {
         try {
             verify(mockedBufferedReader).readLine();
         } catch (IOException e) {
-            fail("This was not supposed to happen");
+            fail(FAIL_ERROR_MESSAGE);
         }
         
         verify(mockedSLAViolationLogger).logHPCViolation("dummy", Violation.DEADLINE_PASSED);
 
+        verifyNoMoreInteractions(mockedEnvironment, mockedDataCenter, mockedSLAViolationLogger, mockedBufferedReader,
+                mockedBladeServer);
+    }
+    
+    @Test
+    public void testReadJob_NoJobsFail() {
+        SystemPOD systemPOD = new ComputeSystemPOD();
+        BufferedReader mockedBufferedReader = mock(BufferedReader.class);
+        try {
+            when(mockedBufferedReader.readLine()).thenReturn(null);
+        } catch (IOException e) {
+            fail(FAIL_ERROR_MESSAGE);
+        }
+        systemPOD.setBis(mockedBufferedReader);
+
+        Environment mockedEnvironment = mock(Environment.class);
+        DataCenter mockedDataCenter = mock(DataCenter.class);
+        SLAViolationLogger mockedSLAViolationLogger = mock(SLAViolationLogger.class);
+        ComputeSystem computeSystem = ComputeSystem.Create("dummy", systemPOD, mockedEnvironment, mockedDataCenter,
+                mockedSLAViolationLogger);
+        
+        BatchJob mockedBatchJob = mock(BatchJob.class);
+            
+        try {
+            Method method = ComputeSystem.class.getDeclaredMethod("readJob", BatchJob.class);
+            method.setAccessible(true);
+            
+            
+            Boolean result = (Boolean) method.invoke(computeSystem, mockedBatchJob);     
+            assertFalse(result);
+        } catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException | NoSuchMethodException | SecurityException e) {
+            fail(FAIL_ERROR_MESSAGE);
+        }
+        
+        try {
+            verify(mockedBufferedReader).readLine();
+        } catch (IOException e) {
+            fail(FAIL_ERROR_MESSAGE);
+        }  
+        
         verifyNoMoreInteractions(mockedEnvironment, mockedDataCenter, mockedSLAViolationLogger, mockedBufferedReader);
+    }
+    
+    @Test
+    public void testReadJob_WrongNumberOfParameters() {
+        SystemPOD systemPOD = new ComputeSystemPOD();
+        BufferedReader mockedBufferedReader = mock(BufferedReader.class);
+        try {
+            when(mockedBufferedReader.readLine()).thenReturn("1\t1");
+        } catch (IOException e) {
+            fail(FAIL_ERROR_MESSAGE);
+        }
+        systemPOD.setBis(mockedBufferedReader);
+
+        Environment mockedEnvironment = mock(Environment.class);
+        DataCenter mockedDataCenter = mock(DataCenter.class);
+        SLAViolationLogger mockedSLAViolationLogger = mock(SLAViolationLogger.class);
+        ComputeSystem computeSystem = ComputeSystem.Create("dummy", systemPOD, mockedEnvironment, mockedDataCenter,
+                mockedSLAViolationLogger);
+        
+        BatchJob mockedBatchJob = mock(BatchJob.class);
+            
+        try {
+            Method method = ComputeSystem.class.getDeclaredMethod("readJob", BatchJob.class);
+            method.setAccessible(true);
+            
+            
+            Boolean result = (Boolean) method.invoke(computeSystem, mockedBatchJob);     
+            assertFalse(result);
+        } catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException | NoSuchMethodException | SecurityException e) {
+            fail(FAIL_ERROR_MESSAGE);
+        }
+        
+        try {
+            verify(mockedBufferedReader).readLine();
+        } catch (IOException e) {
+            fail(FAIL_ERROR_MESSAGE);
+        }
+        
+        verifyNoMoreInteractions(mockedEnvironment, mockedDataCenter, mockedSLAViolationLogger, mockedBufferedReader);
+    }
+    
+    @Test
+    public void testReadJobSuccessfully() {
+        SystemPOD systemPOD = new ComputeSystemPOD();
+        BufferedReader mockedBufferedReader = mock(BufferedReader.class);
+        try {
+            when(mockedBufferedReader.readLine()).thenReturn("1\t2\t3\t4\t5");
+        } catch (IOException e) {
+            fail(FAIL_ERROR_MESSAGE);
+        }
+        systemPOD.setBis(mockedBufferedReader);
+
+        Environment mockedEnvironment = mock(Environment.class);
+        DataCenter mockedDataCenter = mock(DataCenter.class);
+        SLAViolationLogger mockedSLAViolationLogger = mock(SLAViolationLogger.class);
+        ComputeSystem computeSystem = ComputeSystem.Create("dummy", systemPOD, mockedEnvironment, mockedDataCenter,
+                mockedSLAViolationLogger);
+        
+        BatchJob mockedBatchJob = mock(BatchJob.class);
+            
+        try {
+            Method readJobMethod = ComputeSystem.class.getDeclaredMethod("readJob", BatchJob.class);
+            readJobMethod.setAccessible(true);
+            
+            
+            Boolean result = (Boolean) readJobMethod.invoke(computeSystem, mockedBatchJob);     
+            assertTrue(result);
+        } catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException | NoSuchMethodException | SecurityException e) {
+            fail(FAIL_ERROR_MESSAGE);
+        }
+        
+        verify(mockedBatchJob).setStartTime(1);
+        verify(mockedBatchJob).setRemainParam(2, 3, 4, 5);
+        try {
+            verify(mockedBufferedReader).readLine();
+        } catch (IOException e) {
+            fail(FAIL_ERROR_MESSAGE);
+        }   
+        
+        verifyNoMoreInteractions(mockedEnvironment, mockedDataCenter, mockedSLAViolationLogger, mockedBufferedReader);
+    }
+    
+    @Test
+    public void testMoveWaitingJobsToBladeServer() {
+        SystemPOD systemPOD = new ComputeSystemPOD();
+        BufferedReader mockedBufferedReader = mock(BufferedReader.class);
+        try {
+            when(mockedBufferedReader.readLine()).thenReturn("1\t2\t3\t4\t5");
+        } catch (IOException e) {
+            fail(FAIL_ERROR_MESSAGE);
+        }
+        systemPOD.setBis(mockedBufferedReader);
+
+        Environment mockedEnvironment = mock(Environment.class);
+        when(mockedEnvironment.getCurrentLocalTime()).thenReturn(1);
+        DataCenter mockedDataCenter = mock(DataCenter.class);
+        SLAViolationLogger mockedSLAViolationLogger = mock(SLAViolationLogger.class);
+        ComputeSystem computeSystem = ComputeSystem.Create("dummy", systemPOD, mockedEnvironment, mockedDataCenter,
+                mockedSLAViolationLogger);
+        BladeServer mockedBladeServer = mock(BladeServer.class);
+        when(mockedBladeServer.getReady()).thenReturn(1);
+        when(mockedBladeServer.getChassisID()).thenReturn(15);
+        
+        computeSystem.appendBladeServerIntoComputeNodeList(mockedBladeServer);
+        
+        BatchJob mockedBatchJob = mock(BatchJob.class);
+        when(mockedBatchJob.getNumOfNode()).thenReturn(1);
+        when(mockedBatchJob.getDeadline()).thenReturn(10.0);
+        when(mockedBatchJob.getStartTime()).thenReturn(1.0);
+        try {
+            Method readJobMethod = ComputeSystem.class.getDeclaredMethod("readJob", BatchJob.class);
+            readJobMethod.setAccessible(true);
+            
+            Boolean result = (Boolean) readJobMethod.invoke(computeSystem, mockedBatchJob);   
+            assertTrue(result);
+            
+            Method moveWaitingJobsToBladeServerMethod = ComputeSystem.class.getDeclaredMethod("moveWaitingJobsToBladeServer");
+            moveWaitingJobsToBladeServerMethod.setAccessible(true);
+            
+            moveWaitingJobsToBladeServerMethod.invoke(computeSystem);
+        } catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException | NoSuchMethodException | SecurityException e) {
+            fail(FAIL_ERROR_MESSAGE);
+        }
+        
+        verify(mockedEnvironment, times(2)).getCurrentLocalTime();
+        verify(mockedBladeServer).feedWork(any(BatchJob.class));
+        verify(mockedBladeServer).setDependency(anyInt());
+        verify(mockedBatchJob).setStartTime(1);
+        verify(mockedBatchJob).setRemainParam(2, 3, 4, 5);
+        
+        try {
+            verify(mockedBufferedReader).readLine();
+        } catch (IOException e) {
+            fail(FAIL_ERROR_MESSAGE);
+        }
+        
+        verify(mockedBladeServer, times(51)).getReady(); // XXX: 51???
+        verify(mockedBladeServer, times(50)).getChassisID(); //XXX: 26????
+        verify(mockedBladeServer).getServerID();
+        verify(mockedBladeServer).feedWork(any(BatchJob.class));
+        verify(mockedBladeServer).setDependency(0);
+        verify(mockedEnvironment, times(2)).getCurrentLocalTime();
+        
+        verifyNoMoreInteractions(mockedEnvironment, mockedDataCenter, mockedSLAViolationLogger, mockedBufferedReader,
+                mockedBladeServer);
     }
 
     /* Methods that are in coverage report */
-    /* getFromWaitinglist */
     /* Number of idle node */
     /* finalized */
 }
