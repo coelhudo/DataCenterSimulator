@@ -85,14 +85,14 @@ public class MHR extends ResourceAllocation {
     // List is array of compute nodes
 
     @Override
-    public int[] allocateSystemLevelServer(List<BladeServer> ComputeNodeList, int list[]) {
+    public int[] allocateSystemLevelServer(List<BladeServer> computeNodeList, int list[]) {
         int j = 0, i = 0;
         int totalReadyNodes = 0;
         for (i = 0; i < list.length; i++) {
             list[i] = -2;
         }
-        for (int k = 0; k < ComputeNodeList.size(); k++) {
-            if (ComputeNodeList.get(k).getReady() == 1) {
+        for (BladeServer bladeServer : computeNodeList) {
+            if (bladeServer.getReady() == 1) {
                 totalReadyNodes++;
             }
         }
@@ -103,8 +103,8 @@ public class MHR extends ResourceAllocation {
         j = 0;
         int k = powIndex.length - 1;
         for (; k >= 0 && j < list.length; k--) {
-            for (i = 0; i < ComputeNodeList.size(); i++) {
-                if (ComputeNodeList.get(i).getReady() == 1 && powIndex[k] == ComputeNodeList.get(i).getChassisID()) // &
+            for (i = 0; i < computeNodeList.size(); i++) {
+                if (computeNodeList.get(i).getReady() == 1 && powIndex[k] == computeNodeList.get(i).getChassisID()) // &
                 // ComputeNodeList.get(i).activeBatchList.size()==0)
                 {
                     list[j++] = i;

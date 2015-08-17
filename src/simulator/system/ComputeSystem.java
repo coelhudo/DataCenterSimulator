@@ -20,9 +20,8 @@ import simulator.schedulers.Scheduler;
 public class ComputeSystem extends GeneralSystem {
 
     private static final Logger LOGGER = Logger.getLogger(ComputeSystem.class.getName());
-    
-    private Violation SLAViolationType; // different type of violation:
-    // ComputeNodeShortage, DEADLINEPASSED
+
+    private Violation SLAViolationType;
     private List<BatchJob> waitingList;
     private int totalJob = 0;
     private double inputTime;
@@ -32,7 +31,8 @@ public class ComputeSystem extends GeneralSystem {
     private SLAViolationLogger slaViolationLogger;
     private DataCenter dataCenter;
 
-    private ComputeSystem(SystemPOD systemPOD, Environment environment, DataCenter dataCenter, SLAViolationLogger slaViolationLogger) {
+    private ComputeSystem(SystemPOD systemPOD, Environment environment, DataCenter dataCenter,
+            SLAViolationLogger slaViolationLogger) {
         super(systemPOD);
         this.environment = environment;
         this.dataCenter = dataCenter;
@@ -45,16 +45,13 @@ public class ComputeSystem extends GeneralSystem {
         setNumberOfNode(systemPOD.getNumberOfNode());
         priority = ((ComputeSystemPOD) systemPOD).getPriority();
         setRackIDs(systemPOD.getRackIDs());
-        // placement=new jobPlacement(ComputeNodeList);
         setResourceAllocation(new MHR(this.environment, this.dataCenter));
         totalJob = 0;
     }
 
-    boolean runAcycle() {
+    public boolean runAcycle() {
         setSLAviolation(0);
         int numberOfFinishedJob = 0;
-        // if(Main.localTime%1200==0 |Main.localTime%1200==2 )
-        // ASP();
         BatchJob j = new BatchJob(environment, dataCenter);
         // reads all jobs with arrival time less than Localtime
         while (readJob(j)) {
@@ -66,13 +63,12 @@ public class ComputeSystem extends GeneralSystem {
         if (!isBlocked()) {
             // feeds jobs from waiting list to servers as much as possible
             getFromWaitinglist();
-            for (int temp = 0; temp < getComputeNodeList().size(); temp++) {
-                getComputeNodeList().get(temp).run(new BatchJob(environment, dataCenter));
+            for (BladeServer bladeServer : getComputeNodeList()) {
+                bladeServer.run(new BatchJob(environment, dataCenter));
             }
-            for (int temp = 0; temp < getComputeNodeList().size(); temp++) {
-                numberOfFinishedJob = getComputeNodeList().get(temp).getTotalFinishedJob() + numberOfFinishedJob;
+            for (BladeServer bladeServer : getComputeNodeList()) {
+                numberOfFinishedJob = bladeServer.getTotalFinishedJob() + numberOfFinishedJob;
             }
-            //LOGGER.info("total "+totalJob+ "\t finished Job= "+numberOfFinishedJob+"\t LocalTime="+Main.localTime);
         }
         // if is blocked and was not belocked before make it blocked
         if (isBlocked() && !allNodesAreBlocked()) {
@@ -83,14 +79,13 @@ public class ComputeSystem extends GeneralSystem {
             getAM().monitor();
             getAM().analysis(0);
         }
-        // LOGGER.info(Main.localTime +"\t"+totalJob+
-        // "\t"+numberOfFinishedJob);
+        
         if (numberOfFinishedJob == totalJob) {
             markAsDone();
             return true;
-        } else {
-            return false;
         }
+        return false;
+
     }
     /// returns true if all nodes are blocked
 
@@ -111,7 +106,7 @@ public class ComputeSystem extends GeneralSystem {
     }
 
     public void makeSystemaUnBlocked() {
-        for (BladeServer bladeServer: getComputeNodeList()) {
+        for (BladeServer bladeServer : getComputeNodeList()) {
             bladeServer.restoreStatus();
         }
     }
@@ -159,7 +154,7 @@ public class ComputeSystem extends GeneralSystem {
             }
             // Check if dealine is missed
             if (environment.getCurrentLocalTime() - job.getStartTime() > job.getDeadline()) {
-                setSLAviolation(Violation.DEADLINEPASSED);
+                setSLAviolation(Violation.DEADLINE_PASSED);
                 // LOGGER.info("DEADLINE PASSED in getFromWaitingList");
             }
             ////////////////////////////
@@ -179,7 +174,7 @@ public class ComputeSystem extends GeneralSystem {
         // map the index in CS compute node list to physical index(chassID ,
         // ServerID)
         for (int i = 0; i < list.length; i++) {
-            retList[i] = getComputeNodeList().get(list[i]).getServerID();// chassisID*NumOfSerInChas+ComputeNodeList.get(list[i]).serverID;
+            retList[i] = getComputeNodeList().get(list[i]).getServerID();
         }
         return retList;
     }
@@ -195,8 +190,8 @@ public class ComputeSystem extends GeneralSystem {
             SLAViolationType = Violation.COMPUTE_NODE_SHORTAGE;
             SLAviolation++;
         }
-        if (flag == Violation.DEADLINEPASSED) {
-            SLAViolationType = Violation.DEADLINEPASSED;
+        if (flag == Violation.DEADLINE_PASSED) {
+            SLAViolationType = Violation.DEADLINE_PASSED;
             SLAviolation++;
         }
         if (SLAViolationType != Violation.NOTHING) {
@@ -205,7 +200,7 @@ public class ComputeSystem extends GeneralSystem {
         }
     }
 
-    boolean readJob(BatchJob j) {
+    boolean readJob(BatchJob batchJob) {
         try {
             String line = getBis().readLine();
             if (line == null) {
@@ -219,14 +214,12 @@ public class ComputeSystem extends GeneralSystem {
             // Input log format: (time, requiertime, CPU utilization, number of
             // core, dealine for getting to a server buffer)
             inputTime = Double.parseDouble(numbers[0]);
-            j.setRemainParam(Double.parseDouble(numbers[1]), Double.parseDouble(numbers[2]),
+            batchJob.setRemainParam(Double.parseDouble(numbers[1]), Double.parseDouble(numbers[2]),
                     Integer.parseInt(numbers[3]), Integer.parseInt(numbers[4]));
-            j.setStartTime(inputTime);
-            boolean add = waitingList.add(j);
+            batchJob.setStartTime(inputTime);
+           final boolean add = waitingList.add(batchJob);
             // number of jobs which are copied on # of requested nodes
-            totalJob = totalJob + 1 /* +Integer.parseInt(numbers[3]) */;
-            // LOGGER.info("Readed inputTime= " + inputTime + " Job
-            // Reqested Time=" + j.startTime+" Total job so far="+ total);
+            totalJob = totalJob + 1;
             return add;
         } catch (IOException ex) {
             LOGGER.info("readJOB EXC readJOB false ");
@@ -235,7 +228,6 @@ public class ComputeSystem extends GeneralSystem {
         }
     }
 
-    
     List<Integer> getindexSet() {
         return getComputeNodeIndex();
     }
@@ -286,7 +278,8 @@ public class ComputeSystem extends GeneralSystem {
         return totalResponsetime;
     }
 
-    public static ComputeSystem Create(String name, SystemPOD systemPOD, Environment environment, DataCenter dataCenter, SLAViolationLogger slaViolationLogger) {
+    public static ComputeSystem Create(String name, SystemPOD systemPOD, Environment environment, DataCenter dataCenter,
+            SLAViolationLogger slaViolationLogger) {
         ComputeSystem computeSystem = new ComputeSystem(systemPOD, environment, dataCenter, slaViolationLogger);
         computeSystem.getResourceAllocation().initialResourceAloc(computeSystem);
         computeSystem.setAM(new ComputeSystemAM(computeSystem, environment));
