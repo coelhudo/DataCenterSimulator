@@ -71,7 +71,8 @@ public class EnterpriseAppTest {
     }
 
     @Test
-    public void testRunACycle() {
+    public void testRunACycle_MoreJobsThanCapacity() {
+        final int valueToMakeMoreJobsThanCapacity = 3;
         EnterpriseApplicationPOD enterpriseApplicationPOD = new EnterpriseApplicationPOD();
         BufferedReader mockedBufferedReader = mock(BufferedReader.class);
         try {
@@ -87,7 +88,7 @@ public class EnterpriseAppTest {
         
         Scheduler mockedScheduler = mock(Scheduler.class);
         EnterpriseJob mockedEnterpriseJob = mock(EnterpriseJob.class);
-        when(mockedEnterpriseJob.getNumberOfJob()).thenReturn(3);
+        when(mockedEnterpriseJob.getNumberOfJob()).thenReturn(valueToMakeMoreJobsThanCapacity);
         when(mockedScheduler.nextJob(anyListOf(Job.class))).thenReturn(mockedEnterpriseJob);
         when(mockedEnterpriseSystem.getScheduler()).thenReturn(mockedScheduler);
         
@@ -144,6 +145,170 @@ public class EnterpriseAppTest {
         verify(mockedEnterpriseSystem).getScheduler();
         verify(mockedScheduler).nextJob(anyListOf(Job.class));
         verify(mockedEnvironment, times(2)).getCurrentLocalTime();
+
+        verifyNoMoreInteractions(mockedEnterpriseSystem, mockedEnvironment, mockedBladeServer, mockedBufferedReader,
+                mockedScheduler);
+    }
+    
+    @Test
+    public void testRunACycle_CapacityEqualsZero() {
+        final int valueToMakeCapacityEqualsZero = 2;
+        
+        EnterpriseApplicationPOD enterpriseApplicationPOD = new EnterpriseApplicationPOD();
+        BufferedReader mockedBufferedReader = mock(BufferedReader.class);
+        try {
+            when(mockedBufferedReader.readLine()).thenReturn("1\t1");
+        } catch (IOException e1) {
+            // TODO Auto-generated catch block
+            e1.printStackTrace();
+        }
+        
+        enterpriseApplicationPOD.setBIS(mockedBufferedReader);
+        
+        EnterpriseSystem mockedEnterpriseSystem = mock(EnterpriseSystem.class);
+        
+        Scheduler mockedScheduler = mock(Scheduler.class);
+        EnterpriseJob mockedEnterpriseJob = mock(EnterpriseJob.class);
+        when(mockedEnterpriseJob.getNumberOfJob()).thenReturn(valueToMakeCapacityEqualsZero);
+        when(mockedScheduler.nextJob(anyListOf(Job.class))).thenReturn(mockedEnterpriseJob);
+        when(mockedEnterpriseSystem.getScheduler()).thenReturn(mockedScheduler);
+        
+        Environment mockedEnvironment = mock(Environment.class);
+        when(mockedEnvironment.getCurrentLocalTime()).thenReturn(5);
+        
+        EnterpriseApp enterpriseApplication = new EnterpriseApp(enterpriseApplicationPOD, mockedEnterpriseSystem,
+                mockedEnvironment);
+        assertTrue(enterpriseApplication.getComputeNodeList().isEmpty());
+
+        BladeServer mockedBladeServer = mock(BladeServer.class);
+        when(mockedBladeServer.getReady()).thenReturn(1);
+        when(mockedBladeServer.getCurrentCPU()).thenReturn(10.0);
+        when(mockedBladeServer.getMips()).thenReturn(1.4);
+        enterpriseApplication.addCompNodetoBundle(mockedBladeServer);
+        enterpriseApplication.setNumberofBasicNode(1);
+        enterpriseApplication.setMaxNumberOfRequest(1);
+        
+        try {
+            Method runAcycleMethod = EnterpriseApp.class.getDeclaredMethod("runAcycle");
+            runAcycleMethod.setAccessible(true);
+
+            Boolean result = (Boolean) runAcycleMethod.invoke(enterpriseApplication);
+
+            assertTrue(result);
+        } catch (NoSuchMethodException e) {
+            fail(FAIL_ERROR_MESSAGE);
+        } catch (SecurityException e) {
+            fail(FAIL_ERROR_MESSAGE);
+        } catch (IllegalAccessException e) {
+            fail(FAIL_ERROR_MESSAGE);
+        } catch (IllegalArgumentException e) {
+            fail(FAIL_ERROR_MESSAGE);
+        } catch (InvocationTargetException e) {
+            fail(FAIL_ERROR_MESSAGE);
+        }
+
+        assertFalse(enterpriseApplication.getComputeNodeList().isEmpty());
+
+        verify(mockedBladeServer).restart();
+        verify(mockedBladeServer, times(3)).getReady();
+        verify(mockedBladeServer, times(2)).setCurrentCPU(anyInt());
+        verify(mockedBladeServer).setStatusAsRunningNormal();
+        verify(mockedBladeServer).setStatusAsRunningBusy();
+        verify(mockedBladeServer).getCurrentCPU();
+        verify(mockedBladeServer).getMips();
+        
+        try {
+            verify(mockedBufferedReader).readLine();
+        } catch (IOException e) {
+            fail(FAIL_ERROR_MESSAGE);
+        }
+        
+        verify(mockedEnterpriseSystem).getScheduler();
+        verify(mockedScheduler).nextJob(anyListOf(Job.class));
+        verify(mockedEnvironment, times(2)).getCurrentLocalTime();
+
+        verifyNoMoreInteractions(mockedEnterpriseSystem, mockedEnvironment, mockedBladeServer, mockedBufferedReader,
+                mockedScheduler);
+    }
+    
+    @Test
+    public void testRunACycle_CapacityGreaterThanNumberOfJobs() {
+        final int valueToMakeCapacityGreaterThanNumberOfJobs= 1;
+        
+        EnterpriseApplicationPOD enterpriseApplicationPOD = new EnterpriseApplicationPOD();
+        BufferedReader mockedBufferedReader = mock(BufferedReader.class);
+        try {
+            when(mockedBufferedReader.readLine()).thenReturn("1\t1");
+        } catch (IOException e1) {
+            fail(FAIL_ERROR_MESSAGE);
+        }
+        
+        enterpriseApplicationPOD.setBIS(mockedBufferedReader);
+        
+        EnterpriseSystem mockedEnterpriseSystem = mock(EnterpriseSystem.class);
+        
+        Scheduler mockedScheduler = mock(Scheduler.class);
+        EnterpriseJob mockedEnterpriseJob = mock(EnterpriseJob.class);
+        when(mockedEnterpriseJob.getNumberOfJob()).thenReturn(valueToMakeCapacityGreaterThanNumberOfJobs);
+        when(mockedScheduler.nextJob(anyListOf(Job.class))).thenReturn(mockedEnterpriseJob);
+        when(mockedEnterpriseSystem.getScheduler()).thenReturn(mockedScheduler);
+        
+        Environment mockedEnvironment = mock(Environment.class);
+        when(mockedEnvironment.getCurrentLocalTime()).thenReturn(5);
+        
+        EnterpriseApp enterpriseApplication = new EnterpriseApp(enterpriseApplicationPOD, mockedEnterpriseSystem,
+                mockedEnvironment);
+        assertTrue(enterpriseApplication.getComputeNodeList().isEmpty());
+
+        BladeServer mockedBladeServer = mock(BladeServer.class);
+        when(mockedBladeServer.getReady()).thenReturn(1);
+        when(mockedBladeServer.getCurrentCPU()).thenReturn(10.0);
+        when(mockedBladeServer.getMips()).thenReturn(1.4);
+        enterpriseApplication.addCompNodetoBundle(mockedBladeServer);
+        enterpriseApplication.setNumberofBasicNode(1);
+        enterpriseApplication.setMaxNumberOfRequest(1);
+        
+        try {
+            Method runAcycleMethod = EnterpriseApp.class.getDeclaredMethod("runAcycle");
+            runAcycleMethod.setAccessible(true);
+
+            Boolean result = (Boolean) runAcycleMethod.invoke(enterpriseApplication);
+
+            assertTrue(result);
+        } catch (NoSuchMethodException e) {
+            fail(FAIL_ERROR_MESSAGE);
+        } catch (SecurityException e) {
+            fail(FAIL_ERROR_MESSAGE);
+        } catch (IllegalAccessException e) {
+            fail(FAIL_ERROR_MESSAGE);
+        } catch (IllegalArgumentException e) {
+            fail(FAIL_ERROR_MESSAGE);
+        } catch (InvocationTargetException e) {
+            fail(FAIL_ERROR_MESSAGE);
+        }
+
+        assertFalse(enterpriseApplication.getComputeNodeList().isEmpty());
+
+        verify(mockedEnterpriseJob, times(2)).getArrivalTimeOfJob();
+        verify(mockedEnterpriseJob, times(6)).getNumberOfJob();
+        
+        verify(mockedBladeServer).restart();
+        verify(mockedBladeServer, times(3)).getReady();
+        verify(mockedBladeServer, times(2)).setCurrentCPU(anyInt());
+        verify(mockedBladeServer).setStatusAsRunningNormal();
+        verify(mockedBladeServer).setStatusAsRunningBusy();
+        verify(mockedBladeServer).getCurrentCPU();
+        verify(mockedBladeServer).getMips();
+        
+        try {
+            verify(mockedBufferedReader).readLine();
+        } catch (IOException e) {
+            fail(FAIL_ERROR_MESSAGE);
+        }
+        
+        verify(mockedEnterpriseSystem, times(2)).getScheduler();
+        verify(mockedScheduler, times(2)).nextJob(anyListOf(Job.class));
+        verify(mockedEnvironment, times(3)).getCurrentLocalTime();
 
         verifyNoMoreInteractions(mockedEnterpriseSystem, mockedEnvironment, mockedBladeServer, mockedBufferedReader,
                 mockedScheduler);
