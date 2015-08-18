@@ -290,8 +290,8 @@ public class BladeServer {
         for (int i = 0; i < getActiveBatchList().size(); i++) {
             if (getActiveBatchList().get(i).getIsChangedThisTime() == 0) {
                 final double utilization = getActiveBatchList().get(i).getUtilization();
-                final double shareUtilizationRatio = share / utilization;
-                if(shareUtilizationRatio == Double.NEGATIVE_INFINITY || shareUtilizationRatio == Double.POSITIVE_INFINITY)
+                final Double shareUtilizationRatio = share / utilization;
+                if(shareUtilizationRatio.isInfinite())
                     throw new ArithmeticException("Division by Zero");
                 
                 if (shareUtilizationRatio > 1) {

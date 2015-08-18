@@ -132,8 +132,7 @@ public final class EnterpriseApp {
     int readWebJob() {
         int retReadLogfile = readingLogFile();
         if (!getQueueApp().isEmpty()) {
-            if (getQueueApp().get(0).getArrivalTimeOfJob() == environment.getCurrentLocalTime()
-                    | getQueueApp().get(0).getArrivalTimeOfJob() < environment.getCurrentLocalTime()) {
+            if (getQueueApp().get(0).getArrivalTimeOfJob() <= environment.getCurrentLocalTime()) {
                 return 1;
             } else {
                 return 0;
@@ -169,20 +168,17 @@ public final class EnterpriseApp {
         //////// RESET READY FLAGS for all nodes
         resetReadyFlagAndCPU();
         // need more thought
-        if (readingResult == 0) // we have jobs but it is not the time to run
-        // them
-        {
+        if (readingResult == 0) {
+            // we have jobs but it is not the time to run them
             return true;
         }
-        if (readingResult == -2 & getQueueApp().isEmpty()) // no jobs are in the
-        // queue and in
-        // logfile
-        {
+        if (readingResult == -2 & getQueueApp().isEmpty()) {
+            // no jobs are in the queue and in logfile
             return false;
         }
         double CPUpercentage = 0;
         int numberofReadyNodes = 0;
-        double beenRunJobs = 0; // number of jobs have been run so far
+        int beenRunJobs = 0; // number of jobs have been run so far
         for (BladeServer bladeServer : getComputeNodeList()) {
             if (bladeServer.getReady() == 1) {
                 CPUpercentage = (100.0 - bladeServer.getCurrentCPU()) * bladeServer.getMips() + CPUpercentage;
@@ -191,47 +187,38 @@ public final class EnterpriseApp {
         }
         int capacityOfNode = (int) Math
                 .ceil((getMaxNumberOfRequest() * CPUpercentage) / (getNumberofBasicNode() * 100.0));
-        double capacityOfNode_COPY = capacityOfNode;
-        EnterpriseJob jj = new EnterpriseJob();
-        // jj=queueApp.get(0);
-
-        jj = (EnterpriseJob) parent.getScheduler().nextJob(getQueueApp());
+        int capacityOfNode_COPY = capacityOfNode;
+        EnterpriseJob jj = (EnterpriseJob) parent.getScheduler().nextJob(getQueueApp());
         while (capacityOfNode > 0) {
             capacityOfNode = capacityOfNode - jj.getNumberOfJob();
             if (capacityOfNode == 0) {
                 addToresponseArray(jj.getNumberOfJob(),
                         (environment.getCurrentLocalTime() - jj.getArrivalTimeOfJob() + 1));
-                // LOGGER.info((Main.localTime-wJob.arrivalTimeOfJob+1)*(wJob.numberOfJob)
-                // +"\t"+wJob.numberOfJob+"\t q len="+queueLength);
                 beenRunJobs = beenRunJobs + jj.getNumberOfJob();
                 getQueueApp().remove(jj);
                 break;
             }
-            if (capacityOfNode < 0) // there are more jobs than capacity
-            {
+            if (capacityOfNode < 0) {
+                // there are more jobs than capacity
                 addToresponseArray(capacityOfNode + jj.getNumberOfJob(),
                         (environment.getCurrentLocalTime() - jj.getArrivalTimeOfJob() + 1));
                 beenRunJobs = beenRunJobs + capacityOfNode + jj.getNumberOfJob();
                 jj.setNumberOfJob(-1 * capacityOfNode);
-                // LOGGER.info(1000.0*Mips);
                 break;
             }
-            if (capacityOfNode > 0) // still we have capacity to run the jobs
-            {
+            if (capacityOfNode > 0) {
+                // still we have capacity to run the jobs
                 addToresponseArray(jj.getNumberOfJob(),
                         (environment.getCurrentLocalTime() - jj.getArrivalTimeOfJob() + 1));
                 beenRunJobs = beenRunJobs + jj.getNumberOfJob();
                 getQueueApp().remove(jj);
                 while (!getQueueApp().isEmpty()) {
-
-                    // jj=queueApp.get(0);
                     jj = (EnterpriseJob) parent.getScheduler().nextJob(getQueueApp());
-                    double copyTedat = capacityOfNode;
+                    int copyTedat = capacityOfNode;
                     capacityOfNode = capacityOfNode - jj.getNumberOfJob();
                     if (capacityOfNode == 0) {
                         addToresponseArray(jj.getNumberOfJob(),
                                 (environment.getCurrentLocalTime() - jj.getArrivalTimeOfJob() + 1));
-                        // LOGGER.info(wJob.numberOfJob);
                         beenRunJobs = beenRunJobs + jj.getNumberOfJob();
                         getQueueApp().remove(0);
                         break;
@@ -242,29 +229,26 @@ public final class EnterpriseApp {
                                 (environment.getCurrentLocalTime() - jj.getArrivalTimeOfJob() + 1));
                         jj.setNumberOfJob(-1 * capacityOfNode);
                         beenRunJobs = beenRunJobs + copyTedat;
-                        // LOGGER.info(copyTedat);
                         break;
                     }
                     if (capacityOfNode > 0) {
                         addToresponseArray(jj.getNumberOfJob(),
                                 (environment.getCurrentLocalTime() - jj.getArrivalTimeOfJob() + 1));
-                        // LOGGER.info(wJob.numberOfJob);
                         beenRunJobs = beenRunJobs + jj.getNumberOfJob();
                         getQueueApp().remove(0);
                     }
-                } // end while
+                }
                 break;
-            } // end if
+            }
         }
-        if (capacityOfNode_COPY == beenRunJobs) // we're done all our capacity
-        {
+        if (capacityOfNode_COPY == beenRunJobs) {
+            // we're done all our capacity
             for (BladeServer bladeServer : getComputeNodeList()) {
                 if (bladeServer.getReady() == 1) {
                     bladeServer.setCurrentCPU(100);
                     bladeServer.setStatusAsRunningBusy();
                 }
             }
-            // usedNode=usedNode+ComputeNodeList.size();
         } else if (beenRunJobs < 0) {
             LOGGER.info("it is impossible!!!!  Enterprise BoN");
         } else if (beenRunJobs > 0) {
@@ -275,27 +259,23 @@ public final class EnterpriseApp {
                     LOGGER.info("enterPrise BoN : servID =-2\t " + k + "\t" + numberofReadyNodes);
                     break;
                 }
-                double CPUspace = (100 - getComputeNodeList().get(serID).getCurrentCPU())
-                        * getComputeNodeList().get(serID).getMips();
-                double reqSpace = (int) Math
-                        .ceil(CPUspace * getMaxNumberOfRequest() / (getNumberofBasicNode() * 100.0));
-                getComputeNodeList().get(serID).setCurrentCPU(100);
-                getComputeNodeList().get(serID).setStatusAsRunningBusy();
+                BladeServer bladeServer = getComputeNodeList().get(serID);
+                double CPUspace = (100 - bladeServer.getCurrentCPU()) * bladeServer.getMips();
+                int reqSpace = (int) Math.ceil(CPUspace * getMaxNumberOfRequest() / (getNumberofBasicNode() * 100.0));
+                bladeServer.setCurrentCPU(100);
+                bladeServer.setStatusAsRunningBusy();
                 beenRunJobs = beenRunJobs - reqSpace;
                 if (beenRunJobs == 0) {
                     k++;
                     break;
                 }
                 if (beenRunJobs < 0) {
-                    getComputeNodeList().get(serID)
-                            .setCurrentCPU((int) Math.ceil((reqSpace + beenRunJobs) * 100 / reqSpace));
-                    getComputeNodeList().get(serID).setStatusAsRunningNormal();
+                    bladeServer.setCurrentCPU(Math.ceil((reqSpace + beenRunJobs) * 100.0 / reqSpace));
+                    bladeServer.setStatusAsRunningNormal();
                     k++;
                     break;
                 }
             }
-            // LOGGER.info(k +"\t Running node= "+numberofReadyNodes);
-            // usedNode=usedNode+k;
         }
         // AM.monitor();
         // AM.analysis(SLAviolation);
@@ -343,9 +323,9 @@ public final class EnterpriseApp {
     }
 
     public double getAverageCPUutil() {
-        if(getComputeNodeList().isEmpty())
+        if (getComputeNodeList().isEmpty())
             return 0.0;
-        
+
         int i = 0;
         double cpu = 0;
         for (i = 0; i < getComputeNodeList().size(); i++) {

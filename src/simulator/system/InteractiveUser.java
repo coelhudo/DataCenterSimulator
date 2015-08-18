@@ -111,8 +111,7 @@ public class InteractiveUser {
     int readWebJob() {
         int retReadLogfile = readingLogFile();
         if (!getQueueWL().isEmpty()) {
-            if (getQueueWL().get(0).getArrivalTimeOfJob() == environment.getCurrentLocalTime()
-                    | getQueueWL().get(0).getArrivalTimeOfJob() < environment.getCurrentLocalTime()) {
+            if (getQueueWL().get(0).getArrivalTimeOfJob() <= environment.getCurrentLocalTime()) {
                 return 1;
             } else {
                 return 0;

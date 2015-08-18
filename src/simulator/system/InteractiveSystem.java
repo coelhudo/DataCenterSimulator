@@ -116,8 +116,7 @@ public class InteractiveSystem extends GeneralSystem {
     int readWL() {
         int retReadLogfile = readingLogFile();
         if (!getWaitingQueueWL().isEmpty()) {
-            if (getWaitingQueueWL().get(0).getArrivalTime() == environment.getCurrentLocalTime()
-                    | getWaitingQueueWL().get(0).getArrivalTime() < environment.getCurrentLocalTime()) {
+            if (getWaitingQueueWL().get(0).getArrivalTime() <= environment.getCurrentLocalTime()) {
                 return 1;
             } else {
                 return 0;
