@@ -7,13 +7,16 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.List;
 
 import org.junit.Test;
 
 import simulator.Environment;
+import simulator.ResponseTime;
 import simulator.jobs.EnterpriseJob;
 import simulator.jobs.Job;
 import simulator.physical.BladeServer;
+import simulator.ra.ResourceAllocation;
 import simulator.schedulers.Scheduler;
 import simulator.system.EnterpriseApp;
 import simulator.system.EnterpriseApplicationPOD;
@@ -341,14 +344,15 @@ public class EnterpriseAppTest {
             Method runAcycleMethod = EnterpriseApp.class.getDeclaredMethod("runAcycle");
             runAcycleMethod.setAccessible(true);
 
-            assertTrue((Boolean) runAcycleMethod.invoke(enterpriseApplication));
-            assertEquals(1, enterpriseApplication.getQueueApp().size());
-            
-            assertTrue((Boolean) runAcycleMethod.invoke(enterpriseApplication));
-            assertEquals(2, enterpriseApplication.getQueueApp().size());
-            
-            assertTrue((Boolean) runAcycleMethod.invoke(enterpriseApplication));
-            assertEquals(3, enterpriseApplication.getQueueApp().size());
+            // Because job arrivalTime is less than
+            // environment.getCurrentLocalTime()
+            // then nothing is going to be executed. The only thing that is
+            // supposed to happen is the queue become filled
+            for (int i = 1; i <= 3; i++) {
+                assertTrue((Boolean) runAcycleMethod.invoke(enterpriseApplication));
+                assertEquals(i, enterpriseApplication.getQueueApp().size());
+            }
+
         } catch (NoSuchMethodException e) {
             fail(FAIL_ERROR_MESSAGE);
         } catch (SecurityException e) {
@@ -361,20 +365,171 @@ public class EnterpriseAppTest {
             fail(FAIL_ERROR_MESSAGE);
         }
 
-        verify(mockedEnvironment,times(3)).getCurrentLocalTime();
-        
+        verify(mockedEnvironment, times(3)).getCurrentLocalTime();
+
         try {
-            verify(mockedBufferedReader,times(3)).readLine();
+            verify(mockedBufferedReader, times(3)).readLine();
         } catch (IOException e) {
             fail(FAIL_ERROR_MESSAGE);
         }
-        
+
         verifyNoMoreInteractions(mockedEnterpriseSystem, mockedEnvironment, mockedBufferedReader);
     }
-     
-    /*
-     * addToresponseArray destroyApplication
-     * 
-     */
 
+    @Test
+    public void testRunACycleMostBranchesAsPossible() {
+        EnterpriseApplicationPOD enterpriseApplicationPOD = new EnterpriseApplicationPOD();
+        BufferedReader mockedBufferedReader = mock(BufferedReader.class);
+        try {
+            when(mockedBufferedReader.readLine()).thenReturn("2\t1", "3\t1");
+        } catch (IOException e1) {
+            fail(FAIL_ERROR_MESSAGE);
+        }
+
+        enterpriseApplicationPOD.setBIS(mockedBufferedReader);
+
+        EnterpriseSystem mockedEnterpriseSystem = mock(EnterpriseSystem.class);
+
+        Scheduler mockedScheduler = mock(Scheduler.class);
+        EnterpriseJob mockedEnterpriseJob = mock(EnterpriseJob.class);
+        when(mockedEnterpriseJob.getNumberOfJob()).thenReturn(1);
+        when(mockedScheduler.nextJob(anyListOf(Job.class))).thenReturn(mockedEnterpriseJob);
+        when(mockedEnterpriseSystem.getScheduler()).thenReturn(mockedScheduler);
+
+        Environment mockedEnvironment = mock(Environment.class);
+        when(mockedEnvironment.getCurrentLocalTime()).thenReturn(1, 2);
+
+        EnterpriseApp enterpriseApplication = new EnterpriseApp(enterpriseApplicationPOD, mockedEnterpriseSystem,
+                mockedEnvironment);
+        enterpriseApplication.setMaxNumberOfRequest(100);
+        enterpriseApplication.setNumberofBasicNode(1);
+
+        BladeServer mockedBladeServer = mock(BladeServer.class);
+        when(mockedBladeServer.getReady()).thenReturn(1);
+        when(mockedBladeServer.getCurrentCPU()).thenReturn(10.0);
+        when(mockedBladeServer.getMips()).thenReturn(1.4);
+
+        ResourceAllocation mockedResourceAllocation = mock(ResourceAllocation.class);
+        when(mockedResourceAllocation.nextServer(anyListOf(BladeServer.class))).thenReturn(0);
+
+        when(mockedEnterpriseSystem.getResourceAllocation()).thenReturn(mockedResourceAllocation);
+
+        enterpriseApplication.addCompNodetoBundle(mockedBladeServer);
+
+        try {
+            Method runAcycleMethod = EnterpriseApp.class.getDeclaredMethod("runAcycle");
+            runAcycleMethod.setAccessible(true);
+
+            // Will insert job in the queue, but because of the arrival time
+            // will not execute
+            assertTrue((Boolean) runAcycleMethod.invoke(enterpriseApplication));
+            assertFalse(enterpriseApplication.getQueueApp().isEmpty());
+
+            // Now it will execute the previous job and the current one. Hence
+            // the queue will be consumed
+            assertTrue((Boolean) runAcycleMethod.invoke(enterpriseApplication));
+            assertTrue(enterpriseApplication.getQueueApp().isEmpty());
+
+        } catch (NoSuchMethodException e) {
+            fail(FAIL_ERROR_MESSAGE);
+        } catch (SecurityException e) {
+            fail(FAIL_ERROR_MESSAGE);
+        } catch (IllegalAccessException e) {
+            fail(FAIL_ERROR_MESSAGE);
+        } catch (IllegalArgumentException e) {
+            fail(FAIL_ERROR_MESSAGE);
+        } catch (InvocationTargetException e) {
+            fail(FAIL_ERROR_MESSAGE);
+        }
+
+        List<ResponseTime> responses = enterpriseApplication.getResponseList();
+        assertFalse(responses.isEmpty());
+        assertEquals(3, responses.size());
+
+        assertEquals(1, responses.get(0).getNumberOfJob(), 1.0E-8);
+        assertEquals(1, responses.get(1).getNumberOfJob(), 1.0E-8);
+        assertEquals(1, responses.get(2).getNumberOfJob(), 1.0E-8);
+
+        assertEquals(3.0, responses.get(0).getResponseTime(), 1.0E-8);
+        assertEquals(3.0, responses.get(1).getResponseTime(), 1.0E-8);
+        assertEquals(3.0, responses.get(2).getResponseTime(), 1.0E-8);
+
+        verify(mockedEnvironment, times(5)).getCurrentLocalTime();
+
+        verify(mockedEnterpriseSystem, times(3)).getScheduler();
+        verify(mockedEnterpriseSystem).getResourceAllocation();
+
+        verify(mockedScheduler, times(3)).nextJob(anyListOf(Job.class));
+        verify(mockedResourceAllocation).nextServer(anyListOf(BladeServer.class));
+
+        verify(mockedEnterpriseJob, times(9)).getNumberOfJob();
+        verify(mockedEnterpriseJob, times(3)).getArrivalTimeOfJob();
+
+        verify(mockedBladeServer).restart();
+        verify(mockedBladeServer, times(3)).getReady();
+        verify(mockedBladeServer, times(4)).setCurrentCPU(anyInt());
+        verify(mockedBladeServer).setStatusAsRunningBusy();
+        verify(mockedBladeServer, times(3)).setStatusAsRunningNormal();
+        verify(mockedBladeServer, times(2)).getMips();
+        verify(mockedBladeServer, times(2)).getCurrentCPU();
+
+        try {
+            verify(mockedBufferedReader, times(2)).readLine();
+        } catch (IOException e) {
+            fail(FAIL_ERROR_MESSAGE);
+        }
+
+        verifyNoMoreInteractions(mockedScheduler, mockedResourceAllocation, mockedEnterpriseJob, mockedEnterpriseSystem,
+                mockedEnvironment, mockedBufferedReader, mockedBladeServer);
+    }
+
+    @Test
+    public void testDestroyApplication() {
+        EnterpriseApplicationPOD enterpriseApplicationPOD = new EnterpriseApplicationPOD();
+
+        BufferedReader mockedBufferedReader = mock(BufferedReader.class);
+        enterpriseApplicationPOD.setBIS(mockedBufferedReader);
+
+        EnterpriseSystem mockedEnterpriseSystem = mock(EnterpriseSystem.class);
+        Environment mockedEnvironment = mock(Environment.class);
+        EnterpriseApp enterpriseApplication = new EnterpriseApp(enterpriseApplicationPOD, mockedEnterpriseSystem,
+                mockedEnvironment);
+
+        BladeServer mockedBladeServer = mock(BladeServer.class);
+        when(mockedBladeServer.getReady()).thenReturn(1);
+        when(mockedBladeServer.getCurrentCPU()).thenReturn(10.0);
+        when(mockedBladeServer.getMips()).thenReturn(1.4);
+
+        enterpriseApplication.addCompNodetoBundle(mockedBladeServer);
+
+        try {
+            Method destroyApplication = EnterpriseApp.class.getDeclaredMethod("destroyApplication");
+            destroyApplication.setAccessible(true);
+
+            destroyApplication.invoke(enterpriseApplication);
+        } catch (NoSuchMethodException e) {
+            fail(FAIL_ERROR_MESSAGE);
+        } catch (SecurityException e) {
+            fail(FAIL_ERROR_MESSAGE);
+        } catch (IllegalAccessException e) {
+            fail(FAIL_ERROR_MESSAGE);
+        } catch (IllegalArgumentException e) {
+            fail(FAIL_ERROR_MESSAGE);
+        } catch (InvocationTargetException e) {
+            fail(FAIL_ERROR_MESSAGE);
+        }
+
+        verify(mockedBladeServer, times(2)).restart();
+        verify(mockedBladeServer).setStatusAsNotAssignedToAnyApplication();
+        
+        try {
+            verify(mockedBufferedReader).close();
+        } catch (IOException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+        
+        verifyNoMoreInteractions(mockedBladeServer, mockedBufferedReader, mockedEnterpriseSystem, mockedEnvironment);
+
+    }
 }
