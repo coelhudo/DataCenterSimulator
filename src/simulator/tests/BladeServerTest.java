@@ -501,7 +501,7 @@ public class BladeServerTest {
         assertFalse(bladeServer.getActiveBatchList().isEmpty());
         assertTrue(bladeServer.getBlockedBatchList().isEmpty());
 
-        when(mockedBatchJob.getRemainLength()).thenReturn(1);
+        when(mockedBatchJob.getNumOfNode()).thenReturn(1);
         when(mockedBatchJob.getThisNodeIndex(0)).thenReturn(0);
         when(mockedBatchJob.getRemainAt(0)).thenReturn(2.0, 1.0);
 
@@ -524,7 +524,7 @@ public class BladeServerTest {
         assertFalse(bladeServer.getActiveBatchList().isEmpty());
         assertTrue(bladeServer.getBlockedBatchList().isEmpty());
 
-        when(mockedBatchJob.getRemainLength()).thenReturn(1);
+        when(mockedBatchJob.getNumOfNode()).thenReturn(1);
         when(mockedBatchJob.getThisNodeIndex(0)).thenReturn(0);
         when(mockedBatchJob.getRemainAt(0)).thenReturn(1.0, 0.0);
         when(mockedBatchJob.allDone()).thenReturn(false);
@@ -552,7 +552,7 @@ public class BladeServerTest {
 
         assertEquals(0, bladeServer.getTotalFinishedJob());
 
-        when(mockedBatchJob.getRemainLength()).thenReturn(1);
+        when(mockedBatchJob.getNumOfNode()).thenReturn(1);
         when(mockedBatchJob.getThisNodeIndex(0)).thenReturn(0);
         when(mockedBatchJob.getRemainAt(0)).thenReturn(1.0, 0.0);
         when(mockedBatchJob.allDone()).thenReturn(true);

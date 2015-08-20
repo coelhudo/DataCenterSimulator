@@ -223,11 +223,11 @@ public class ComputeSystem extends GeneralSystem {
         }
     }
 
-    List<Integer> getindexSet() {
+    List<Integer> getIndexSet() {
         return getComputeNodeIndex();
     }
 
-    public int numberofRunningNode() {
+    public int numberOfRunningNode() {
         int cnt = 0;
         for (int i = 0; i < getComputeNodeList().size(); i++) {
             if (getComputeNodeList().get(i).getReady() > -1) {
@@ -237,10 +237,10 @@ public class ComputeSystem extends GeneralSystem {
         return cnt;
     }
 
-    public int numberofIdleNode() {
+    public int numberOfIdleNode() {
         int cnt = 0;
-        for (int i = 0; i < getComputeNodeList().size(); i++) {
-            if (getComputeNodeList().get(i).getReady() == -1) {
+        for (BladeServer bladeServer : getComputeNodeList()) {
+            if (bladeServer.getReady() == -1) {
                 cnt++;
             }
         }
@@ -248,15 +248,14 @@ public class ComputeSystem extends GeneralSystem {
     }
 
     public void activeOneNode() {
-        int i = 0;
-        for (i = 0; i < getComputeNodeList().size(); i++) {
-            if (getComputeNodeList().get(i).getReady() == -1) {
-                getComputeNodeList().get(i).restart();
-                getComputeNodeList().get(i).setStatusAsRunningNormal();
+        for (BladeServer bladeServer : getComputeNodeList()) {
+            if (bladeServer.getReady() == -1) {
+                bladeServer.restart();
+                bladeServer.setStatusAsRunningNormal();
+                LOGGER.info("activeone node in compuet system MIIIIPPPSSS    " + bladeServer.getMips());
                 break;
             }
         }
-        LOGGER.info("activeone node in compuet system MIIIIPPPSSS    " + getComputeNodeList().get(i).getMips());
     }
 
     double finalized() {

@@ -546,7 +546,7 @@ public class ComputeSystemTest {
         BladeServer mockedBladeServer = mock(BladeServer.class);
         when(mockedBladeServer.getReady()).thenReturn(-1);
         computeSystem.appendBladeServerIntoComputeNodeList(mockedBladeServer);
-        assertEquals(1, computeSystem.numberofIdleNode());
+        assertEquals(1, computeSystem.numberOfIdleNode());
 
         verify(mockedBladeServer).getReady();
 
@@ -574,7 +574,7 @@ public class ComputeSystemTest {
         BladeServer mockedBladeServer = mock(BladeServer.class);
         when(mockedBladeServer.getReady()).thenReturn(1);
         computeSystem.appendBladeServerIntoComputeNodeList(mockedBladeServer);
-        assertEquals(0, computeSystem.numberofIdleNode());
+        assertEquals(0, computeSystem.numberOfIdleNode());
 
         verify(mockedBladeServer).getReady();
 

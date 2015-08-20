@@ -49,8 +49,8 @@ public class ReadingConfigurationTest {
         assertEquals(35, computeSystem.getComputeNodeIndex().size());
         assertFalse(computeSystem.getComputeNodeList().isEmpty());
         assertEquals(35, computeSystem.getComputeNodeList().size()); //TODO: check how the last two lists are correlated.
-        assertEquals(35, computeSystem.numberofRunningNode()); //FIXME: is this correct? Check Active (below) vs Running
-        assertEquals(0, computeSystem.numberofIdleNode());
+        assertEquals(35, computeSystem.numberOfRunningNode()); //FIXME: is this correct? Check Active (below) vs Running
+        assertEquals(0, computeSystem.numberOfIdleNode());
         assertEquals(0, computeSystem.getNumberOfActiveServ());
         assertEquals(35, computeSystem.getNumberOfNode());
         assertEquals(0.0, computeSystem.getPower(), 1.0E-8);

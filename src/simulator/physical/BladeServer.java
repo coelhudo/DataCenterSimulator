@@ -243,8 +243,7 @@ public class BladeServer {
         }
         return 1;
     }
-    // running batch type JOB
-
+    
     public int run() {
         double tempCpu = 0;
         int num = getActiveBatchList().size(), index = 0, index_1 = 0, rmpart = 0;

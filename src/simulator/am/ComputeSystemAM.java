@@ -58,12 +58,12 @@ public class ComputeSystemAM extends GeneralAM {
                 }
             }
             // Activate just half of sleep nodes
-            int hlfNumofSlept = computeSystem.numberofIdleNode() / 2;
+            int hlfNumofSlept = computeSystem.numberOfIdleNode() / 2;
             int tedad = 0;
             for (BladeServer bladeServer : computeSystem.getComputeNodeList()) {
                 if (bladeServer.getReady() == -1) {
                     LOGGER.info("CSys GR: " + "\tactive a Server!\t\t @" + environment.getCurrentLocalTime()
-                            + "\tNumber of runinng:  " + computeSystem.numberofRunningNode());
+                            + "\tNumber of runinng:  " + computeSystem.numberOfRunningNode());
                     bladeServer.setStatusAsRunningNormal();
                     bladeServer.setMips(1.4);
                     environment.updateNumberOfMessagesFromSystemToNodes();

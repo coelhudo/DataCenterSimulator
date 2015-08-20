@@ -74,16 +74,12 @@ public class BatchJob extends Job {
     }
 
     public int getThisNodeIndex(int serverIndex) {
-        for (int ki = 0; ki < getRemainLength(); ki++) {
+        for (int ki = 0; ki < getNumOfNode(); ki++) {
             if (getServerIndexAt(ki) == serverIndex) {
                 return ki;
             }
         }
         return -1;
-    }
-
-    public int getRemainLength() {
-        return remain.length;
     }
 
     public double getStartTime() {
