@@ -354,21 +354,17 @@ public class BladeServerTest {
 
     @Test
     public void testRunBatchJobNotBelongingToActiveJobs() {
-        BatchJob mockedBatchJob = mock(BatchJob.class);
-
         assertEquals(-3, bladeServer.getReady());
         bladeServer.setCurrentCPU(1.0);
         assertEquals(1.0, bladeServer.getCurrentCPU(), 1.0E-8);
         bladeServer.setDependency(1);
         assertEquals(1, bladeServer.getDependency());
 
-        assertEquals(0, bladeServer.run(mockedBatchJob));
+        assertEquals(0, bladeServer.run());
 
         assertEquals(1, bladeServer.getReady());
         assertEquals(0.0, bladeServer.getCurrentCPU(), 1.0E-8);
         assertEquals(0, bladeServer.getDependency());
-
-        verifyNoMoreInteractions(mockedBatchJob);
     }
 
     @Test
@@ -387,7 +383,7 @@ public class BladeServerTest {
         when(mockedBatchJob.getUtilization()).thenReturn(1.0);
         when(mockedBatchJob.getIsChangedThisTime()).thenReturn(0, 1);
 
-        assertEquals(1, bladeServer.run(mockedBatchJob));
+        assertEquals(1, bladeServer.run());
 
         assertEquals(0, bladeServer.getReady());
         assertEquals(71.42857, bladeServer.getCurrentCPU(), 1.0E-5);
@@ -420,7 +416,7 @@ public class BladeServerTest {
         when(mockedBatchJob.getIsChangedThisTime()).thenReturn(1, 1, 0);
 
         expectedException.expect(ArithmeticException.class);
-        assertEquals(1, bladeServer.run(mockedBatchJob));
+        assertEquals(1, bladeServer.run());
 
         verify(mockedBatchJob, times(5)).getUtilization();
         verify(mockedBatchJob, times(3)).getIsChangedThisTime();
@@ -449,7 +445,7 @@ public class BladeServerTest {
         when(mockedBatchJob.getUtilization()).thenReturn(0.1);
         when(mockedBatchJob.getIsChangedThisTime()).thenReturn(1, 1, 0);
 
-        assertEquals(1, bladeServer.run(mockedBatchJob));
+        assertEquals(1, bladeServer.run());
 
         assertEquals(1, bladeServer.getReady());
         assertEquals(100, bladeServer.getCurrentCPU(), 1.0E-5);

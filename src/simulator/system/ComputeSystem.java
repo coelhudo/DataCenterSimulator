@@ -26,7 +26,6 @@ public class ComputeSystem extends GeneralSystem {
     private int totalJob = 0;
     private double inputTime;
     private boolean blocked = false;
-    private int priority;
     private Environment environment;
     private SLAViolationLogger slaViolationLogger;
     private DataCenter dataCenter;
@@ -43,7 +42,7 @@ public class ComputeSystem extends GeneralSystem {
         setScheduler(new LeastRemainFirstScheduler());
         setBis(systemPOD.getBis());
         setNumberOfNode(systemPOD.getNumberOfNode());
-        priority = ((ComputeSystemPOD) systemPOD).getPriority();
+        ((ComputeSystemPOD) systemPOD).getPriority();
         setRackIDs(systemPOD.getRackIDs());
         setResourceAllocation(new MHR(this.environment, this.dataCenter));
         totalJob = 0;
@@ -64,7 +63,7 @@ public class ComputeSystem extends GeneralSystem {
             // feeds jobs from waiting list to servers as much as possible
             moveWaitingJobsToBladeServer();
             for (BladeServer bladeServer : getComputeNodeList()) {
-                bladeServer.run(new BatchJob(environment, dataCenter));
+                bladeServer.run();
             }
             for (BladeServer bladeServer : getComputeNodeList()) {
                 numberOfFinishedJob = bladeServer.getTotalFinishedJob() + numberOfFinishedJob;

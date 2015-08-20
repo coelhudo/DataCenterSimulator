@@ -245,7 +245,7 @@ public class BladeServer {
     }
     // running batch type JOB
 
-    public int run(BatchJob j) {
+    public int run() {
         double tempCpu = 0;
         int num = getActiveBatchList().size(), index = 0, index_1 = 0, rmpart = 0;
         double share = 0, share_t = 0, extraShare = 0;

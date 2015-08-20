@@ -175,7 +175,7 @@ public class ComputeSystemTest {
         verify(mockedBladeServer).feedWork(any(BatchJob.class));
         verify(mockedBladeServer).setDependency(0);
         verify(mockedEnvironment, times(3)).getCurrentLocalTime();
-        verify(mockedBladeServer).run(any(BatchJob.class));
+        verify(mockedBladeServer).run();
         verify(mockedBladeServer).getTotalFinishedJob();
         verify(mockedBladeServer).getCurrentFreqLevel();
 
@@ -233,7 +233,7 @@ public class ComputeSystemTest {
         verify(mockedBladeServer).feedWork(any(BatchJob.class));
         verify(mockedBladeServer).setDependency(0);
         verify(mockedEnvironment, times(3)).getCurrentLocalTime();
-        verify(mockedBladeServer).run(any(BatchJob.class));
+        verify(mockedBladeServer).run();
         verify(mockedBladeServer).getTotalFinishedJob();
         verify(mockedBladeServer).getCurrentFreqLevel();
 
@@ -297,7 +297,7 @@ public class ComputeSystemTest {
         verify(mockedBladeServer).feedWork(any(BatchJob.class));
         verify(mockedBladeServer).setDependency(0);
         verify(mockedEnvironment, times(3)).getCurrentLocalTime();
-        verify(mockedBladeServer).run(any(BatchJob.class));
+        verify(mockedBladeServer).run();
         verify(mockedBladeServer).getTotalFinishedJob();
         verify(mockedBladeServer).getCurrentFreqLevel();
 
