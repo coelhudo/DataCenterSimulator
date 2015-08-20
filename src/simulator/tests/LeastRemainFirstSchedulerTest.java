@@ -24,7 +24,7 @@ public class LeastRemainFirstSchedulerTest {
     public void testNextJobWhenTheQueueContainsOnlyOneJob() {
         LeastRemainFirstScheduler leastRemainFirst = new LeastRemainFirstScheduler();
         List<BatchJob> queue = new ArrayList<BatchJob>();
-        BatchJob expectedJob = new BatchJob(null, null);
+        BatchJob expectedJob = new BatchJob(null);
         queue.add(expectedJob);
         Job job = leastRemainFirst.nextJob(queue);
         assertEquals(expectedJob, job);
@@ -34,9 +34,9 @@ public class LeastRemainFirstSchedulerTest {
     public void testTwoBatchJobsInTheQueue() {
         LeastRemainFirstScheduler leastRemainFirst = new LeastRemainFirstScheduler();
         List<BatchJob> queue = new ArrayList<BatchJob>();
-        BatchJob expectedJob = new BatchJob(null, null);
+        BatchJob expectedJob = new BatchJob(null);
         queue.add(expectedJob);
-        BatchJob notExpectedJob = new BatchJob(null, null);
+        BatchJob notExpectedJob = new BatchJob(null);
         queue.add(notExpectedJob);
         assertNotEquals(expectedJob, notExpectedJob);
         Job job = leastRemainFirst.nextJob(queue);
@@ -51,10 +51,10 @@ public class LeastRemainFirstSchedulerTest {
     public void testChangingReqTimeFromBatchJob() {
         LeastRemainFirstScheduler leastRemainFirst = new LeastRemainFirstScheduler();
         List<BatchJob> queue = new ArrayList<BatchJob>();
-        BatchJob expectedJob = new BatchJob(null, null);
+        BatchJob expectedJob = new BatchJob(null);
         expectedJob.setReqTime(0.1);
         queue.add(expectedJob);
-        BatchJob otherExpectedJob = new BatchJob(null, null);
+        BatchJob otherExpectedJob = new BatchJob(null);
         otherExpectedJob.setReqTime(0.2);
         queue.add(otherExpectedJob);
         assertNotEquals(expectedJob, otherExpectedJob);
@@ -74,10 +74,10 @@ public class LeastRemainFirstSchedulerTest {
     public void testRemovingBatchJobFromTheQueue() {
         LeastRemainFirstScheduler leastRemainFirst = new LeastRemainFirstScheduler();
         List<BatchJob> queue = new ArrayList<BatchJob>();
-        BatchJob expectedJob = new BatchJob(null, null);
+        BatchJob expectedJob = new BatchJob(null);
         expectedJob.setReqTime(0.1);
         queue.add(expectedJob);
-        BatchJob otherExpectedJob = new BatchJob(null, null);
+        BatchJob otherExpectedJob = new BatchJob(null);
         otherExpectedJob.setReqTime(0.2);
         queue.add(otherExpectedJob);
         assertNotEquals(expectedJob, otherExpectedJob);

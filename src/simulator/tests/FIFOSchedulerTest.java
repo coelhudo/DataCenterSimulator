@@ -30,7 +30,7 @@ public class FIFOSchedulerTest {
     
     @Test
     public void testWithOnlyOneJob() {
-        testWithJob(new BatchJob(null, null));
+        testWithJob(new BatchJob(null));
         testWithJob(new EnterpriseJob());
         testWithJob(new InteractiveJob());
     }
@@ -47,9 +47,9 @@ public class FIFOSchedulerTest {
     @Test
     public void testWithMoreThanOneJob() {
         List<BatchJob> queue = new ArrayList<BatchJob>();
-        BatchJob job = new BatchJob(null, null);
+        BatchJob job = new BatchJob(null);
         queue.add(job);
-        BatchJob otherJob = new BatchJob(null, null);
+        BatchJob otherJob = new BatchJob(null);
         queue.add(otherJob);
         
         FIFOScheduler fifoScheduler = new FIFOScheduler();

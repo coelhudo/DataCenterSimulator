@@ -19,7 +19,6 @@ public class BatchJob extends Job {
     private double[] remain;
     private int numOfNode;
     private int[] listOfServer;
-    private Environment environment;
     private DataCenter dataCenter;
 
     public void setRemainParam(double remainingTime, double utilization, int numberOfNodes, double deadline) {
@@ -37,8 +36,7 @@ public class BatchJob extends Job {
         setDeadline(deadline);
     }
 
-    public BatchJob(Environment environment, DataCenter dataCenter) {
-        this.environment = environment;
+    public BatchJob(DataCenter dataCenter) {
         this.dataCenter = dataCenter;
         setStartTime(0);
         setExitTime(0);
@@ -57,9 +55,9 @@ public class BatchJob extends Job {
         return true;
     }
 
-    public void jobFinished() {
-        setExitTime(environment.getCurrentLocalTime());
-        double waitTime = (environment.getCurrentLocalTime() + 1) - getStartTime();
+    public void Finish(double timeStamp) {
+        setExitTime(timeStamp);
+        double waitTime = (timeStamp + 1) - getStartTime();
         if (waitTime < 0) {
             LOGGER.info("Alert: Error in BatchJob\t" + waitTime);
         }

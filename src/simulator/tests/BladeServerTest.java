@@ -9,6 +9,7 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
+import static org.mockito.Matchers.anyInt;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -566,7 +567,7 @@ public class BladeServerTest {
         verify(mockedBatchJob).setIsChangedThisTime(0);
         verify(mockedBatchJob, times(2)).getRemainAt(0);
         verify(mockedBatchJob).allDone();
-        verify(mockedBatchJob).jobFinished();
+        verify(mockedBatchJob).Finish(anyInt());
 
         assertEquals(1, bladeServer.getTotalFinishedJob());
 
