@@ -71,12 +71,13 @@ public class BatchJobTest {
         BatchJob batchJob = new BatchJob(mockedEnvironment, mockedDataCenter);
         final int remainingTime = 1;
         batchJob.setRemainParam(remainingTime, 0, 1, 5.0);
+        batchJob.setListOfServer(new int[batchJob.getNumOfNode()]);
         
         when(mockedEnvironment.getCurrentLocalTime()).thenReturn(1);
         BladeServer mockedBladeServer = mock(BladeServer.class);
         when(mockedBladeServer.getResponseTime()).thenReturn(1.0);
         when(mockedDataCenter.getServer(0)).thenReturn(mockedBladeServer);
-        
+
         batchJob.jobFinished();
         
         verify(mockedEnvironment, times(2)).getCurrentLocalTime();
@@ -89,6 +90,7 @@ public class BatchJobTest {
     public void testGetThisNodeIndexFails() {
         BatchJob batchJob = new BatchJob(mockedEnvironment, mockedDataCenter);
         batchJob.setRemainParam(1.0, 1, 1, 1);
+        batchJob.setListOfServer(new int[batchJob.getNumOfNode()]);
         final int nonExistentIndex = 1;
         assertEquals(-1, batchJob.getThisNodeIndex(nonExistentIndex));
     }
@@ -97,6 +99,7 @@ public class BatchJobTest {
     public void testGetThisNodeIndexSucceed() {
         BatchJob batchJob = new BatchJob(mockedEnvironment, mockedDataCenter);
         batchJob.setRemainParam(1.0, 1, 1, 1);
+        batchJob.setListOfServer(new int[batchJob.getNumOfNode()]);
         final int existentIndex = 0;
         assertEquals(0, batchJob.getThisNodeIndex(existentIndex));
     }

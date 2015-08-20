@@ -29,7 +29,6 @@ public class BatchJob extends Job {
             setUtilization(utilization / 100);
         }
         setNumOfNode(numberOfNodes);
-        setListOfServer(new int[getNumOfNode()]);
         setRemain(new double[getNumOfNode()]);
         for (int i = 0; i < getNumOfNode(); i++) {
             setRemainAt(i, remainingTime);
