@@ -471,7 +471,6 @@ public class BladeServerTest {
         assertTrue(bladeServer.getActiveBatchList().isEmpty());
         assertEquals(0, bladeServer.getTotalFinishedJob());
 
-        verify(mockedBatchJob).getThisNodeIndex(0);
         verify(mockedBatchJob).setExitTime(1.0);
         verify(mockedBatchJob).getUtilization();
 

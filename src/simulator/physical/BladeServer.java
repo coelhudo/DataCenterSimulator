@@ -316,11 +316,6 @@ public class BladeServer {
     public int done(int tmp, double share) {
         // return 1 means: a job has been finished
         BatchJob job = getActiveBatchList().get(tmp);
-        // int
-        // serverIndex=chassisID*DataCenter.theDataCenter.chassisSet.get(0).servers.size()+serverID;
-        // //getting this server ID
-        int serverIndex = getServerID();
-        int ki = job.getThisNodeIndex(serverIndex);
         if (share == 0) {
             LOGGER.info(
                     "In DONE share== zero00000000000000000000000000000000000000oo,revise the code  need some work!");
@@ -329,6 +324,7 @@ public class BladeServer {
             // totalFinishedJob++;
             return 1;
         }
+        int ki = job.getThisNodeIndex(getServerID());
         if (ki == -1) {
             LOGGER.info("Blade server is wrong in BladeServer!!!");
         }
