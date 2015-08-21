@@ -335,7 +335,7 @@ public class BladeServer {
         if (ki == -1) {
             LOGGER.info("Blade server is wrong in BladeServer!!!");
         }
-        // setRemainAllNodes(tmp, share);
+        
         job.setRemainAt(ki, job.getRemainAt(ki) - share);
         if (job.getRemainAt(ki) <= 0) {
             getBlockedBatchList().add(job);
@@ -414,10 +414,6 @@ public class BladeServer {
 
     public void setResponseListWeb(List<ResponseTime> responseListWeb) {
         this.responseListWeb = responseListWeb;
-    }
-
-    public int getDependency() {
-        return dependency;
     }
 
     public void setDependency(int dependency) {

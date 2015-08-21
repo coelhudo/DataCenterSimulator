@@ -63,7 +63,6 @@ public class BladeServerTest {
         assertEquals(chassisID, bladeServer.getChassisID());
         assertEquals(0.0, bladeServer.getCurrentCPU(), 1.0E-8);
         assertEquals(0, bladeServer.getCurrentFreqLevel());
-        assertEquals(0, bladeServer.getDependency());
         List<EnterpriseJob> enterpriseJobs = bladeServer.getEnterpriseList();
         assertTrue(enterpriseJobs.isEmpty());
         assertEquals(1, bladeServer.getNumberOfFrequencyLevel());
@@ -177,7 +176,6 @@ public class BladeServerTest {
         assertTrue(bladeServer.getEnterpriseList().isEmpty());
         assertTrue(bladeServer.getInteractiveList().isEmpty());
         assertEquals(-3, bladeServer.getReady());
-        assertEquals(0, bladeServer.getDependency());
         assertEquals(0, bladeServer.getTotalJob());
 
         BatchJob mockBatchJob = mock(BatchJob.class);
@@ -188,7 +186,6 @@ public class BladeServerTest {
         assertTrue(bladeServer.getEnterpriseList().isEmpty());
         assertTrue(bladeServer.getInteractiveList().isEmpty());
         assertEquals(1, bladeServer.getReady());
-        assertEquals(0, bladeServer.getDependency());
         assertEquals(1, bladeServer.getTotalJob());
     }
 
@@ -199,7 +196,6 @@ public class BladeServerTest {
         assertTrue(bladeServer.getEnterpriseList().isEmpty());
         assertTrue(bladeServer.getInteractiveList().isEmpty());
         assertEquals(-3, bladeServer.getReady());
-        assertEquals(0, bladeServer.getDependency());
         assertEquals(0, bladeServer.getTotalJob());
         assertEquals(0, bladeServer.getQueueLength());
 
@@ -219,7 +215,6 @@ public class BladeServerTest {
         assertFalse(interactiveJobs.isEmpty());
 
         assertEquals(-3, bladeServer.getReady());
-        assertEquals(0, bladeServer.getDependency());
         assertEquals(numberOfJobsInInteractiveJob, bladeServer.getTotalJob());
         InteractiveJob job = interactiveJobs.get(0);
         assertEquals(arrivalTime, job.getArrivalTimeOfJob());
@@ -236,7 +231,6 @@ public class BladeServerTest {
         assertTrue(enterpriseJobs.isEmpty());
         assertTrue(bladeServer.getInteractiveList().isEmpty());
         assertEquals(-3, bladeServer.getReady());
-        assertEquals(0, bladeServer.getDependency());
         assertEquals(0, bladeServer.getTotalJob());
         assertEquals(0, bladeServer.getQueueLength());
 
@@ -254,7 +248,6 @@ public class BladeServerTest {
         assertFalse(bladeServer.getEnterpriseList().isEmpty());
         assertTrue(bladeServer.getInteractiveList().isEmpty());
         assertEquals(-3, bladeServer.getReady());
-        assertEquals(0, bladeServer.getDependency());
         assertEquals(10, bladeServer.getTotalJob());
         assertEquals(10, bladeServer.getQueueLength());
         EnterpriseJob job = enterpriseJobs.get(0);
@@ -359,13 +352,11 @@ public class BladeServerTest {
         bladeServer.setCurrentCPU(1.0);
         assertEquals(1.0, bladeServer.getCurrentCPU(), 1.0E-8);
         bladeServer.setDependency(1);
-        assertEquals(1, bladeServer.getDependency());
 
         assertEquals(0, bladeServer.run());
 
         assertEquals(1, bladeServer.getReady());
         assertEquals(0.0, bladeServer.getCurrentCPU(), 1.0E-8);
-        assertEquals(0, bladeServer.getDependency());
     }
 
     @Test
@@ -377,7 +368,6 @@ public class BladeServerTest {
         bladeServer.setCurrentCPU(1.0);
         assertEquals(1.0, bladeServer.getCurrentCPU(), 1.0E-8);
         bladeServer.setDependency(1);
-        assertEquals(1, bladeServer.getDependency());
         assertEquals(1.4, bladeServer.getMips(), 1.0E-8);
 
         when(mockedBatchJob.getRemainAt(0)).thenReturn(5.0, 3.6);
@@ -409,7 +399,6 @@ public class BladeServerTest {
         bladeServer.setCurrentCPU(1.0);
         assertEquals(1.0, bladeServer.getCurrentCPU(), 1.0E-8);
         bladeServer.setDependency(1);
-        assertEquals(1, bladeServer.getDependency());
         assertEquals(1.4, bladeServer.getMips(), 1.0E-8);
 
         when(mockedBatchJob.getRemainAt(0)).thenReturn(5.0, 3.6);
@@ -439,7 +428,6 @@ public class BladeServerTest {
         bladeServer.setCurrentCPU(1.0);
         assertEquals(1.0, bladeServer.getCurrentCPU(), 1.0E-8);
         bladeServer.setDependency(1);
-        assertEquals(1, bladeServer.getDependency());
         assertEquals(1.4, bladeServer.getMips(), 1.0E-8);
 
         when(mockedBatchJob.getRemainAt(0)).thenReturn(5.0);
@@ -580,38 +568,38 @@ public class BladeServerTest {
         assertTrue(bladeServer.getActiveBatchList().isEmpty());
         assertEquals(1, bladeServer.getReady());
     }
-    
+
     @Test
     public void testSetReadyAsRunningNormalWhenThereAreActiveJobsAndUtilizationLessThanThreshold() {
         BatchJob mockedBatchJob = mock(BatchJob.class);
         bladeServer.feedWork(mockedBatchJob);
         final double lessThanThreshold = 0.99999;
         when(mockedBatchJob.getUtilization()).thenReturn(lessThanThreshold);
-        
+
         bladeServer.setReady();
-        
+
         assertFalse(bladeServer.getActiveBatchList().isEmpty());
         assertEquals(1, bladeServer.getReady());
-        
+
         verify(mockedBatchJob, times(2)).getUtilization();
-        
+
         verifyNoMoreInteractions(mockedBatchJob);
     }
-    
+
     @Test
     public void testSetReadyAsRunningBusyWhenThereAreActiveJobsAndUtilizationGreaterThanThreshold() {
         BatchJob mockedBatchJob = mock(BatchJob.class);
         bladeServer.feedWork(mockedBatchJob);
         final double greaterThanThreshold = 1.000001;
         when(mockedBatchJob.getUtilization()).thenReturn(greaterThanThreshold);
-        
+
         bladeServer.setReady();
-        
+
         assertFalse(bladeServer.getActiveBatchList().isEmpty());
         assertEquals(0, bladeServer.getReady());
-        
+
         verify(mockedBatchJob, times(2)).getUtilization();
-        
+
         verifyNoMoreInteractions(mockedBatchJob);
     }
 }

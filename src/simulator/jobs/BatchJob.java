@@ -2,7 +2,6 @@ package simulator.jobs;
 
 import java.util.logging.Logger;
 
-import simulator.Environment;
 import simulator.physical.BladeServer;
 import simulator.physical.DataCenter;
 

@@ -119,15 +119,14 @@ public class ComputeSystem extends GeneralSystem {
         while (job.getStartTime() <= environment.getCurrentLocalTime()) {
             int[] indexes = new int[job.getNumOfNode()]; // number of node the
             // last job wants
-            int[] listServer = new int[job.getNumOfNode()];
             if (getResourceAllocation().allocateSystemLevelServer(getComputeNodeList(), indexes)[0] == -2) {
                 setSLAviolation(Violation.COMPUTE_NODE_SHORTAGE);
                 return; // can not find the bunch of requested node for the job
             }
-            listServer = makeListofServer(indexes);
+            int[] listServer = makeListofServer(indexes);
+            job.setListOfServer(listServer);
             for (int i = 0; i < indexes.length; i++) {
 
-                job.setListOfServer(listServer);
                 getComputeNodeList().get(indexes[i]).feedWork(job);// feed also
                 // takes care
                 // of setting
@@ -164,10 +163,6 @@ public class ComputeSystem extends GeneralSystem {
 
     int[] makeListofServer(int[] list) {
         int[] retList = new int[list.length];
-        // int
-        // NumOfSerInChas=DataCenter.theDataCenter.chassisSet.get(0).servers.size();
-        // map the index in CS compute node list to physical index(chassID ,
-        // ServerID)
         for (int i = 0; i < list.length; i++) {
             retList[i] = getComputeNodeList().get(list[i]).getServerID();
         }
