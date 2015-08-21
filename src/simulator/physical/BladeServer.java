@@ -21,7 +21,6 @@ public class BladeServer {
 
     private List<ResponseTime> responseList;
     private List<ResponseTime> responseListWeb;
-    private int dependency = 0;
     private double[] frequencyLevel;
     private double[] powerBusy;
     private double[] powerIdle;
@@ -183,7 +182,6 @@ public class BladeServer {
     public void feedWork(BatchJob batchJob) {
         getActiveBatchList().add(batchJob);
         setReady();
-        setDependency();
         setTotalJob(getTotalJob() + 1);
     }
     // feeding webbased type Job to blade server
@@ -213,7 +211,8 @@ public class BladeServer {
     public int increaseFrequency() {
         // LOGGER.info("MIIIPPSSS "+Mips);
         if (getCurrentFreqLevel() == 2) {
-            return 0; //FIXME: This should be 2 i think. That's my conclusion based on the behaviour of decreaseFrequency
+            return 0; // FIXME: This should be 2 i think. That's my conclusion
+                      // based on the behaviour of decreaseFrequency
         } else {
             setMips(frequencyLevel[getCurrentFreqLevel() + 1]); // getCurrentFrequency
             // already
@@ -243,14 +242,13 @@ public class BladeServer {
         }
         return 1;
     }
-    
+
     public int run() {
         double tempCpu = 0;
         int num = getActiveBatchList().size(), index = 0, index_1 = 0, rmpart = 0;
         double share = 0, share_t = 0, extraShare = 0;
         if (num == 0) {
             setStatusAsRunningNormal();
-            setDependency();
             setCurrentCPU(0);
             return 0;
         }
@@ -290,12 +288,12 @@ public class BladeServer {
             if (getActiveBatchList().get(i).getIsChangedThisTime() == 0) {
                 final double utilization = getActiveBatchList().get(i).getUtilization();
                 final Double shareUtilizationRatio = share / utilization;
-                if(shareUtilizationRatio.isInfinite())
+                if (shareUtilizationRatio.isInfinite())
                     throw new ArithmeticException("Division by Zero");
-                
+
                 if (shareUtilizationRatio > 1) {
-                    LOGGER.info("share more than one!\t" + share_t + "\t" + share + "\t"
-                            + utilization + "\t" + environment.getCurrentLocalTime());
+                    LOGGER.info("share more than one!\t" + share_t + "\t" + share + "\t" + utilization + "\t"
+                            + environment.getCurrentLocalTime());
                 }
                 getActiveBatchList().get(i).setIsChangedThisTime(1);
                 ret_done = done(i, shareUtilizationRatio);
@@ -304,7 +302,7 @@ public class BladeServer {
                 // DONE function
             }
         }
-        
+
         for (BatchJob job : getActiveBatchList()) {
             job.setIsChangedThisTime(0);
         }
@@ -312,7 +310,6 @@ public class BladeServer {
         // nazar nagereftam!
         setCurrentCPU(100.0 * tempCpu / getMips());
         setReady();
-        setDependency();
         return 1;
     }
 
@@ -335,7 +332,7 @@ public class BladeServer {
         if (ki == -1) {
             LOGGER.info("Blade server is wrong in BladeServer!!!");
         }
-        
+
         job.setRemainAt(ki, job.getRemainAt(ki) - share);
         if (job.getRemainAt(ki) <= 0) {
             getBlockedBatchList().add(job);
@@ -345,20 +342,11 @@ public class BladeServer {
 
                 job.Finish(environment.getCurrentLocalTime());
 
-                setDependency();
                 setTotalFinishedJob(getTotalFinishedJob() + 1);
                 return 1;
             }
         }
         return 0;
-    }
-
-    void setDependency() {
-        if (!getBlockedBatchList().isEmpty()) {
-            dependency = 1;
-            return;
-        }
-        dependency = 0;
     }
 
     public void setReady() {
@@ -374,7 +362,7 @@ public class BladeServer {
             setStatusAsRunningNormal();
         }
     }
-    
+
     // void addToresponseArray(double num,int time)
     // {
     // responseTime t= new responseTime();
@@ -414,10 +402,6 @@ public class BladeServer {
 
     public void setResponseListWeb(List<ResponseTime> responseListWeb) {
         this.responseListWeb = responseListWeb;
-    }
-
-    public void setDependency(int dependency) {
-        this.dependency = dependency;
     }
 
     public double getMips() {

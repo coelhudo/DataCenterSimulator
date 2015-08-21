@@ -126,26 +126,7 @@ public class ComputeSystem extends GeneralSystem {
             int[] listServer = makeListofServer(indexes);
             job.setListOfServer(listServer);
             for (int i = 0; i < indexes.length; i++) {
-
-                getComputeNodeList().get(indexes[i]).feedWork(job);// feed also
-                // takes care
-                // of setting
-                // ready :)
-                if (indexes.length > 1) {
-                    getComputeNodeList().get(indexes[i]).setDependency(1); // means:
-                    // this
-                    // server
-                    // has
-                    // a
-                    // process
-                    // which
-                    // is
-                    // dependent
-                    // on
-                    // others
-                } else {
-                    getComputeNodeList().get(indexes[i]).setDependency(0);
-                }
+                getComputeNodeList().get(indexes[i]).feedWork(job);
             }
 
             if (environment.getCurrentLocalTime() - job.getStartTime() > job.getDeadline()) {
@@ -158,7 +139,6 @@ public class ComputeSystem extends GeneralSystem {
             }
             job = (BatchJob) (getScheduler().nextJob(waitingList));
         }
-        return; // it is not important
     }
 
     int[] makeListofServer(int[] list) {
@@ -259,7 +239,7 @@ public class ComputeSystem extends GeneralSystem {
         } catch (IOException ex) {
             Logger.getLogger(EnterpriseApp.class.getName()).log(Level.SEVERE, null, ex);
         }
-        
+
         double totalResponsetime = 0;
         for (BladeServer bladeServer : getComputeNodeList()) {
             totalResponsetime = totalResponsetime + bladeServer.getResponseTime();

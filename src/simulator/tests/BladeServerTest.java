@@ -351,8 +351,7 @@ public class BladeServerTest {
         assertEquals(-3, bladeServer.getReady());
         bladeServer.setCurrentCPU(1.0);
         assertEquals(1.0, bladeServer.getCurrentCPU(), 1.0E-8);
-        bladeServer.setDependency(1);
-
+        
         assertEquals(0, bladeServer.run());
 
         assertEquals(1, bladeServer.getReady());
@@ -367,7 +366,6 @@ public class BladeServerTest {
         assertEquals(1, bladeServer.getReady());
         bladeServer.setCurrentCPU(1.0);
         assertEquals(1.0, bladeServer.getCurrentCPU(), 1.0E-8);
-        bladeServer.setDependency(1);
         assertEquals(1.4, bladeServer.getMips(), 1.0E-8);
 
         when(mockedBatchJob.getRemainAt(0)).thenReturn(5.0, 3.6);
@@ -398,7 +396,6 @@ public class BladeServerTest {
         assertEquals(1, bladeServer.getReady());
         bladeServer.setCurrentCPU(1.0);
         assertEquals(1.0, bladeServer.getCurrentCPU(), 1.0E-8);
-        bladeServer.setDependency(1);
         assertEquals(1.4, bladeServer.getMips(), 1.0E-8);
 
         when(mockedBatchJob.getRemainAt(0)).thenReturn(5.0, 3.6);
@@ -427,7 +424,6 @@ public class BladeServerTest {
         assertEquals(1, bladeServer.getReady());
         bladeServer.setCurrentCPU(1.0);
         assertEquals(1.0, bladeServer.getCurrentCPU(), 1.0E-8);
-        bladeServer.setDependency(1);
         assertEquals(1.4, bladeServer.getMips(), 1.0E-8);
 
         when(mockedBatchJob.getRemainAt(0)).thenReturn(5.0);

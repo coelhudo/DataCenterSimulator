@@ -173,7 +173,6 @@ public class ComputeSystemTest {
         verify(mockedBladeServer, times(26)).getChassisID(); // XXX: 26????
         verify(mockedBladeServer).getServerID();
         verify(mockedBladeServer).feedWork(any(BatchJob.class));
-        verify(mockedBladeServer).setDependency(0);
         verify(mockedEnvironment, times(3)).getCurrentLocalTime();
         verify(mockedBladeServer).run();
         verify(mockedBladeServer).getTotalFinishedJob();
@@ -231,7 +230,6 @@ public class ComputeSystemTest {
         verify(mockedBladeServer, times(26)).getChassisID(); // XXX: 26????
         verify(mockedBladeServer).getServerID();
         verify(mockedBladeServer).feedWork(any(BatchJob.class));
-        verify(mockedBladeServer).setDependency(0);
         verify(mockedEnvironment, times(3)).getCurrentLocalTime();
         verify(mockedBladeServer).run();
         verify(mockedBladeServer).getTotalFinishedJob();
@@ -295,7 +293,6 @@ public class ComputeSystemTest {
         verify(mockedBladeServer, times(26)).getChassisID(); // XXX: 26????
         verify(mockedBladeServer).getServerID();
         verify(mockedBladeServer).feedWork(any(BatchJob.class));
-        verify(mockedBladeServer).setDependency(0);
         verify(mockedEnvironment, times(3)).getCurrentLocalTime();
         verify(mockedBladeServer).run();
         verify(mockedBladeServer).getTotalFinishedJob();
@@ -510,7 +507,6 @@ public class ComputeSystemTest {
 
         verify(mockedEnvironment, times(2)).getCurrentLocalTime();
         verify(mockedBladeServer).feedWork(any(BatchJob.class));
-        verify(mockedBladeServer).setDependency(anyInt());
         verify(mockedBatchJob).setStartTime(1);
         verify(mockedBatchJob).setRemainParam(2, 3, 4, 5);
 
@@ -524,7 +520,6 @@ public class ComputeSystemTest {
         verify(mockedBladeServer, times(50)).getChassisID(); // XXX: 26????
         verify(mockedBladeServer).getServerID();
         verify(mockedBladeServer).feedWork(any(BatchJob.class));
-        verify(mockedBladeServer).setDependency(0);
         verify(mockedEnvironment, times(2)).getCurrentLocalTime();
 
         verifyNoMoreInteractions(mockedEnvironment, mockedDataCenter, mockedSLAViolationLogger, mockedBufferedReader,
