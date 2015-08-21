@@ -244,18 +244,17 @@ public class BladeServer {
     }
 
     public int run() {
-        double tempCpu = 0;
         int num = getActiveBatchList().size(), index = 0, index_1 = 0, rmpart = 0;
-        double share = 0, share_t = 0, extraShare = 0;
+        double extraShare = 0;
         if (num == 0) {
             setStatusAsRunningNormal();
             setCurrentCPU(0);
             return 0;
         }
-        share = getMips() / num;// second freqcuency level!
+        double share = getMips() / num;// second freqcuency level!
         // LOGGER.info("Share "+share);
-        share_t = share;
-        int ret_done = 0;
+        double share_t = share;
+        double tempCpu = 0;
         while (index < num) { // index<activeBatchList.size()
             index_1 = index;
             for (int i = 0; i < getActiveBatchList().size(); i++) {
@@ -265,8 +264,7 @@ public class BladeServer {
                     index++;
                     getActiveBatchList().get(i).setIsChangedThisTime(1);
                     tempCpu = getActiveBatchList().get(i).getUtilization() + tempCpu;
-                    ret_done = done(i, share_t);
-                    i = i - ret_done;
+                    i = i - done(i, share_t);
                     // i=i-done(i,activeBatchList.get(i).utilization);
                 }
             }
@@ -296,10 +294,8 @@ public class BladeServer {
                             + environment.getCurrentLocalTime());
                 }
                 getActiveBatchList().get(i).setIsChangedThisTime(1);
-                ret_done = done(i, shareUtilizationRatio);
+                i = i - done(i, shareUtilizationRatio);
                 tempCpu = tempCpu + share;
-                i = i - ret_done; // if a job has been removed (finished) in
-                // DONE function
             }
         }
 
