@@ -450,12 +450,6 @@ public class BladeServerTest {
     }
 
     @Test
-    public void testDoneWhenThereAreNoBatchJobsAsActiveJobs() {
-        expectedException.expect(IndexOutOfBoundsException.class);
-        bladeServer.done(0, 0.0);
-    }
-
-    @Test
     public void testNotDoneWhenThereAreBatchJobAsActiveJobAndShareIsEqualsToZero() {
         BatchJob mockedBatchJob = mock(BatchJob.class);
         bladeServer.feedWork(mockedBatchJob);
@@ -465,7 +459,7 @@ public class BladeServerTest {
         assertEquals(0, bladeServer.getTotalFinishedJob());
 
         final double share = 0.0;
-        assertEquals(1, bladeServer.done(0, share));
+        assertEquals(1, bladeServer.done(mockedBatchJob, share));
 
         assertTrue(bladeServer.getBlockedBatchList().isEmpty());
         assertTrue(bladeServer.getActiveBatchList().isEmpty());
@@ -490,7 +484,7 @@ public class BladeServerTest {
         when(mockedBatchJob.getRemainAt(0)).thenReturn(2.0, 1.0);
 
         final double share = 1.0;
-        assertEquals(0, bladeServer.done(0, share));
+        assertEquals(0, bladeServer.done(mockedBatchJob, share));
 
         verify(mockedBatchJob).getUtilization();
         verify(mockedBatchJob).getThisNodeIndex(0);
@@ -514,7 +508,7 @@ public class BladeServerTest {
         when(mockedBatchJob.allDone()).thenReturn(false);
 
         final double share = 1.0;
-        assertEquals(0, bladeServer.done(0, share));
+        assertEquals(0, bladeServer.done(mockedBatchJob, share));
 
         verify(mockedBatchJob).getUtilization();
         verify(mockedBatchJob).getThisNodeIndex(0);
@@ -542,7 +536,7 @@ public class BladeServerTest {
         when(mockedBatchJob.allDone()).thenReturn(true);
 
         final double share = 1.0;
-        assertEquals(1, bladeServer.done(0, share));
+        assertEquals(1, bladeServer.done(mockedBatchJob, share));
 
         verify(mockedBatchJob).getUtilization();
         verify(mockedBatchJob).getThisNodeIndex(0);

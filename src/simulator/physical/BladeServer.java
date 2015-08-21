@@ -251,21 +251,19 @@ public class BladeServer {
             setCurrentCPU(0);
             return 0;
         }
-        double share = getMips() / num;// second freqcuency level!
-        // LOGGER.info("Share "+share);
-        double share_t = share;
+        double share = getMips() / num;
+        final double share_t = share;
         double tempCpu = 0;
-        while (index < num) { // index<activeBatchList.size()
+        while (index < num) {
             index_1 = index;
             for (int i = 0; i < getActiveBatchList().size(); i++) {
-                if (getActiveBatchList().get(i).getUtilization() <= share
-                        & getActiveBatchList().get(i).getIsChangedThisTime() == 0) {
-                    extraShare = extraShare + share - getActiveBatchList().get(i).getUtilization();
+                BatchJob job = getActiveBatchList().get(i);
+                if (job.getUtilization() <= share & job.getIsChangedThisTime() == 0) {
+                    extraShare = extraShare + share - job.getUtilization();
                     index++;
-                    getActiveBatchList().get(i).setIsChangedThisTime(1);
-                    tempCpu = getActiveBatchList().get(i).getUtilization() + tempCpu;
-                    i = i - done(i, share_t);
-                    // i=i-done(i,activeBatchList.get(i).utilization);
+                    job.setIsChangedThisTime(1);
+                    tempCpu = job.getUtilization() + tempCpu;
+                    i = i - done(job, share_t);
                 }
             }
             for (BatchJob batchJob : getActiveBatchList()) {
@@ -283,8 +281,9 @@ public class BladeServer {
             }
         }
         for (int i = 0; i < getActiveBatchList().size(); i++) {
-            if (getActiveBatchList().get(i).getIsChangedThisTime() == 0) {
-                final double utilization = getActiveBatchList().get(i).getUtilization();
+            BatchJob job = getActiveBatchList().get(i);
+            if (job.getIsChangedThisTime() == 0) {
+                final double utilization = job.getUtilization();
                 final Double shareUtilizationRatio = share / utilization;
                 if (shareUtilizationRatio.isInfinite())
                     throw new ArithmeticException("Division by Zero");
@@ -293,8 +292,8 @@ public class BladeServer {
                     LOGGER.info("share more than one!\t" + share_t + "\t" + share + "\t" + utilization + "\t"
                             + environment.getCurrentLocalTime());
                 }
-                getActiveBatchList().get(i).setIsChangedThisTime(1);
-                i = i - done(i, shareUtilizationRatio);
+                job.setIsChangedThisTime(1);
+                i = i - done(job, shareUtilizationRatio);
                 tempCpu = tempCpu + share;
             }
         }
@@ -309,15 +308,13 @@ public class BladeServer {
         return 1;
     }
 
-    public int done(int tmp, double share) {
+    public int done(BatchJob job, double share) {
         // return 1 means: a job has been finished
-        BatchJob job = getActiveBatchList().get(tmp);
         if (share == 0) {
             LOGGER.info(
                     "In DONE share== zero00000000000000000000000000000000000000oo,revise the code  need some work!");
             job.setExitTime(environment.getCurrentLocalTime());
-            getActiveBatchList().remove(tmp--);
-            // totalFinishedJob++;
+            getActiveBatchList().remove(job);
             return 1;
         }
         int ki = job.getThisNodeIndex(getServerID());
@@ -328,7 +325,7 @@ public class BladeServer {
         job.setRemainAt(ki, job.getRemainAt(ki) - share);
         if (job.getRemainAt(ki) <= 0) {
             getBlockedBatchList().add(job);
-            getActiveBatchList().get(tmp).setIsChangedThisTime(0);
+            job.setIsChangedThisTime(0);
             getActiveBatchList().remove(job);// still exsits in other nodes
             if (job.allDone()) {
 
