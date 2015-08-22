@@ -1,4 +1,4 @@
-package simulator.tests;
+package simulator.tests.integration_tests;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -9,7 +9,11 @@ import java.util.List;
 
 import org.junit.Test;
 
+import simulator.Environment;
+import simulator.SLAViolationLogger;
 import simulator.Simulator;
+import simulator.SimulatorBuilder;
+import simulator.SimulatorPOD;
 import simulator.am.DataCenterAM;
 import simulator.physical.DataCenter;
 import simulator.system.ComputeSystem;
@@ -17,12 +21,17 @@ import simulator.system.EnterpriseSystem;
 import simulator.system.InteractiveSystem;
 import simulator.system.Systems;
 
-public class ReadingConfigurationTest {
+public class ReadingConfigurationIT {
 
     @Test
     public void testSimulatorBuilder() {
-        Simulator simulator = new Simulator();
-        simulator.initialize("configs/DC_Logic.xml");
+        Environment environment = new Environment();
+        SLAViolationLogger slaViolationLogger = new SLAViolationLogger(environment);
+        SimulatorBuilder dataCenterBuilder = new SimulatorBuilder("configs/DC_Logic.xml", environment,
+                slaViolationLogger);
+        SimulatorPOD simulatorPOD = dataCenterBuilder.buildLogicalDataCenter();
+
+        Simulator simulator = new Simulator(simulatorPOD, environment);
 
         DataCenter dataCenter = simulator.getDatacenter();
         Systems systems = simulator.getSystems();

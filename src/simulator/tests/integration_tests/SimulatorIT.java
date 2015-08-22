@@ -8,15 +8,26 @@ import java.util.logging.Logger;
 
 import org.junit.Test;
 
+import simulator.Environment;
+import simulator.SLAViolationLogger;
 import simulator.SimulationResults;
 import simulator.Simulator;
+import simulator.SimulatorBuilder;
+import simulator.SimulatorPOD;
 
 public class SimulatorIT {
 
     @Test
     public void testIDidntBreakAnythingFromTheOriginalCode() {
         try {
-            Simulator simulator = new Simulator();
+            Environment environment = new Environment();
+            SLAViolationLogger slaViolationLogger = new SLAViolationLogger(environment);
+            SimulatorBuilder dataCenterBuilder = new SimulatorBuilder("configs/DC_Logic.xml", environment,
+                    slaViolationLogger);
+            SimulatorPOD simulatorPOD = dataCenterBuilder.buildLogicalDataCenter();
+
+            Simulator simulator = new Simulator(simulatorPOD, environment);
+
             SimulationResults results = simulator.execute();
             final double expectedTotalPowerConsumption = 7.555028576875995E9;
             assertEquals(expectedTotalPowerConsumption, results.getTotalPowerConsumption(), 1.0E-5);

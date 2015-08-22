@@ -32,18 +32,11 @@ public class Simulator {
         }
     }
 
-    public Simulator() {
-    }
+    public Simulator(SimulatorPOD simulatorPOD, Environment environment) {
+        this.environment = environment;
+        datacenter = simulatorPOD.getDataCenter();
+        systems = simulatorPOD.getSystems();
 
-    public void initialize(String config) {
-        SimulatorBuilder dataCenterBuilder = new SimulatorBuilder(environment, slaViolationLogger);
-        dataCenterBuilder.buildLogicalDataCenter(config);
-
-        datacenter = dataCenterBuilder.getDataCenter();
-        systems = dataCenterBuilder.getSystems();
-
-        // set the overal policy here
-        // Data Center is green!
         datacenter.getAM().setStrategy(StrategyEnum.Green);
 
         class DataCenterAMXunxo implements Observer {
@@ -54,17 +47,13 @@ public class Simulator {
         }
 
         systems.addObserver(new DataCenterAMXunxo());
-        // CS.get(0).AM.strtg=strategyEnum.SLA;
-        // CS.get(1).AM.strtg=strategyEnum.Green;
-
     }
 
-    private Environment environment = new Environment();
     // private int epochSys = 120, epochSideApp = 120;
     // private List<ResponseTime> responseArray;
     // public int communicationAM = 0;
     private DataCenter datacenter;
-    private SLAViolationLogger slaViolationLogger = new SLAViolationLogger(environment);
+    private Environment environment;
     private Systems systems;
 
     protected double getTotalPowerConsumption() {
@@ -110,7 +99,13 @@ public class Simulator {
         FileHandler logFile = new FileHandler("log.txt");
         LOGGER.addHandler(logFile);
 
-        Simulator simulator = new Simulator();
+        Environment environment = new Environment();
+        SLAViolationLogger slaViolationLogger = new SLAViolationLogger(environment);
+        SimulatorBuilder dataCenterBuilder = new SimulatorBuilder("configs/DC_Logic.xml", environment,
+                slaViolationLogger);
+        SimulatorPOD simulatorPOD = dataCenterBuilder.buildLogicalDataCenter();
+
+        Simulator simulator = new Simulator(simulatorPOD, environment);
         SimulationResults results = simulator.execute();
         LOGGER.info("Total energy Consumption= " + results.getTotalPowerConsumption());
         LOGGER.info("LocalTime= " + results.getLocalTime());
@@ -118,10 +113,11 @@ public class Simulator {
         LOGGER.info("Over RED\t " + results.getOverRedTemperatureNumber() + "\t# of Messages DC to sys= "
                 + results.getNumberOfMessagesFromDataCenterToSystem() + "\t# of Messages sys to nodes= "
                 + results.getNumberOfMessagesFromSystemToNodes());
+        
+        slaViolationLogger.finish();
     }
 
     public SimulationResults execute() throws IOException {
-        initialize("configs/DC_Logic.xml");
         LOGGER.info("Systems start running");
         run();
         csFinalize();
@@ -132,7 +128,6 @@ public class Simulator {
     void csFinalize() {
         systems.logTotalResponseTimeComputeSystem();
         datacenter.shutDownDC();
-        slaViolationLogger.finish();
     }
 
     public boolean areSystemsDone() {

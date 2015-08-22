@@ -30,22 +30,25 @@ public class SimulatorBuilder {
 
     private static final Logger LOGGER = Logger.getLogger(SimulatorBuilder.class.getName());
 
-    private DataCenter dataCenter;
     private Environment environment;
     private Systems systems;
+    private DataCenter dataCenter;
     private SLAViolationLogger slaViolationLogger;
+    private String configurationFile;
 
-    public SimulatorBuilder(Environment environment, SLAViolationLogger slaViolationLogger) {
+    public SimulatorBuilder(String configurationFile, Environment environment, SLAViolationLogger slaViolationLogger) {
         this.environment = environment;
         this.systems = new Systems(this.environment);
         this.slaViolationLogger = slaViolationLogger;
+        this.configurationFile = configurationFile;
     }
 
-    public void buildLogicalDataCenter(String config) {
+    public SimulatorPOD buildLogicalDataCenter() {
+        SimulatorPOD simulatorPOD = new SimulatorPOD();
         try {
             DocumentBuilderFactory docBuilderFactory = DocumentBuilderFactory.newInstance();
             DocumentBuilder docBuilder = docBuilderFactory.newDocumentBuilder();
-            final File file = new File(config);
+            final File file = new File(configurationFile);
             Document doc = docBuilder.parse(file);
             String path = file.getParent();
             // normalize text representation
@@ -67,7 +70,8 @@ public class SimulatorBuilder {
                     }
                 }
             }
-
+            simulatorPOD.setSystems(systems);
+            simulatorPOD.setDataCenter(dataCenter);
         } catch (ParserConfigurationException ex) {
             LOGGER.severe(ex.getMessage());
         } catch (SAXException ex) {
@@ -75,6 +79,8 @@ public class SimulatorBuilder {
         } catch (IOException ex) {
             LOGGER.severe(ex.getMessage());
         }
+        
+        return simulatorPOD;
     }
 
     public void systemConfig(NodeList nodiLst, String path) {
@@ -110,8 +116,8 @@ public class SimulatorBuilder {
                     case 2:
                         LOGGER.info("Initialization of Interactive System Name=" + name);
                         SystemBuilder interactiveSystemBuilder = new InteractiveSystemBuilder(fileName);
-                        systems.addInteractiveSystem((InteractiveSystem) interactiveSystemBuilder.build(name, dataCenter,
-                                environment, slaViolationLogger));
+                        systems.addInteractiveSystem((InteractiveSystem) interactiveSystemBuilder.build(name,
+                                dataCenter, environment, slaViolationLogger));
                         break;
                     case 3:
                         LOGGER.info("Initialization of HPC System Name=" + name);
@@ -125,13 +131,4 @@ public class SimulatorBuilder {
             }
         }
     }
-
-    public DataCenter getDataCenter() {
-        return dataCenter;
-    }
-
-    public Systems getSystems() {
-        return systems;
-    }
-
 }
