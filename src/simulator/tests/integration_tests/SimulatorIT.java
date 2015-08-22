@@ -1,4 +1,4 @@
-package simulator.tests;
+package simulator.tests.integration_tests;
 
 import static org.junit.Assert.*;
 
@@ -11,7 +11,7 @@ import org.junit.Test;
 import simulator.SimulationResults;
 import simulator.Simulator;
 
-public class SimulatorTest {
+public class SimulatorIT {
 
     @Test
     public void testIDidntBreakAnythingFromTheOriginalCode() {
@@ -32,7 +32,7 @@ public class SimulatorTest {
             final int expectedNumberMessagesFromSystemToNodes = 198253;
             assertEquals(expectedNumberMessagesFromSystemToNodes, results.getNumberOfMessagesFromSystemToNodes());
         } catch (IOException e) {
-            Logger.getLogger(SimulatorTest.class.getName()).log(Level.SEVERE, "Something went wrong during the test", e);
+            Logger.getLogger(SimulatorIT.class.getName()).log(Level.SEVERE, "Something went wrong during the test", e);
         }
     }
 
