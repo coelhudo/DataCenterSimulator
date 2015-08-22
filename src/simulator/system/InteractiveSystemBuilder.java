@@ -10,21 +10,16 @@ import java.util.logging.Logger;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
-import simulator.Environment;
-import simulator.SLAViolationLogger;
-import simulator.physical.DataCenter;
-
 public class InteractiveSystemBuilder extends SystemBuilder {
     
     private static final Logger LOGGER = Logger.getLogger(InteractiveSystemBuilder.class.getName());
     
-    public InteractiveSystemBuilder(String configurationFile) {
-        super(configurationFile);
+    public InteractiveSystemBuilder(String configurationFile, String name) {
+        super(configurationFile, name);
     }
 
     protected SystemPOD readFromNode(Node node, String path) {
         SystemPOD systemPOD = new InteractiveSystemPOD();
-        //getComputeNodeList().clear();
         NodeList childNodes = node.getChildNodes();
         for (int i = 0; i < childNodes.getLength(); i++) {
             if (childNodes.item(i).getNodeType() == Node.ELEMENT_NODE) {
@@ -57,14 +52,4 @@ public class InteractiveSystemBuilder extends SystemBuilder {
         
         return systemPOD;
     }
-
-    @Override
-    public GeneralSystem build(String name, DataCenter dataCenter, Environment environment, SLAViolationLogger slaViolationLogger) {
-        SystemPOD interactiveSystemPOD = getSystemPOD();                
-        GeneralSystem interactiveSystem = InteractiveSystem.Create(interactiveSystemPOD, environment, dataCenter,
-                slaViolationLogger);
-        interactiveSystem.setName(name);
-        return interactiveSystem;
-    }
-
 }

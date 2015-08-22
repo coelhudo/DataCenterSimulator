@@ -10,16 +10,12 @@ import java.util.logging.Logger;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
-import simulator.Environment;
-import simulator.SLAViolationLogger;
-import simulator.physical.DataCenter;
-
 public class ComputeSystemBuilder extends SystemBuilder {
     
     private static final Logger LOGGER = Logger.getLogger(ComputeSystemBuilder.class.getName());
     
-    public ComputeSystemBuilder(String configurationFile) {
-        super(configurationFile);
+    public ComputeSystemBuilder(String configurationFile, String name) {
+        super(configurationFile, name);
     }
 
     protected SystemPOD readFromNode(Node node, String path) {
@@ -58,12 +54,4 @@ public class ComputeSystemBuilder extends SystemBuilder {
         
         return systemPOD;
     }
-
-    @Override
-    public GeneralSystem build(String name, DataCenter dataCenter, Environment environment, SLAViolationLogger slaViolationLogger) {
-        SystemPOD computeSystemPOD = getSystemPOD();                
-        GeneralSystem computeSystem = ComputeSystem.Create(name, computeSystemPOD, environment, dataCenter, slaViolationLogger);
-        return computeSystem;
-    }
-
 }

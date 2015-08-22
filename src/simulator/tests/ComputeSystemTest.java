@@ -33,7 +33,7 @@ public class ComputeSystemTest {
         Environment mockedEnvironment = mock(Environment.class);
         DataCenter mockedDataCenter = mock(DataCenter.class);
         SLAViolationLogger mockedSLAViolationLogger = mock(SLAViolationLogger.class);
-        ComputeSystem computeSystem = ComputeSystem.Create("dummy", systemPOD, mockedEnvironment, mockedDataCenter,
+        ComputeSystem computeSystem = ComputeSystem.Create(systemPOD, mockedEnvironment, mockedDataCenter,
                 mockedSLAViolationLogger);
 
         assertEquals(0, computeSystem.getAccumolatedViolation());
@@ -41,7 +41,6 @@ public class ComputeSystemTest {
         assertNotNull(computeSystem.getBis());
         assertTrue(computeSystem.getComputeNodeIndex().isEmpty());
         assertTrue(computeSystem.getComputeNodeList().isEmpty());
-        assertEquals("dummy", computeSystem.getName());
         assertEquals(0, computeSystem.getNumberOfActiveServ());
         assertEquals(0, computeSystem.getNumberofIdleNode());
         assertEquals(0, computeSystem.getNumberOfNode());
@@ -70,7 +69,7 @@ public class ComputeSystemTest {
         Environment mockedEnvironment = mock(Environment.class);
         DataCenter mockedDataCenter = mock(DataCenter.class);
         SLAViolationLogger mockedSLAViolationLogger = mock(SLAViolationLogger.class);
-        ComputeSystem computeSystem = ComputeSystem.Create("dummy", systemPOD, mockedEnvironment, mockedDataCenter,
+        ComputeSystem computeSystem = ComputeSystem.Create(systemPOD, mockedEnvironment, mockedDataCenter,
                 mockedSLAViolationLogger);
         assertTrue(computeSystem.runAcycle());
         assertTrue(computeSystem.isDone());
@@ -109,7 +108,7 @@ public class ComputeSystemTest {
         when(mockedEnvironment.getCurrentLocalTime()).thenReturn(1, 3);
         DataCenter mockedDataCenter = mock(DataCenter.class);
         SLAViolationLogger mockedSLAViolationLogger = mock(SLAViolationLogger.class);
-        ComputeSystem computeSystem = ComputeSystem.Create("dummy", systemPOD, mockedEnvironment, mockedDataCenter,
+        ComputeSystem computeSystem = ComputeSystem.Create(systemPOD, mockedEnvironment, mockedDataCenter,
                 mockedSLAViolationLogger);
         assertFalse(computeSystem.runAcycle());
         assertFalse(computeSystem.isDone());
@@ -131,7 +130,7 @@ public class ComputeSystemTest {
             fail(FAIL_ERROR_MESSAGE);
         }
 
-        verify(mockedSLAViolationLogger).logHPCViolation("dummy", Violation.COMPUTE_NODE_SHORTAGE);
+        verify(mockedSLAViolationLogger).logHPCViolation(anyString(), eq(Violation.COMPUTE_NODE_SHORTAGE));
 
         verifyNoMoreInteractions(mockedEnvironment, mockedDataCenter, mockedSLAViolationLogger, mockedBufferedReader);
     }
@@ -151,7 +150,7 @@ public class ComputeSystemTest {
         when(mockedEnvironment.getCurrentLocalTime()).thenReturn(1, 3, 4);
         DataCenter mockedDataCenter = mock(DataCenter.class);
         SLAViolationLogger mockedSLAViolationLogger = mock(SLAViolationLogger.class);
-        ComputeSystem computeSystem = ComputeSystem.Create("dummy", systemPOD, mockedEnvironment, mockedDataCenter,
+        ComputeSystem computeSystem = ComputeSystem.Create(systemPOD, mockedEnvironment, mockedDataCenter,
                 mockedSLAViolationLogger);
         BladeServer mockedBladeServer = mock(BladeServer.class);
         when(mockedBladeServer.getReady()).thenReturn(1);
@@ -185,7 +184,7 @@ public class ComputeSystemTest {
         } catch (IOException e) {
             fail(FAIL_ERROR_MESSAGE);
         }
-        verify(mockedSLAViolationLogger).logHPCViolation("dummy", Violation.DEADLINE_PASSED);
+        verify(mockedSLAViolationLogger).logHPCViolation(anyString(), eq(Violation.DEADLINE_PASSED));
 
         verifyNoMoreInteractions(mockedEnvironment, mockedDataCenter, mockedSLAViolationLogger, mockedBufferedReader,
                 mockedBladeServer);
@@ -207,7 +206,7 @@ public class ComputeSystemTest {
 
         DataCenter mockedDataCenter = mock(DataCenter.class);
         SLAViolationLogger mockedSLAViolationLogger = mock(SLAViolationLogger.class);
-        ComputeSystem computeSystem = ComputeSystem.Create("dummy", systemPOD, mockedEnvironment, mockedDataCenter,
+        ComputeSystem computeSystem = ComputeSystem.Create(systemPOD, mockedEnvironment, mockedDataCenter,
                 mockedSLAViolationLogger);
         BladeServer mockedBladeServer = mock(BladeServer.class);
         when(mockedBladeServer.getReady()).thenReturn(1);
@@ -270,7 +269,7 @@ public class ComputeSystemTest {
 
         DataCenter mockedDataCenter = mock(DataCenter.class);
         SLAViolationLogger mockedSLAViolationLogger = mock(SLAViolationLogger.class);
-        ComputeSystem computeSystem = ComputeSystem.Create("dummy", systemPOD, mockedEnvironment, mockedDataCenter,
+        ComputeSystem computeSystem = ComputeSystem.Create(systemPOD, mockedEnvironment, mockedDataCenter,
                 mockedSLAViolationLogger);
         BladeServer mockedBladeServer = mock(BladeServer.class);
         when(mockedBladeServer.getReady()).thenReturn(1);
@@ -308,7 +307,7 @@ public class ComputeSystemTest {
             fail(FAIL_ERROR_MESSAGE);
         }
 
-        verify(mockedSLAViolationLogger).logHPCViolation("dummy", Violation.DEADLINE_PASSED);
+        verify(mockedSLAViolationLogger).logHPCViolation(anyString(), eq(Violation.DEADLINE_PASSED));
 
         verifyNoMoreInteractions(mockedEnvironment, mockedDataCenter, mockedSLAViolationLogger, mockedBufferedReader,
                 mockedBladeServer);
@@ -328,7 +327,7 @@ public class ComputeSystemTest {
         Environment mockedEnvironment = mock(Environment.class);
         DataCenter mockedDataCenter = mock(DataCenter.class);
         SLAViolationLogger mockedSLAViolationLogger = mock(SLAViolationLogger.class);
-        ComputeSystem computeSystem = ComputeSystem.Create("dummy", systemPOD, mockedEnvironment, mockedDataCenter,
+        ComputeSystem computeSystem = ComputeSystem.Create(systemPOD, mockedEnvironment, mockedDataCenter,
                 mockedSLAViolationLogger);
 
         BatchJob mockedBatchJob = mock(BatchJob.class);
@@ -374,7 +373,7 @@ public class ComputeSystemTest {
         Environment mockedEnvironment = mock(Environment.class);
         DataCenter mockedDataCenter = mock(DataCenter.class);
         SLAViolationLogger mockedSLAViolationLogger = mock(SLAViolationLogger.class);
-        ComputeSystem computeSystem = ComputeSystem.Create("dummy", systemPOD, mockedEnvironment, mockedDataCenter,
+        ComputeSystem computeSystem = ComputeSystem.Create(systemPOD, mockedEnvironment, mockedDataCenter,
                 mockedSLAViolationLogger);
 
         BatchJob mockedBatchJob = mock(BatchJob.class);
@@ -420,7 +419,7 @@ public class ComputeSystemTest {
         Environment mockedEnvironment = mock(Environment.class);
         DataCenter mockedDataCenter = mock(DataCenter.class);
         SLAViolationLogger mockedSLAViolationLogger = mock(SLAViolationLogger.class);
-        ComputeSystem computeSystem = ComputeSystem.Create("dummy", systemPOD, mockedEnvironment, mockedDataCenter,
+        ComputeSystem computeSystem = ComputeSystem.Create(systemPOD, mockedEnvironment, mockedDataCenter,
                 mockedSLAViolationLogger);
 
         BatchJob mockedBatchJob = mock(BatchJob.class);
@@ -469,7 +468,7 @@ public class ComputeSystemTest {
         when(mockedEnvironment.getCurrentLocalTime()).thenReturn(1);
         DataCenter mockedDataCenter = mock(DataCenter.class);
         SLAViolationLogger mockedSLAViolationLogger = mock(SLAViolationLogger.class);
-        ComputeSystem computeSystem = ComputeSystem.Create("dummy", systemPOD, mockedEnvironment, mockedDataCenter,
+        ComputeSystem computeSystem = ComputeSystem.Create(systemPOD, mockedEnvironment, mockedDataCenter,
                 mockedSLAViolationLogger);
         BladeServer mockedBladeServer = mock(BladeServer.class);
         when(mockedBladeServer.getReady()).thenReturn(1);
@@ -536,7 +535,7 @@ public class ComputeSystemTest {
         when(mockedEnvironment.getCurrentLocalTime()).thenReturn(1);
         DataCenter mockedDataCenter = mock(DataCenter.class);
         SLAViolationLogger mockedSLAViolationLogger = mock(SLAViolationLogger.class);
-        ComputeSystem computeSystem = ComputeSystem.Create("dummy", systemPOD, mockedEnvironment, mockedDataCenter,
+        ComputeSystem computeSystem = ComputeSystem.Create(systemPOD, mockedEnvironment, mockedDataCenter,
                 mockedSLAViolationLogger);
         BladeServer mockedBladeServer = mock(BladeServer.class);
         when(mockedBladeServer.getReady()).thenReturn(-1);
@@ -564,7 +563,7 @@ public class ComputeSystemTest {
         when(mockedEnvironment.getCurrentLocalTime()).thenReturn(1);
         DataCenter mockedDataCenter = mock(DataCenter.class);
         SLAViolationLogger mockedSLAViolationLogger = mock(SLAViolationLogger.class);
-        ComputeSystem computeSystem = ComputeSystem.Create("dummy", systemPOD, mockedEnvironment, mockedDataCenter,
+        ComputeSystem computeSystem = ComputeSystem.Create(systemPOD, mockedEnvironment, mockedDataCenter,
                 mockedSLAViolationLogger);
         BladeServer mockedBladeServer = mock(BladeServer.class);
         when(mockedBladeServer.getReady()).thenReturn(1);
@@ -587,7 +586,7 @@ public class ComputeSystemTest {
         when(mockedEnvironment.getCurrentLocalTime()).thenReturn(1);
         DataCenter mockedDataCenter = mock(DataCenter.class);
         SLAViolationLogger mockedSLAViolationLogger = mock(SLAViolationLogger.class);
-        ComputeSystem computeSystem = ComputeSystem.Create("dummy", systemPOD, mockedEnvironment, mockedDataCenter,
+        ComputeSystem computeSystem = ComputeSystem.Create(systemPOD, mockedEnvironment, mockedDataCenter,
                 mockedSLAViolationLogger);
         BladeServer mockedBladeServer = mock(BladeServer.class);
         when(mockedBladeServer.getResponseTime()).thenReturn(15.0);

@@ -7,7 +7,15 @@ import java.util.logging.FileHandler;
 import java.util.logging.Logger;
 
 import simulator.physical.DataCenter;
+import simulator.system.ComputeSystem;
+import simulator.system.ComputeSystemPOD;
+import simulator.system.EnterpriseSystem;
+import simulator.system.EnterpriseSystemPOD;
+import simulator.system.InteractiveSystem;
+import simulator.system.InteractiveSystemPOD;
 import simulator.system.Systems;
+import simulator.system.SystemsPOD;
+import simulator.utils.ActivitiesLogger;
 
 public class Simulator {
 
@@ -34,8 +42,23 @@ public class Simulator {
 
     public Simulator(SimulatorPOD simulatorPOD, Environment environment) {
         this.environment = environment;
-        datacenter = simulatorPOD.getDataCenter();
-        systems = simulatorPOD.getSystems();
+        ActivitiesLogger activitiesLogger = new ActivitiesLogger("out_W.txt");
+        slaViolationLogger = new SLAViolationLogger(environment);
+        systems = new Systems(environment);
+        datacenter = new DataCenter(simulatorPOD.getDataCenterPOD(), activitiesLogger, environment, systems);
+        SystemsPOD systemsPOD = simulatorPOD.getSystemsPOD();
+        for (EnterpriseSystemPOD enterprisesystemPOD : systemsPOD.getEnterpriseSystemsPOD()) {
+            systems.addEnterpriseSystem(
+                    EnterpriseSystem.Create(enterprisesystemPOD, environment, datacenter, slaViolationLogger));
+        }
+        for (ComputeSystemPOD computeSystemPOD : systemsPOD.getComputeSystemsPOD()) {
+            systems.addComputeSystem(
+                    ComputeSystem.Create(computeSystemPOD, environment, datacenter, slaViolationLogger));
+        }
+        for (InteractiveSystemPOD interactivePOD : systemsPOD.getInteractiveSystemsPOD()) {
+            systems.addInteractiveSystem(
+                    InteractiveSystem.Create(interactivePOD, environment, datacenter, slaViolationLogger));
+        }
 
         datacenter.getAM().setStrategy(StrategyEnum.Green);
 
@@ -55,7 +78,8 @@ public class Simulator {
     private DataCenter datacenter;
     private Environment environment;
     private Systems systems;
-
+    private SLAViolationLogger slaViolationLogger;
+    
     protected double getTotalPowerConsumption() {
         return datacenter.getTotalPowerConsumption();
     }
@@ -100,9 +124,7 @@ public class Simulator {
         LOGGER.addHandler(logFile);
 
         Environment environment = new Environment();
-        SLAViolationLogger slaViolationLogger = new SLAViolationLogger(environment);
-        SimulatorBuilder dataCenterBuilder = new SimulatorBuilder("configs/DC_Logic.xml", environment,
-                slaViolationLogger);
+        SimulatorBuilder dataCenterBuilder = new SimulatorBuilder("configs/DC_Logic.xml", environment);
         SimulatorPOD simulatorPOD = dataCenterBuilder.buildLogicalDataCenter();
 
         Simulator simulator = new Simulator(simulatorPOD, environment);
@@ -113,8 +135,6 @@ public class Simulator {
         LOGGER.info("Over RED\t " + results.getOverRedTemperatureNumber() + "\t# of Messages DC to sys= "
                 + results.getNumberOfMessagesFromDataCenterToSystem() + "\t# of Messages sys to nodes= "
                 + results.getNumberOfMessagesFromSystemToNodes());
-        
-        slaViolationLogger.finish();
     }
 
     public SimulationResults execute() throws IOException {
@@ -126,6 +146,7 @@ public class Simulator {
     }
 
     void csFinalize() {
+        slaViolationLogger.finish();
         systems.logTotalResponseTimeComputeSystem();
         datacenter.shutDownDC();
     }

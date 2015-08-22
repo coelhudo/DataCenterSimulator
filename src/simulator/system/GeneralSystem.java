@@ -33,8 +33,9 @@ public class GeneralSystem {
 
     public GeneralSystem(SystemPOD systemPOD) {
         rackIDs = systemPOD.getRackIDs();
+        name = systemPOD.getName();
     }
-    
+
     public void addComputeNodeToSys(BladeServer bladeServer) {
         bladeServer.restart();
         appendBladeServerIntoComputeNodeList(bladeServer);
@@ -49,10 +50,6 @@ public class GeneralSystem {
 
     public String getName() {
         return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
     }
 
     public ResourceAllocation getResourceAllocation() {
@@ -86,7 +83,7 @@ public class GeneralSystem {
     protected void setNumberOfNode(int numberOfNode) {
         this.numberOfNode = numberOfNode;
     }
-    
+
     public List<BladeServer> getComputeNodeList() {
         return computeNodeList;
     }
@@ -94,7 +91,7 @@ public class GeneralSystem {
     public void setComputeNodeList(ArrayList<BladeServer> computeNodeList) {
         this.computeNodeList = computeNodeList;
     }
-    
+
     public void appendBladeServerIntoComputeNodeList(BladeServer bladeServer) {
         computeNodeList.add(bladeServer);
     }
@@ -106,7 +103,7 @@ public class GeneralSystem {
     public void setComputeNodeIndex(ArrayList<Integer> computeNodeIndex) {
         this.computeNodeIndex = computeNodeIndex;
     }
-    
+
     public void appendBladeServerIndexIntoComputeNodeIndex(Integer index) {
         computeNodeIndex.add(index);
     }
@@ -170,7 +167,7 @@ public class GeneralSystem {
     public List<Integer> getRackIDs() {
         return rackIDs;
     }
-    
+
     protected void setRackIDs(List<Integer> rackIDs) {
         this.rackIDs = rackIDs;
     }

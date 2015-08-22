@@ -10,7 +10,6 @@ import java.util.List;
 import org.junit.Test;
 
 import simulator.Environment;
-import simulator.SLAViolationLogger;
 import simulator.Simulator;
 import simulator.SimulatorBuilder;
 import simulator.SimulatorPOD;
@@ -26,9 +25,7 @@ public class ReadingConfigurationIT {
     @Test
     public void testSimulatorBuilder() {
         Environment environment = new Environment();
-        SLAViolationLogger slaViolationLogger = new SLAViolationLogger(environment);
-        SimulatorBuilder dataCenterBuilder = new SimulatorBuilder("configs/DC_Logic.xml", environment,
-                slaViolationLogger);
+        SimulatorBuilder dataCenterBuilder = new SimulatorBuilder("configs/DC_Logic.xml", environment);
         SimulatorPOD simulatorPOD = dataCenterBuilder.buildLogicalDataCenter();
 
         Simulator simulator = new Simulator(simulatorPOD, environment);

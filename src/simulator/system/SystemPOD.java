@@ -9,6 +9,15 @@ public abstract class SystemPOD {
     private List<Integer> rackIDs = new ArrayList<Integer>();
     private BufferedReader bis = null;
     private int numberOfNode;
+    private String name; 
+    
+    public void setName(String name) {
+        this.name = name;
+    }
+    
+    public String getName() {
+        return name;
+    }
     
     public void setNumberofNode(int n) {
         numberOfNode = n;

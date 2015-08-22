@@ -106,11 +106,10 @@ public class EnterpriseSystem extends GeneralSystem {
 
     public static EnterpriseSystem Create(SystemPOD systemPOD, Environment environment, DataCenter dataCenter,
             SLAViolationLogger slaViolationLogger) {
-        EnterpriseSystem enterpriseSytem = new EnterpriseSystem(systemPOD, environment, dataCenter);
-        enterpriseSytem.getResourceAllocation().initialResourceAlocator(enterpriseSytem);
+        EnterpriseSystem enterpriseSystem = new EnterpriseSystem(systemPOD, environment, dataCenter);
+        enterpriseSystem.getResourceAllocation().initialResourceAlocator(enterpriseSystem);
         //FIXME: why violation is logged in the AM class instead the system class
-        enterpriseSytem.setAM(new EnterpriseSystemAM(enterpriseSytem, environment, slaViolationLogger));
-
-        return enterpriseSytem;
+        enterpriseSystem.setAM(new EnterpriseSystemAM(enterpriseSystem, environment, slaViolationLogger));
+        return enterpriseSystem;
     }
 }

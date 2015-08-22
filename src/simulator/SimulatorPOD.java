@@ -1,26 +1,26 @@
 package simulator;
 
-import simulator.physical.DataCenter;
-import simulator.system.Systems;
+import simulator.physical.DataCenterPOD;
+import simulator.system.SystemsPOD;
 
 public class SimulatorPOD {
-    private Systems systems;
-    private DataCenter dataCenter;
+    private SystemsPOD systemsPOD;
+    private DataCenterPOD dataCenterPOD;
     
-    public void setDataCenter(DataCenter dataCenter) {
-        this.dataCenter = dataCenter;
+    public void setDataCenterPOD(DataCenterPOD dataCenter) {
+        this.dataCenterPOD = dataCenter;
     }
     
-    public DataCenter getDataCenter() {
-        return dataCenter;
+    public DataCenterPOD getDataCenterPOD() {
+        return dataCenterPOD;
     }
     
-    public void setSystems(Systems systems) {
-        this.systems = systems;
+    public void setSystemsPOD(SystemsPOD systemsPOD) {
+        this.systemsPOD = systemsPOD;
     }
 
-    public Systems getSystems() {
-        return systems;
+    public SystemsPOD getSystemsPOD() {
+        return systemsPOD;
     }
 
 }

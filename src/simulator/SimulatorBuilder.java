@@ -13,38 +13,32 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
-import simulator.physical.DataCenter;
 import simulator.physical.DataCenterBuilder;
 import simulator.physical.DataCenterPOD;
-import simulator.system.ComputeSystem;
 import simulator.system.ComputeSystemBuilder;
-import simulator.system.EnterpriseSystem;
+import simulator.system.ComputeSystemPOD;
 import simulator.system.EnterpriseSystemBuilder;
-import simulator.system.InteractiveSystem;
+import simulator.system.EnterpriseSystemPOD;
 import simulator.system.InteractiveSystemBuilder;
+import simulator.system.InteractiveSystemPOD;
 import simulator.system.SystemBuilder;
-import simulator.system.Systems;
-import simulator.utils.ActivitiesLogger;
+import simulator.system.SystemsPOD;
 
 public class SimulatorBuilder {
 
     private static final Logger LOGGER = Logger.getLogger(SimulatorBuilder.class.getName());
 
     private Environment environment;
-    private Systems systems;
-    private DataCenter dataCenter;
-    private SLAViolationLogger slaViolationLogger;
     private String configurationFile;
 
-    public SimulatorBuilder(String configurationFile, Environment environment, SLAViolationLogger slaViolationLogger) {
+    public SimulatorBuilder(String configurationFile, Environment environment) {
         this.environment = environment;
-        this.systems = new Systems(this.environment);
-        this.slaViolationLogger = slaViolationLogger;
         this.configurationFile = configurationFile;
     }
 
     public SimulatorPOD buildLogicalDataCenter() {
         SimulatorPOD simulatorPOD = new SimulatorPOD();
+        SystemsPOD systemsPOD = new SystemsPOD();
         try {
             DocumentBuilderFactory docBuilderFactory = DocumentBuilderFactory.newInstance();
             DocumentBuilder docBuilder = docBuilderFactory.newDocumentBuilder();
@@ -61,17 +55,14 @@ public class SimulatorBuilder {
                         String DCLayout = path + "/" + childNodes.item(i).getChildNodes().item(0).getNodeValue().trim();
                         DataCenterBuilder dataCenterBuilder = new DataCenterBuilder(DCLayout, environment);
                         DataCenterPOD dataCenterPOD = dataCenterBuilder.getDataCenterPOD();
-                        ActivitiesLogger activitiesLogger = new ActivitiesLogger("out_W.txt");
-                        dataCenter = new DataCenter(dataCenterPOD, activitiesLogger, environment, systems);
+                        simulatorPOD.setDataCenterPOD(dataCenterPOD);
                     }
                     if (childNodes.item(i).getNodeName().equalsIgnoreCase("System")) {
                         NodeList nodiLst = childNodes.item(i).getChildNodes();
-                        systemConfig(nodiLst, path);
+                        systemConfig(nodiLst, path, systemsPOD);
                     }
                 }
             }
-            simulatorPOD.setSystems(systems);
-            simulatorPOD.setDataCenter(dataCenter);
         } catch (ParserConfigurationException ex) {
             LOGGER.severe(ex.getMessage());
         } catch (SAXException ex) {
@@ -79,11 +70,12 @@ public class SimulatorBuilder {
         } catch (IOException ex) {
             LOGGER.severe(ex.getMessage());
         }
-        
+
+        simulatorPOD.setSystemsPOD(systemsPOD);
         return simulatorPOD;
     }
 
-    public void systemConfig(NodeList nodiLst, String path) {
+    public void systemConfig(NodeList nodiLst, String path, SystemsPOD systemsPOD) {
         int whichSystem = -1;
         // whichSystem=1 means Enterprise
         // whichSystem=2 means Interactive
@@ -109,21 +101,18 @@ public class SimulatorBuilder {
                     switch (whichSystem) {
                     case 1:
                         LOGGER.info("Initialization of Enterprise System Name=" + name);
-                        SystemBuilder enterpriseSystemBuilder = new EnterpriseSystemBuilder(fileName);
-                        systems.addEnterpriseSystem((EnterpriseSystem) enterpriseSystemBuilder.build(name, dataCenter,
-                                environment, slaViolationLogger));
+                        SystemBuilder enterpriseSystemBuilder = new EnterpriseSystemBuilder(fileName, name);
+                        systemsPOD.appendEnterprisePOD((EnterpriseSystemPOD) enterpriseSystemBuilder.getSystemPOD());
                         break;
                     case 2:
                         LOGGER.info("Initialization of Interactive System Name=" + name);
-                        SystemBuilder interactiveSystemBuilder = new InteractiveSystemBuilder(fileName);
-                        systems.addInteractiveSystem((InteractiveSystem) interactiveSystemBuilder.build(name,
-                                dataCenter, environment, slaViolationLogger));
+                        SystemBuilder interactiveSystemBuilder = new InteractiveSystemBuilder(fileName, name);
+                        systemsPOD.appendInteractivePOD((InteractiveSystemPOD) interactiveSystemBuilder.getSystemPOD());
                         break;
                     case 3:
                         LOGGER.info("Initialization of HPC System Name=" + name);
-                        SystemBuilder computeSystemBuilder = new ComputeSystemBuilder(fileName);
-                        systems.addComputeSystem((ComputeSystem) computeSystemBuilder.build(name, dataCenter,
-                                environment, slaViolationLogger));
+                        SystemBuilder computeSystemBuilder = new ComputeSystemBuilder(fileName, name);
+                        systemsPOD.appendComputeSystemPOD((ComputeSystemPOD) computeSystemBuilder.getSystemPOD());
                         break;
                     }
                     whichSystem = -1;

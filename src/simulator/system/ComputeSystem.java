@@ -248,12 +248,11 @@ public class ComputeSystem extends GeneralSystem {
         return totalResponsetime;
     }
 
-    public static ComputeSystem Create(String name, SystemPOD systemPOD, Environment environment, DataCenter dataCenter,
+    public static ComputeSystem Create(SystemPOD systemPOD, Environment environment, DataCenter dataCenter,
             SLAViolationLogger slaViolationLogger) {
         ComputeSystem computeSystem = new ComputeSystem(systemPOD, environment, dataCenter, slaViolationLogger);
         computeSystem.getResourceAllocation().initialResourceAloc(computeSystem);
         computeSystem.setAM(new ComputeSystemAM(computeSystem, environment));
-        computeSystem.setName(name);
         return computeSystem;
     }
 

@@ -1,6 +1,6 @@
 package simulator.tests.integration_tests;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
 import java.io.IOException;
 import java.util.logging.Level;
@@ -9,7 +9,6 @@ import java.util.logging.Logger;
 import org.junit.Test;
 
 import simulator.Environment;
-import simulator.SLAViolationLogger;
 import simulator.SimulationResults;
 import simulator.Simulator;
 import simulator.SimulatorBuilder;
@@ -21,9 +20,7 @@ public class SimulatorIT {
     public void testIDidntBreakAnythingFromTheOriginalCode() {
         try {
             Environment environment = new Environment();
-            SLAViolationLogger slaViolationLogger = new SLAViolationLogger(environment);
-            SimulatorBuilder dataCenterBuilder = new SimulatorBuilder("configs/DC_Logic.xml", environment,
-                    slaViolationLogger);
+            SimulatorBuilder dataCenterBuilder = new SimulatorBuilder("configs/DC_Logic.xml", environment);
             SimulatorPOD simulatorPOD = dataCenterBuilder.buildLogicalDataCenter();
 
             Simulator simulator = new Simulator(simulatorPOD, environment);
