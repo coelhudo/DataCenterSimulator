@@ -57,7 +57,6 @@ public class DataCenterBuilder {
         } catch (IOException ex) {
             LOGGER.log(Level.SEVERE, this.getClass().getName(), ex);
         }
-
     }
 
     void parseDataCenter(Node node, String path) {
@@ -138,14 +137,6 @@ public class DataCenterBuilder {
                 chassisPOD.appendServer(new BladeServer(bladeServerPOD, -1, environment));
             }
         }
-
-        // if(childNodes.item(i).getNodeName().equalsIgnoreCase("bladeServer"))
-        // {
-        // BladeServer bladeServer = new BladeServer(chassisID);
-        //
-        // bladeServer.readFromNode(childNodes.item(i));
-        // servers.add(bladeServer);
-        // }
 
         return chassisPOD;
     }
@@ -263,7 +254,6 @@ public class DataCenterBuilder {
                     return false;
                 }
                 for (int i = 0; i < numberOfChassis; i++) {
-
                     if (Double.parseDouble(numbers[i]) > 0) {
                         dataCenterPOD.setD(k, i, 13 * Double.parseDouble(numbers[i]));
                     } else {
@@ -284,11 +274,6 @@ public class DataCenterBuilder {
         NodeList childNodes = node.getChildNodes();
         for (int i = 0; i < childNodes.getLength(); i++) {
             if (childNodes.item(i).getNodeType() == Node.ELEMENT_NODE) {
-                // if(childNodes.item(i).getNodeName().equalsIgnoreCase("ID"))
-                // {
-                // serverID =
-                // Integer.parseInt(childNodes.item(i).getChildNodes().item(0).getNodeValue().trim());
-                // }
                 if ("BladeType".equalsIgnoreCase(childNodes.item(i).getNodeName())) {
                     bladeServerPOD.setBladeType(childNodes.item(i).getChildNodes().item(0).getNodeValue().trim());
                 }
