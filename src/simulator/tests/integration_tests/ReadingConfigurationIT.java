@@ -5,7 +5,9 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertTrue;
 
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.junit.Test;
 
@@ -14,6 +16,8 @@ import simulator.Simulator;
 import simulator.SimulatorBuilder;
 import simulator.SimulatorPOD;
 import simulator.am.DataCenterAM;
+import simulator.physical.BladeServer;
+import simulator.physical.Chassis;
 import simulator.physical.DataCenter;
 import simulator.system.ComputeSystem;
 import simulator.system.EnterpriseSystem;
@@ -31,6 +35,34 @@ public class ReadingConfigurationIT {
         Simulator simulator = new Simulator(simulatorPOD, environment);
 
         DataCenter dataCenter = simulator.getDatacenter();
+        List<Chassis> chassisSet = dataCenter.getChassisSet();
+        assertEquals(50, chassisSet.size());
+        int chassisID = 0;
+        Set<Integer> rackIDSet = new HashSet<Integer>();
+        for(Chassis chassis : chassisSet) {
+            assertEquals(chassisID, chassis.getChassisID());
+            chassisID++;
+            rackIDSet.add(chassis.getRackID());
+            assertEquals(1, chassis.getServers().size());
+            for(BladeServer bladeServer : chassis.getServers()) {
+                assertEquals(chassis.getChassisID(), bladeServer.getChassisID());
+                assertEquals(chassis.getRackID(), bladeServer.getRackId());
+                assertEquals(chassis.getChassisID(), bladeServer.getServerID());
+                assertEquals("HP Proliant DL3", bladeServer.getBladeType());
+                assertEquals(1.0, bladeServer.getFrequencyLevelAt(0), 1.0E-8);
+                assertEquals(1.04, bladeServer.getFrequencyLevelAt(1), 1.0E-8);
+                assertEquals(1.4, bladeServer.getFrequencyLevelAt(2), 1.0E-8);
+                assertEquals(300.0, bladeServer.getPowerBusyAt(0), 1.0E-8);
+                assertEquals(336.0, bladeServer.getPowerBusyAt(1), 1.0E-8);
+                assertEquals(448.0, bladeServer.getPowerBusyAt(2), 1.0E-8);
+                assertEquals(100.0, bladeServer.getPowerIdleAt(0), 1.0E-8);
+                assertEquals(100.0, bladeServer.getPowerIdleAt(1), 1.0E-8);
+                assertEquals(128.0, bladeServer.getPowerIdleAt(2), 1.0E-8);
+                assertEquals(5.0, bladeServer.getIdleConsumption(), 1.0E-8);
+            }
+        }
+        assertEquals(10, rackIDSet.size());
+        
         Systems systems = simulator.getSystems();
         List<ComputeSystem> computeSystems = systems.getComputeSystems();
         List<EnterpriseSystem> enterpriseSystems = systems.getEnterpriseSystems();
