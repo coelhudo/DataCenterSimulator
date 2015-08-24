@@ -1,19 +1,24 @@
 package simulator.physical;
 
+import java.util.ArrayList;
 import java.util.List;
+
+import simulator.Environment;
 
 public class Chassis {
 
-    private List<BladeServer> servers;
-    private int chassisID, rackId;
+    private List<BladeServer> servers = new ArrayList<BladeServer>();
+    private int chassisID, rackID;
     private String chassisType;
-    
-    public Chassis(ChassisPOD chassisPOD, int idArg) {
-        // if it is -1 means this chassis is just a template and not assigned
-        // yet
-        servers = chassisPOD.getServers();
+
+    public Chassis(ChassisPOD chassisPOD, Environment environment) {
         chassisType = chassisPOD.getChassisType();
-        chassisID = idArg;
+        chassisID = chassisPOD.getID();
+        rackID = chassisPOD.getRackID();
+        for (BladeServerPOD bladeServerPOD : chassisPOD.getServerPODs()) {
+            BladeServer bladeServer = new BladeServer(bladeServerPOD, environment);
+            servers.add(bladeServer);
+        }
     }
 
     public List<BladeServer> getServers() {
@@ -21,11 +26,7 @@ public class Chassis {
     }
 
     public int getRackID() {
-        return rackId;
-    }
-
-    public void setRackID(int rackId) {
-        this.rackId = rackId;
+        return rackID;
     }
 
     public int getChassisID() {

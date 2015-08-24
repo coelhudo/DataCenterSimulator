@@ -51,12 +51,13 @@ public class BladeServer {
     private boolean slaViolation;
     private Environment environment;
 
-    public BladeServer(BladeServerPOD bladeServerPOD, int chasID, Environment environment) {
+    public BladeServer(BladeServerPOD bladeServerPOD, Environment environment) {
         this.environment = environment;
         setRespTime(0);
         // if it is -1 means that it is not put in the proper position yet ID
         // should be set
-        setChassisID(chasID);
+        chassisID = bladeServerPOD.getChassisID();
+        rackId = bladeServerPOD.getRackID();
         serverID = bladeServerPOD.getServerID();
         bladeType = bladeServerPOD.getBladeType();
         powerBusy = bladeServerPOD.getPowerBusy();
@@ -80,15 +81,6 @@ public class BladeServer {
         setTotalFinishedJob(0);
         setSLAviolation(false);
         setMips(1.4);
-    }
-
-    public void changeInternals(BladeServerPOD bladeServerPOD) {
-        serverID = bladeServerPOD.getServerID();
-        bladeType = bladeServerPOD.getBladeType();
-        powerBusy = bladeServerPOD.getPowerBusy();
-        powerIdle = bladeServerPOD.getPowerIdle();
-        frequencyLevel = bladeServerPOD.getFrequencyLevel();
-        idleConsumption = bladeServerPOD.getIdleConsumption();
     }
 
     // Transaction system

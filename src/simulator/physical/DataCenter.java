@@ -1,5 +1,6 @@
 package simulator.physical;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import simulator.Environment;
@@ -12,7 +13,7 @@ public class DataCenter {
     private int overRed = 0;
     private double totalPowerConsumption = 0;
     private Cooler cooler1 = new Cooler();
-    private List<Chassis> chassisSet;
+    private List<Chassis> chassisSet = new ArrayList<Chassis>();
     private int redTemperature;
     private double[][] D;
     private DataCenterAM am;
@@ -25,7 +26,10 @@ public class DataCenter {
         this.activitiesLogger = activitiesLogger;
         am = new DataCenterAM(environment, systems);
         this.environment = environment;
-        chassisSet = dataCenterPOD.getChassis();
+        for(ChassisPOD chassisPOD : dataCenterPOD.getChassisPOD()) {
+            Chassis chassis = new Chassis(chassisPOD, environment);
+            chassisSet.add(chassis);
+        }
         redTemperature = dataCenterPOD.getRedTemperature();
         D = dataCenterPOD.getD();
     }

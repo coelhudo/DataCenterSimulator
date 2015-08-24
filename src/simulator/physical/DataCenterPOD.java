@@ -4,11 +4,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class DataCenterPOD {
-    private List<Chassis> chassisSet = new ArrayList<Chassis>();
+    private List<ChassisPOD> chassisSet = new ArrayList<ChassisPOD>();
     private int redTemperature;
     private double[][] D;
 
-    public List<Chassis> getChassis() {
+    public List<ChassisPOD> getChassisPOD() {
         return chassisSet;
     }
 
@@ -24,7 +24,7 @@ public class DataCenterPOD {
         return D;
     }
 
-    public void appendChassis(Chassis chassis) {
+    public void appendChassis(ChassisPOD chassis) {
         chassisSet.add(chassis);
     }
 

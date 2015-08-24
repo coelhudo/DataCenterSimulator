@@ -32,7 +32,6 @@ import simulator.physical.BladeServerPOD;
 public class BladeServerTest {
 
     public Environment environment;
-    final int chassisID = 0;
     BladeServerPOD bladeServerPOD;
     final double frequency = 1.4;
     BladeServer bladeServer;
@@ -51,7 +50,7 @@ public class BladeServerTest {
         bladeServerPOD.setPowerBusyAt(0, 100.0);
         bladeServerPOD.setPowerIdle(new double[1]);
         bladeServerPOD.setPowerIdleAt(0, 50.0);
-        bladeServer = new BladeServer(bladeServerPOD, chassisID, environment);
+        bladeServer = new BladeServer(bladeServerPOD, environment);
     }
 
     @Test
@@ -60,7 +59,7 @@ public class BladeServerTest {
         assertTrue(activeBatchJobs.isEmpty());
         List<BatchJob> blockedJobs = bladeServer.getBlockedBatchList();
         assertTrue(blockedJobs.isEmpty());
-        assertEquals(chassisID, bladeServer.getChassisID());
+        assertEquals(0, bladeServer.getChassisID());
         assertEquals(0.0, bladeServer.getCurrentCPU(), 1.0E-8);
         assertEquals(0, bladeServer.getCurrentFreqLevel());
         List<EnterpriseJob> enterpriseJobs = bladeServer.getEnterpriseList();
@@ -73,7 +72,7 @@ public class BladeServerTest {
         assertEquals(1, bladeServer.getNumberOfPowerIdle());
         assertEquals(3, bladeServer.getPwrParam().length);
         assertEquals(0.0, bladeServer.getQueueLength(), 1.0E-8);
-        assertEquals(0.0, bladeServer.getRackId(), 1.0E-8);
+        assertEquals(0, bladeServer.getRackId());
         assertEquals(-3.0, bladeServer.getReady(), 1.0E-8);
         List<ResponseTime> responseTime = bladeServer.getResponseList();
         assertTrue(responseTime.isEmpty());
@@ -258,7 +257,7 @@ public class BladeServerTest {
     @Test
     public void testGetCurrentFreqLevelWhenItDiffersFromMips() {
         bladeServerPOD.setFrequencyLevelAt(0, 1.8);
-        bladeServer = new BladeServer(bladeServerPOD, chassisID, environment);
+        bladeServer = new BladeServer(bladeServerPOD, environment);
         bladeServer.setMips(1.4);
 
         assertEquals(-1, bladeServer.getCurrentFreqLevel());
@@ -269,7 +268,7 @@ public class BladeServerTest {
         final int expectedIndex = 0;
         final double mips = 1.4;
         bladeServerPOD.setFrequencyLevelAt(expectedIndex, mips);
-        bladeServer = new BladeServer(bladeServerPOD, chassisID, environment);
+        bladeServer = new BladeServer(bladeServerPOD, environment);
         bladeServer.setMips(mips);
 
         assertEquals(expectedIndex, bladeServer.getCurrentFreqLevel());
@@ -282,7 +281,7 @@ public class BladeServerTest {
         bladeServerPOD.setFrequencyLevel(new double[2]);
         bladeServerPOD.setFrequencyLevelAt(0, 1.8);
         bladeServerPOD.setFrequencyLevelAt(expectedIndex, mips);
-        bladeServer = new BladeServer(bladeServerPOD, chassisID, environment);
+        bladeServer = new BladeServer(bladeServerPOD, environment);
         bladeServer.setMips(mips);
 
         assertEquals(expectedIndex, bladeServer.getCurrentFreqLevel());
@@ -294,7 +293,7 @@ public class BladeServerTest {
         bladeServerPOD.setFrequencyLevelAt(0, 1.4);
         bladeServerPOD.setFrequencyLevelAt(1, 1.8);
         bladeServerPOD.setFrequencyLevelAt(2, 2.2);
-        bladeServer = new BladeServer(bladeServerPOD, chassisID, environment);
+        bladeServer = new BladeServer(bladeServerPOD, environment);
         bladeServer.setMips(1.4);
 
         assertEquals(0, bladeServer.getCurrentFreqLevel());
@@ -323,7 +322,7 @@ public class BladeServerTest {
         bladeServerPOD.setFrequencyLevelAt(0, 1.4);
         bladeServerPOD.setFrequencyLevelAt(1, 1.8);
         bladeServerPOD.setFrequencyLevelAt(2, 2.2);
-        bladeServer = new BladeServer(bladeServerPOD, chassisID, environment);
+        bladeServer = new BladeServer(bladeServerPOD, environment);
         bladeServer.setMips(2.2);
 
         assertEquals(2, bladeServer.getCurrentFreqLevel());

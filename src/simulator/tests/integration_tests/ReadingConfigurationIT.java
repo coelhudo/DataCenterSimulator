@@ -5,7 +5,6 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertTrue;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
@@ -124,10 +123,10 @@ public class ReadingConfigurationIT {
 
         assertEquals(1, enterpriseSystems.size());
         EnterpriseSystem enterpriseSystem = enterpriseSystems.get(0);
-        
+
         Set<Integer> serversInEnterpriseSystem = new HashSet<Integer>(Arrays.asList(17, 19, 18, 10, 11, 12, 13, 14));
         Set<Integer> chassisInEnterpriseSystem = new HashSet<Integer>(Arrays.asList(17, 19, 18, 10, 11, 12, 13, 14));
-        Set<Integer> racksInEnterpriseSystem = new HashSet<Integer>(Arrays.asList(2,3));
+        Set<Integer> racksInEnterpriseSystem = new HashSet<Integer>(Arrays.asList(2, 3));
         for (BladeServer bladeServer : enterpriseSystem.getComputeNodeList()) {
             chassisInEnterpriseSystem.remove(bladeServer.getChassisID());
             racksInEnterpriseSystem.remove(bladeServer.getRackId());
@@ -136,7 +135,7 @@ public class ReadingConfigurationIT {
         assertTrue(serversInEnterpriseSystem.isEmpty());
         assertTrue(chassisInEnterpriseSystem.isEmpty());
         assertTrue(racksInEnterpriseSystem.isEmpty());
-        
+
         assertFalse(enterpriseSystem.isDone());
         assertEquals(0, enterpriseSystem.getAccumolatedViolation());
         assertEquals("Enterprise_01", enterpriseSystem.getName());

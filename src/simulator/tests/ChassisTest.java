@@ -4,63 +4,122 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
 
+import org.junit.Before;
 import org.junit.Test;
 
-import simulator.physical.BladeServer;
+import simulator.Environment;
+import simulator.physical.BladeServerPOD;
 import simulator.physical.Chassis;
 import simulator.physical.ChassisPOD;
 
 public class ChassisTest {
 
+    public static final double[] FREQUENCY_LEVEL = { 1.4, 1.4, 1.4 };
+    public static final double[] POWER_IDLE = { 100, 100, 128 };
+    public static final double[] POWER_BUSY = { 300, 336, 448 };
+    public BladeServerPOD bladeServerPOD;
+
+    @Before
+    public void setUp() {
+        bladeServerPOD = new BladeServerPOD();
+        bladeServerPOD.setFrequencyLevel(FREQUENCY_LEVEL);
+        bladeServerPOD.setPowerIdle(POWER_IDLE);
+        bladeServerPOD.setPowerBusy(POWER_BUSY);
+        bladeServerPOD.setIdleConsumption(5.0);
+    }
+
     @Test
     public void testChassisCreation() {
+        Environment mockedEnvironment = mock(Environment.class);
         final int chassisID = 1;
         ChassisPOD chassisPOD = new ChassisPOD();
-        Chassis chassis = new Chassis(chassisPOD, chassisID);
+        chassisPOD.setID(1);
+        Chassis chassis = new Chassis(chassisPOD, mockedEnvironment);
         assertEquals(chassisID, chassis.getChassisID());
         assertEquals(0, chassis.getRackID());
         assertTrue(chassis.getServers().isEmpty());
+
+        verifyNoMoreInteractions(mockedEnvironment);
     }
-    
+
     @Test
-    public void testPower() {
-        BladeServer mockedBladeServerOne = mock(BladeServer.class);
-        when(mockedBladeServerOne.getPower()).thenReturn(15.0);
-        BladeServer mockedBladeServerTwo = mock(BladeServer.class);
-        when(mockedBladeServerTwo.getPower()).thenReturn(17.0);
-        
+    public void testPowerIdle() {
         ChassisPOD chassisPOD = new ChassisPOD();
-        chassisPOD.appendServer(mockedBladeServerOne);
-        chassisPOD.appendServer(mockedBladeServerTwo);
-        
-        Chassis chassis = new Chassis(chassisPOD, -1);
-        assertEquals(32.0, chassis.power(), 1.0E-8);
+        chassisPOD.appendServerPOD(bladeServerPOD);
+        Environment mockedEnvironment = mock(Environment.class);
+        Chassis chassis = new Chassis(chassisPOD, mockedEnvironment);
+        assertFalse(chassis.getServers().isEmpty());
+        assertEquals(5.0, chassis.power(), 1.0E-8);
+
+        verifyNoMoreInteractions(mockedEnvironment);
     }
-    
+
+    @Test
+    public void testPowerBusy() {
+        ChassisPOD chassisPOD = new ChassisPOD();
+        chassisPOD.appendServerPOD(bladeServerPOD);
+        Environment mockedEnvironment = mock(Environment.class);
+        Chassis chassis = new Chassis(chassisPOD, mockedEnvironment);
+        assertFalse(chassis.getServers().isEmpty());
+        chassis.getServers().get(0).setStatusAsRunningBusy();
+        assertEquals(100.0, chassis.power(), 1.0E-8);
+
+        verifyNoMoreInteractions(mockedEnvironment);
+    }
+
     @Test
     public void testIsNotReady() {
-        BladeServer mockedBladeServer = mock(BladeServer.class);
-        when(mockedBladeServer.getReady()).thenReturn(0);
-        
         ChassisPOD chassisPOD = new ChassisPOD();
-        chassisPOD.appendServer(mockedBladeServer);
-        
-        Chassis chassis = new Chassis(chassisPOD, -1);
+        chassisPOD.appendServerPOD(bladeServerPOD);
+        Environment mockedEnvironment = mock(Environment.class);
+        Chassis chassis = new Chassis(chassisPOD, mockedEnvironment);
+        assertFalse(chassis.getServers().isEmpty());
         assertFalse(chassis.isReady());
+    }
+
+    @Test
+    public void testIsNotReadyWhenThereAreNoServers() {
+        ChassisPOD chassisPOD = new ChassisPOD();
+        Environment mockedEnvironment = mock(Environment.class);
+        Chassis chassis = new Chassis(chassisPOD, mockedEnvironment);
+        assertTrue(chassis.getServers().isEmpty());
+        assertFalse(chassis.isReady());
+
+        verifyNoMoreInteractions(mockedEnvironment);
+    }
+
+    @Test
+    public void testIsNotReadyWhenBusy() {
+        ChassisPOD chassisPOD = new ChassisPOD();
+        chassisPOD.appendServerPOD(bladeServerPOD);
+        Environment mockedEnvironment = mock(Environment.class);
+        
+        Chassis chassis = new Chassis(chassisPOD, mockedEnvironment);
+        assertFalse(chassis.getServers().isEmpty());
+        chassis.getServers().get(0).setStatusAsRunningBusy();
+        
+        assertFalse(chassis.isReady());
+        
+        verifyNoMoreInteractions(mockedEnvironment);
+        
     }
     
     @Test
-    public void testIsReady() {
-        BladeServer mockedBladeServer = mock(BladeServer.class);
-        when(mockedBladeServer.getReady()).thenReturn(1);
-        
+    public void testIsReadyWhenRunningNormal() {
         ChassisPOD chassisPOD = new ChassisPOD();
-        chassisPOD.appendServer(mockedBladeServer);
+        chassisPOD.appendServerPOD(bladeServerPOD);
+        Environment mockedEnvironment = mock(Environment.class);
         
-        Chassis chassis = new Chassis(chassisPOD, -1);
+        Chassis chassis = new Chassis(chassisPOD, mockedEnvironment);
+        assertFalse(chassis.getServers().isEmpty());
+        chassis.getServers().get(0).setStatusAsRunningNormal();
+        
         assertTrue(chassis.isReady());
+        
+        verifyNoMoreInteractions(mockedEnvironment);
+        
     }
 
 }

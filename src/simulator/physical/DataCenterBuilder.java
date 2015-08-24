@@ -26,15 +26,13 @@ public class DataCenterBuilder {
     private static final Logger LOGGER = Logger.getLogger(DataCenterBuilder.class.getName());
 
     private List<BladeServerPOD> bladeServerPODs = new ArrayList<BladeServerPOD>();
-    private List<Chassis> chassis = new ArrayList<Chassis>();
+    private List<ChassisPOD> chassisPODs = new ArrayList<ChassisPOD>();
 
+    private int numberOfServersSoFar = 0;
     private int numbOfSofarChassis = 0;
-    private int numOfServerSoFar = 0;
-    private Environment environment;
     private DataCenterPOD dataCenterPOD;
 
     public DataCenterBuilder(String config, Environment environment) {
-        this.environment = environment;
         dataCenterPOD = new DataCenterPOD();
         parseXmlConfig(config);
     }
@@ -60,7 +58,6 @@ public class DataCenterBuilder {
     }
 
     void parseDataCenter(Node node, String path) {
-        dataCenterPOD.clearChassis();
         NodeList childNodes = node.getChildNodes();
         for (int i = 0; i < childNodes.getLength(); i++) {
             if (childNodes.item(i).getNodeType() == Node.ELEMENT_NODE) {
@@ -75,16 +72,15 @@ public class DataCenterBuilder {
             if (childNodes.item(i).getNodeType() == Node.ELEMENT_NODE) {
                 if ("Chassis".equalsIgnoreCase(childNodes.item(i).getNodeName())) {
                     ChassisPOD chassisPOD = parseChassis(childNodes.item(i));
-                    Chassis chs = new Chassis(chassisPOD, -1);
-                    setUpChassis(chs);
-                    chassis.add(chs);
+                    loadBladeServersIntoChassis(chassisPOD);
+                    chassisPODs.add(chassisPOD);
                 }
             }
         }
         for (int i = 0; i < childNodes.getLength(); i++) {
             if (childNodes.item(i).getNodeType() == Node.ELEMENT_NODE) {
                 if ("Rack".equalsIgnoreCase(childNodes.item(i).getNodeName())) {
-                    setUpRack(childNodes.item(i));
+                    loadChassisIntoRack(childNodes.item(i));
 
                 }
                 if ("ThermalModel".equalsIgnoreCase(childNodes.item(i).getNodeName())) {
@@ -103,9 +99,7 @@ public class DataCenterBuilder {
     public ChassisPOD parseChassis(Node node) {
         ChassisPOD chassisPOD = new ChassisPOD();
         int[] number = null;
-        String[] s = null;
 
-        int tedad = 0;
         NodeList childNodes = node.getChildNodes();
         for (int i = 0; i < childNodes.getLength(); i++) {
             if (childNodes.item(i).getNodeType() == Node.ELEMENT_NODE) {
@@ -119,31 +113,20 @@ public class DataCenterBuilder {
                     for (int j = 0; j < split.length; j++) {
                         number[j] = Integer.parseInt(split[j]);
                     }
-                    tedad = number.length;
                 }
                 if ("BladeType".equalsIgnoreCase(childNodes.item(i).getNodeName())) {
-                    String str = childNodes.item(i).getChildNodes().item(0).getNodeValue().trim();
-
-                    String[] split = str.split(",");
-                    s = new String[split.length];
-                    System.arraycopy(split, 0, s, 0, split.length);
+                    String bladeType = childNodes.item(i).getChildNodes().item(0).getNodeValue().trim();
+                    chassisPOD.setBladeType(bladeType);
                 }
-            }
-        }
-        for (int j = 0; j < tedad; j++) {
-            for (int k = 0; k < number[j]; k++) {
-                BladeServerPOD bladeServerPOD = new BladeServerPOD();
-                bladeServerPOD.setBladeType(s[j].trim());
-                chassisPOD.appendServer(new BladeServer(bladeServerPOD, -1, environment));
             }
         }
 
         return chassisPOD;
     }
 
-    void setUpRack(Node node) {
+    void loadChassisIntoRack(Node node) {
         NodeList childNodes = node.getChildNodes();
-        int k = 0, rackID = 0;
+        int rackID = 0;
         int tedad = 0;
         int[] tedadinRack = null;
         String[] s = null;
@@ -173,64 +156,36 @@ public class DataCenterBuilder {
         int kk = 0;
         for (int loop = 0; loop < tedad; loop++) {
             for (kk = 0; kk < tedadinRack[loop]; kk++) {
-                for (k = 0; k < chassis.size(); k++) {
-                    if (s[loop].equalsIgnoreCase(chassis.get(k).getChassisType())) {
-                        break;
+                for (ChassisPOD currentChassisPOD :  chassisPODs) {
+                    if (s[loop].equalsIgnoreCase(currentChassisPOD.getChassisType())) {
+                        loadChassisIntoDataCenter(currentChassisPOD, rackID, kk);
                     }
                 }
-                if (k == chassis.size()) {
-                    LOGGER.info("ERORE IN CONFIG FILE DATACENTE.java");
-                }
-                ChassisPOD chassisPOD = new ChassisPOD();
-                chassisPOD.setChassisType(chassis.get(k).getChassisType());
-                Chassis ch1 = new Chassis(chassisPOD, numbOfSofarChassis + kk);
-                cloneChassis(ch1, chassis.get(k));
-                ch1.setRackID(rackID);
-                for (BladeServer bladeServer : ch1.getServers()) {
-                    bladeServer.setChassisID(numbOfSofarChassis + kk);
-                    bladeServer.setRackId(rackID);
-                }
-                dataCenterPOD.appendChassis(ch1);
+
             }
             numbOfSofarChassis += kk;
         }
     }
-
-    void setUpChassis(Chassis ch) {
-        for (int j = 0; j < ch.getServers().size(); j++) {
-            for (BladeServerPOD bladeServerPOD : bladeServerPODs) {
-                if (ch.getServers().get(j).getBladeType().trim()
-                        .equalsIgnoreCase(bladeServerPOD.getBladeType().trim())) {
-                    bladeServerPOD.setServerID(j);
-                    ch.getServers().get(j).changeInternals(bladeServerPOD);
-                    break;
-                }
-            }
+    
+    void loadChassisIntoDataCenter(ChassisPOD currentChassisPOD, int rackID, int kk) {
+        ChassisPOD chassisPOD = new ChassisPOD(currentChassisPOD);
+        chassisPOD.setID(numbOfSofarChassis + kk);
+        chassisPOD.setRackID(rackID);
+        for(BladeServerPOD bladeServerPOD : chassisPOD.getServerPODs()) {
+            bladeServerPOD.setServerID(numberOfServersSoFar);
+            numberOfServersSoFar++;
         }
+        dataCenterPOD.appendChassis(chassisPOD);
     }
 
-    void cloneChassis(Chassis destiny, Chassis source) {
-        for (BladeServer bladeServer : source.getServers()) {
-            BladeServerPOD bladeServerPOD = new BladeServerPOD();
-            bladeServerPOD.setFrequencyLevel(new double[bladeServer.getNumberOfFrequencyLevel()]);
-            bladeServerPOD.setPowerBusy(new double[bladeServer.getNumberOfPowerBusy()]);
-            bladeServerPOD.setPowerIdle(new double[bladeServer.getNumberOfPowerIdle()]);
-            int numberOfMIPSlevels = bladeServer.getNumberOfFrequencyLevel();
-
-            for (int p = 0; p < numberOfMIPSlevels; p++) {
-                bladeServerPOD.setFrequencyLevelAt(p, bladeServer.getFrequencyLevelAt(p));
-                bladeServerPOD.setPowerBusyAt(p, bladeServer.getPowerBusyAt(p));
-                bladeServerPOD.setPowerIdleAt(p, bladeServer.getPowerIdleAt(p));
+    void loadBladeServersIntoChassis(ChassisPOD chassis) {
+        for (BladeServerPOD bladeServerPOD : bladeServerPODs) {
+            if (chassis.getBladeType().trim().equalsIgnoreCase(bladeServerPOD.getBladeType().trim())) {
+                chassis.appendServerPOD(bladeServerPOD);
+                break;
             }
-            bladeServerPOD.setIdleConsumption(bladeServer.getIdleConsumption());
-            bladeServerPOD.setBladeType(bladeServer.getBladeType());
-            bladeServerPOD.setServerID(numOfServerSoFar);
-
-            BladeServer a = new BladeServer(bladeServerPOD, -1, environment);
-            destiny.getServers().add(a);
-
-            numOfServerSoFar++;
         }
+
     }
 
     boolean getDmatrix(String matrixDFileName) {
