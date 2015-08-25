@@ -39,9 +39,6 @@ public class ComputeSystemBuilder extends SystemBuilder {
                 if (childNodes.item(i).getNodeName().equalsIgnoreCase("ComputeNode")) {
                     systemPOD.setNumberofNode(Integer.parseInt(childNodes.item(i).getChildNodes().item(0).getNodeValue().trim()));
                 }
-                if (childNodes.item(i).getNodeName().equalsIgnoreCase("Priority")) {
-                    ((ComputeSystemPOD)systemPOD).setPriority(Integer.parseInt(childNodes.item(i).getChildNodes().item(0).getNodeValue().trim()));
-                }
                 if (childNodes.item(i).getNodeName().equalsIgnoreCase("Rack")) {
                     String str = childNodes.item(i).getChildNodes().item(0).getNodeValue().trim();
                     String[] split = str.split(",");

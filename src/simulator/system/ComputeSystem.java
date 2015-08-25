@@ -42,7 +42,6 @@ public class ComputeSystem extends GeneralSystem {
         setScheduler(new LeastRemainFirstScheduler());
         setBis(systemPOD.getBis());
         setNumberOfNode(systemPOD.getNumberOfNode());
-        ((ComputeSystemPOD) systemPOD).getPriority();
         setRackIDs(systemPOD.getRackIDs());
         setResourceAllocation(new MHR(this.environment, this.dataCenter));
         totalJob = 0;

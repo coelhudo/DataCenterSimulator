@@ -131,7 +131,7 @@ public class Simulator {
         SimulationResults results = simulator.execute();
         LOGGER.info("Total energy Consumption= " + results.getTotalPowerConsumption());
         LOGGER.info("LocalTime= " + results.getLocalTime());
-        LOGGER.info("Mean Power Consumption= " + results.getTotalPowerConsumption() / results.getLocalTime());
+        LOGGER.info("Mean Power Consumption= " + results.getMeanPowerConsumption());
         LOGGER.info("Over RED\t " + results.getOverRedTemperatureNumber() + "\t# of Messages DC to sys= "
                 + results.getNumberOfMessagesFromDataCenterToSystem() + "\t# of Messages sys to nodes= "
                 + results.getNumberOfMessagesFromSystemToNodes());
