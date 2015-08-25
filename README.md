@@ -45,7 +45,8 @@ Current dependencies are listed in the pom.xml file.
 
 * *mvn compile* to compile :)
 * *mvn exec:java* to execute Simulator Main class
-* *mvn test* to execute units tests (and one integration test)
+* *mvn test* to execute only units tests
+* *mvn verify* to execute units tests and integration tests
 
 # Publications
 
