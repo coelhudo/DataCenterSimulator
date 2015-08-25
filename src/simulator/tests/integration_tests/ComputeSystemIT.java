@@ -1,22 +1,32 @@
 package simulator.tests.integration_tests;
 
-import static org.junit.Assert.*;
-import static org.mockito.Mockito.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
+import static org.mockito.Mockito.when;
 
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.util.List;
 
 import org.junit.Test;
-import org.mockito.AdditionalMatchers;
 import org.mockito.ArgumentCaptor;
-import org.mockito.Matchers.*;
 
-import simulator.*;
-import simulator.physical.*;
+import simulator.Environment;
+import simulator.SLAViolationLogger;
+import simulator.physical.BladeServerPOD;
+import simulator.physical.ChassisPOD;
+import simulator.physical.DataCenter;
+import simulator.physical.DataCenterPOD;
+import simulator.system.ComputeSystem;
+import simulator.system.ComputeSystemPOD;
+import simulator.system.Systems;
 import simulator.utils.ActivitiesLogger;
-
-import simulator.system.*;
 
 public class ComputeSystemIT {
 
@@ -25,7 +35,7 @@ public class ComputeSystemIT {
     public static final double[] POWER_BUSY = { 300, 336, 448 };
 
     @Test
-    public void testBladeWithZeroBatchJob() {
+    public void testBladeWithOneServerAndOneBatchJob() {
         BladeServerPOD bladeServerPOD = new BladeServerPOD();
         bladeServerPOD.setBladeType("DummyType");
         bladeServerPOD.setChassisID(0);
