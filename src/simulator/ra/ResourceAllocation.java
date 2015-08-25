@@ -427,11 +427,10 @@ public abstract class ResourceAllocation {
 
     List<Integer> createChassisArray(List<Integer> myRackID) {
         List<Integer> myChassisId = new ArrayList<Integer>();
-        for (int i = 0; i < myRackID.size(); i++) {
-            int j = 0;
-            for (; j < dataCenter.getChassisSet().size(); j++) {
-                if (dataCenter.getChassisSet().get(j).getRackID() == myRackID.get(i)) {
-                    myChassisId.add(dataCenter.getChassisSet().get(j).getChassisID());
+        for (Integer rackID : myRackID) {
+            for (Chassis chassis : dataCenter.getChassisSet()) {
+                if (chassis.getRackID() == rackID) {
+                    myChassisId.add(chassis.getChassisID());
                 }
             }
         }

@@ -110,4 +110,90 @@ public class ComputeSystemIT {
         verifyNoMoreInteractions(mockedDataCenterAM, mockedActivitiesLogger, mockedBufferedReader, mockedEnvironment);
     }
 
+    @Test
+    public void testBladeWithTwoServersAndOneBatchJob_OneServerPerChassis() {
+        BladeServerPOD bladeServerPOD = new BladeServerPOD();
+        bladeServerPOD.setBladeType("DummyType");
+        bladeServerPOD.setChassisID(0);
+        bladeServerPOD.setRackID(0);
+        bladeServerPOD.setServerID(0);
+        bladeServerPOD.setFrequencyLevel(FREQUENCY_LEVEL);
+        bladeServerPOD.setPowerBusy(POWER_BUSY);
+        bladeServerPOD.setPowerIdle(POWER_IDLE);
+        bladeServerPOD.setIdleConsumption(5);
+
+        ChassisPOD firstChassisPOD = new ChassisPOD();
+        firstChassisPOD.appendServerPOD(bladeServerPOD);
+        firstChassisPOD.setBladeType("DummyType");
+        firstChassisPOD.setChassisType("DummyChassisType");
+        firstChassisPOD.setID(0);
+        firstChassisPOD.setRackID(0);
+        
+        ChassisPOD secondChassisPOS = new ChassisPOD(firstChassisPOD);
+        secondChassisPOS.setID(1);
+        secondChassisPOS.getServerPODs().get(0).setServerID(1);
+
+        DataCenterPOD dataCenterPOD = new DataCenterPOD();
+        dataCenterPOD.appendChassis(firstChassisPOD);
+        dataCenterPOD.appendChassis(secondChassisPOS);
+        dataCenterPOD.setD(0, 0, 100);
+        dataCenterPOD.setD(0, 1, 100);
+        dataCenterPOD.setD(1, 0, 100);
+        dataCenterPOD.setD(1, 1, 100);
+
+        Environment mockedEnvironment = mock(Environment.class);
+        ActivitiesLogger mockedActivitiesLogger = mock(ActivitiesLogger.class);
+
+        ComputeSystemPOD computerSystemPOD = new ComputeSystemPOD();
+        BufferedReader mockedBufferedReader = mock(BufferedReader.class);
+        computerSystemPOD.setBis(mockedBufferedReader);
+        computerSystemPOD.setName("DummyHPCSystem");
+        computerSystemPOD.setNumberofNode(2);
+        computerSystemPOD.appendRackID(0);
+
+        DataCenterAM mockedDataCenterAM = mock(DataCenterAM.class);
+        DataCenter dataCenter = new DataCenter(dataCenterPOD, mockedDataCenterAM, mockedActivitiesLogger,
+                mockedEnvironment);
+
+        SLAViolationLogger slaViolationLogger = mock(SLAViolationLogger.class);
+        Systems systems = new Systems(mockedEnvironment);
+        systems.addComputeSystem(
+                ComputeSystem.Create(computerSystemPOD, mockedEnvironment, dataCenter, slaViolationLogger));
+
+        try {
+            String end = null;
+            when(mockedBufferedReader.readLine()).thenReturn("1\t1\t41.07\t2\t1", end);
+            when(mockedEnvironment.getCurrentLocalTime()).thenReturn(0, 1);
+            assertFalse(systems.allJobsDone());
+            systems.runACycle();
+            assertTrue(systems.allJobsDone());
+
+            dataCenter.calculatePower();
+
+            ArgumentCaptor<String> argument = ArgumentCaptor.forClass(String.class);
+
+            verify(mockedActivitiesLogger, times(3)).write(argument.capture());
+
+            List<String> values = argument.getAllValues();
+            assertEquals(3, values.size());
+            assertEquals("5\t", values.get(0));
+            assertEquals("5\t", values.get(1));
+            assertEquals("10\t10\t1\n", values.get(2));
+
+            assertEquals(10.00147066220095, dataCenter.getTotalPowerConsumption(), 1.0E-8);
+            assertEquals(1, dataCenter.getOverRed());
+
+            verify(mockedDataCenterAM).setSlowDownFromCooler(true);
+            verify(mockedBufferedReader).readLine();
+            verify(mockedEnvironment, times(5)).getCurrentLocalTime();
+            verify(mockedEnvironment).localTimeByEpoch();
+            verify(mockedEnvironment).updateNumberOfMessagesFromDataCenterToSystem();
+            verify(mockedEnvironment, times(2)).updateNumberOfMessagesFromSystemToNodes();
+        } catch (IOException e) {
+            fail("Not expect: " + e.getMessage());
+        }
+
+        verifyNoMoreInteractions(mockedDataCenterAM, mockedActivitiesLogger, mockedBufferedReader, mockedEnvironment);
+    }
+
 }
