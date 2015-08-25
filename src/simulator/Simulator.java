@@ -15,6 +15,7 @@ import simulator.system.InteractiveSystem;
 import simulator.system.InteractiveSystemPOD;
 import simulator.system.Systems;
 import simulator.system.SystemsPOD;
+import simulator.am.DataCenterAM;
 import simulator.utils.ActivitiesLogger;
 
 public class Simulator {
@@ -45,7 +46,8 @@ public class Simulator {
         ActivitiesLogger activitiesLogger = new ActivitiesLogger("out_W.txt");
         slaViolationLogger = new SLAViolationLogger(environment);
         systems = new Systems(environment);
-        datacenter = new DataCenter(simulatorPOD.getDataCenterPOD(), activitiesLogger, environment, systems);
+        dataCenterAM = new DataCenterAM(environment, systems);
+        datacenter = new DataCenter(simulatorPOD.getDataCenterPOD(), dataCenterAM, activitiesLogger, environment);
         SystemsPOD systemsPOD = simulatorPOD.getSystemsPOD();
         for (EnterpriseSystemPOD enterprisesystemPOD : systemsPOD.getEnterpriseSystemsPOD()) {
             systems.addEnterpriseSystem(
@@ -79,6 +81,7 @@ public class Simulator {
     private Environment environment;
     private Systems systems;
     private SLAViolationLogger slaViolationLogger;
+    private DataCenterAM dataCenterAM;
     
     protected double getTotalPowerConsumption() {
         return datacenter.getTotalPowerConsumption();

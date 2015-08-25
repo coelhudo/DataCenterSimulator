@@ -16,6 +16,7 @@ import simulator.physical.DataCenter;
 import simulator.physical.DataCenterBuilder;
 import simulator.physical.DataCenterPOD;
 import simulator.system.Systems;
+import simulator.am.DataCenterAM;
 import simulator.utils.ActivitiesLogger;
 
 public class DataCenterTest {
@@ -34,18 +35,18 @@ public class DataCenterTest {
         bladeServerPOD.setPowerBusy(POWER_BUSY);
         bladeServerPOD.setIdleConsumption(5.0);
         chassisPOD = new ChassisPOD();
-        chassisPOD.appendServerPOD(bladeServerPOD);   
+        chassisPOD.appendServerPOD(bladeServerPOD);
     }
 
-    
     @Test
     public void testDataCenterCreation() {
         Environment mockedEnvironment = mock(Environment.class);
-        Systems mockedSystems = mock(Systems.class);
+        DataCenterAM mockeddataCenterAM = mock(DataCenterAM.class);
         DataCenterBuilder dataCenterBuilder = new DataCenterBuilder("configs/DC.xml", mockedEnvironment);
         DataCenterPOD dataCenterPOD = dataCenterBuilder.getDataCenterPOD();
         ActivitiesLogger mockedActivitiesLogger = mock(ActivitiesLogger.class);
-        DataCenter dataCenter = new DataCenter(dataCenterPOD, mockedActivitiesLogger, mockedEnvironment, mockedSystems);
+        DataCenter dataCenter = new DataCenter(dataCenterPOD, mockeddataCenterAM, mockedActivitiesLogger,
+                mockedEnvironment);
         List<Chassis> chassis = dataCenter.getChassisSet();
         assertFalse(chassis.isEmpty());
         assertEquals(50, chassis.size());
@@ -53,57 +54,57 @@ public class DataCenterTest {
         assertNotNull(dataCenter.getServer(0));
         assertNotNull(dataCenter.getServer(0, 0));
         assertEquals(0.0, dataCenter.getTotalPowerConsumption(), 1.0E-8);
-        
-        verifyNoMoreInteractions(mockedActivitiesLogger, mockedEnvironment, mockedEnvironment);
+
+        verifyNoMoreInteractions(mockedActivitiesLogger, mockeddataCenterAM, mockedEnvironment, mockedEnvironment);
     }
-    
-    @Test 
+
+    @Test
     public void testCalculatePowerSlowingDownFromCooler() {
         DataCenterPOD dataCenterPOD = new DataCenterPOD();
         dataCenterPOD.appendChassis(chassisPOD);
         dataCenterPOD.setD(0, 0, 200.0);
         dataCenterPOD.setRedTemperature(0);
-        
+
         Environment mockedEnvironment = mock(Environment.class);
-        Systems mockedSystems = mock(Systems.class);
+        DataCenterAM mockeddataCenterAM = mock(DataCenterAM.class);
         ActivitiesLogger mockedActivitiesLogger = mock(ActivitiesLogger.class);
-        DataCenter dataCenter = new DataCenter(dataCenterPOD, mockedActivitiesLogger, mockedEnvironment, mockedSystems);
+        DataCenter dataCenter = new DataCenter(dataCenterPOD, mockeddataCenterAM, mockedActivitiesLogger,
+                mockedEnvironment);
         dataCenter.getChassisSet().get(0).getServers().get(0).setStatusAsRunningBusy();
         dataCenter.calculatePower();
-        
+
         assertEquals(100.00003676, dataCenter.getTotalPowerConsumption(), 1.0E-8);
-        assertTrue(dataCenter.getAM().isSlowDownFromCooler());
         
+        verify(mockeddataCenterAM).setSlowDownFromCooler(true);
         verify(mockedActivitiesLogger, times(2)).write(anyString());
         verify(mockedEnvironment).getCurrentLocalTime();
-        verify(mockedSystems).getComputeSystems();
-        
-        verifyNoMoreInteractions(mockedActivitiesLogger, mockedEnvironment, mockedSystems);        
+
+        verifyNoMoreInteractions(mockedActivitiesLogger, mockeddataCenterAM, mockedEnvironment, mockedEnvironment);
     }
-    
-    @Test 
+
+    @Test
     public void testCalculatePowerNotSlowingDownFromCooler() {
         DataCenterPOD dataCenterPOD = new DataCenterPOD();
         dataCenterPOD.appendChassis(chassisPOD);
         dataCenterPOD.setD(0, 0, 1.0);
         dataCenterPOD.setRedTemperature(10);
-        
+
         Environment mockedEnvironment = mock(Environment.class);
-        Systems mockedSystems = mock(Systems.class);
+        DataCenterAM mockeddataCenterAM = mock(DataCenterAM.class);
         ActivitiesLogger mockedActivitiesLogger = mock(ActivitiesLogger.class);
-        DataCenter dataCenter = new DataCenter(dataCenterPOD, mockedActivitiesLogger, mockedEnvironment, mockedSystems);
+        DataCenter dataCenter = new DataCenter(dataCenterPOD, mockeddataCenterAM, mockedActivitiesLogger,
+                mockedEnvironment);
         dataCenter.getChassisSet().get(0).getServers().get(0).setStatusAsIdle();
-        
+
         dataCenter.calculatePower();
-        
+
         assertEquals(12.91139, dataCenter.getTotalPowerConsumption(), 1.0E-4);
-        assertFalse(dataCenter.getAM().isSlowDownFromCooler());
-        
+
+        verify(mockeddataCenterAM).setSlowDownFromCooler(false);
         verify(mockedActivitiesLogger, times(2)).write(anyString());
         verify(mockedEnvironment).getCurrentLocalTime();
-        verify(mockedSystems).getComputeSystems();
-        
-        verifyNoMoreInteractions(mockedActivitiesLogger, mockedEnvironment, mockedSystems);
+
+        verifyNoMoreInteractions(mockedActivitiesLogger, mockeddataCenterAM, mockedEnvironment, mockedEnvironment);
     }
 
 }

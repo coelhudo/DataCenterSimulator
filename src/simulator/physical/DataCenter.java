@@ -5,7 +5,6 @@ import java.util.List;
 
 import simulator.Environment;
 import simulator.am.DataCenterAM;
-import simulator.system.Systems;
 import simulator.utils.ActivitiesLogger;
 
 public class DataCenter {
@@ -21,10 +20,9 @@ public class DataCenter {
 
     private Environment environment;
 
-    public DataCenter(DataCenterPOD dataCenterPOD, ActivitiesLogger activitiesLogger, Environment environment,
-            Systems systems) {
+    public DataCenter(DataCenterPOD dataCenterPOD, DataCenterAM dataCenterAM, ActivitiesLogger activitiesLogger, Environment environment) {
         this.activitiesLogger = activitiesLogger;
-        am = new DataCenterAM(environment, systems);
+        am = dataCenterAM;
         this.environment = environment;
         for(ChassisPOD chassisPOD : dataCenterPOD.getChassisPOD()) {
             Chassis chassis = new Chassis(chassisPOD, environment);

@@ -26,6 +26,7 @@ import simulator.physical.DataCenterPOD;
 import simulator.system.ComputeSystem;
 import simulator.system.ComputeSystemPOD;
 import simulator.system.Systems;
+import simulator.am.*;
 import simulator.utils.ActivitiesLogger;
 
 public class ComputeSystemIT {
@@ -67,11 +68,12 @@ public class ComputeSystemIT {
         computerSystemPOD.setNumberofNode(1);
         computerSystemPOD.appendRackID(0);
 
-        Systems systems = new Systems(mockedEnvironment);
-
-        DataCenter dataCenter = new DataCenter(dataCenterPOD, mockedActivitiesLogger, mockedEnvironment, systems);
+        DataCenterAM mockedDataCenterAM = mock(DataCenterAM.class);
+        DataCenter dataCenter = new DataCenter(dataCenterPOD, mockedDataCenterAM, mockedActivitiesLogger,
+                mockedEnvironment);
 
         SLAViolationLogger slaViolationLogger = mock(SLAViolationLogger.class);
+        Systems systems = new Systems(mockedEnvironment);
         systems.addComputeSystem(
                 ComputeSystem.Create(computerSystemPOD, mockedEnvironment, dataCenter, slaViolationLogger));
 
@@ -81,9 +83,9 @@ public class ComputeSystemIT {
             assertFalse(systems.allJobsDone());
             systems.runACycle();
             assertTrue(systems.allJobsDone());
-            
+
             dataCenter.calculatePower();
-            
+
             ArgumentCaptor<String> argument = ArgumentCaptor.forClass(String.class);
 
             verify(mockedActivitiesLogger, times(2)).write(argument.capture());
@@ -91,10 +93,11 @@ public class ComputeSystemIT {
             List<String> values = argument.getAllValues();
             assertEquals("5\t", values.get(0));
             assertEquals("5\t5\t1\n", values.get(1));
-            
-            assertEquals(5.002941076127991,dataCenter.getTotalPowerConsumption(), 1.0E-8);
-            assertEquals(1,dataCenter.getOverRed());
-            
+
+            assertEquals(5.002941076127991, dataCenter.getTotalPowerConsumption(), 1.0E-8);
+            assertEquals(1, dataCenter.getOverRed());
+
+            verify(mockedDataCenterAM).setSlowDownFromCooler(true);
             verify(mockedBufferedReader).readLine();
             verify(mockedEnvironment, times(5)).getCurrentLocalTime();
             verify(mockedEnvironment).localTimeByEpoch();
@@ -104,7 +107,7 @@ public class ComputeSystemIT {
             fail("Not expect: " + e.getMessage());
         }
 
-        verifyNoMoreInteractions(mockedActivitiesLogger, mockedBufferedReader, mockedEnvironment);
+        verifyNoMoreInteractions(mockedDataCenterAM, mockedActivitiesLogger, mockedBufferedReader, mockedEnvironment);
     }
 
 }
