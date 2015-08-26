@@ -60,12 +60,9 @@ public class ComputeSystem extends GeneralSystem {
             j = new BatchJob(dataCenter);
         }
         if (!isBlocked()) {
-            // feeds jobs from waiting list to servers as much as possible
             moveWaitingJobsToBladeServer();
             BladeServerCollectionOperations.runAllServers(getComputeNodeList());
-            for (BladeServer bladeServer : getComputeNodeList()) {
-                numberOfFinishedJob = bladeServer.getTotalFinishedJob() + numberOfFinishedJob;
-            }
+            numberOfFinishedJob += BladeServerCollectionOperations.totalFinishedJob(getComputeNodeList());
         }
         // if is blocked and was not belocked before make it blocked
         if (isBlocked() && !allNodesAreBlocked()) {
