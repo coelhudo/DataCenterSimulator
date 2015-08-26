@@ -12,6 +12,7 @@ import simulator.Violation;
 import simulator.am.ComputeSystemAM;
 import simulator.jobs.BatchJob;
 import simulator.physical.BladeServer;
+import simulator.physical.BladeServerCollectionOperations;
 import simulator.physical.DataCenter;
 import simulator.ra.MHR;
 import simulator.schedulers.LeastRemainFirstScheduler;
@@ -61,9 +62,7 @@ public class ComputeSystem extends GeneralSystem {
         if (!isBlocked()) {
             // feeds jobs from waiting list to servers as much as possible
             moveWaitingJobsToBladeServer();
-            for (BladeServer bladeServer : getComputeNodeList()) {
-                bladeServer.run();
-            }
+            BladeServerCollectionOperations.runAllServers(getComputeNodeList());
             for (BladeServer bladeServer : getComputeNodeList()) {
                 numberOfFinishedJob = bladeServer.getTotalFinishedJob() + numberOfFinishedJob;
             }
