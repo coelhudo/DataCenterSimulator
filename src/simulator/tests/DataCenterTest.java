@@ -1,7 +1,13 @@
 package simulator.tests;
 
-import static org.junit.Assert.*;
-import static org.mockito.Mockito.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.mockito.Matchers.anyString;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
 
 import java.util.List;
 
@@ -9,14 +15,13 @@ import org.junit.Before;
 import org.junit.Test;
 
 import simulator.Environment;
+import simulator.am.DataCenterAM;
 import simulator.physical.BladeServerPOD;
 import simulator.physical.Chassis;
 import simulator.physical.ChassisPOD;
 import simulator.physical.DataCenter;
 import simulator.physical.DataCenterBuilder;
 import simulator.physical.DataCenterPOD;
-import simulator.system.Systems;
-import simulator.am.DataCenterAM;
 import simulator.utils.ActivitiesLogger;
 
 public class DataCenterTest {
