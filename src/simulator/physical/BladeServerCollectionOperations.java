@@ -33,7 +33,7 @@ public final class BladeServerCollectionOperations {
 
     public static boolean allIdle(List<BladeServer> bladeServers) {
         for (BladeServer bladeServer : bladeServers) {
-            if (bladeServer.getReady() != -1) {
+            if (!bladeServer.isIdle()) {
                 return false;
             }
         }
@@ -43,7 +43,7 @@ public final class BladeServerCollectionOperations {
     public static int countIdle(List<BladeServer> bladeServers) {
         int count = 0;
         for (BladeServer bladeServer : bladeServers) {
-            if (bladeServer.getReady() == -1) {
+            if (bladeServer.isIdle()) {
                 count++;
             }
         }
@@ -53,7 +53,7 @@ public final class BladeServerCollectionOperations {
     public static int countRunning(List<BladeServer> bladeServers) {
         int count = 0;
         for (BladeServer bladeServer : bladeServers) {
-            if (bladeServer.getReady() == 0 || bladeServer.getReady() == 1) {
+            if (bladeServer.isRunningBusy() || bladeServer.isRunningNormal()) {
                 count++;
             }
         }

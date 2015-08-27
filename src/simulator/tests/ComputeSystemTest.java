@@ -168,7 +168,8 @@ public class ComputeSystemTest {
         assertEquals(0.0, computeSystem.getPower(), 1.0E-8);
         assertEquals(1, computeSystem.getAccumolatedViolation());
 
-        verify(mockedBladeServer, times(31)).getReady(); // XXX: 31???
+        verify(mockedBladeServer).isIdle();
+        verify(mockedBladeServer, times(30)).getReady(); // XXX: 30???
         verify(mockedBladeServer, times(26)).getChassisID(); // XXX: 26????
         verify(mockedBladeServer).getServerID();
         verify(mockedBladeServer).feedWork(any(BatchJob.class));
@@ -288,7 +289,8 @@ public class ComputeSystemTest {
         assertEquals(0.0, computeSystem.getPower(), 1.0E-8);
         assertEquals(1, computeSystem.getAccumolatedViolation());
 
-        verify(mockedBladeServer, times(31)).getReady(); // XXX: 31???
+        verify(mockedBladeServer).isIdle(); 
+        verify(mockedBladeServer, times(30)).getReady(); // XXX: 30???
         verify(mockedBladeServer, times(26)).getChassisID(); // XXX: 26????
         verify(mockedBladeServer).getServerID();
         verify(mockedBladeServer).feedWork(any(BatchJob.class));
@@ -538,11 +540,11 @@ public class ComputeSystemTest {
         ComputeSystem computeSystem = ComputeSystem.Create(systemPOD, mockedEnvironment, mockedDataCenter,
                 mockedSLAViolationLogger);
         BladeServer mockedBladeServer = mock(BladeServer.class);
-        when(mockedBladeServer.getReady()).thenReturn(-1);
+        when(mockedBladeServer.isIdle()).thenReturn(true);
         computeSystem.appendBladeServerIntoComputeNodeList(mockedBladeServer);
         assertEquals(1, computeSystem.numberOfIdleNode());
 
-        verify(mockedBladeServer).getReady();
+        verify(mockedBladeServer).isIdle();
 
         verifyNoMoreInteractions(mockedEnvironment, mockedDataCenter, mockedSLAViolationLogger, mockedBufferedReader,
                 mockedBladeServer);
@@ -566,11 +568,11 @@ public class ComputeSystemTest {
         ComputeSystem computeSystem = ComputeSystem.Create(systemPOD, mockedEnvironment, mockedDataCenter,
                 mockedSLAViolationLogger);
         BladeServer mockedBladeServer = mock(BladeServer.class);
-        when(mockedBladeServer.getReady()).thenReturn(1);
+        when(mockedBladeServer.isIdle()).thenReturn(false);
         computeSystem.appendBladeServerIntoComputeNodeList(mockedBladeServer);
         assertEquals(0, computeSystem.numberOfIdleNode());
 
-        verify(mockedBladeServer).getReady();
+        verify(mockedBladeServer).isIdle();
 
         verifyNoMoreInteractions(mockedEnvironment, mockedDataCenter, mockedSLAViolationLogger, mockedBufferedReader,
                 mockedBladeServer);

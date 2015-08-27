@@ -440,6 +440,26 @@ public class BladeServer {
     public void setTotalJobEpoch(double totalJobEpoch) {
         this.totalJobEpoch = totalJobEpoch;
     }
+    
+    public boolean isNotSystemAssigned() {
+        return ready == BladeServerStatus.NOT_ASSIGNED_TO_ANY_SYSTEM;
+    }
+    
+    public boolean isNotApplicationAssigned() {
+        return ready == BladeServerStatus.NOT_ASSIGNED_TO_ANY_APPLICATION;
+    }
+    
+    public boolean isIdle() {
+        return ready == BladeServerStatus.IDLE;
+    }
+    
+    public boolean isRunningNormal() {
+        return ready == BladeServerStatus.RUNNING_NORMAL;
+    }
+    
+    public boolean isRunningBusy() {
+        return ready == BladeServerStatus.RUNNING_BUSY;
+    }
 
     public int getReady() {
         int status = 0;

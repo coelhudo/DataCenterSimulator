@@ -39,52 +39,53 @@ public class BladeServersCollectionOperationsTest {
     
     @Test
     public void testAllIdleTrue() {
-        when(mockedBladeServerOne.getReady()).thenReturn(-1);
-        when(mockedBladeServerTwo.getReady()).thenReturn(-1);
+        when(mockedBladeServerOne.isIdle()).thenReturn(true);
+        when(mockedBladeServerTwo.isIdle()).thenReturn(true);
         
         assertTrue(BladeServerCollectionOperations.allIdle(bladeServers));
         
-        verify(mockedBladeServerOne).getReady();
-        verify(mockedBladeServerTwo).getReady();
+        verify(mockedBladeServerOne).isIdle();
+        verify(mockedBladeServerTwo).isIdle();
         
         verifyNoMoreInteractions(mockedBladeServerOne, mockedBladeServerTwo);
     }
     
     @Test
     public void testAllIdleFalse() {
-        when(mockedBladeServerOne.getReady()).thenReturn(-1);
-        when(mockedBladeServerTwo.getReady()).thenReturn(0);
+        when(mockedBladeServerOne.isIdle()).thenReturn(true);
+        when(mockedBladeServerTwo.isIdle()).thenReturn(false);
         
         assertFalse(BladeServerCollectionOperations.allIdle(bladeServers));
         
-        verify(mockedBladeServerOne).getReady();
-        verify(mockedBladeServerTwo).getReady();
+        verify(mockedBladeServerOne).isIdle();
+        verify(mockedBladeServerTwo).isIdle();
         
         verifyNoMoreInteractions(mockedBladeServerOne, mockedBladeServerTwo);
     }
     
     @Test
     public void testcountIdle() {
-        when(mockedBladeServerOne.getReady()).thenReturn(-1);
-        when(mockedBladeServerTwo.getReady()).thenReturn(0);
+        when(mockedBladeServerOne.isIdle()).thenReturn(true);
+        when(mockedBladeServerTwo.isIdle()).thenReturn(false);
         
         assertEquals(1, BladeServerCollectionOperations.countIdle(bladeServers));
         
-        verify(mockedBladeServerOne).getReady();
-        verify(mockedBladeServerTwo).getReady();
+        verify(mockedBladeServerOne).isIdle();
+        verify(mockedBladeServerTwo).isIdle();
         
         verifyNoMoreInteractions(mockedBladeServerOne, mockedBladeServerTwo);
     }
     
     @Test
     public void testcountRunning() {
-        when(mockedBladeServerOne.getReady()).thenReturn(0);
-        when(mockedBladeServerTwo.getReady()).thenReturn(0);
+        when(mockedBladeServerOne.isRunningNormal()).thenReturn(true);
+        when(mockedBladeServerTwo.isRunningBusy()).thenReturn(true);
         
         assertEquals(2, BladeServerCollectionOperations.countRunning(bladeServers));
         
-        verify(mockedBladeServerOne).getReady();
-        verify(mockedBladeServerTwo).getReady();
+        verify(mockedBladeServerOne).isRunningBusy();
+        verify(mockedBladeServerOne).isRunningNormal();
+        verify(mockedBladeServerTwo).isRunningBusy();
         
         verifyNoMoreInteractions(mockedBladeServerOne, mockedBladeServerTwo);
     }
