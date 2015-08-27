@@ -61,11 +61,11 @@ public class ComputeSystem extends GeneralSystem {
         }
         if (!isBlocked()) {
             moveWaitingJobsToBladeServer();
-            BladeServerCollectionOperations.runAllServers(getComputeNodeList());
+            BladeServerCollectionOperations.runAll(getComputeNodeList());
             numberOfFinishedJob += BladeServerCollectionOperations.totalFinishedJob(getComputeNodeList());
         }
         // if is blocked and was not belocked before make it blocked
-        if (isBlocked() && !allNodesAreBlocked()) {
+        if (isBlocked() && !BladeServerCollectionOperations.allIdle(getComputeNodeList())) {
             makeSystemaBlocked();
         }
 
@@ -80,16 +80,6 @@ public class ComputeSystem extends GeneralSystem {
         }
         return false;
 
-    }
-    /// returns true if all nodes are blocked
-
-    boolean allNodesAreBlocked() {
-        for (BladeServer bladeServer : getComputeNodeList()) {
-            if (bladeServer.getReady() != -1) {
-                return false;
-            }
-        }
-        return true;
     }
 
     void makeSystemaBlocked() {
@@ -198,23 +188,11 @@ public class ComputeSystem extends GeneralSystem {
     }
 
     public int numberOfRunningNode() {
-        int cnt = 0;
-        for (int i = 0; i < getComputeNodeList().size(); i++) {
-            if (getComputeNodeList().get(i).getReady() > -1) {
-                cnt++;
-            }
-        }
-        return cnt;
+        return BladeServerCollectionOperations.countRunning(getComputeNodeList());
     }
 
     public int numberOfIdleNode() {
-        int cnt = 0;
-        for (BladeServer bladeServer : getComputeNodeList()) {
-            if (bladeServer.getReady() == -1) {
-                cnt++;
-            }
-        }
-        return cnt;
+        return BladeServerCollectionOperations.countIdle(getComputeNodeList());
     }
 
     public void activeOneNode() {
@@ -235,12 +213,7 @@ public class ComputeSystem extends GeneralSystem {
             Logger.getLogger(EnterpriseApp.class.getName()).log(Level.SEVERE, null, ex);
         }
 
-        double totalResponsetime = 0;
-        for (BladeServer bladeServer : getComputeNodeList()) {
-            totalResponsetime = totalResponsetime + bladeServer.getResponseTime();
-
-        }
-        return totalResponsetime;
+        return BladeServerCollectionOperations.totalResponseTime(getComputeNodeList());
     }
 
     public static ComputeSystem Create(SystemPOD systemPOD, Environment environment, DataCenter dataCenter,
