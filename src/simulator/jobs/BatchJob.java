@@ -54,19 +54,19 @@ public class BatchJob extends Job {
         return true;
     }
 
-    public void Finish(double timeStamp) {
+    public double Finish(double timeStamp) {
         setExitTime(timeStamp);
         double waitTime = (timeStamp + 1) - getStartTime();
         if (waitTime < 0) {
             LOGGER.info("Alert: Error in BatchJob\t" + waitTime);
         }
 
-        BladeServer server = dataCenter.getServer(getServerIndexAt(0));
-        server.setRespTime(waitTime + server.getResponseTime());
         for (int i = 0; i < getNumOfNode(); i++) {
-            server = dataCenter.getServer(getServerIndexAt(i));
+            BladeServer server = dataCenter.getServer(getServerIndexAt(i));
             server.getBlockedBatchList().remove(this);
         }
+        
+        return waitTime;
     }
 
     public int getThisNodeIndex(int serverIndex) {

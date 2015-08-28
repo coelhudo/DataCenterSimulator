@@ -76,13 +76,11 @@ public class BatchJobTest {
         batchJob.setListOfServer(new int[batchJob.getNumOfNode()]);
 
         BladeServer mockedBladeServer = mock(BladeServer.class);
-        when(mockedBladeServer.getResponseTime()).thenReturn(1.0);
         when(mockedDataCenter.getServer(0)).thenReturn(mockedBladeServer);
 
-        batchJob.Finish(1.0);
+        assertEquals(2.0, batchJob.Finish(1.0), 1.0E-8);
 
-        verify(mockedBladeServer).setRespTime(3.0);
-        verify(mockedDataCenter, times(2)).getServer(0);
+        verify(mockedDataCenter).getServer(0);
         verify(mockedBladeServer).getBlockedBatchList();
     }
 

@@ -320,8 +320,8 @@ public class BladeServer {
             job.setIsChangedThisTime(0);
             getActiveBatchList().remove(job);// still exsits in other nodes
             if (job.allDone()) {
-
-                job.Finish(environment.getCurrentLocalTime());
+                
+                setRespTime(job.Finish(environment.getCurrentLocalTime()) + getResponseTime());
 
                 setTotalFinishedJob(getTotalFinishedJob() + 1);
                 return 1;
