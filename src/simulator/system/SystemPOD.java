@@ -4,12 +4,15 @@ import java.io.BufferedReader;
 import java.util.ArrayList;
 import java.util.List;
 
+import simulator.jobs.JobProducer;
+
 public abstract class SystemPOD {
 
     private List<Integer> rackIDs = new ArrayList<Integer>();
     private BufferedReader bis = null;
     private int numberOfNode;
     private String name; 
+    private JobProducer jobProducer;
     
     public void setName(String name) {
         this.name = name;
@@ -41,5 +44,13 @@ public abstract class SystemPOD {
     
     public List<Integer> getRackIDs() {
         return rackIDs;
+    }
+    
+    public void setJobProducer(JobProducer jobProducer) {
+        this.jobProducer = jobProducer;
+    }
+    
+    public JobProducer getJobProducer() {
+        return jobProducer;
     }
 }

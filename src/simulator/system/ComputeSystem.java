@@ -11,6 +11,7 @@ import simulator.SLAViolationLogger;
 import simulator.Violation;
 import simulator.am.ComputeSystemAM;
 import simulator.jobs.BatchJob;
+import simulator.jobs.JobProducer;
 import simulator.physical.BladeServer;
 import simulator.physical.BladeServerCollectionOperations;
 import simulator.physical.DataCenter;
@@ -30,10 +31,12 @@ public class ComputeSystem extends GeneralSystem {
     private Environment environment;
     private SLAViolationLogger slaViolationLogger;
     private DataCenter dataCenter;
+    private JobProducer jobProducer;
     
     private ComputeSystem(SystemPOD systemPOD, Environment environment, DataCenter dataCenter,
             SLAViolationLogger slaViolationLogger) {
         super(systemPOD);
+        this.jobProducer = systemPOD.getJobProducer();
         this.environment = environment;
         this.dataCenter = dataCenter;
         this.slaViolationLogger = slaViolationLogger;

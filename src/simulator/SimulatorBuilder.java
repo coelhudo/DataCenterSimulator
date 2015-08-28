@@ -111,7 +111,7 @@ public class SimulatorBuilder {
                         break;
                     case 3:
                         LOGGER.info("Initialization of HPC System Name=" + name);
-                        SystemBuilder computeSystemBuilder = new ComputeSystemBuilder(fileName, name);
+                        SystemBuilder computeSystemBuilder = new ComputeSystemBuilder(fileName, name, environment);
                         systemsPOD.appendComputeSystemPOD((ComputeSystemPOD) computeSystemBuilder.getSystemPOD());
                         break;
                     }

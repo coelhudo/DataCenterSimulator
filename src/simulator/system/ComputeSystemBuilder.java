@@ -10,12 +10,16 @@ import java.util.logging.Logger;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
+import simulator.Environment;
+import simulator.jobs.BatchJobProducer;
+
 public class ComputeSystemBuilder extends SystemBuilder {
     
     private static final Logger LOGGER = Logger.getLogger(ComputeSystemBuilder.class.getName());
-    
-    public ComputeSystemBuilder(String configurationFile, String name) {
+    private Environment environment;
+    public ComputeSystemBuilder(String configurationFile, String name, Environment environment) {
         super(configurationFile, name);
+        this.environment = environment;
     }
 
     protected SystemPOD readFromNode(Node node, String path) {
@@ -31,7 +35,9 @@ public class ComputeSystemBuilder extends SystemBuilder {
                     String fileName = path + "/" + childNodes.item(i).getChildNodes().item(0).getNodeValue().trim();
                     try {
                         logFile = new File(fileName);
-                        systemPOD.setBis(new BufferedReader(new InputStreamReader(new FileInputStream(logFile))));
+                        BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(new FileInputStream(logFile)));
+                        systemPOD.setBis(bufferedReader);
+                        systemPOD.setJobProducer(new BatchJobProducer(environment, bufferedReader));
                     } catch (IOException e) {
                         LOGGER.info("Uh oh, got an IOException error!" + e.getMessage());
                     }
