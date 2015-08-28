@@ -56,7 +56,7 @@ public class EnterpriseSystem extends GeneralSystem {
 
     public boolean isThereFreeNodeforApp() {
         for (BladeServer bladeServer : getComputeNodeList()) {
-            if (bladeServer.getReady() == -2) {
+            if (bladeServer.isNotApplicationAssigned()) {
                 return true;
             }
         }
@@ -66,7 +66,7 @@ public class EnterpriseSystem extends GeneralSystem {
     public int numberofAvailableNodetoAlocate() {
         int n = 0;
         for (BladeServer bladeServer : getComputeNodeList()) {
-            if (bladeServer.getReady() == -2) {
+            if (bladeServer.isNotApplicationAssigned()) {
                 n++;
             }
         }

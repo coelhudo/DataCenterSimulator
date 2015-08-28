@@ -73,8 +73,7 @@ public class ApplicationAM extends GeneralAM {
         int[] levels = { 0, 0, 0 };
         int index = 0;
         for (int j = 0; j < app.getComputeNodeList().size(); j++) {
-            if (app.getComputeNodeList().get(j).getReady() != -1) // it is idle
-            {
+            if (!app.getComputeNodeList().get(j).isIdle()) {
                 index = app.getComputeNodeList().get(j).getCurrentFreqLevel();
                 levels[index]++;
             }
@@ -131,14 +130,14 @@ public class ApplicationAM extends GeneralAM {
 
         if (violationInEpoch > 0) {
             for (BladeServer bladeServer : app.getComputeNodeList()) {
-                if (bladeServer.getReady() != -1) {
+                if (!bladeServer.isIdle()) {
                     bladeServer.increaseFrequency();
                 }
             }
             int tedad = app.getComputeNodeList().size();
             // Policy 4: if SLA violation then unshrink active server
             for (int j = 0; j < app.getComputeNodeList().size() && tedad > 0; j++) {
-                if (app.getComputeNodeList().get(j).getReady() == -1) {
+                if (app.getComputeNodeList().get(j).isIdle()) {
                     // LOGGER.info("Application:SLA" +app.id +"\tActive
                     // one Server!\t\t "+"Number of runinng:
                     // "+app.numberofRunningNode());
@@ -161,7 +160,7 @@ public class ApplicationAM extends GeneralAM {
         // Policy 1: if no SLA violation then decrease frequency
         if (violationInEpoch == 0) {
             for (BladeServer bladeServer : app.getComputeNodeList()) {
-                if (bladeServer.getReady() != -1) {
+                if (!bladeServer.isIdle()) {
                     bladeServer.decreaseFrequency();
                 }
             }
@@ -169,7 +168,7 @@ public class ApplicationAM extends GeneralAM {
 
             for (int j = 0; j < app.getComputeNodeList().size()
                     & app.numberofRunningNode() > (app.getMinProc() + 1); j++) {
-                if (app.getComputeNodeList().get(j).getReady() == 1
+                if (app.getComputeNodeList().get(j).isIdle()
                         && app.getComputeNodeList().get(j).getCurrentCPU() == 0) {
                     app.getComputeNodeList().get(j).makeItIdle(new EnterpriseJob());
                     // LOGGER.info("\tIdle\t\t\t\t\t@:"+Main.localTime+"\tNumber
@@ -181,7 +180,7 @@ public class ApplicationAM extends GeneralAM {
         // Policy 2: If SLA is violated then increase frequency of the nodes
         if (violationInEpoch > 0) {
             for (BladeServer bladeServer : app.getComputeNodeList()) {
-                if (bladeServer.getReady() == 0) {
+                if (bladeServer.isRunningBusy()) {
                     bladeServer.increaseFrequency();
                 }
             }
@@ -189,7 +188,7 @@ public class ApplicationAM extends GeneralAM {
             // sleep nodes will wake up!
             int tedad = app.numberofIdleNode() / 2;
             for (int j = 0; j < app.getComputeNodeList().size() && tedad > 0; j++) {
-                if (app.getComputeNodeList().get(j).getReady() == -1) {
+                if (app.getComputeNodeList().get(j).isIdle()) {
                     LOGGER.info("App GR: " + app.getID() + "\tactive a Server!\t\t @"
                             + environment.getCurrentLocalTime() + "\tNumber of runinng:  " + app.numberofRunningNode());
                     app.getComputeNodeList().get(j).setStatusAsRunningNormal();

@@ -33,14 +33,6 @@ public class Chassis {
         return chassisID;
     }
 
-    public boolean isReady() {
-        int readyCounter = 0;
-        for (BladeServer bladeServer : servers) {
-            readyCounter = readyCounter + bladeServer.getReady();
-        }
-        return readyCounter > 0;
-    }
-
     public double power() {
         double pw = 0;
         for (BladeServer bladeServer : servers) {

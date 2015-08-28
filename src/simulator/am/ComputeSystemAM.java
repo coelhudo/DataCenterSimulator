@@ -28,10 +28,7 @@ public class ComputeSystemAM extends GeneralAM {
         int[] levels = { 0, 0, 0 };
         int index = 0;
         for (int j = 0; j < computeSystem.getComputeNodeList().size(); j++) {
-            if (computeSystem.getComputeNodeList().get(j).getReady() != -1) // it
-                                                                            // is
-                                                                            // idle
-            {
+            if (!computeSystem.getComputeNodeList().get(j).isIdle()) {
                 index = computeSystem.getComputeNodeList().get(j).getCurrentFreqLevel();
                 levels[index]++;
             }
@@ -53,7 +50,7 @@ public class ComputeSystemAM extends GeneralAM {
              * blocked) send(SOS, theParent)
              */
             for (BladeServer bladeServer : computeSystem.getComputeNodeList()) {
-                if (bladeServer.getReady() == 0) {
+                if (bladeServer.isRunningBusy()) {
                     bladeServer.increaseFrequency();
                 }
             }
@@ -61,7 +58,7 @@ public class ComputeSystemAM extends GeneralAM {
             int hlfNumofSlept = computeSystem.numberOfIdleNode() / 2;
             int tedad = 0;
             for (BladeServer bladeServer : computeSystem.getComputeNodeList()) {
-                if (bladeServer.getReady() == -1) {
+                if (bladeServer.isIdle()) {
                     LOGGER.info("CSys GR: " + "\tactive a Server!\t\t @" + environment.getCurrentLocalTime()
                             + "\tNumber of runinng:  " + computeSystem.numberOfRunningNode());
                     bladeServer.setStatusAsRunningNormal();
@@ -86,14 +83,14 @@ public class ComputeSystemAM extends GeneralAM {
              */
             // Decrease freq. of all nodes
             for (BladeServer bladeServer : computeSystem.getComputeNodeList()) {
-                if (bladeServer.getReady() > -1) {
+                if (bladeServer.isRunning()) {
                     bladeServer.decreaseFrequency();
                 }
             }
             // If node is ready and is not used make it sleep
             for (BladeServer bladeServer : computeSystem.getComputeNodeList()) {
                 if (bladeServer.getActiveBatchList().isEmpty() && bladeServer.getBlockedBatchList().isEmpty()
-                        && bladeServer.getReady() > -1) {
+                        && bladeServer.isRunning()) {
                     environment.updateNumberOfMessagesFromSystemToNodes();
                     bladeServer.setStatusAsIdle();
                 }
@@ -109,10 +106,10 @@ public class ComputeSystemAM extends GeneralAM {
         if (getSLAViolationGen() > 0) {
 
             for (int i = 0; i < computeSystem.getComputeNodeList().size(); i++) {
-                if (computeSystem.getComputeNodeList().get(i).getReady() == 0) {
+                if (computeSystem.getComputeNodeList().get(i).isRunningBusy()) {
                     computeSystem.getComputeNodeList().get(i).increaseFrequency();
                 }
-                if (computeSystem.getComputeNodeList().get(i).getReady() == -1) {
+                if (computeSystem.getComputeNodeList().get(i).isIdle()) {
                     environment.updateNumberOfMessagesFromSystemToNodes();
                     computeSystem.getComputeNodeList().get(i).setStatusAsRunningNormal();
                 }

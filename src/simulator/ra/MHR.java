@@ -30,7 +30,7 @@ public class MHR extends ResourceAllocation {
         int i = 0, j = 0;
         for (i = 0; i < powIndex.length; i++) {
             for (j = 0; j < bs.size(); j++) {
-                if (bs.get(j).getReady() == 1 && powIndex[i] == bs.get(j).getChassisID()) {
+                if (bs.get(j).isRunningNormal() && powIndex[i] == bs.get(j).getChassisID()) {
                     return j;
                 }
             }
@@ -44,7 +44,7 @@ public class MHR extends ResourceAllocation {
         int i = 0, j = 0;
         for (i = 0; i < powIndex.length; i++) {
             for (j = 0; j < bs.size(); j++) {
-                if (bs.get(j).getReady() == -2 && powIndex[i] == bs.get(j).getChassisID()) {
+                if (bs.get(j).isNotApplicationAssigned() && powIndex[i] == bs.get(j).getChassisID()) {
                     return j;
                 }
             }
@@ -70,7 +70,7 @@ public class MHR extends ResourceAllocation {
             // server
             {
                 for (int k = 0; k < dataCenter.getChassisSet().get(chassisList.get(l)).getServers().size(); k++) {
-                    if (dataCenter.getChassisSet().get(chassisList.get(l)).getServers().get(k).getReady() == -3) {
+                    if (dataCenter.getChassisSet().get(chassisList.get(l)).getServers().get(k).isNotSystemAssigned()) {
                         retValue[0] = chassisList.get(l); // chassis id
                         retValue[1] = k; // Server ID
                         return retValue;
@@ -91,7 +91,7 @@ public class MHR extends ResourceAllocation {
             list[i] = -2;
         }
         for (BladeServer bladeServer : computeNodeList) {
-            if (bladeServer.getReady() == 1) {
+            if (bladeServer.isRunningNormal()) {
                 totalReadyNodes++;
             }
         }
@@ -103,7 +103,7 @@ public class MHR extends ResourceAllocation {
         int k = powIndex.length - 1;
         for (; k >= 0 && j < list.length; k--) {
             for (i = 0; i < computeNodeList.size(); i++) {
-                if (computeNodeList.get(i).getReady() == 1 && powIndex[k] == computeNodeList.get(i).getChassisID())
+                if (computeNodeList.get(i).isRunningNormal() && powIndex[k] == computeNodeList.get(i).getChassisID())
                 {
                     list[j++] = i;
                     if (j == list.length) {

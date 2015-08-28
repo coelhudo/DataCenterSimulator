@@ -57,7 +57,7 @@ public class InteractiveUserAM extends GeneralAM {
         int[] levels = { 0, 0, 0 };
         int index = 0;
         for (int j = 0; j < user.getComputeNodeList().size(); j++) {
-            if (user.getComputeNodeList().get(j).getReady() != -1) // it is idle
+            if (!user.getComputeNodeList().get(j).isIdle()) // it is idle
             {
                 index = user.getComputeNodeList().get(j).getCurrentFreqLevel();
                 levels[index]++;
@@ -86,15 +86,14 @@ public class InteractiveUserAM extends GeneralAM {
 
         if (violationInEpoch > 0) {
             for (int j = 0; j < user.getComputeNodeList().size(); j++) {
-                if (user.getComputeNodeList().get(j).getReady() != -1) {
-                    // except idle nodes
+                if (!user.getComputeNodeList().get(j).isIdle()) {
                     user.getComputeNodeList().get(j).increaseFrequency();
                 }
             }
             int tedad = user.getComputeNodeList().size();
             // Policy 4: if SLA violation then unshrink active server
             for (int j = 0; j < user.getComputeNodeList().size() && tedad > 0; j++) {
-                if (user.getComputeNodeList().get(j).getReady() == -1) {
+                if (user.getComputeNodeList().get(j).isIdle()) {
                     // LOGGER.info("Application:SLA" +app.id +"\tActive
                     // one Server!\t\t "+"Number of runinng:
                     // "+app.numberofRunningNode());
@@ -116,7 +115,7 @@ public class InteractiveUserAM extends GeneralAM {
         // Policy 1: if no SLA violation then decrease frequency
         if (violationInEpoch == 0) {
             for (int j = 0; j < user.getComputeNodeList().size(); j++) {
-                if (user.getComputeNodeList().get(j).getReady() != -1) {
+                if (!user.getComputeNodeList().get(j).isIdle()) {
                     user.getComputeNodeList().get(j).decreaseFrequency();
                 }
             }
@@ -124,7 +123,7 @@ public class InteractiveUserAM extends GeneralAM {
 
             for (int j = 0; j < user.getComputeNodeList().size()
                     & user.numberofRunningNode() > (user.getMinProc() + 1); j++) {
-                if (user.getComputeNodeList().get(j).getReady() == 1
+                if (user.getComputeNodeList().get(j).isRunningNormal()
                         && user.getComputeNodeList().get(j).getCurrentCPU() == 0) {
                     // System.out.print("App:GR " +app.id);
                     user.getComputeNodeList().get(j).makeItIdle(new EnterpriseJob());
@@ -136,7 +135,7 @@ public class InteractiveUserAM extends GeneralAM {
         // Policy 2: If SLA is violated then increase frequency of the nodes
         if (violationInEpoch > 0) {
             for (int j = 0; j < user.getComputeNodeList().size(); j++) {
-                if (user.getComputeNodeList().get(j).getReady() == 0) {
+                if (user.getComputeNodeList().get(j).isRunningBusy()) {
                     user.getComputeNodeList().get(j).increaseFrequency();
                 }
             }
@@ -144,7 +143,7 @@ public class InteractiveUserAM extends GeneralAM {
             // sleep nodes will wake up!
             int tedad = user.numberofIdleNode() / 2;
             for (int j = 0; j < user.getComputeNodeList().size() && tedad > 0; j++) {
-                if (user.getComputeNodeList().get(j).getReady() == -1) {
+                if (user.getComputeNodeList().get(j).isIdle()) {
                     LOGGER.info(
                             "USer GR: " + user.getID() + "\tactive a Server!\t\t @" + environment.getCurrentLocalTime()
                                     + "\tNumber of runinng:  " + user.numberofRunningNode());

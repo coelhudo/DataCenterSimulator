@@ -144,7 +144,7 @@ public class InteractiveUser {
         int numberofReadyNodes = 0;
         int beenRunJobs = 0; // number of jobs have been run so far
         for (BladeServer bladeServer : getComputeNodeList()) {
-            if (bladeServer.getReady() == 1) {
+            if (bladeServer.isRunningNormal()) {
                 CPUpercentage = (100.0 - bladeServer.getCurrentCPU()) * bladeServer.getMips() + CPUpercentage;
                 numberofReadyNodes++;
             }
@@ -234,8 +234,7 @@ public class InteractiveUser {
                 }
                 double CPUspace = (100 - getComputeNodeList().get(serID).getCurrentCPU())
                         * getComputeNodeList().get(serID).getMips();
-                int reqSpace = (int) Math
-                        .ceil(CPUspace * getMaxNumberOfRequest() / (getNumberofBasicNode() * 100.0));
+                int reqSpace = (int) Math.ceil(CPUspace * getMaxNumberOfRequest() / (getNumberofBasicNode() * 100.0));
                 getComputeNodeList().get(serID).setCurrentCPU(100);
                 getComputeNodeList().get(serID).setStatusAsRunningBusy();
                 beenRunJobs = beenRunJobs - reqSpace;
@@ -276,21 +275,12 @@ public class InteractiveUser {
 
     void setReadyFlag() {
         for (BladeServer bladeServer : getComputeNodeList()) {
-            if (bladeServer.getReady() != -1) {
-             // -1 : means this
-                // server is
-                // idle not so
-                // as to compute
-                // its idle
-                // power
+            if (!bladeServer.isIdle()) {
                 if (bladeServer.getInteractiveList().isEmpty()) {
                     bladeServer.setStatusAsRunningNormal();
                     bladeServer.setCurrentCPU(0);
-                } // bahs
-                else {
+                } else {
                     bladeServer.setStatusAsRunningBusy();
-                    // LOGGER.info("queulength in SetReady FLag:
-                    // "+ComputeNodeList.get(i).queueLength);
                 }
             }
         }
@@ -311,7 +301,7 @@ public class InteractiveUser {
     public int numberofRunningNode() {
         int cnt = 0;
         for (BladeServer bladeServer : getComputeNodeList()) {
-            if (bladeServer.getReady() > -1) {
+            if (bladeServer.isRunning()) {
                 cnt++;
             }
         }
@@ -321,17 +311,16 @@ public class InteractiveUser {
     public int numberofIdleNode() {
         int cnt = 0;
         for (BladeServer bladeServer : getComputeNodeList()) {
-            if (bladeServer.getReady() == -1) {
+            if (bladeServer.isIdle()) {
                 cnt++;
             }
         }
         return cnt;
     }
 
-    // FIXME: why return index instead instance?
     public int myFirstIdleNode() {
         for (int i = 0; i < getComputeNodeList().size(); i++) {
-            if (getComputeNodeList().get(i).getReady() == -1) {
+            if (getComputeNodeList().get(i).isIdle()) {
                 return i;
             }
         }
@@ -344,7 +333,7 @@ public class InteractiveUser {
     public void activeOneNode() {
         int i = 0;
         for (i = 0; i < getComputeNodeList().size(); i++) {
-            if (getComputeNodeList().get(i).getReady() == -1) {
+            if (getComputeNodeList().get(i).isIdle()) {
                 getComputeNodeList().get(i).restart();
                 getComputeNodeList().get(i).setStatusAsRunningNormal();
                 break;
@@ -370,7 +359,8 @@ public class InteractiveUser {
         for (i = 0; i < getComputeNodeList().size(); i++) {
             cpu = cpu + getComputeNodeList().get(i).getCurrentCPU();
         }
-        cpu = cpu / i; // FIXME: why not list.size()? it will always be (size -1)
+        cpu = cpu / i; // FIXME: why not list.size()? it will always be (size
+                       // -1)
         return cpu;
     }
 

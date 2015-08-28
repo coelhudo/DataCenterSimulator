@@ -1,7 +1,5 @@
 package simulator.physical;
 
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 import java.util.List;
 import java.util.logging.Logger;
 
@@ -53,7 +51,7 @@ public final class BladeServerCollectionOperations {
     public static int countRunning(List<BladeServer> bladeServers) {
         int count = 0;
         for (BladeServer bladeServer : bladeServers) {
-            if (bladeServer.isRunningBusy() || bladeServer.isRunningNormal()) {
+            if (bladeServer.isRunning()) {
                 count++;
             }
         }

@@ -153,7 +153,7 @@ public class ComputeSystemTest {
         ComputeSystem computeSystem = ComputeSystem.Create(systemPOD, mockedEnvironment, mockedDataCenter,
                 mockedSLAViolationLogger);
         BladeServer mockedBladeServer = mock(BladeServer.class);
-        when(mockedBladeServer.getReady()).thenReturn(1);
+        when(mockedBladeServer.isRunningNormal()).thenReturn(true);
         computeSystem.appendBladeServerIntoComputeNodeList(mockedBladeServer);
 
         assertFalse(computeSystem.runAcycle());
@@ -168,9 +168,10 @@ public class ComputeSystemTest {
         assertEquals(0.0, computeSystem.getPower(), 1.0E-8);
         assertEquals(1, computeSystem.getAccumolatedViolation());
 
-        verify(mockedBladeServer).isIdle();
-        verify(mockedBladeServer, times(30)).getReady(); // XXX: 30???
-        verify(mockedBladeServer, times(26)).getChassisID(); // XXX: 26????
+        verify(mockedBladeServer, times(3)).isIdle();
+        verify(mockedBladeServer).isRunningBusy();
+        verify(mockedBladeServer, times(27)).isRunningNormal();
+        verify(mockedBladeServer, times(26)).getChassisID();
         verify(mockedBladeServer).getServerID();
         verify(mockedBladeServer).feedWork(any(BatchJob.class));
         verify(mockedEnvironment, times(3)).getCurrentLocalTime();
@@ -210,7 +211,8 @@ public class ComputeSystemTest {
         ComputeSystem computeSystem = ComputeSystem.Create(systemPOD, mockedEnvironment, mockedDataCenter,
                 mockedSLAViolationLogger);
         BladeServer mockedBladeServer = mock(BladeServer.class);
-        when(mockedBladeServer.getReady()).thenReturn(1);
+        when(mockedBladeServer.isRunningNormal()).thenReturn(true);
+        when(mockedBladeServer.isRunning()).thenReturn(true);
         when(mockedBladeServer.getTotalFinishedJob()).thenReturn(1);
         computeSystem.appendBladeServerIntoComputeNodeList(mockedBladeServer);
 
@@ -226,8 +228,10 @@ public class ComputeSystemTest {
         assertEquals(0.0, computeSystem.getPower(), 1.0E-8);
         assertEquals(0, computeSystem.getAccumolatedViolation());
 
-        verify(mockedBladeServer, times(30)).getReady(); // XXX: 30???
-        verify(mockedBladeServer, times(26)).getChassisID(); // XXX: 26????
+        verify(mockedBladeServer).isIdle();
+        verify(mockedBladeServer, times(2)).isRunning();
+        verify(mockedBladeServer, times(27)).isRunningNormal();
+        verify(mockedBladeServer, times(26)).getChassisID();
         verify(mockedBladeServer).getServerID();
         verify(mockedBladeServer).feedWork(any(BatchJob.class));
         verify(mockedEnvironment, times(3)).getCurrentLocalTime();
@@ -273,7 +277,7 @@ public class ComputeSystemTest {
         ComputeSystem computeSystem = ComputeSystem.Create(systemPOD, mockedEnvironment, mockedDataCenter,
                 mockedSLAViolationLogger);
         BladeServer mockedBladeServer = mock(BladeServer.class);
-        when(mockedBladeServer.getReady()).thenReturn(1);
+        when(mockedBladeServer.isRunningNormal()).thenReturn(true);
         when(mockedBladeServer.getTotalFinishedJob()).thenReturn(1);
         computeSystem.appendBladeServerIntoComputeNodeList(mockedBladeServer);
 
@@ -289,9 +293,10 @@ public class ComputeSystemTest {
         assertEquals(0.0, computeSystem.getPower(), 1.0E-8);
         assertEquals(1, computeSystem.getAccumolatedViolation());
 
-        verify(mockedBladeServer).isIdle(); 
-        verify(mockedBladeServer, times(30)).getReady(); // XXX: 30???
-        verify(mockedBladeServer, times(26)).getChassisID(); // XXX: 26????
+        verify(mockedBladeServer, times(3)).isIdle(); 
+        verify(mockedBladeServer, times(27)).isRunningNormal(); 
+        verify(mockedBladeServer).isRunningBusy(); 
+        verify(mockedBladeServer, times(26)).getChassisID();
         verify(mockedBladeServer).getServerID();
         verify(mockedBladeServer).feedWork(any(BatchJob.class));
         verify(mockedEnvironment, times(3)).getCurrentLocalTime();
@@ -473,7 +478,7 @@ public class ComputeSystemTest {
         ComputeSystem computeSystem = ComputeSystem.Create(systemPOD, mockedEnvironment, mockedDataCenter,
                 mockedSLAViolationLogger);
         BladeServer mockedBladeServer = mock(BladeServer.class);
-        when(mockedBladeServer.getReady()).thenReturn(1);
+        when(mockedBladeServer.isRunningNormal()).thenReturn(true);
         when(mockedBladeServer.getChassisID()).thenReturn(15);
 
         computeSystem.appendBladeServerIntoComputeNodeList(mockedBladeServer);
@@ -507,6 +512,7 @@ public class ComputeSystemTest {
         }
 
         verify(mockedEnvironment, times(2)).getCurrentLocalTime();
+        verify(mockedBladeServer, times(51)).isRunningNormal();
         verify(mockedBladeServer).feedWork(any(BatchJob.class));
         verify(mockedBatchJob).setStartTime(1);
         verify(mockedBatchJob).setRemainParam(2, 3, 4, 5);
@@ -517,8 +523,7 @@ public class ComputeSystemTest {
             fail(FAIL_ERROR_MESSAGE);
         }
 
-        verify(mockedBladeServer, times(51)).getReady(); // XXX: 51???
-        verify(mockedBladeServer, times(50)).getChassisID(); // XXX: 26????
+        verify(mockedBladeServer, times(50)).getChassisID();
         verify(mockedBladeServer).getServerID();
         verify(mockedBladeServer).feedWork(any(BatchJob.class));
         verify(mockedEnvironment, times(2)).getCurrentLocalTime();

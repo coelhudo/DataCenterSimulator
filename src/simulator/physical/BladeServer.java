@@ -120,7 +120,7 @@ public class BladeServer {
             }
             w = powerIdle[j];
             a = powerBusy[j] - w;
-            if (getReady() == -1 | getReady() == -2 | getReady() == -3) {
+            if (isNotSystemAssigned() || isNotApplicationAssigned() || isIdle()) {
                 // if the server is in idle state
 
                 a = 0;
@@ -460,33 +460,9 @@ public class BladeServer {
     public boolean isRunningBusy() {
         return ready == BladeServerStatus.RUNNING_BUSY;
     }
-
-    public int getReady() {
-        int status = 0;
-        switch (ready) {
-        case NOT_ASSIGNED_TO_ANY_SYSTEM:
-            status = -3;
-            break;
-
-        case NOT_ASSIGNED_TO_ANY_APPLICATION:
-            status = -2;
-            break;
-        case IDLE:
-            status = -1;
-            break;
-        case RUNNING_NORMAL:
-            status = 1;
-            break;
-        case RUNNING_BUSY:
-            status = 0;
-            break;
-        default:
-            status = -4;
-            break;
-        }
-
-        assert(status != -4);
-        return status;
+    
+    public boolean isRunning() {
+        return ready == BladeServerStatus.RUNNING_BUSY || ready == BladeServerStatus.RUNNING_NORMAL;
     }
 
     private void setStatusAsNotAssignedToAnySystem() {

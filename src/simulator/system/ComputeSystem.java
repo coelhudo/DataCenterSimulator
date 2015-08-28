@@ -197,7 +197,7 @@ public class ComputeSystem extends GeneralSystem {
 
     public void activeOneNode() {
         for (BladeServer bladeServer : getComputeNodeList()) {
-            if (bladeServer.getReady() == -1) {
+            if (bladeServer.isIdle()) {
                 bladeServer.restart();
                 bladeServer.setStatusAsRunningNormal();
                 LOGGER.info("activeone node in compuet system MIIIIPPPSSS    " + bladeServer.getMips());

@@ -77,15 +77,14 @@ public class BladeServersCollectionOperationsTest {
     }
     
     @Test
-    public void testcountRunning() {
-        when(mockedBladeServerOne.isRunningNormal()).thenReturn(true);
-        when(mockedBladeServerTwo.isRunningBusy()).thenReturn(true);
+    public void testCountRunning() {
+        when(mockedBladeServerOne.isRunning()).thenReturn(true);
+        when(mockedBladeServerTwo.isRunning()).thenReturn(true);
         
         assertEquals(2, BladeServerCollectionOperations.countRunning(bladeServers));
         
-        verify(mockedBladeServerOne).isRunningBusy();
-        verify(mockedBladeServerOne).isRunningNormal();
-        verify(mockedBladeServerTwo).isRunningBusy();
+        verify(mockedBladeServerOne).isRunning();
+        verify(mockedBladeServerTwo).isRunning();
         
         verifyNoMoreInteractions(mockedBladeServerOne, mockedBladeServerTwo);
     }

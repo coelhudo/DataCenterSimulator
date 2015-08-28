@@ -103,7 +103,8 @@ public class EnterpriseAppTest {
         assertTrue(enterpriseApplication.getComputeNodeList().isEmpty());
 
         BladeServer mockedBladeServer = mock(BladeServer.class);
-        when(mockedBladeServer.getReady()).thenReturn(1);
+        when(mockedBladeServer.isIdle()).thenReturn(false);
+        when(mockedBladeServer.isRunningNormal()).thenReturn(true);
         when(mockedBladeServer.getCurrentCPU()).thenReturn(10.0);
         when(mockedBladeServer.getMips()).thenReturn(1.4);
         enterpriseApplication.addCompNodetoBundle(mockedBladeServer);
@@ -132,8 +133,9 @@ public class EnterpriseAppTest {
         assertFalse(enterpriseApplication.getComputeNodeList().isEmpty());
         assertFalse(enterpriseApplication.getQueueApp().isEmpty());
 
+        verify(mockedBladeServer).isIdle();
+        verify(mockedBladeServer, times(2)).isRunningNormal();
         verify(mockedBladeServer).restart();
-        verify(mockedBladeServer, times(3)).getReady();
         verify(mockedBladeServer, times(2)).setCurrentCPU(anyInt());
         verify(mockedBladeServer).setStatusAsRunningNormal();
         verify(mockedBladeServer).setStatusAsRunningBusy();
@@ -185,7 +187,8 @@ public class EnterpriseAppTest {
         assertTrue(enterpriseApplication.getComputeNodeList().isEmpty());
 
         BladeServer mockedBladeServer = mock(BladeServer.class);
-        when(mockedBladeServer.getReady()).thenReturn(1);
+        when(mockedBladeServer.isRunningNormal()).thenReturn(true);
+        when(mockedBladeServer.isIdle()).thenReturn(false);
         when(mockedBladeServer.getCurrentCPU()).thenReturn(10.0);
         when(mockedBladeServer.getMips()).thenReturn(1.4);
         enterpriseApplication.addCompNodetoBundle(mockedBladeServer);
@@ -214,8 +217,9 @@ public class EnterpriseAppTest {
         assertFalse(enterpriseApplication.getComputeNodeList().isEmpty());
         assertFalse(enterpriseApplication.getQueueApp().isEmpty());
 
+        verify(mockedBladeServer).isIdle();
+        verify(mockedBladeServer, times(2)).isRunningNormal();
         verify(mockedBladeServer).restart();
-        verify(mockedBladeServer, times(3)).getReady();
         verify(mockedBladeServer, times(2)).setCurrentCPU(anyInt());
         verify(mockedBladeServer).setStatusAsRunningNormal();
         verify(mockedBladeServer).setStatusAsRunningBusy();
@@ -266,7 +270,8 @@ public class EnterpriseAppTest {
         assertTrue(enterpriseApplication.getComputeNodeList().isEmpty());
 
         BladeServer mockedBladeServer = mock(BladeServer.class);
-        when(mockedBladeServer.getReady()).thenReturn(1);
+        when(mockedBladeServer.isIdle()).thenReturn(false);
+        when(mockedBladeServer.isRunningNormal()).thenReturn(true);
         when(mockedBladeServer.getCurrentCPU()).thenReturn(10.0);
         when(mockedBladeServer.getMips()).thenReturn(1.4);
         enterpriseApplication.addCompNodetoBundle(mockedBladeServer);
@@ -294,16 +299,17 @@ public class EnterpriseAppTest {
 
         assertFalse(enterpriseApplication.getComputeNodeList().isEmpty());
 
-        verify(mockedEnterpriseJob, times(2)).getArrivalTimeOfJob();
-        verify(mockedEnterpriseJob, times(6)).getNumberOfJob();
-
-        verify(mockedBladeServer).restart();
-        verify(mockedBladeServer, times(3)).getReady();
-        verify(mockedBladeServer, times(2)).setCurrentCPU(anyInt());
+        verify(mockedBladeServer, times(1)).isIdle();
         verify(mockedBladeServer).setStatusAsRunningNormal();
+        verify(mockedBladeServer, times(2)).isRunningNormal();
+        verify(mockedBladeServer).restart();
+        verify(mockedBladeServer, times(2)).setCurrentCPU(anyInt());
         verify(mockedBladeServer).setStatusAsRunningBusy();
         verify(mockedBladeServer).getCurrentCPU();
         verify(mockedBladeServer).getMips();
+        
+        verify(mockedEnterpriseJob, times(2)).getArrivalTimeOfJob();
+        verify(mockedEnterpriseJob, times(6)).getNumberOfJob();
 
         try {
             verify(mockedBufferedReader).readLine();
@@ -405,7 +411,7 @@ public class EnterpriseAppTest {
         enterpriseApplication.setNumberofBasicNode(1);
 
         BladeServer mockedBladeServer = mock(BladeServer.class);
-        when(mockedBladeServer.getReady()).thenReturn(1);
+        when(mockedBladeServer.isRunningNormal()).thenReturn(true);
         when(mockedBladeServer.getCurrentCPU()).thenReturn(10.0);
         when(mockedBladeServer.getMips()).thenReturn(1.4);
 
@@ -465,8 +471,9 @@ public class EnterpriseAppTest {
         verify(mockedEnterpriseJob, times(9)).getNumberOfJob();
         verify(mockedEnterpriseJob, times(3)).getArrivalTimeOfJob();
 
+        verify(mockedBladeServer, times(2)).isIdle();
+        verify(mockedBladeServer).isRunningNormal();
         verify(mockedBladeServer).restart();
-        verify(mockedBladeServer, times(3)).getReady();
         verify(mockedBladeServer, times(4)).setCurrentCPU(anyInt());
         verify(mockedBladeServer).setStatusAsRunningBusy();
         verify(mockedBladeServer, times(3)).setStatusAsRunningNormal();
@@ -496,7 +503,7 @@ public class EnterpriseAppTest {
                 mockedEnvironment);
 
         BladeServer mockedBladeServer = mock(BladeServer.class);
-        when(mockedBladeServer.getReady()).thenReturn(1);
+        when(mockedBladeServer.isRunningNormal()).thenReturn(true);
         when(mockedBladeServer.getCurrentCPU()).thenReturn(10.0);
         when(mockedBladeServer.getMips()).thenReturn(1.4);
 

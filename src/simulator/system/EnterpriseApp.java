@@ -147,7 +147,7 @@ public final class EnterpriseApp {
 
     void resetReadyFlagAndCPU() {
         for (BladeServer bladeServer : getComputeNodeList()) {
-            if (bladeServer.getReady() != -1) { // if it is idle
+            if (!bladeServer.isIdle()) { // if it is idle
                 // dont
                 // change it! it
                 // is
@@ -180,7 +180,7 @@ public final class EnterpriseApp {
         int numberofReadyNodes = 0;
         int beenRunJobs = 0; // number of jobs have been run so far
         for (BladeServer bladeServer : getComputeNodeList()) {
-            if (bladeServer.getReady() == 1) {
+            if (bladeServer.isRunningNormal()) {
                 CPUpercentage = (100.0 - bladeServer.getCurrentCPU()) * bladeServer.getMips() + CPUpercentage;
                 numberofReadyNodes++;
             }
@@ -244,7 +244,7 @@ public final class EnterpriseApp {
         if (capacityOfNode_COPY == beenRunJobs) {
             // we're done all our capacity
             for (BladeServer bladeServer : getComputeNodeList()) {
-                if (bladeServer.getReady() == 1) {
+                if (bladeServer.isRunningNormal()) {
                     bladeServer.setCurrentCPU(100);
                     bladeServer.setStatusAsRunningBusy();
                 }
@@ -286,7 +286,7 @@ public final class EnterpriseApp {
     public int numberofRunningNode() {
         int cnt = 0;
         for (BladeServer bladeServer : getComputeNodeList()) {
-            if (bladeServer.getReady() > -1) {
+            if (bladeServer.isRunning()) {
                 cnt++;
             }
         }
@@ -296,7 +296,7 @@ public final class EnterpriseApp {
     public int numberofIdleNode() {
         int cnt = 0;
         for (BladeServer bladeServer : getComputeNodeList()) {
-            if (bladeServer.getReady() == -1) {
+            if (bladeServer.isIdle()) {
                 cnt++;
             }
         }
@@ -306,7 +306,7 @@ public final class EnterpriseApp {
     public void activeOneNode() {
         int i = 0;
         for (i = 0; i < getComputeNodeList().size(); i++) {
-            if (getComputeNodeList().get(i).getReady() == -1) {
+            if (getComputeNodeList().get(i).isIdle()) {
                 getComputeNodeList().get(i).restart();
                 getComputeNodeList().get(i).setStatusAsRunningNormal();
                 break;
@@ -358,17 +358,16 @@ public final class EnterpriseApp {
 
     boolean isThereIdleNode() {
         for (BladeServer bladeServer : getComputeNodeList()) {
-            if (bladeServer.getReady() == -1) {
+            if (bladeServer.isIdle()) {
                 return true;
             }
         }
         return false;
     }
 
-    // FIXME: why get index instead of the instance?
     public int myFirstIdleNode() {
         for (int i = 0; i < getComputeNodeList().size(); i++) {
-            if (getComputeNodeList().get(i).getReady() == -1) {
+            if (getComputeNodeList().get(i).isIdle()) {
                 return i;
             }
         }

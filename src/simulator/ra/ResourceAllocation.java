@@ -17,7 +17,7 @@ import simulator.system.InteractiveUser;
 public abstract class ResourceAllocation {
 
     private static final Logger LOGGER = Logger.getLogger(ResourceAllocation.class.getName());
-    
+
     protected DataCenter dataCenter;
     private Environment environment;
 
@@ -156,16 +156,8 @@ public abstract class ResourceAllocation {
             int difference = predicdetNumber - currentInvolved;
             for (int i = 0; i < difference; i++) {
                 for (int j = 0; j < enterpriseSystem.getComputeNodeList().size(); j++) {
-                    if (enterpriseSystem.getComputeNodeList().get(j).getReady() == -2 // is in
-                            // System
-                            // but
-                            // not
-                            // assigned
-                            // to
-                            // application
-                            | enterpriseSystem.getComputeNodeList().get(j).getReady() == -1) // is
-                    // idle
-                    {
+                    if (enterpriseSystem.getComputeNodeList().get(j).isNotApplicationAssigned()
+                            | enterpriseSystem.getComputeNodeList().get(j).isIdle()) {
                         int indexServer = enterpriseSystem.getComputeNodeList().get(j).getServerID();
                         int indexChassis = enterpriseSystem.getComputeNodeList().get(j).getChassisID();
                         BladeServer server = dataCenter.getServer(indexChassis,
@@ -374,13 +366,7 @@ public abstract class ResourceAllocation {
         j = test.getMinProc();
         while (j-- > 0) {
             for (i = 0; i < WS.getComputeNodeList().size(); i++) {
-                if (WS.getComputeNodeList().get(i).getReady() == -2) // this
-                // node
-                // is
-                // not
-                // assigned
-                // yet!
-                {
+                if (WS.getComputeNodeList().get(i).isNotApplicationAssigned()) {
                     break;
                 }
             }

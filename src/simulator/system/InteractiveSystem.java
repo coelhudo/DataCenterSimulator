@@ -44,7 +44,7 @@ public class InteractiveSystem extends GeneralSystem {
     public int numberofAvailableNodetoAlocate() {
         int n = 0;
         for (BladeServer bladeServer : getComputeNodeList()) {
-            if (bladeServer.getReady() == -2) {
+            if (bladeServer.isNotApplicationAssigned()) {
                 n++;
             }
         }
