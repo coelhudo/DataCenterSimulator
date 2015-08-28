@@ -35,14 +35,17 @@ public class BatchJob extends Job {
         setDeadline(deadline);
     }
 
-    public BatchJob(DataCenter dataCenter) {
-        this.dataCenter = dataCenter;
+    public BatchJob() {
         setStartTime(0);
         setExitTime(0);
         setReqTime(0);
         setExitTime(0);
         setNumOfNode(0);
         setDeadline(0);
+    }
+    
+    public void setDataCenter(DataCenter dataCenter) {
+        this.dataCenter = dataCenter;
     }
 
     public boolean allDone() {

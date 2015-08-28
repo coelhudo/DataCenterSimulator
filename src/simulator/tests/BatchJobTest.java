@@ -4,11 +4,9 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import org.junit.Before;
 import org.junit.Test;
 
 import simulator.jobs.BatchJob;
@@ -17,16 +15,9 @@ import simulator.physical.DataCenter;
 
 public class BatchJobTest {
 
-    DataCenter mockedDataCenter;
-
-    @Before
-    public void setUP() {
-        mockedDataCenter = mock(DataCenter.class);
-    }
-
     @Test
     public void testBatchJobInstantiation() {
-        BatchJob batchJob = new BatchJob(mockedDataCenter);
+        BatchJob batchJob = new BatchJob();
         assertEquals(0.0, batchJob.getStartTime(), 1.0E-8);
         assertEquals(0.0, batchJob.getExitTime(), 1.0E-8);
         assertEquals(0.0, batchJob.getReqTime(), 1.0E-8);
@@ -37,7 +28,7 @@ public class BatchJobTest {
 
     @Test
     public void testSetRemainParameters() {
-        BatchJob batchJob = new BatchJob(mockedDataCenter);
+        BatchJob batchJob = new BatchJob();
         batchJob.setRemainParam(10.0, 50, 100, 5.0);
         assertEquals(0.5, batchJob.getUtilization(), 1.0E-8);
         assertEquals(100, batchJob.getNumOfNode());
@@ -47,14 +38,14 @@ public class BatchJobTest {
 
     @Test
     public void testAllDoneWhenThereAreNoNodes() {
-        BatchJob batchJob = new BatchJob(mockedDataCenter);
+        BatchJob batchJob = new BatchJob();
         assertEquals(0, batchJob.getNumOfNode());
         assertTrue(batchJob.allDone());
     }
 
     @Test
     public void testAllDoneWhenThereAreNoneRemaining() {
-        BatchJob batchJob = new BatchJob(mockedDataCenter);
+        BatchJob batchJob = new BatchJob();
         final int remainingTime = 0;
         batchJob.setRemainParam(remainingTime, 0, 1, 5.0);
         assertTrue(batchJob.allDone());
@@ -62,15 +53,19 @@ public class BatchJobTest {
 
     @Test
     public void testAllDoneWhenThereAreRemainingTime() {
-        BatchJob batchJob = new BatchJob(mockedDataCenter);
+        BatchJob batchJob = new BatchJob();
         final int remainingTime = 1;
         batchJob.setRemainParam(remainingTime, 0, 1, 5.0);
         assertFalse(batchJob.allDone());
     }
 
     @Test
-    public void testJobFinished() {
-        BatchJob batchJob = new BatchJob(mockedDataCenter);
+    public void testFinish() {
+
+        DataCenter mockedDataCenter = mock(DataCenter.class);
+        
+        BatchJob batchJob = new BatchJob();
+        batchJob.setDataCenter(mockedDataCenter);
         final int remainingTime = 1;
         batchJob.setRemainParam(remainingTime, 0, 1, 5.0);
         batchJob.setListOfServer(new int[batchJob.getNumOfNode()]);
@@ -86,7 +81,7 @@ public class BatchJobTest {
 
     @Test
     public void testGetThisNodeIndexFails() {
-        BatchJob batchJob = new BatchJob(mockedDataCenter);
+        BatchJob batchJob = new BatchJob();
         batchJob.setRemainParam(1.0, 1, 1, 1);
         batchJob.setListOfServer(new int[batchJob.getNumOfNode()]);
         final int nonExistentIndex = 1;
@@ -95,7 +90,7 @@ public class BatchJobTest {
 
     @Test
     public void testGetThisNodeIndexSucceed() {
-        BatchJob batchJob = new BatchJob(mockedDataCenter);
+        BatchJob batchJob = new BatchJob();
         batchJob.setRemainParam(1.0, 1, 1, 1);
         batchJob.setListOfServer(new int[batchJob.getNumOfNode()]);
         final int existentIndex = 0;

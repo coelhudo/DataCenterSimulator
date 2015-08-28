@@ -34,7 +34,7 @@ public class BatchJobProducer {
                     continue;
                 }
 
-                BatchJob batchJob = new BatchJob(null);
+                BatchJob batchJob = new BatchJob();
                 batchJob.setRemainParam(Double.parseDouble(numbers[1]), Double.parseDouble(numbers[2]),
                         Integer.parseInt(numbers[3]), Double.parseDouble(numbers[4]));
                 batchJob.setStartTime(Double.parseDouble(numbers[0]));

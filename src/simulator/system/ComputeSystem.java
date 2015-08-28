@@ -51,13 +51,15 @@ public class ComputeSystem extends GeneralSystem {
     public boolean runAcycle() {
         setSLAviolation(0);
         int numberOfFinishedJob = 0;
-        BatchJob j = new BatchJob(dataCenter);
+        BatchJob j = new BatchJob();
+        j.setDataCenter(dataCenter);
         // reads all jobs with arrival time less than Localtime
         while (readJob(j)) {
             if (inputTime > environment.getCurrentLocalTime()) {
                 break;
             }
-            j = new BatchJob(dataCenter);
+            j = new BatchJob();
+            j.setDataCenter(dataCenter);
         }
         if (!isBlocked()) {
             moveWaitingJobsToBladeServer();
