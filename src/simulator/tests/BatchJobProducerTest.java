@@ -31,7 +31,7 @@ public class BatchJobProducerTest {
     public BufferedReader mockedBufferedReader;
 
     @Before
-    void setUp() {
+    public void setUp() {
         mockedEnvironment = mock(Environment.class);
         mockedBufferedReader = mock(BufferedReader.class);
     }
@@ -63,12 +63,14 @@ public class BatchJobProducerTest {
         when(mockedEnvironment.getCurrentLocalTime()).thenReturn(jobStartTime - 1);
         assertTrue(batchJobProducer.hasNext());
 
-        BatchJob batchJob = (BatchJob) batchJobProducer.next();
+        BatchJob batchJob = batchJobProducer.next();
         assertEquals(jobStartTime, batchJob.getStartTime(), 1.0E-8);
         assertEquals(remainingTime, batchJob.getRemainAt(0), 1.0E-8);
         assertEquals(utilization / 100.0, batchJob.getUtilization(), 1.0E-8);
         assertEquals(numberOfNodes, batchJob.getNumOfNode());
         assertEquals(deadline, batchJob.getDeadline(), 1.0E-8);
+        
+        assertFalse(batchJobProducer.hasNext());
 
         try {
             verify(mockedBufferedReader, times(2)).readLine();
@@ -143,9 +145,9 @@ public class BatchJobProducerTest {
             fail(FAIL_ERROR_MESSAGE + e.getMessage());
         }
 
-        when(mockedEnvironment.getCurrentLocalTime()).thenReturn(1);
-
         batchJobProducer.loadJobs();
+
+        when(mockedEnvironment.getCurrentLocalTime()).thenReturn(1);
         assertTrue(batchJobProducer.hasNext());
 
         try {
@@ -155,6 +157,8 @@ public class BatchJobProducerTest {
         }
 
         verify(mockedEnvironment).getCurrentLocalTime();
+
+        verifyNoMoreInteractions(mockedEnvironment, mockedBufferedReader);
     }
 
     @Test
@@ -168,5 +172,44 @@ public class BatchJobProducerTest {
         assertNotNull(batchJobProducer.next());
 
         verify(mockedEnvironment, times(2)).getCurrentLocalTime();
+
+        verifyNoMoreInteractions(mockedEnvironment, mockedBufferedReader);
+    }
+
+    @Test
+    public void testNextMoreThanOneJob() {
+        BatchJobProducer batchJobProducer = new BatchJobProducer(mockedEnvironment, mockedBufferedReader);
+
+        when(mockedEnvironment.getCurrentLocalTime()).thenReturn(0);
+
+        assertFalse(batchJobProducer.hasNext());
+
+        try {
+            String stopValue = null;
+            when(mockedBufferedReader.readLine()).thenReturn("1\t1\t1\t1\t1", "2\t1\t1\t1\t1", stopValue);
+        } catch (IOException e) {
+            fail(FAIL_ERROR_MESSAGE + e.getMessage());
+        }
+
+        batchJobProducer.loadJobs();
+
+        when(mockedEnvironment.getCurrentLocalTime()).thenReturn(1);
+        assertTrue(batchJobProducer.hasNext());
+        BatchJob batchJob = batchJobProducer.next();
+        assertEquals(1.0, batchJob.getStartTime(), 1.0E-8);
+        assertTrue(batchJobProducer.hasNext());
+        batchJob = batchJobProducer.next();
+        assertEquals(2.0, batchJob.getStartTime(), 1.0E-8);
+        assertFalse(batchJobProducer.hasNext());
+
+        try {
+            verify(mockedBufferedReader, times(3)).readLine();
+        } catch (IOException e) {
+            fail(FAIL_ERROR_MESSAGE + e.getMessage());
+        }
+
+        verify(mockedEnvironment, times(4)).getCurrentLocalTime();
+
+        verifyNoMoreInteractions(mockedEnvironment, mockedBufferedReader);
     }
 }

@@ -18,6 +18,7 @@ public class BatchJobProducer {
     private BufferedReader bufferedReader;
     private List<BatchJob> availableJobs = new ArrayList<BatchJob>();
     private final int numberOfParameters = 5;
+    private int currentIndex = 0;
 
     public BatchJobProducer(Environment environment, BufferedReader bufferedReader) {
         this.environment = environment;
@@ -46,14 +47,15 @@ public class BatchJobProducer {
     }
 
     public boolean hasNext() {
-        return !availableJobs.isEmpty() && availableJobs.get(0).getStartTime() >= environment.getCurrentLocalTime();
+        return !availableJobs.isEmpty() && currentIndex < availableJobs.size()
+                && availableJobs.get(currentIndex).getStartTime() >= environment.getCurrentLocalTime();
     }
 
-    public Job next() {
+    public BatchJob next() {
         if (!hasNext())
             throw new NoSuchElementException();
 
-        return availableJobs.get(0);
+        return availableJobs.get(currentIndex++);
     }
 
 }
