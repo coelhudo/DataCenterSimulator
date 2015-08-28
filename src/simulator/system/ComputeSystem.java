@@ -30,7 +30,7 @@ public class ComputeSystem extends GeneralSystem {
     private Environment environment;
     private SLAViolationLogger slaViolationLogger;
     private DataCenter dataCenter;
-
+    
     private ComputeSystem(SystemPOD systemPOD, Environment environment, DataCenter dataCenter,
             SLAViolationLogger slaViolationLogger) {
         super(systemPOD);

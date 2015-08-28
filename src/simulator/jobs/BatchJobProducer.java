@@ -10,7 +10,7 @@ import java.util.logging.Logger;
 
 import simulator.Environment;
 
-public class BatchJobProducer {
+public class BatchJobProducer implements JobProducer {
 
     private static final Logger LOGGER = Logger.getLogger(BatchJobProducer.class.getName());
 
@@ -51,7 +51,7 @@ public class BatchJobProducer {
                 && availableJobs.get(currentIndex).getStartTime() >= environment.getCurrentLocalTime();
     }
 
-    public BatchJob next() {
+    public Job next() {
         if (!hasNext())
             throw new NoSuchElementException();
 

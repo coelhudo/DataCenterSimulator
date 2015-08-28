@@ -63,7 +63,7 @@ public class BatchJobProducerTest {
         when(mockedEnvironment.getCurrentLocalTime()).thenReturn(jobStartTime - 1);
         assertTrue(batchJobProducer.hasNext());
 
-        BatchJob batchJob = batchJobProducer.next();
+        BatchJob batchJob = (BatchJob) batchJobProducer.next();
         assertEquals(jobStartTime, batchJob.getStartTime(), 1.0E-8);
         assertEquals(remainingTime, batchJob.getRemainAt(0), 1.0E-8);
         assertEquals(utilization / 100.0, batchJob.getUtilization(), 1.0E-8);
@@ -195,10 +195,10 @@ public class BatchJobProducerTest {
 
         when(mockedEnvironment.getCurrentLocalTime()).thenReturn(1);
         assertTrue(batchJobProducer.hasNext());
-        BatchJob batchJob = batchJobProducer.next();
+        BatchJob batchJob = (BatchJob) batchJobProducer.next();
         assertEquals(1.0, batchJob.getStartTime(), 1.0E-8);
         assertTrue(batchJobProducer.hasNext());
-        batchJob = batchJobProducer.next();
+        batchJob = (BatchJob) batchJobProducer.next();
         assertEquals(2.0, batchJob.getStartTime(), 1.0E-8);
         assertFalse(batchJobProducer.hasNext());
 
