@@ -15,6 +15,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.util.NoSuchElementException;
 
+import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
@@ -26,14 +27,20 @@ import simulator.jobs.BatchJobProducer;
 public class BatchJobProducerTest {
 
     private static final String FAIL_ERROR_MESSAGE = "That was supposed not to happen ";
-  
+    public Environment mockedEnvironment;
+    public BufferedReader mockedBufferedReader;
+
+    @Before
+    void setUp() {
+        mockedEnvironment = mock(Environment.class);
+        mockedBufferedReader = mock(BufferedReader.class);
+    }
+
     @Rule
     public ExpectedException expected = ExpectedException.none();
 
     @Test
     public void testLoadJobs() {
-        Environment mockedEnvironment = mock(Environment.class);
-        BufferedReader mockedBufferedReader = mock(BufferedReader.class);
         BatchJobProducer batchJobProducer = new BatchJobProducer(mockedEnvironment, mockedBufferedReader);
 
         final int jobStartTime = 4;
@@ -76,8 +83,6 @@ public class BatchJobProducerTest {
 
     @Test
     public void testLoadJobsMalformedEntry() {
-        Environment mockedEnvironment = mock(Environment.class);
-        BufferedReader mockedBufferedReader = mock(BufferedReader.class);
         BatchJobProducer batchJobProducer = new BatchJobProducer(mockedEnvironment, mockedBufferedReader);
 
         try {
@@ -102,8 +107,6 @@ public class BatchJobProducerTest {
 
     @Test
     public void testLoadJobsIOException() {
-        Environment mockedEnvironment = mock(Environment.class);
-        BufferedReader mockedBufferedReader = mock(BufferedReader.class);
         BatchJobProducer batchJobProducer = new BatchJobProducer(mockedEnvironment, mockedBufferedReader);
 
         try {
@@ -127,8 +130,6 @@ public class BatchJobProducerTest {
 
     @Test
     public void testHasNext() {
-        Environment mockedEnvironment = mock(Environment.class);
-        BufferedReader mockedBufferedReader = mock(BufferedReader.class);
         BatchJobProducer batchJobProducer = new BatchJobProducer(mockedEnvironment, mockedBufferedReader);
 
         when(mockedEnvironment.getCurrentLocalTime()).thenReturn(0);
@@ -141,7 +142,7 @@ public class BatchJobProducerTest {
         } catch (IOException e) {
             fail(FAIL_ERROR_MESSAGE + e.getMessage());
         }
-        
+
         when(mockedEnvironment.getCurrentLocalTime()).thenReturn(1);
 
         batchJobProducer.loadJobs();
@@ -152,14 +153,12 @@ public class BatchJobProducerTest {
         } catch (IOException e) {
             fail(FAIL_ERROR_MESSAGE + e.getMessage());
         }
-        
+
         verify(mockedEnvironment).getCurrentLocalTime();
     }
 
     @Test
     public void testNextFail() {
-        Environment mockedEnvironment = mock(Environment.class);
-        BufferedReader mockedBufferedReader = mock(BufferedReader.class);
         BatchJobProducer batchJobProducer = new BatchJobProducer(mockedEnvironment, mockedBufferedReader);
 
         when(mockedEnvironment.getCurrentLocalTime()).thenReturn(0);
@@ -170,5 +169,4 @@ public class BatchJobProducerTest {
 
         verify(mockedEnvironment, times(2)).getCurrentLocalTime();
     }
-
 }
