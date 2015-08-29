@@ -2,7 +2,6 @@ package simulator.system;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.NoSuchElementException;
 import java.util.logging.Logger;
 
 import simulator.Environment;
@@ -79,19 +78,16 @@ public class ComputeSystem extends GeneralSystem {
         if (!jobProducer.hasNext()) {
             return;
         }
-        
-        try {
-            do {
-                BatchJob batchJob = (BatchJob) jobProducer.next();
-                batchJob.setDataCenter(dataCenter);
-                waitingList.add(batchJob);
-                totalJob++;
-                if (batchJob.getStartTime() > environment.getCurrentLocalTime())
-                    break;
-            } while (jobProducer.hasNext());
-        } catch (NoSuchElementException e) {
-            LOGGER.info("Element does not exist " + e.getMessage());
-        }
+
+        do {
+            BatchJob batchJob = (BatchJob) jobProducer.next();
+            batchJob.setDataCenter(dataCenter);
+            waitingList.add(batchJob);
+            totalJob++;
+            if (batchJob.getStartTime() > environment.getCurrentLocalTime()) {
+                break;
+            }
+        } while (jobProducer.hasNext());
     }
 
     void makeSystemaBlocked() {

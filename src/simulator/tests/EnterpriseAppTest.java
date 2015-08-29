@@ -81,8 +81,7 @@ public class EnterpriseAppTest {
         try {
             when(mockedBufferedReader.readLine()).thenReturn("1\t1");
         } catch (IOException e1) {
-            // TODO Auto-generated catch block
-            e1.printStackTrace();
+            fail("Ouch");
         }
 
         enterpriseApplicationPOD.setBIS(mockedBufferedReader);
@@ -165,8 +164,7 @@ public class EnterpriseAppTest {
         try {
             when(mockedBufferedReader.readLine()).thenReturn("1\t1");
         } catch (IOException e1) {
-            // TODO Auto-generated catch block
-            e1.printStackTrace();
+            fail("Ouch");
         }
 
         enterpriseApplicationPOD.setBIS(mockedBufferedReader);
@@ -532,8 +530,7 @@ public class EnterpriseAppTest {
         try {
             verify(mockedBufferedReader).close();
         } catch (IOException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            fail("Ouch");
         }
         
         verifyNoMoreInteractions(mockedBladeServer, mockedBufferedReader, mockedEnterpriseSystem, mockedEnvironment);
