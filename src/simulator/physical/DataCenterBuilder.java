@@ -19,8 +19,6 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
-import simulator.Environment;
-
 public class DataCenterBuilder {
 
     private static final Logger LOGGER = Logger.getLogger(DataCenterBuilder.class.getName());
@@ -32,7 +30,7 @@ public class DataCenterBuilder {
     private int numbOfSofarChassis = 0;
     private DataCenterPOD dataCenterPOD;
 
-    public DataCenterBuilder(String config, Environment environment) {
+    public DataCenterBuilder(String config) {
         dataCenterPOD = new DataCenterPOD();
         parseXmlConfig(config);
     }

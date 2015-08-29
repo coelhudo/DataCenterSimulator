@@ -47,7 +47,7 @@ public class DataCenterTest {
     public void testDataCenterCreation() {
         Environment mockedEnvironment = mock(Environment.class);
         DataCenterAM mockeddataCenterAM = mock(DataCenterAM.class);
-        DataCenterBuilder dataCenterBuilder = new DataCenterBuilder("configs/DC.xml", mockedEnvironment);
+        DataCenterBuilder dataCenterBuilder = new DataCenterBuilder("configs/DC.xml");
         DataCenterPOD dataCenterPOD = dataCenterBuilder.getDataCenterPOD();
         ActivitiesLogger mockedActivitiesLogger = mock(ActivitiesLogger.class);
         DataCenter dataCenter = new DataCenter(dataCenterPOD, mockeddataCenterAM, mockedActivitiesLogger,
@@ -60,7 +60,7 @@ public class DataCenterTest {
         assertNotNull(dataCenter.getServer(0, 0));
         assertEquals(0.0, dataCenter.getTotalPowerConsumption(), 1.0E-8);
 
-        verifyNoMoreInteractions(mockedActivitiesLogger, mockeddataCenterAM, mockedEnvironment, mockedEnvironment);
+        verifyNoMoreInteractions(mockedActivitiesLogger, mockeddataCenterAM, mockedEnvironment);
     }
 
     @Test
@@ -84,7 +84,7 @@ public class DataCenterTest {
         verify(mockedActivitiesLogger, times(2)).write(anyString());
         verify(mockedEnvironment).getCurrentLocalTime();
 
-        verifyNoMoreInteractions(mockedActivitiesLogger, mockeddataCenterAM, mockedEnvironment, mockedEnvironment);
+        verifyNoMoreInteractions(mockedActivitiesLogger, mockeddataCenterAM, mockedEnvironment);
     }
 
     @Test
@@ -109,7 +109,7 @@ public class DataCenterTest {
         verify(mockedActivitiesLogger, times(2)).write(anyString());
         verify(mockedEnvironment).getCurrentLocalTime();
 
-        verifyNoMoreInteractions(mockedActivitiesLogger, mockeddataCenterAM, mockedEnvironment, mockedEnvironment);
+        verifyNoMoreInteractions(mockedActivitiesLogger, mockeddataCenterAM, mockedEnvironment);
     }
 
 }

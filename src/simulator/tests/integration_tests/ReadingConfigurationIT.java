@@ -29,10 +29,10 @@ public class ReadingConfigurationIT {
 
     @Test
     public void testSimulatorBuilder() {
-        Environment environment = new Environment();
-        SimulatorBuilder dataCenterBuilder = new SimulatorBuilder("configs/DC_Logic.xml", environment);
+        SimulatorBuilder dataCenterBuilder = new SimulatorBuilder("configs/DC_Logic.xml");
         SimulatorPOD simulatorPOD = dataCenterBuilder.buildLogicalDataCenter();
 
+        Environment environment = new Environment();
         Simulator simulator = new Simulator(simulatorPOD, environment);
 
         DataCenter dataCenter = simulator.getDatacenter();

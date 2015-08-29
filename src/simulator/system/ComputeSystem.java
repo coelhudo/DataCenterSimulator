@@ -1,9 +1,8 @@
 package simulator.system;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.logging.Level;
+import java.util.NoSuchElementException;
 import java.util.logging.Logger;
 
 import simulator.Environment;
@@ -17,7 +16,6 @@ import simulator.physical.BladeServerCollectionOperations;
 import simulator.physical.DataCenter;
 import simulator.ra.MHR;
 import simulator.schedulers.LeastRemainFirstScheduler;
-import simulator.schedulers.Scheduler;
 
 public class ComputeSystem extends GeneralSystem {
 
@@ -26,13 +24,12 @@ public class ComputeSystem extends GeneralSystem {
     private Violation SLAViolationType;
     private List<BatchJob> waitingList;
     private int totalJob = 0;
-    private double inputTime;
     private boolean blocked = false;
     private Environment environment;
     private SLAViolationLogger slaViolationLogger;
     private DataCenter dataCenter;
     private JobProducer jobProducer;
-    
+
     private ComputeSystem(SystemPOD systemPOD, Environment environment, DataCenter dataCenter,
             SLAViolationLogger slaViolationLogger) {
         super(systemPOD);
@@ -54,16 +51,7 @@ public class ComputeSystem extends GeneralSystem {
     public boolean runAcycle() {
         setSLAviolation(0);
         int numberOfFinishedJob = 0;
-        BatchJob j = new BatchJob();
-        j.setDataCenter(dataCenter);
-        // reads all jobs with arrival time less than Localtime
-        while (readJob(j)) {
-            if (inputTime > environment.getCurrentLocalTime()) {
-                break;
-            }
-            j = new BatchJob();
-            j.setDataCenter(dataCenter);
-        }
+        loadJobsIntoWaitingQueue();
         if (!isBlocked()) {
             moveWaitingJobsToBladeServer();
             BladeServerCollectionOperations.runAll(getComputeNodeList());
@@ -85,6 +73,25 @@ public class ComputeSystem extends GeneralSystem {
         }
         return false;
 
+    }
+
+    private void loadJobsIntoWaitingQueue() {
+        if (!jobProducer.hasNext()) {
+            return;
+        }
+        
+        try {
+            do {
+                BatchJob batchJob = (BatchJob) jobProducer.next();
+                batchJob.setDataCenter(dataCenter);
+                waitingList.add(batchJob);
+                totalJob++;
+                if (batchJob.getStartTime() > environment.getCurrentLocalTime())
+                    break;
+            } while (jobProducer.hasNext());
+        } catch (NoSuchElementException e) {
+            LOGGER.info("Element does not exist " + e.getMessage());
+        }
     }
 
     void makeSystemaBlocked() {
@@ -160,34 +167,6 @@ public class ComputeSystem extends GeneralSystem {
         }
     }
 
-    boolean readJob(BatchJob batchJob) {
-        try {
-            String line = getBis().readLine();
-            if (line == null) {
-                return false;
-            }
-            line = line.replace("\t", " ");
-            String[] numbers = line.split(" ");
-            if (numbers.length < 5) {
-                return false;
-            }
-            // Input log format: (time, requiertime, CPU utilization, number of
-            // core, dealine for getting to a server buffer)
-            inputTime = Double.parseDouble(numbers[0]);
-            batchJob.setRemainParam(Double.parseDouble(numbers[1]), Double.parseDouble(numbers[2]),
-                    Integer.parseInt(numbers[3]), Integer.parseInt(numbers[4]));
-            batchJob.setStartTime(inputTime);
-            final boolean added = waitingList.add(batchJob);
-            // number of jobs which are copied on # of requested nodes
-            totalJob = totalJob + 1;
-            return added;
-        } catch (IOException ex) {
-            LOGGER.info("readJOB EXC readJOB false ");
-            Logger.getLogger(Scheduler.class.getName()).log(Level.SEVERE, null, ex);
-            return false;
-        }
-    }
-
     List<Integer> getIndexSet() {
         return getComputeNodeIndex();
     }
@@ -212,12 +191,6 @@ public class ComputeSystem extends GeneralSystem {
     }
 
     double finalized() {
-        try {
-            getBis().close();
-        } catch (IOException ex) {
-            Logger.getLogger(EnterpriseApp.class.getName()).log(Level.SEVERE, null, ex);
-        }
-
         return BladeServerCollectionOperations.totalResponseTime(getComputeNodeList());
     }
 

@@ -43,7 +43,7 @@ public class BatchJob extends Job {
         setNumOfNode(0);
         setDeadline(0);
     }
-    
+
     public void setDataCenter(DataCenter dataCenter) {
         this.dataCenter = dataCenter;
     }
@@ -68,7 +68,7 @@ public class BatchJob extends Job {
             BladeServer server = dataCenter.getServer(getServerIndexAt(i));
             server.getBlockedBatchList().remove(this);
         }
-        
+
         return waitTime;
     }
 
@@ -132,7 +132,7 @@ public class BatchJob extends Job {
     public double getRemainAt(int index) {
         return remain[index];
     }
-    
+
     public void setRemainAt(int index, double remainValue) {
         remain[index] = remainValue;
     }

@@ -126,10 +126,10 @@ public class Simulator {
         FileHandler logFile = new FileHandler("log.txt");
         LOGGER.addHandler(logFile);
 
-        Environment environment = new Environment();
-        SimulatorBuilder dataCenterBuilder = new SimulatorBuilder("configs/DC_Logic.xml", environment);
+        SimulatorBuilder dataCenterBuilder = new SimulatorBuilder("configs/DC_Logic.xml");
         SimulatorPOD simulatorPOD = dataCenterBuilder.buildLogicalDataCenter();
 
+        Environment environment = new Environment();
         Simulator simulator = new Simulator(simulatorPOD, environment);
         SimulationResults results = simulator.execute();
         LOGGER.info("Total energy Consumption= " + results.getTotalPowerConsumption());

@@ -28,11 +28,9 @@ public class SimulatorBuilder {
 
     private static final Logger LOGGER = Logger.getLogger(SimulatorBuilder.class.getName());
 
-    private Environment environment;
     private String configurationFile;
 
-    public SimulatorBuilder(String configurationFile, Environment environment) {
-        this.environment = environment;
+    public SimulatorBuilder(String configurationFile) {
         this.configurationFile = configurationFile;
     }
 
@@ -53,7 +51,7 @@ public class SimulatorBuilder {
                 if (childNodes.item(i).getNodeType() == Node.ELEMENT_NODE) {
                     if (childNodes.item(i).getNodeName().equalsIgnoreCase("layout")) {
                         String DCLayout = path + "/" + childNodes.item(i).getChildNodes().item(0).getNodeValue().trim();
-                        DataCenterBuilder dataCenterBuilder = new DataCenterBuilder(DCLayout, environment);
+                        DataCenterBuilder dataCenterBuilder = new DataCenterBuilder(DCLayout);
                         DataCenterPOD dataCenterPOD = dataCenterBuilder.getDataCenterPOD();
                         simulatorPOD.setDataCenterPOD(dataCenterPOD);
                     }
@@ -111,7 +109,7 @@ public class SimulatorBuilder {
                         break;
                     case 3:
                         LOGGER.info("Initialization of HPC System Name=" + name);
-                        SystemBuilder computeSystemBuilder = new ComputeSystemBuilder(fileName, name, environment);
+                        SystemBuilder computeSystemBuilder = new ComputeSystemBuilder(fileName, name);
                         systemsPOD.appendComputeSystemPOD((ComputeSystemPOD) computeSystemBuilder.getSystemPOD());
                         break;
                     }

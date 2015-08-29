@@ -19,10 +19,10 @@ public class SimulatorIT {
     @Test
     public void testIDidntBreakAnythingFromTheOriginalCode() {
         try {
-            Environment environment = new Environment();
-            SimulatorBuilder dataCenterBuilder = new SimulatorBuilder("configs/DC_Logic.xml", environment);
+            SimulatorBuilder dataCenterBuilder = new SimulatorBuilder("configs/DC_Logic.xml");
             SimulatorPOD simulatorPOD = dataCenterBuilder.buildLogicalDataCenter();
 
+            Environment environment = new Environment();
             Simulator simulator = new Simulator(simulatorPOD, environment);
 
             SimulationResults results = simulator.execute();

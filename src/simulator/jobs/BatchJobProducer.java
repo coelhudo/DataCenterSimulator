@@ -8,20 +8,14 @@ import java.util.NoSuchElementException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import simulator.Environment;
-
 public class BatchJobProducer implements JobProducer {
 
     private static final Logger LOGGER = Logger.getLogger(BatchJobProducer.class.getName());
 
-    private Environment environment;
     private BufferedReader bufferedReader;
     private List<BatchJob> availableJobs = new ArrayList<BatchJob>();
-    private final int numberOfParameters = 5;
-    private int currentIndex = 0;
-
-    public BatchJobProducer(Environment environment, BufferedReader bufferedReader) {
-        this.environment = environment;
+    private static final int NUMBER_OF_PARAMETERS = 5;
+    public BatchJobProducer(BufferedReader bufferedReader) {
         this.bufferedReader = bufferedReader;
     }
 
@@ -30,8 +24,8 @@ public class BatchJobProducer implements JobProducer {
             String line = null;
             while ((line = bufferedReader.readLine()) != null) {
                 String[] numbers = line.split("\t");
-                if (numbers.length < numberOfParameters) {
-                    LOGGER.severe("Malformed line, expecting 5 elements found " + numbers.length);
+                if (numbers.length < NUMBER_OF_PARAMETERS) {
+                    LOGGER.severe("Malformed line, expecting "+ NUMBER_OF_PARAMETERS + " elements. Found " + numbers.length);
                     continue;
                 }
 
@@ -47,15 +41,16 @@ public class BatchJobProducer implements JobProducer {
     }
 
     public boolean hasNext() {
-        return !availableJobs.isEmpty() && currentIndex < availableJobs.size()
-                && availableJobs.get(currentIndex).getStartTime() >= environment.getCurrentLocalTime();
+        return !availableJobs.isEmpty();
     }
 
     public Job next() {
         if (!hasNext())
             throw new NoSuchElementException();
 
-        return availableJobs.get(currentIndex++);
+        Job result = availableJobs.get(0);
+        availableJobs.remove(0);
+        return result;
     }
 
 }
