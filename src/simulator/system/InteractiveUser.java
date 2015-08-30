@@ -37,7 +37,7 @@ public class InteractiveUser {
     private BufferedReader bis = null;
     // SLA
     private int slaViolation = 0;
-    private InteractiveUserAM AM;
+    private InteractiveUserAM autonomicManager;
     private int usedNode = 0;
     private int maxNumberOfRequest = 0; // # of Request can be handled by number
     // of basic node which for 100% CPU
@@ -134,10 +134,7 @@ public class InteractiveUser {
         {
             return true;
         }
-        if (readingResult == -2 & getQueueWL().isEmpty()) // no jobs are in the
-        // queue and in
-        // logfile
-        {
+        if (readingResult == -2 & getQueueWL().isEmpty()) {
             return false;
         }
         double CPUpercentage = 0;
@@ -169,7 +166,7 @@ public class InteractiveUser {
             if (capacityOfNode < 0) // there are more jobs than capacity
             {
                 addToresponseArray(capacityOfNode + jj.getNumberOfJob(),
-                        (environment.getCurrentLocalTime() - jj.getArrivalTimeOfJob() + 1));
+                        environment.getCurrentLocalTime() - jj.getArrivalTimeOfJob() + 1);
                 beenRunJobs = beenRunJobs + capacityOfNode + jj.getNumberOfJob();
                 jj.setNumberOfJob(-1 * capacityOfNode);
                 // LOGGER.info(1000.0*Mips);
@@ -450,11 +447,11 @@ public class InteractiveUser {
     }
 
     public InteractiveUserAM getAM() {
-        return AM;
+        return autonomicManager;
     }
 
     public void setAM(InteractiveUserAM aM) {
-        AM = aM;
+        autonomicManager = aM;
     }
 
     public int getMaxNumberOfRequest() {

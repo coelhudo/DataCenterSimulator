@@ -323,8 +323,9 @@ public final class EnterpriseApp {
     }
 
     public double getAverageCPUutil() {
-        if (getComputeNodeList().isEmpty())
+        if (getComputeNodeList().isEmpty()) {
             return 0.0;
+        }
 
         int i = 0;
         double cpu = 0;

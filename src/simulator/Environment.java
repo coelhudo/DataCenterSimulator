@@ -4,7 +4,7 @@ public class Environment {
     private int localTime = 1;
     private int numberOfMessagesFromDataCenterToSystem = 0;
     private int numberOfMessagesFromSystemToNodes = 0;
-    private final int EPOCH_APP = 60;
+    private static final int EPOCH_APP = 60;
     
     public int getCurrentLocalTime() {
         return localTime;

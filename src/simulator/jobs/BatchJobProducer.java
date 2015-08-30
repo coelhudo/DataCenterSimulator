@@ -45,9 +45,10 @@ public class BatchJobProducer implements JobProducer {
     }
 
     public Job next() {
-        if (!hasNext())
+        if (!hasNext()) {
             throw new NoSuchElementException();
-
+        }
+        
         Job result = availableJobs.get(0);
         availableJobs.remove(0);
         return result;

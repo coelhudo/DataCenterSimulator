@@ -43,10 +43,10 @@ public class InteractiveUserAM extends GeneralAM {
     }
 
     public void localUtilCal() {
-        double CPU = user.getAverageCPUUtilization();
-        double[] pwr = user.getAveragePwrParam();
-        double x = CPU * (pwr[0] - pwr[1]) / 100 + user.numberofIdleNode() * pwr[2]
-                + user.numberofRunningNode() * pwr[1];
+        double averageCPUUtilization = user.getAverageCPUUtilization();
+        double[] power = user.getAveragePwrParam();
+        double x = averageCPUUtilization * (power[0] - power[1]) / 100 + user.numberofIdleNode() * power[2]
+                + user.numberofRunningNode() * power[1];
         // U= a x+ b y a=b=1
         util = x + user.getSLAviolation();
         // util=sigmoid(util);
@@ -57,8 +57,7 @@ public class InteractiveUserAM extends GeneralAM {
         int[] levels = { 0, 0, 0 };
         int index = 0;
         for (int j = 0; j < user.getComputeNodeList().size(); j++) {
-            if (!user.getComputeNodeList().get(j).isIdle()) // it is idle
-            {
+            if (!user.getComputeNodeList().get(j).isIdle()) {
                 index = user.getComputeNodeList().get(j).getCurrentFreqLevel();
                 levels[index]++;
             }

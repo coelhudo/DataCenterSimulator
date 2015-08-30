@@ -105,11 +105,10 @@ public class BladeServer {
     }
 
     public double getPower() {
-        double pw = 0, w = 0, a = 0, cpu = 0, mips = 0;
+        double pw = 0, w = 0, a = 0, cpu = 0;
         int j;
         cpu = getCurrentCPU();
-        mips = getMips();
-        if (mips == 0) {
+        if (getMips() == 0) {
             pw = pw + idleConsumption;
             LOGGER.info("MIPS Zero!!!!");
         } else {
@@ -277,9 +276,10 @@ public class BladeServer {
             if (job.getIsChangedThisTime() == 0) {
                 final double utilization = job.getUtilization();
                 final Double shareUtilizationRatio = share / utilization;
-                if (shareUtilizationRatio.isInfinite())
+                if (shareUtilizationRatio.isInfinite()) {
                     throw new ArithmeticException("Division by Zero");
-
+                }
+                
                 if (shareUtilizationRatio > 1) {
                     LOGGER.info("share more than one!\t" + share_t + "\t" + share + "\t" + utilization + "\t"
                             + environment.getCurrentLocalTime());

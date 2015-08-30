@@ -7,7 +7,7 @@ public class BladeServerPOD {
     private double[] powerBusy;
     private double[] powerIdle;
     private double idleConsumption;
-    private int ID;
+    private int bladeServerID;
     private int rackID;
     private int chassisID;
 
@@ -26,15 +26,15 @@ public class BladeServerPOD {
         idleConsumption = bladeServerPOD.idleConsumption;
         rackID = bladeServerPOD.rackID;
         chassisID = bladeServerPOD.chassisID;
-        ID = bladeServerPOD.ID;
+        bladeServerID = bladeServerPOD.bladeServerID;
     }
 
-    public void setServerID(int ID) {
-        this.ID = ID;
+    public void setServerID(int bladeServerID) {
+        this.bladeServerID = bladeServerID;
     }
 
     public int getServerID() {
-        return this.ID;
+        return this.bladeServerID;
     }
 
     public String getBladeType() {

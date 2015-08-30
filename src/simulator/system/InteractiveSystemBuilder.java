@@ -11,9 +11,9 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
 public class InteractiveSystemBuilder extends SystemBuilder {
-    
+
     private static final Logger LOGGER = Logger.getLogger(InteractiveSystemBuilder.class.getName());
-    
+
     public InteractiveSystemBuilder(String configurationFile, String name) {
         super(configurationFile, name);
     }
@@ -23,22 +23,23 @@ public class InteractiveSystemBuilder extends SystemBuilder {
         NodeList childNodes = node.getChildNodes();
         for (int i = 0; i < childNodes.getLength(); i++) {
             if (childNodes.item(i).getNodeType() == Node.ELEMENT_NODE) {
-                if (childNodes.item(i).getNodeName().equalsIgnoreCase("ComputeNode")) {
-                    systemPOD.setNumberofNode(Integer.parseInt(childNodes.item(i).getChildNodes().item(0).getNodeValue().trim()));
+                if ("ComputeNode".equalsIgnoreCase(childNodes.item(i).getNodeName())) {
+                    systemPOD.setNumberofNode(
+                            Integer.parseInt(childNodes.item(i).getChildNodes().item(0).getNodeValue().trim()));
                     ((InteractiveSystemPOD) systemPOD).setNumberofIdleNode(systemPOD.getNumberOfNode());
                 }
-                if (childNodes.item(i).getNodeName().equalsIgnoreCase("Rack")) {
+                if ("Rack".equalsIgnoreCase(childNodes.item(i).getNodeName())) {
                     String str = childNodes.item(i).getChildNodes().item(0).getNodeValue().trim();
                     String[] split = str.split(",");
                     for (int j = 0; j < split.length; j++) {
                         systemPOD.appendRackID(Integer.parseInt(split[j]));
                     }
                 }
-                if (childNodes.item(i).getNodeName().equalsIgnoreCase("ResourceAllocationAlg"))
+                if ("ResourceAllocationAlg".equalsIgnoreCase(childNodes.item(i).getNodeName()))
                     ;
-                if (childNodes.item(i).getNodeName().equalsIgnoreCase("Scheduler"))
+                if ("Scheduler".equalsIgnoreCase(childNodes.item(i).getNodeName()))
                     ;
-                if (childNodes.item(i).getNodeName().equalsIgnoreCase("WorkLoad")) {
+                if ("WorkLoad".equalsIgnoreCase(childNodes.item(i).getNodeName())) {
                     String fileName = path + "/" + childNodes.item(i).getChildNodes().item(0).getNodeValue().trim();
                     try {
                         logFile = new File(fileName);
@@ -49,7 +50,7 @@ public class InteractiveSystemBuilder extends SystemBuilder {
                 }
             }
         }
-        
+
         return systemPOD;
     }
 }

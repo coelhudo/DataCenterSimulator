@@ -1,7 +1,6 @@
 package simulator.system;
 
 import java.io.BufferedReader;
-import java.util.ArrayList;
 import java.util.List;
 
 import simulator.am.GeneralAM;
@@ -88,7 +87,7 @@ public class GeneralSystem {
         return computeNodeList;
     }
 
-    public void setComputeNodeList(ArrayList<BladeServer> computeNodeList) {
+    public void setComputeNodeList(List<BladeServer> computeNodeList) {
         this.computeNodeList = computeNodeList;
     }
 
@@ -100,7 +99,7 @@ public class GeneralSystem {
         return computeNodeIndex;
     }
 
-    public void setComputeNodeIndex(ArrayList<Integer> computeNodeIndex) {
+    public void setComputeNodeIndex(List<Integer> computeNodeIndex) {
         this.computeNodeIndex = computeNodeIndex;
     }
 

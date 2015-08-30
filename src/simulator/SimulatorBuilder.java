@@ -49,13 +49,14 @@ public class SimulatorBuilder {
             NodeList childNodes = node.getChildNodes();
             for (int i = 0; i < childNodes.getLength(); i++) {
                 if (childNodes.item(i).getNodeType() == Node.ELEMENT_NODE) {
-                    if (childNodes.item(i).getNodeName().equalsIgnoreCase("layout")) {
-                        String DCLayout = path + "/" + childNodes.item(i).getChildNodes().item(0).getNodeValue().trim();
-                        DataCenterBuilder dataCenterBuilder = new DataCenterBuilder(DCLayout);
+                    if ("layout".equalsIgnoreCase(childNodes.item(i).getNodeName())) {
+                        String dataCenterLayout = path + "/"
+                                + childNodes.item(i).getChildNodes().item(0).getNodeValue().trim();
+                        DataCenterBuilder dataCenterBuilder = new DataCenterBuilder(dataCenterLayout);
                         DataCenterPOD dataCenterPOD = dataCenterBuilder.getDataCenterPOD();
                         simulatorPOD.setDataCenterPOD(dataCenterPOD);
                     }
-                    if (childNodes.item(i).getNodeName().equalsIgnoreCase("System")) {
+                    if ("System".equalsIgnoreCase(childNodes.item(i).getNodeName())) {
                         NodeList nodiLst = childNodes.item(i).getChildNodes();
                         systemConfig(nodiLst, path, systemsPOD);
                     }
@@ -83,18 +84,18 @@ public class SimulatorBuilder {
             if (nodiLst.item(i).getNodeType() == Node.ELEMENT_NODE) {
                 if (nodiLst.item(i).getNodeName().equalsIgnoreCase("type")) {
                     String systemType = nodiLst.item(i).getChildNodes().item(0).getNodeValue().trim();
-                    if (systemType.equalsIgnoreCase("Enterprise")) {
+                    if ("Enterprise".equalsIgnoreCase(systemType)) {
                         whichSystem = 1;
-                    } else if (systemType.equalsIgnoreCase("Interactive")) {
+                    } else if ("Interactive".equalsIgnoreCase(systemType)) {
                         whichSystem = 2;
-                    } else if (systemType.equalsIgnoreCase("HPC")) {
+                    } else if ("HPC".equalsIgnoreCase(systemType)) {
                         whichSystem = 3;
                     }
                 }
-                if (nodiLst.item(i).getNodeName().equalsIgnoreCase("name")) {
+                if ("name".equalsIgnoreCase(nodiLst.item(i).getNodeName())) {
                     name = nodiLst.item(i).getChildNodes().item(0).getNodeValue().trim();
                 }
-                if (nodiLst.item(i).getNodeName().equalsIgnoreCase("configFile")) {
+                if ("configFile".equalsIgnoreCase(nodiLst.item(i).getNodeName())) {
                     String fileName = path + "/" + nodiLst.item(i).getChildNodes().item(0).getNodeValue().trim();
                     switch (whichSystem) {
                     case 1:

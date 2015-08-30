@@ -4,6 +4,10 @@ import java.util.List;
 
 public final class BladeServerCollectionOperations {
 
+    private BladeServerCollectionOperations() {
+        
+    }
+    
     public static void runAll(List<BladeServer> bladeServers) {
         for (BladeServer bladeServer : bladeServers) {
             bladeServer.run();
