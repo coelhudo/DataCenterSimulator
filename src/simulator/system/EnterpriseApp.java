@@ -12,6 +12,7 @@ import simulator.ResponseTime;
 import simulator.am.ApplicationAM;
 import simulator.jobs.EnterpriseJob;
 import simulator.physical.BladeServer;
+import simulator.ra.ResourceAllocation;
 import simulator.schedulers.Scheduler;
 
 public final class EnterpriseApp {
@@ -40,17 +41,18 @@ public final class EnterpriseApp {
     // of basic node which for 100% CPU
     // utilization
     private int numberofBasicNode = 0;
-    GeneralSystem parent;
+    private Scheduler scheduler;
+    private ResourceAllocation resourceAllocation;
     private Environment environment;
 
     public EnterpriseApp(EnterpriseApplicationPOD enterpriseApplicationPOD, GeneralSystem parent,
             Environment environment) {
-        this.parent = parent;
+        this.scheduler = parent.getScheduler();
+        this.resourceAllocation = parent.getResourceAllocation();
         this.environment = environment;
         setComputeNodeList(new ArrayList<BladeServer>());
         setQueueApp(new ArrayList<EnterpriseJob>());
         setResponseList(new ArrayList<ResponseTime>());
-        // ComputeNodeIndex=new ArrayList<Integer>();
         id = enterpriseApplicationPOD.getID();
         minProc = enterpriseApplicationPOD.getMinProc();
         timeTreshold = enterpriseApplicationPOD.getTimeTreshold();
@@ -67,8 +69,6 @@ public final class EnterpriseApp {
         maxExpectedResTime = enterpriseApplicationPOD.getMaxExpectedResTime();
         bis = enterpriseApplicationPOD.getBIS();
         configSLAallcomputingNode();
-        // placement= new jobPlacement(ComputeNodeList) ;
-        setAM(new ApplicationAM((EnterpriseSystem) parent, this, environment));
     }
 
     public double numberOfWaitingJobs() {
@@ -188,7 +188,7 @@ public final class EnterpriseApp {
         int capacityOfNode = (int) Math
                 .ceil((getMaxNumberOfRequest() * CPUpercentage) / (getNumberofBasicNode() * 100.0));
         int capacityOfNode_COPY = capacityOfNode;
-        EnterpriseJob jj = (EnterpriseJob) parent.getScheduler().nextJob(getQueueApp());
+        EnterpriseJob jj = (EnterpriseJob) scheduler.nextJob(getQueueApp());
         while (capacityOfNode > 0) {
             capacityOfNode = capacityOfNode - jj.getNumberOfJob();
             if (capacityOfNode == 0) {
@@ -213,7 +213,7 @@ public final class EnterpriseApp {
                 beenRunJobs = beenRunJobs + jj.getNumberOfJob();
                 getQueueApp().remove(jj);
                 while (!getQueueApp().isEmpty()) {
-                    jj = (EnterpriseJob) parent.getScheduler().nextJob(getQueueApp());
+                    jj = (EnterpriseJob) scheduler.nextJob(getQueueApp());
                     int copyTedat = capacityOfNode;
                     capacityOfNode = capacityOfNode - jj.getNumberOfJob();
                     if (capacityOfNode == 0) {
@@ -254,7 +254,7 @@ public final class EnterpriseApp {
         } else if (beenRunJobs > 0) {
             int k = 0;
             for (k = 0; k < numberofReadyNodes; k++) {
-                int serID = parent.getResourceAllocation().nextServer(getComputeNodeList());
+                int serID = resourceAllocation.nextServer(getComputeNodeList());
                 if (serID == -2) {
                     LOGGER.info("enterPrise BoN : servID =-2\t " + k + "\t" + numberofReadyNodes);
                     break;
@@ -504,8 +504,10 @@ public final class EnterpriseApp {
         this.numberofBasicNode = numberofBasicNode;
     }
 
-    public static EnterpriseApp Create(EnterpriseApplicationPOD enterpriseApplicationPOD, GeneralSystem parent,
+    public static EnterpriseApp Create(EnterpriseApplicationPOD enterpriseApplicationPOD, EnterpriseSystem parent,
             Environment environment) {
-        return new EnterpriseApp(enterpriseApplicationPOD, parent, environment);
+        EnterpriseApp enterpriseApplication = new EnterpriseApp(enterpriseApplicationPOD, parent, environment);
+        enterpriseApplication.setAM(new ApplicationAM(parent, enterpriseApplication, environment));
+        return enterpriseApplication;
     }
 }
