@@ -63,8 +63,8 @@ public class InteractiveUserAM extends GeneralAM {
             }
         }
         percnt = percnt + levels[0] + 2 * levels[1] + 3 * levels[2];
-        sys.getAM().getCompPowerApps()[user.getID()] = sys.getAM().getCompPowerApps()[user.getID()] + levels[0]
-                + 2 * levels[1] + 3 * levels[2];
+        sys.getAM().setCompPowerAppsAt(user.getID(), sys.getAM().getCompPowerAppsAt(user.getID()) + levels[0]
+                + 2 * levels[1] + 3 * levels[2]);
         return percnt;
     }
 

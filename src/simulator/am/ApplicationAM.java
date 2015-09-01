@@ -79,8 +79,8 @@ public class ApplicationAM extends GeneralAM {
             }
         }
         setPercnt(getPercnt() + levels[0] + 2 * levels[1] + 3 * levels[2]);
-        sys.getAM().getCompPowerApps()[app.getID()] = sys.getAM().getCompPowerApps()[app.getID()] + levels[0]
-                + 2 * levels[1] + 3 * levels[2];
+        sys.getAM().setCompPowerAppsAt(app.getID(), sys.getAM().getCompPowerAppsAt(app.getID()) + levels[0]
+                + 2 * levels[1] + 3 * levels[2]);
         return getPercnt();
     }
 

@@ -26,12 +26,12 @@ public abstract class GeneralAM {
         this.recForCoop = recForCoop;
     }
 
-    public double[] getCompPowerApps() {
-        return compPwrApps;
+    public double getCompPowerAppsAt(int index) {
+        return compPwrApps[index];
     }
-
-    public void setCompPwrApps(double[] compPwrApps) {
-        this.compPwrApps = compPwrApps;
+    
+    public void setCompPowerAppsAt(int index, double value) {
+        this.compPwrApps[index] = value;
     }
 
     protected int getSLAViolationGen() {

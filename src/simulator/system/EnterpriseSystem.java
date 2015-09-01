@@ -30,8 +30,8 @@ public class EnterpriseSystem extends GeneralSystem {
         resetNumberOfSLAViolation();
         setNumberOfNode(systemPOD.getNumberOfNode());
         setRackIDs(systemPOD.getRackIDs());
-        loadEnterpriseApplications(systemPOD);
         setScheduler(new FIFOScheduler());
+        loadEnterpriseApplications(systemPOD);
     }
     
     private void loadEnterpriseApplications(SystemPOD systemPOD) {
