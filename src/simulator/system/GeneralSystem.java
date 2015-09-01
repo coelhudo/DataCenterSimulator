@@ -119,6 +119,10 @@ public class GeneralSystem {
         return slaViolation;
     }
 
+    public void resetNumberOfSLAViolation() {
+        this.slaViolation = 0;
+    }
+    
     public void setSLAviolation(int slaViolation) {
         this.slaViolation = slaViolation;
     }

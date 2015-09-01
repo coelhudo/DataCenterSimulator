@@ -34,7 +34,7 @@ public class InteractiveSystem extends GeneralSystem {
         setWaitingQueueWL(new ArrayList<InteractiveUser>());
         setResourceAllocation(new MHR(this.environment, dataCenter));
         setScheduler(new FIFOScheduler());
-        setSLAviolation(0);
+        resetNumberOfSLAViolation();
         setNumberOfNode(systemPOD.getNumberOfNode());
         setNumberofIdleNode(systemPOD.getNumberOfNode());
         setBis(systemPOD.getBis());
@@ -161,7 +161,7 @@ public class InteractiveSystem extends GeneralSystem {
     }
 
     void violationCheckandSet() throws IOException {
-        setSLAviolation(0);
+        resetNumberOfSLAViolation();
         for (InteractiveUser interactiveUser : getUserList()) {
             setSLAviolation(+interactiveUser.getSLAviolation());
         }

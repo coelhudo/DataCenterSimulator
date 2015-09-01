@@ -75,7 +75,7 @@ public class EnterpriseSystemAM extends GeneralAM {
         allocationVector = new int[enterpriseSystem.getApplications().size()];
         accuSLA = new int[enterpriseSystem.getApplications().size()];
         queueLengthApps = new double[enterpriseSystem.getApplications().size()];
-        enterpriseSystem.setSLAviolation(0);
+        enterpriseSystem.resetNumberOfSLAViolation();
         workloadIntensity();
         for (int i = 0; i < enterpriseSystem.getApplications().size(); i++) {
             enterpriseSystem.setSLAviolation(enterpriseSystem.getSLAviolation() + enterpriseSystem.getApplications().get(i).getSLAviolation());

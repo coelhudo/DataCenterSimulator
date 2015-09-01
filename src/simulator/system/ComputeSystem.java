@@ -48,7 +48,7 @@ public class ComputeSystem extends GeneralSystem {
     }
 
     public boolean runAcycle() {
-        setSLAviolation(0);
+        resetNumberOfSLAViolation();
         int numberOfFinishedJob = 0;
         loadJobsIntoWaitingQueue();
         if (!isBlocked()) {

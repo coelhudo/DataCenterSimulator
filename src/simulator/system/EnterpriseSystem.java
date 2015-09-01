@@ -27,7 +27,7 @@ public class EnterpriseSystem extends GeneralSystem {
         setComputeNodeIndex(new ArrayList<Integer>());
         applicationList = new ArrayList<EnterpriseApp>();
         setResourceAllocation(new MHR(environment, dataCenter));
-        setSLAviolation(0);
+        resetNumberOfSLAViolation();
         setNumberOfNode(systemPOD.getNumberOfNode());
         setRackIDs(systemPOD.getRackIDs());
         loadEnterpriseApplications(systemPOD);
