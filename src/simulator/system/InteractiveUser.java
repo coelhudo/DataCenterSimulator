@@ -62,10 +62,6 @@ public class InteractiveUser {
         b.restart();
         getComputeNodeList().add(b);
     }
-    /*
-     * Return Values: 1: read successfully 0:put in waiting list -1: end of file
-     * or error
-     */
 
     int readingLogFile() {
         if (bis == null) {
@@ -74,6 +70,7 @@ public class InteractiveUser {
                 bis = new BufferedReader(new InputStreamReader(new FileInputStream(logFile)));
             } catch (IOException e) {
                 LOGGER.warning("Uh oh, got an IOException error!" + e.getMessage());
+                return -2;
             }
         }
         try {
@@ -129,9 +126,7 @@ public class InteractiveUser {
         //////// RESET READY FLAGS for all nodes
         resetReadyFlag();
         // need more thought
-        if (readingResult == 0) // we have jobs but it is not the time to run
-        // them
-        {
+        if (readingResult == 0) {
             return true;
         }
         if (readingResult == -2 & getQueueWL().isEmpty()) {
