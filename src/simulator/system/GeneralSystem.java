@@ -30,9 +30,11 @@ public class GeneralSystem {
     private int accumolatedViolation = 0;
     private int numberOfActiveServ = 0;
 
-    public GeneralSystem(SystemPOD systemPOD) {
+    public GeneralSystem(SystemPOD systemPOD, Scheduler scheduler, ResourceAllocation resourceAllocation) {
         rackIDs = systemPOD.getRackIDs();
         name = systemPOD.getName();
+        this.scheduler = scheduler;
+        this.resourceAllocation = resourceAllocation;
     }
 
     public void addComputeNodeToSys(BladeServer bladeServer) {
@@ -55,16 +57,8 @@ public class GeneralSystem {
         return resourceAllocation;
     }
 
-    public void setResourceAllocation(ResourceAllocation resourceAllocation) {
-        this.resourceAllocation = resourceAllocation;
-    }
-
     public Scheduler getScheduler() {
         return scheduler;
-    }
-
-    public void setScheduler(Scheduler scheduler) {
-        this.scheduler = scheduler;
     }
 
     public int getNumberofIdleNode() {

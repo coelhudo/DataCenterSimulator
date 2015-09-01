@@ -31,7 +31,7 @@ public class ComputeSystem extends GeneralSystem {
 
     private ComputeSystem(SystemPOD systemPOD, Environment environment, DataCenter dataCenter,
             SLAViolationLogger slaViolationLogger) {
-        super(systemPOD);
+        super(systemPOD, new LeastRemainFirstScheduler(), new MHR(environment, dataCenter));
         this.jobProducer = systemPOD.getJobProducer();
         this.environment = environment;
         this.dataCenter = dataCenter;
@@ -39,11 +39,9 @@ public class ComputeSystem extends GeneralSystem {
         setComputeNodeList(new ArrayList<BladeServer>());
         waitingList = new ArrayList<BatchJob>();
         setComputeNodeIndex(new ArrayList<Integer>());
-        setScheduler(new LeastRemainFirstScheduler());
         setBis(systemPOD.getBis());
         setNumberOfNode(systemPOD.getNumberOfNode());
         setRackIDs(systemPOD.getRackIDs());
-        setResourceAllocation(new MHR(this.environment, this.dataCenter));
         totalJob = 0;
     }
 

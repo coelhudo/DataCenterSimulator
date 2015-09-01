@@ -25,15 +25,13 @@ public class InteractiveSystem extends GeneralSystem {
     private SLAViolationLogger slaViolationLogger;
 
     public InteractiveSystem(SystemPOD systemPOD, Environment environment, DataCenter dataCenter, SLAViolationLogger slaViolationLogger) {
-        super(systemPOD);
+        super(systemPOD, new FIFOScheduler(), new MHR(environment, dataCenter));
         this.environment = environment;
         this.slaViolationLogger = slaViolationLogger;
         setComputeNodeList(new ArrayList<BladeServer>());
         setComputeNodeIndex(new ArrayList<Integer>());
         setUserList(new ArrayList<InteractiveUser>());
         setWaitingQueueWL(new ArrayList<InteractiveUser>());
-        setResourceAllocation(new MHR(this.environment, dataCenter));
-        setScheduler(new FIFOScheduler());
         resetNumberOfSLAViolation();
         setNumberOfNode(systemPOD.getNumberOfNode());
         setNumberofIdleNode(systemPOD.getNumberOfNode());

@@ -21,16 +21,14 @@ public class EnterpriseSystem extends GeneralSystem {
     private Environment environment;
     
     private EnterpriseSystem(SystemPOD systemPOD, Environment environment, DataCenter dataCenter) {
-        super(systemPOD);
+        super(systemPOD, new FIFOScheduler(), new MHR(environment, dataCenter));
         this.environment = environment;
         setComputeNodeList(new ArrayList<BladeServer>());
         setComputeNodeIndex(new ArrayList<Integer>());
         applicationList = new ArrayList<EnterpriseApp>();
-        setResourceAllocation(new MHR(environment, dataCenter));
         resetNumberOfSLAViolation();
         setNumberOfNode(systemPOD.getNumberOfNode());
         setRackIDs(systemPOD.getRackIDs());
-        setScheduler(new FIFOScheduler());
         loadEnterpriseApplications(systemPOD);
     }
     
