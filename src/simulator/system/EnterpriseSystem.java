@@ -36,7 +36,7 @@ public class EnterpriseSystem extends GeneralSystem {
     
     private void loadEnterpriseApplications(SystemPOD systemPOD) {
         for (EnterpriseApplicationPOD pod : ((EnterpriseSystemPOD) systemPOD).getApplicationPODs()) {
-            EnterpriseApp enterpriseApplication = new EnterpriseApp(pod, this, environment);
+            EnterpriseApp enterpriseApplication = EnterpriseApp.Create(pod, this, environment);
             applicationList.add(enterpriseApplication);
         }
     }

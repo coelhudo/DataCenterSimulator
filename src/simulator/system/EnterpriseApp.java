@@ -503,4 +503,9 @@ public final class EnterpriseApp {
     public void setNumberofBasicNode(int numberofBasicNode) {
         this.numberofBasicNode = numberofBasicNode;
     }
+
+    public static EnterpriseApp Create(EnterpriseApplicationPOD enterpriseApplicationPOD, GeneralSystem parent,
+            Environment environment) {
+        return new EnterpriseApp(enterpriseApplicationPOD, parent, environment);
+    }
 }

@@ -7,8 +7,12 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 
+import java.io.BufferedReader;
+import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
@@ -19,6 +23,7 @@ import simulator.SLAViolationLogger;
 import simulator.physical.DataCenter;
 import simulator.system.EnterpriseSystem;
 import simulator.system.EnterpriseSystemPOD;
+import simulator.system.EnterpriseApplicationPOD;
 import simulator.system.SystemPOD;
 
 public class EnterpriseSystemTest {
@@ -84,7 +89,7 @@ public class EnterpriseSystemTest {
         verifyNoMoreInteractions(mockedEnvironment, mockedDataCenter, mockedSLAViolationLogger);
     }
     
-    /*@Test
+    @Test
     public void testRunACycle_WithApplication_MarkAsNotDone() {
         EnterpriseSystemPOD systemPOD = new EnterpriseSystemPOD();
         
@@ -106,8 +111,8 @@ public class EnterpriseSystemTest {
         try {
             Method runACycle = EnterpriseSystem.class.getDeclaredMethod("runAcycle");
             runACycle.setAccessible(true);
-            boolean result = (boolean) runACycle.invoke(enterpriseSystem);
-            assertTrue(result);
+            Boolean result = (Boolean) runACycle.invoke(enterpriseSystem);
+            assertFalse(result);
             assertFalse(enterpriseSystem.isDone());
         } catch (NoSuchMethodException e) {
             fail(FAIL_ERROR_MESSAGE);
@@ -121,6 +126,14 @@ public class EnterpriseSystemTest {
             fail(FAIL_ERROR_MESSAGE);
         }
         
+        try {
+            verify(mockedBufferedReader).readLine();
+        } catch (IOException e) {
+            fail(FAIL_ERROR_MESSAGE);
+        }
+        
+        verify(mockedEnvironment).getCurrentLocalTime();
+        
         verifyNoMoreInteractions(mockedBufferedReader, mockedEnvironment, mockedDataCenter, mockedSLAViolationLogger);
-    }*/
+    }
 }
