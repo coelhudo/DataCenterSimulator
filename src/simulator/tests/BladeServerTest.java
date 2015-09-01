@@ -88,7 +88,6 @@ public class BladeServerTest {
         assertEquals(0.0, bladeServer.getTotalJobEpoch(), 1.0E-8);
         List<InteractiveJob> interactiveJobs = bladeServer.getInteractiveList();
         assertTrue(interactiveJobs.isEmpty());
-        assertFalse(bladeServer.isSLAviolation());
 
     }
 
@@ -133,7 +132,6 @@ public class BladeServerTest {
         bladeServer.setResTimeEpoch(1.0);
         bladeServer.setTotalJob(10);
         bladeServer.setTotalJobEpoch(30);
-        bladeServer.setSLAviolation(true);
 
         assertNotEquals(0.0, bladeServer.getResponseTime(), 1.0E-8);
         assertNotEquals(0.0, bladeServer.getCurrentCPU(), 1.0E-8);
@@ -148,7 +146,6 @@ public class BladeServerTest {
         assertNotEquals(0.0, bladeServer.getResTimeEpoch(), 1.0E-8);
         assertNotEquals(0, bladeServer.getTotalJob());
         assertNotEquals(0.0, bladeServer.getTotalJobEpoch(), 1.0E-8);
-        assertTrue(bladeServer.isSLAviolation());
 
         bladeServer.restart();
 
@@ -165,7 +162,6 @@ public class BladeServerTest {
         assertEquals(0.0, bladeServer.getResTimeEpoch(), 1.0E-8);
         assertEquals(0, bladeServer.getTotalJob());
         assertEquals(0.0, bladeServer.getTotalJobEpoch(), 1.0E-8);
-        assertFalse(bladeServer.isSLAviolation());
     }
 
     @Test
@@ -350,7 +346,7 @@ public class BladeServerTest {
         assertTrue(bladeServer.isNotSystemAssigned());
         bladeServer.setCurrentCPU(1.0);
         assertEquals(1.0, bladeServer.getCurrentCPU(), 1.0E-8);
-        
+
         assertEquals(0, bladeServer.run());
 
         assertTrue(bladeServer.isRunningNormal());
@@ -568,7 +564,7 @@ public class BladeServerTest {
 
         assertFalse(bladeServer.getActiveBatchList().isEmpty());
         assertTrue(bladeServer.isRunningNormal());
-        
+
         verify(mockedBatchJob, times(2)).getUtilization();
 
         verifyNoMoreInteractions(mockedBatchJob);

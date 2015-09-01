@@ -48,7 +48,6 @@ public class BladeServer {
     private int slaPercentage;
     // WorkLoad Bundle
     private int maxExpectedRes = 0;
-    private boolean slaViolation;
     private Environment environment;
 
     public BladeServer(BladeServerPOD bladeServerPOD, Environment environment) {
@@ -79,7 +78,6 @@ public class BladeServer {
         // or not
         setStatusAsNotAssignedToAnySystem();
         setTotalFinishedJob(0);
-        setSLAviolation(false);
         setMips(1.4);
     }
 
@@ -147,7 +145,6 @@ public class BladeServer {
         setResTimeEpoch(0);
         setTotalJob(0);
         setTotalJobEpoch(0);
-        setSLAviolation(false);
     }
     // if it blongs to Enterprise system
 
@@ -575,14 +572,6 @@ public class BladeServer {
 
     public void setMaxExpectedRes(int maxExpectedRes) {
         this.maxExpectedRes = maxExpectedRes;
-    }
-
-    public boolean isSLAviolation() {
-        return slaViolation;
-    }
-
-    public void setSLAviolation(boolean slaViolation) {
-        this.slaViolation = slaViolation;
     }
 
     public String getBladeType() {
