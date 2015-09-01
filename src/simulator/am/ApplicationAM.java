@@ -1,5 +1,6 @@
 package simulator.am;
 
+import java.util.List;
 import java.util.logging.Logger;
 
 import simulator.Environment;
@@ -13,7 +14,6 @@ public class ApplicationAM extends GeneralAM {
 
     private static final Logger LOGGER = Logger.getLogger(ApplicationAM.class.getName());
 
-    private EnterpriseSystem sys;
     private EnterpriseApp app;
     static int violationInEpoch = 0;
     private double util = 0;
@@ -21,9 +21,12 @@ public class ApplicationAM extends GeneralAM {
     private int accumulativeSLA = 0;
     Simulator.StrategyEnum StrategyWsitch = Simulator.StrategyEnum.Green;
     private Environment environment;
+    private GeneralAM am;
+    private List<EnterpriseApp> applications;
 
-    public ApplicationAM(EnterpriseSystem Sys, EnterpriseApp app, Environment environment) {
-        this.sys = Sys;
+    public ApplicationAM(EnterpriseSystem sys, EnterpriseApp app, Environment environment) {
+        this.am = sys.getAM();
+        this.applications = sys.getApplications();
         this.app = app;
         this.environment = environment;
     }
@@ -35,9 +38,9 @@ public class ApplicationAM extends GeneralAM {
         getPercentageOfComputingPwr();
         /// Check if its neighborhood are not happy to see if it can help or
         /// not!
-        for (int i = 0; i < sys.getApplications().size(); i++) {
-            if (sys.getAM().getRecForCoop()[i] == 1) {
-                if (app.numberOfWaitingJobs() < sys.getApplications().get(i).numberOfWaitingJobs()) {// this
+        for (int i = 0; i < applications.size(); i++) {
+            if (am.getRecForCoopAt(i) == 1) {
+                if (app.numberOfWaitingJobs() < applications.get(i).numberOfWaitingJobs()) {// this
                     // app
                     // can
                     // generously
@@ -79,7 +82,7 @@ public class ApplicationAM extends GeneralAM {
             }
         }
         setPercnt(getPercnt() + levels[0] + 2 * levels[1] + 3 * levels[2]);
-        sys.getAM().setCompPowerAppsAt(app.getID(), sys.getAM().getCompPowerAppsAt(app.getID()) + levels[0]
+        am.setCompPowerAppsAt(app.getID(), am.getCompPowerAppsAt(app.getID()) + levels[0]
                 + 2 * levels[1] + 3 * levels[2]);
         return getPercnt();
     }
@@ -108,7 +111,7 @@ public class ApplicationAM extends GeneralAM {
             // + Main.localTime);
         }
         setAccumulativeSLA(getAccumulativeSLA() + app.getSLAviolation());
-        sys.getAM().SlaApps[app.getID()] = sys.getAM().SlaApps[app.getID()] + getAccumulativeSLA();
+        am.SlaApps[app.getID()] = am.SlaApps[app.getID()] + getAccumulativeSLA();
         // LOGGER.info("ACCCUMU \t"+accumulativeSLA);
     }
 
@@ -257,15 +260,15 @@ public class ApplicationAM extends GeneralAM {
         // return;
         // }
         BladeServer bladeServer = app.getComputeNodeList().get(index);
-        bladeServer.setSLAPercentage(sys.getApplications().get(targetApp).getSLAPercentage());
-        bladeServer.setTimeTreshold(sys.getApplications().get(targetApp).getTimeTreshold());
+        bladeServer.setSLAPercentage(applications.get(targetApp).getSLAPercentage());
+        bladeServer.setTimeTreshold(applications.get(targetApp).getTimeTreshold());
         bladeServer.setMips(1.4);
         bladeServer.setStatusAsRunningNormal();
-        sys.getApplications().get(targetApp).getComputeNodeList().add(bladeServer);
+        applications.get(targetApp).getComputeNodeList().add(bladeServer);
         app.getComputeNodeList().remove(index);
         LOGGER.info("app:\t" + app.getID() + " ----------> :\t\t " + targetApp + "\t\t@:"
                 + environment.getCurrentLocalTime() + "\tRunning target node= "
-                + sys.getApplications().get(targetApp).numberofRunningNode() + "\tRunning this node= "
+                + applications.get(targetApp).numberofRunningNode() + "\tRunning this node= "
                 + app.numberofRunningNode() + "\tstrtgy= " + StrategyWsitch);
         StrategyWsitch = Simulator.StrategyEnum.SLA;
         return true;

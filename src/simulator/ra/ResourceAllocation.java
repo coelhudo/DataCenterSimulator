@@ -42,58 +42,58 @@ public abstract class ResourceAllocation {
         this.dataCenter = dataCenter;
     }
 
-    void resourceAlocViolation(EnterpriseSystem ES) {
+    void resourceAlocViolation(EnterpriseSystem enterpriseSystem) {
     }
 
-    void resourceAlocViolation(InteractiveSystem WS) {
+    void resourceAlocViolation(InteractiveSystem interactiveSystem) {
     }
 
-    abstract public void resourceAloc(EnterpriseSystem ES);
+    abstract public void resourceAloc(EnterpriseSystem enterpriseSystem);
 
-    abstract public void resourceAloc(InteractiveSystem WS);
+    abstract public void resourceAloc(InteractiveSystem interactiveSystem);
 
-    void resourceRelease(EnterpriseSystem ES, int predicdetNumber) {
+    void resourceRelease(EnterpriseSystem enterpriseSystem, int predicdetNumber) {
 
-        int currentInvolved = ES.getComputeNodeList().size() - ES.getNumberofIdleNode();
+        int currentInvolved = enterpriseSystem.getComputeNodeList().size() - enterpriseSystem.getNumberofIdleNode();
         int difference = currentInvolved - predicdetNumber;
         // LOGGER.info("in releaseing resource "+difference);
         for (int j = 0; j < difference; j++) {
-            int indexServer = ES.getApplications().get(0).getComputeNodeList().get(difference - j).getServerID();
-            int indexChassis = ES.getApplications().get(0).getComputeNodeList().get(difference - j).getChassisID();
-            ES.getApplications().get(0).removeCompNodeFromBundle(
+            int indexServer = enterpriseSystem.getApplications().get(0).getComputeNodeList().get(difference - j).getServerID();
+            int indexChassis = enterpriseSystem.getApplications().get(0).getComputeNodeList().get(difference - j).getChassisID();
+            enterpriseSystem.getApplications().get(0).removeCompNodeFromBundle(
                     dataCenter.getServer(indexChassis, findServerInChasis(indexChassis, indexServer)));
             // ES.getApplications().get(0).ComputeNodeIndex.remove(difference-j);///////
             // not exactly correct
-            ES.setNumberofIdleNode(ES.getNumberofIdleNode() + 1);
+            enterpriseSystem.setNumberofIdleNode(enterpriseSystem.getNumberofIdleNode() + 1);
         }
     }
 
-    public void resourceProvision(EnterpriseSystem ES, int[] alocVectr) {
+    public void resourceProvision(EnterpriseSystem enterpriseSystem, int[] alocVectr) {
         // release first
         for (int i = 0; i < alocVectr.length; i++) {
             if (alocVectr[i] < 0) {
                 for (int ii = 0; ii < (-1 * alocVectr[i]); ii++) {
-                    int indexi = ES.getApplications().get(i).myFirstIdleNode();
+                    int indexi = enterpriseSystem.getApplications().get(i).myFirstIdleNode();
                     if (indexi == -2) {
                         LOGGER.info("kkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkk");
                         return;
                     }
-                    int indexServer = ES.getApplications().get(i).getComputeNodeList().get(indexi).getServerID();
-                    int indexChassis = ES.getApplications().get(i).getComputeNodeList().get(indexi).getChassisID();
-                    ES.getApplications().get(i).getComputeNodeList().remove(indexi);
+                    int indexServer = enterpriseSystem.getApplications().get(i).getComputeNodeList().get(indexi).getServerID();
+                    int indexChassis = enterpriseSystem.getApplications().get(i).getComputeNodeList().get(indexi).getChassisID();
+                    enterpriseSystem.getApplications().get(i).getComputeNodeList().remove(indexi);
                     final BladeServer server = dataCenter.getServer(indexChassis,
                             findServerInChasis(indexChassis, indexServer));
                     server.setStatusAsNotAssignedToAnyApplication();
                     server.setSLAPercentage(0);
                     server.setTimeTreshold(0);
                     /////
-                    if (ES.getApplications().get(i).numberofRunningNode() == 0) {
-                        ES.getApplications().get(i).activeOneNode();
+                    if (enterpriseSystem.getApplications().get(i).numberofRunningNode() == 0) {
+                        enterpriseSystem.getApplications().get(i).activeOneNode();
                     }
                     LOGGER.info("Release:app: " + i + "\t#of comp Node="
-                            + ES.getApplications().get(i).getComputeNodeList().size() + "\t system Rdy to aloc="
-                            + ES.numberofAvailableNodetoAlocate() + "\t@:" + environment.getCurrentLocalTime()
-                            + "\tNumber of running = " + ES.getApplications().get(i).numberofRunningNode());
+                            + enterpriseSystem.getApplications().get(i).getComputeNodeList().size() + "\t system Rdy to aloc="
+                            + enterpriseSystem.numberofAvailableNodetoAlocate() + "\t@:" + environment.getCurrentLocalTime()
+                            + "\tNumber of running = " + enterpriseSystem.getApplications().get(i).numberofRunningNode());
                     environment.updateNumberOfMessagesFromDataCenterToSystem();
                 }
             }
@@ -102,29 +102,29 @@ public abstract class ResourceAllocation {
         for (int i = 0; i < alocVectr.length; i++) {
             if (alocVectr[i] >= 1) {
                 for (int ii = 0; ii < alocVectr[i]; ii++) {
-                    int indexInComputeList = nextServerInSys(ES.getComputeNodeList());
+                    int indexInComputeList = nextServerInSys(enterpriseSystem.getComputeNodeList());
                     if (indexInComputeList == -2) {
                         // LOGGER.info("nashod alocate konim! for this
                         // application ->"+i +"\tsize quueue 0->"+
                         // ES.getApplications().get(0).queueApp.size()+"\t1->"+ES.getApplications().get(1).queueApp.size());
-                        ES.getAM().getRecForCoop()[i] = 1;
+                        enterpriseSystem.getAM().setRecForCoopAt(i, 1);
                     } else {
-                        int indexServer = ES.getComputeNodeList().get(indexInComputeList).getServerID();
-                        int indexChassis = ES.getComputeNodeList().get(indexInComputeList).getChassisID();
+                        int indexServer = enterpriseSystem.getComputeNodeList().get(indexInComputeList).getServerID();
+                        int indexChassis = enterpriseSystem.getComputeNodeList().get(indexInComputeList).getChassisID();
                         final BladeServer server = dataCenter.getServer(indexChassis,
                                 findServerInChasis(indexChassis, indexServer));
-                        ES.getApplications().get(i).addCompNodetoBundle(server);
+                        enterpriseSystem.getApplications().get(i).addCompNodetoBundle(server);
                         // ES.getApplications().get(i).ComputeNodeIndex.add(indexChassis);
                         // //need to think about that!
                         // now the node is assinged to a application and is
                         // ready!
                         server.setStatusAsRunningNormal();
-                        server.setSLAPercentage(ES.getApplications().get(i).getSLAPercentage());
-                        server.setTimeTreshold(ES.getApplications().get(i).getTimeTreshold());
+                        server.setSLAPercentage(enterpriseSystem.getApplications().get(i).getSLAPercentage());
+                        server.setTimeTreshold(enterpriseSystem.getApplications().get(i).getTimeTreshold());
                         LOGGER.info("Alloc: to app:" + i + "\t#of comp Node="
-                                + ES.getApplications().get(i).getComputeNodeList().size() + "\tsys Rdy to aloc="
-                                + ES.numberofAvailableNodetoAlocate() + "\t@:" + environment.getCurrentLocalTime()
-                                + "\tsys Number of running = " + ES.getApplications().get(i).numberofRunningNode());
+                                + enterpriseSystem.getApplications().get(i).getComputeNodeList().size() + "\tsys Rdy to aloc="
+                                + enterpriseSystem.numberofAvailableNodetoAlocate() + "\t@:" + environment.getCurrentLocalTime()
+                                + "\tsys Number of running = " + enterpriseSystem.getApplications().get(i).numberofRunningNode());
                         environment.updateNumberOfMessagesFromDataCenterToSystem();
                     }
                 }
@@ -353,24 +353,23 @@ public abstract class ResourceAllocation {
             interactiveSystem.appendBladeServerIndexIntoComputeNodeIndex(serverIndex[1]);
         }
     }
-    //////////////////////
 
-    public int initialResourceAloc(InteractiveSystem WS) {
+    public int initialResourceAloc(InteractiveSystem interactiveSystem) {
         int i = 0, j;
-        InteractiveUser test = new InteractiveUser(WS, environment);
-        test = WS.getWaitingQueueWL().get(0);
-        if (test.getMinProc() > WS.getNumberofIdleNode()) {
+        InteractiveUser test = new InteractiveUser(interactiveSystem, environment);
+        test = interactiveSystem.getWaitingQueueWL().get(0);
+        if (test.getMinProc() > interactiveSystem.getNumberofIdleNode()) {
             LOGGER.info("initialResource ALoc: not enough resource for WLBundle");
             return -1;
         }
         j = test.getMinProc();
         while (j-- > 0) {
-            for (i = 0; i < WS.getComputeNodeList().size(); i++) {
-                if (WS.getComputeNodeList().get(i).isNotApplicationAssigned()) {
+            for (i = 0; i < interactiveSystem.getComputeNodeList().size(); i++) {
+                if (interactiveSystem.getComputeNodeList().get(i).isNotApplicationAssigned()) {
                     break;
                 }
             }
-            if (i == WS.getComputeNodeList().size()) // just in case! this
+            if (i == interactiveSystem.getComputeNodeList().size()) // just in case! this
             // condition has been
             // checked before ,no
             // node is ready in this
@@ -378,21 +377,21 @@ public abstract class ResourceAllocation {
             {
                 return -1;
             }
-            int serverId = WS.getComputeNodeList().get(i).getServerID();
-            int indexChassis = WS.getComputeNodeList().get(i).getChassisID();
+            int serverId = interactiveSystem.getComputeNodeList().get(i).getServerID();
+            int indexChassis = interactiveSystem.getComputeNodeList().get(i).getChassisID();
             serverId = findServerInChasis(indexChassis, serverId);
             final BladeServer server = dataCenter.getServer(indexChassis, serverId);
             test.addCompNodetoBundle(server);
             test.getComputeNodeIndex().add(serverId);
             server.setStatusAsRunningNormal();
             server.configSLAparameter(test.getMaxExpectedResTime());
-            WS.setNumberofIdleNode(WS.getNumberofIdleNode() - 1);
+            interactiveSystem.setNumberofIdleNode(interactiveSystem.getNumberofIdleNode() - 1);
             LOGGER.info("Allocating compute node to Inter. User: Chassis#" + indexChassis
-                    + "\tNumber of remained IdleNode in sys\t" + WS.getNumberofIdleNode() + "@ time: "
+                    + "\tNumber of remained IdleNode in sys\t" + interactiveSystem.getNumberofIdleNode() + "@ time: "
                     + environment.getCurrentLocalTime());
         }
-        WS.getUserList().add(test);
-        WS.getWaitingQueueWL().remove(test);
+        interactiveSystem.getUserList().add(test);
+        interactiveSystem.getWaitingQueueWL().remove(test);
         return 0;
     }
 
@@ -424,32 +423,32 @@ public abstract class ResourceAllocation {
     }
     //////////////////////////////// INTERACTIVE//////////////////////////////
 
-    public void resourceProvision(InteractiveSystem IS, int[] alocVectr) {
+    public void resourceProvision(InteractiveSystem interactiveSystem, int[] alocVectr) {
         // release first
         for (int i = 0; i < alocVectr.length; i++) {
             if (alocVectr[i] < 0) {
                 for (int ii = 0; ii < (-1 * alocVectr[i]); ii++) {
-                    int indexi = IS.getUserList().get(i).myFirstIdleNode();
+                    int indexi = interactiveSystem.getUserList().get(i).myFirstIdleNode();
                     if (indexi == -2) {
                         LOGGER.info("kkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkk");
                         return;
                     }
-                    int indexServer = IS.getUserList().get(i).getComputeNodeList().get(indexi).getServerID();
-                    int indexChassis = IS.getUserList().get(i).getComputeNodeList().get(indexi).getChassisID();
-                    IS.getUserList().get(i).getComputeNodeList().remove(indexi);
+                    int indexServer = interactiveSystem.getUserList().get(i).getComputeNodeList().get(indexi).getServerID();
+                    int indexChassis = interactiveSystem.getUserList().get(i).getComputeNodeList().get(indexi).getChassisID();
+                    interactiveSystem.getUserList().get(i).getComputeNodeList().remove(indexi);
                     final BladeServer server = dataCenter.getServer(indexChassis,
                             findServerInChasis(indexChassis, indexServer));
                     server.setStatusAsNotAssignedToAnyApplication();
                     server.setSLAPercentage(0);
                     server.setTimeTreshold(0);
                     /////
-                    if (IS.getUserList().get(i).numberofRunningNode() == 0) {
-                        IS.getUserList().get(i).activeOneNode();
+                    if (interactiveSystem.getUserList().get(i).numberofRunningNode() == 0) {
+                        interactiveSystem.getUserList().get(i).activeOneNode();
                     }
                     LOGGER.info("Release:User: " + i + "\t#of comp Node="
-                            + IS.getUserList().get(i).getComputeNodeList().size() + "\t system Rdy to aloc="
-                            + IS.numberofAvailableNodetoAlocate() + "\t@:" + environment.getCurrentLocalTime()
-                            + "\tNumber of running = " + IS.getUserList().get(i).numberofRunningNode());
+                            + interactiveSystem.getUserList().get(i).getComputeNodeList().size() + "\t system Rdy to aloc="
+                            + interactiveSystem.numberofAvailableNodetoAlocate() + "\t@:" + environment.getCurrentLocalTime()
+                            + "\tNumber of running = " + interactiveSystem.getUserList().get(i).numberofRunningNode());
                 }
             }
         }
@@ -457,29 +456,29 @@ public abstract class ResourceAllocation {
         for (int i = 0; i < alocVectr.length; i++) {
             if (alocVectr[i] >= 1) {
                 for (int ii = 0; ii < alocVectr[i]; ii++) {
-                    int indexInComputeList = nextServerInSys(IS.getComputeNodeList());
+                    int indexInComputeList = nextServerInSys(interactiveSystem.getComputeNodeList());
                     if (indexInComputeList == -2) {
                         LOGGER.info("nashod alocate konim! for  this User ->" + i + "\tsize quueue 0->"
-                                + IS.getUserList().get(0).getQueueWL().size() + "\t1->"
-                                + IS.getUserList().get(1).getQueueWL().size() + "\t2->"
-                                + IS.getUserList().get(2).getQueueWL().size());
-                        IS.getAM().getRecForCoop()[i] = 1;
+                                + interactiveSystem.getUserList().get(0).getQueueWL().size() + "\t1->"
+                                + interactiveSystem.getUserList().get(1).getQueueWL().size() + "\t2->"
+                                + interactiveSystem.getUserList().get(2).getQueueWL().size());
+                        interactiveSystem.getAM().setRecForCoopAt(i, 1);
                     } else {
-                        int indexServer = IS.getComputeNodeList().get(indexInComputeList).getServerID();
-                        int indexChassis = IS.getComputeNodeList().get(indexInComputeList).getChassisID();
+                        int indexServer = interactiveSystem.getComputeNodeList().get(indexInComputeList).getServerID();
+                        int indexChassis = interactiveSystem.getComputeNodeList().get(indexInComputeList).getChassisID();
                         final BladeServer server = dataCenter.getServer(indexChassis,
                                 findServerInChasis(indexChassis, indexServer));
-                        IS.getUserList().get(i).addCompNodetoBundle(server);
+                        interactiveSystem.getUserList().get(i).addCompNodetoBundle(server);
                         // ES.getApplications().get(i).ComputeNodeIndex.add(indexChassis);
                         // //need to think about that!
                         // now the node is assinged to a application and is
                         // ready!
                         server.setStatusAsRunningNormal();
-                        server.setTimeTreshold(IS.getUserList().get(i).getMaxExpectedResTime());
+                        server.setTimeTreshold(interactiveSystem.getUserList().get(i).getMaxExpectedResTime());
                         LOGGER.info("Alloc: to User:" + i + "\t#of comp Node="
-                                + IS.getUserList().get(i).getComputeNodeList().size() + "\tsys Rdy to aloc="
-                                + IS.numberofAvailableNodetoAlocate() + "\t@:" + environment.getCurrentLocalTime()
-                                + "\tsys Number of running = " + IS.getUserList().get(i).numberofRunningNode());
+                                + interactiveSystem.getUserList().get(i).getComputeNodeList().size() + "\tsys Rdy to aloc="
+                                + interactiveSystem.numberofAvailableNodetoAlocate() + "\t@:" + environment.getCurrentLocalTime()
+                                + "\tsys Number of running = " + interactiveSystem.getUserList().get(i).numberofRunningNode());
                     }
                 }
             }

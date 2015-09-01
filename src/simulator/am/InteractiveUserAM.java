@@ -36,7 +36,7 @@ public class InteractiveUserAM extends GeneralAM {
         /// Check if its neighborhood are not happy to see if it can help or
         /// not!
         for (int i = 0; i < sys.getUserList().size(); i++) {
-            if (sys.getAM().getRecForCoop()[i] == 1) {
+            if (sys.getAM().getRecForCoopAt(i) == 1) {
                 // TODO
             }
         }

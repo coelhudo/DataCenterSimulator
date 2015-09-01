@@ -18,12 +18,16 @@ public abstract class GeneralAM {
 
     public abstract void execution();
 
-    public int[] getRecForCoop() {
-        return recForCoop;
+    public int getRecForCoopAt(int index) {
+        return recForCoop[index];
     }
-
-    public void setRecForCoop(int[] recForCoop) {
-        this.recForCoop = recForCoop;
+    
+    public void setRecForCoopAt(int index, int value) {
+        this.recForCoop[index] = value;
+    }
+    
+    public void setRecForCoop(int[] setRecForCoop) {
+        this.recForCoop = setRecForCoop;
     }
 
     public double getCompPowerAppsAt(int index) {

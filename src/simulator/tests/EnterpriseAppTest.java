@@ -51,6 +51,9 @@ public class EnterpriseAppTest {
         assertEquals(0, enterpriseApplication.getSLAviolation());
         assertEquals(0, enterpriseApplication.getTimeTreshold());
 
+        verify(mockedEnterpriseSystem).getAM();
+        verify(mockedEnterpriseSystem).getApplications();
+        
         verifyNoMoreInteractions(mockedEnterpriseSystem, mockedEnvironment);
     }
 
@@ -69,6 +72,8 @@ public class EnterpriseAppTest {
         assertFalse(enterpriseApplication.getComputeNodeList().isEmpty());
 
         verify(mockedBladeServer).restart();
+        verify(mockedEnterpriseSystem).getAM();
+        verify(mockedEnterpriseSystem).getApplications();
 
         verifyNoMoreInteractions(mockedEnterpriseSystem, mockedEnvironment, mockedBladeServer);
     }
@@ -151,6 +156,9 @@ public class EnterpriseAppTest {
         verify(mockedScheduler).nextJob(anyListOf(Job.class));
         verify(mockedEnvironment, times(2)).getCurrentLocalTime();
 
+        verify(mockedEnterpriseSystem).getAM();
+        verify(mockedEnterpriseSystem).getApplications();
+        
         verifyNoMoreInteractions(mockedEnterpriseSystem, mockedEnvironment, mockedBladeServer, mockedBufferedReader,
                 mockedScheduler);
     }
@@ -234,6 +242,9 @@ public class EnterpriseAppTest {
         verify(mockedScheduler).nextJob(anyListOf(Job.class));
         verify(mockedEnvironment, times(2)).getCurrentLocalTime();
 
+        verify(mockedEnterpriseSystem).getAM();
+        verify(mockedEnterpriseSystem).getApplications();
+        
         verifyNoMoreInteractions(mockedEnterpriseSystem, mockedEnvironment, mockedBladeServer, mockedBufferedReader,
                 mockedScheduler);
     }
@@ -319,6 +330,9 @@ public class EnterpriseAppTest {
         verify(mockedScheduler, times(2)).nextJob(anyListOf(Job.class));
         verify(mockedEnvironment, times(3)).getCurrentLocalTime();
 
+        verify(mockedEnterpriseSystem).getAM();
+        verify(mockedEnterpriseSystem).getApplications();
+        
         verifyNoMoreInteractions(mockedEnterpriseSystem, mockedEnvironment, mockedBladeServer, mockedBufferedReader,
                 mockedScheduler);
     }
@@ -377,6 +391,9 @@ public class EnterpriseAppTest {
             fail(FAIL_ERROR_MESSAGE);
         }
 
+        verify(mockedEnterpriseSystem).getAM();
+        verify(mockedEnterpriseSystem).getApplications();
+        
         verifyNoMoreInteractions(mockedEnterpriseSystem, mockedEnvironment, mockedBufferedReader);
     }
 
@@ -484,6 +501,9 @@ public class EnterpriseAppTest {
             fail(FAIL_ERROR_MESSAGE);
         }
 
+        verify(mockedEnterpriseSystem).getAM();
+        verify(mockedEnterpriseSystem).getApplications();
+        
         verifyNoMoreInteractions(mockedScheduler, mockedResourceAllocation, mockedEnterpriseJob, mockedEnterpriseSystem,
                 mockedEnvironment, mockedBufferedReader, mockedBladeServer);
     }
@@ -532,6 +552,9 @@ public class EnterpriseAppTest {
         } catch (IOException e) {
             fail("Ouch");
         }
+        
+        verify(mockedEnterpriseSystem).getAM();
+        verify(mockedEnterpriseSystem).getApplications();
         
         verifyNoMoreInteractions(mockedBladeServer, mockedBufferedReader, mockedEnterpriseSystem, mockedEnvironment);
 
