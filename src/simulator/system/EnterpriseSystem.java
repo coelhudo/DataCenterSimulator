@@ -7,6 +7,7 @@ import java.util.logging.Logger;
 
 import simulator.Environment;
 import simulator.SLAViolationLogger;
+import simulator.am.ApplicationAM;
 import simulator.am.EnterpriseSystemAM;
 import simulator.physical.BladeServer;
 import simulator.ra.ResourceAllocation;
@@ -34,8 +35,9 @@ public class EnterpriseSystem extends GeneralSystem {
 
     private void loadEnterpriseApplications(SystemPOD systemPOD) {
         for (EnterpriseApplicationPOD pod : ((EnterpriseSystemPOD) systemPOD).getApplicationPODs()) {
+            ApplicationAM applicationAM = new ApplicationAM(this, environment);
             EnterpriseApp enterpriseApplication = EnterpriseApp.create(pod, getScheduler(), getResourceAllocation(),
-                    this, environment);
+                    environment, applicationAM);
             applicationList.add(enterpriseApplication);
         }
     }
@@ -107,8 +109,6 @@ public class EnterpriseSystem extends GeneralSystem {
             ResourceAllocation resourceAllocation, SLAViolationLogger slaViolationLogger) {
         EnterpriseSystem enterpriseSystem = new EnterpriseSystem(systemPOD, environment, scheduler, resourceAllocation);
         enterpriseSystem.getResourceAllocation().initialResourceAlocator(enterpriseSystem);
-        // FIXME: why violation is logged in the AM class instead the system
-        // class
         enterpriseSystem.setAM(new EnterpriseSystemAM(enterpriseSystem, environment, slaViolationLogger));
         return enterpriseSystem;
     }

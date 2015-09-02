@@ -52,8 +52,7 @@ public class Simulator {
         datacenter = new DataCenter(simulatorPOD.getDataCenterPOD(), dataCenterAM, activitiesLogger, environment);
         SystemsPOD systemsPOD = simulatorPOD.getSystemsPOD();
         for (EnterpriseSystemPOD enterprisesystemPOD : systemsPOD.getEnterpriseSystemsPOD()) {
-            systems.addEnterpriseSystem(
-EnterpriseSystem.Create(enterprisesystemPOD, environment, new FIFOScheduler(),
+            systems.addEnterpriseSystem(EnterpriseSystem.Create(enterprisesystemPOD, environment, new FIFOScheduler(),
                     new MHR(environment, datacenter), slaViolationLogger));
         }
         for (ComputeSystemPOD computeSystemPOD : systemsPOD.getComputeSystemsPOD()) {
@@ -85,7 +84,7 @@ EnterpriseSystem.Create(enterprisesystemPOD, environment, new FIFOScheduler(),
     private Systems systems;
     private SLAViolationLogger slaViolationLogger;
     private DataCenterAM dataCenterAM;
-    
+
     protected double getTotalPowerConsumption() {
         return datacenter.getTotalPowerConsumption();
     }
@@ -130,7 +129,7 @@ EnterpriseSystem.Create(enterprisesystemPOD, environment, new FIFOScheduler(),
         LOGGER.addHandler(logFile);
 
         SimulatorBuilder dataCenterBuilder = new SimulatorBuilder("configs/DC_Logic.xml");
-        SimulatorPOD simulatorPOD = dataCenterBuilder.buildLogicalDataCenter();
+        SimulatorPOD simulatorPOD = dataCenterBuilder.build();
 
         Environment environment = new Environment();
         Simulator simulator = new Simulator(simulatorPOD, environment);

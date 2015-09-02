@@ -34,7 +34,7 @@ public class SimulatorBuilder {
         this.configurationFile = configurationFile;
     }
 
-    public SimulatorPOD buildLogicalDataCenter() {
+    public SimulatorPOD build() {
         SimulatorPOD simulatorPOD = new SimulatorPOD();
         SystemsPOD systemsPOD = new SystemsPOD();
         try {

@@ -34,7 +34,7 @@ public final class EnterpriseApp {
     private int slaViolation = 0;
     private int numOfViolation = 0;
     private BufferedReader bis = null;
-    private ApplicationAM AM;
+    private ApplicationAM am;
     // EnterpriseSystem mySys; //Application knows in which Sys it is located.
     // initialize in EnterpriseSystem
     private int maxNumberOfRequest = 0; // # of Request can be handled by number
@@ -481,11 +481,12 @@ public final class EnterpriseApp {
     }
 
     public ApplicationAM getAM() {
-        return AM;
+        return am;
     }
 
-    public void setAM(ApplicationAM aM) {
-        AM = aM;
+    public void setAM(ApplicationAM am) {
+        this.am = am;
+        this.am.setApplication(this);
     }
 
     public int getMaxNumberOfRequest() {
@@ -504,10 +505,10 @@ public final class EnterpriseApp {
         this.numberofBasicNode = numberofBasicNode;
     }
 
-    public static EnterpriseApp create(EnterpriseApplicationPOD enterpriseApplicationPOD, Scheduler scheduler, ResourceAllocation resourceAllocation, EnterpriseSystem parent,
-            Environment environment) {
+    public static EnterpriseApp create(EnterpriseApplicationPOD enterpriseApplicationPOD, Scheduler scheduler, ResourceAllocation resourceAllocation,
+            Environment environment, ApplicationAM applicationAM) {
         EnterpriseApp enterpriseApplication = new EnterpriseApp(enterpriseApplicationPOD, scheduler, resourceAllocation, environment);
-        enterpriseApplication.setAM(new ApplicationAM(parent, enterpriseApplication, environment));
+        enterpriseApplication.setAM(applicationAM);
         return enterpriseApplication;
     }
 }

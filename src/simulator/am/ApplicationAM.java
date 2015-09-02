@@ -24,11 +24,14 @@ public class ApplicationAM extends GeneralAM {
     private GeneralAM am;
     private List<EnterpriseApp> applications;
 
-    public ApplicationAM(EnterpriseSystem sys, EnterpriseApp app, Environment environment) {
+    public ApplicationAM(EnterpriseSystem sys, Environment environment) {
         this.am = sys.getAM();
         this.applications = sys.getApplications();
-        this.app = app;
         this.environment = environment;
+    }
+    
+    public void setApplication(EnterpriseApp app) {
+        this.app = app;
     }
 
     @Override

@@ -20,7 +20,7 @@ public class SimulatorIT {
     public void testIDidntBreakAnythingFromTheOriginalCode() {
         try {
             SimulatorBuilder dataCenterBuilder = new SimulatorBuilder("configs/DC_Logic.xml");
-            SimulatorPOD simulatorPOD = dataCenterBuilder.buildLogicalDataCenter();
+            SimulatorPOD simulatorPOD = dataCenterBuilder.build();
 
             Environment environment = new Environment();
             Simulator simulator = new Simulator(simulatorPOD, environment);
