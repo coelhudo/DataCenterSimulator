@@ -13,15 +13,15 @@ public class InteractiveUserAM extends GeneralAM {
 
     private static final Logger LOGGER = Logger.getLogger(InteractiveUserAM.class.getName());
 
-    InteractiveUser user;
-    InteractiveSystem sys;
+    private InteractiveUser user;
+    private InteractiveSystem sys;
     double util = 0;
     static int violationInEpoch = 0;
     double percnt = 0;
     int accumulativeSLA = 0;
     // int cpAccumu=0;
-    Simulator.StrategyEnum currentStrategy = Simulator.StrategyEnum.Green; // Green
-    Environment environment;
+    Simulator.StrategyEnum currentStrategy = Simulator.StrategyEnum.Green;
+    private Environment environment;
 
     public InteractiveUserAM(InteractiveSystem sys, InteractiveUser user, Environment environment) {
         this.sys = sys;

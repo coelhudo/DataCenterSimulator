@@ -6,13 +6,13 @@ import simulator.system.InteractiveSystem;
 
 public class InteractiveSystemAM extends SystemAM {
 
-    InteractiveSystem interatctiveSystem;
-    double[] percentCompPwr;
+    private InteractiveSystem interatctiveSystem;
+    private double[] percentCompPwr;
     private int[] allocationVector;
-    double wlkIntens = 0;
-    int[] accuSLA;
-    double[] queueLengthUsr;
-    int lastTime = 0;
+    private double wlkIntens = 0;
+    private int[] accuSLA;
+    private double[] queueLengthUsr;
+    private int lastTime = 0;
     private Environment environment;
 
     public InteractiveSystemAM(InteractiveSystem interactiveSystem, Environment environment) {

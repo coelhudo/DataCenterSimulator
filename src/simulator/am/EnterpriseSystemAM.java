@@ -16,12 +16,12 @@ public class EnterpriseSystemAM extends SystemAM {
     private EnterpriseSystem enterpriseSystem;
     private List<EnterpriseApp> applications;
     static int kalmanIndex = 0;
-    double[] percentCompPwr;
-    double[] queueLengthApps;
+    private double[] percentCompPwr;
+    private double[] queueLengthApps;
     private int[] allocationVector;
-    int lastTime = 0;
-    int[] accuSLA;
-    double wlkIntens = 0;
+    private int lastTime = 0;
+    private int[] accuSLA;
+    private double wlkIntens = 0;
     private Environment environment;
     private SLAViolationLogger slaViolationLogger;
 
