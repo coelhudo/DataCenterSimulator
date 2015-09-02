@@ -342,7 +342,7 @@ public class EnterpriseApp {
         return ret;
     }
 
-    void destroyApplication() throws IOException {
+    public void destroyApplication() throws IOException {
         for (BladeServer bladeServer : getComputeNodeList()) {
             bladeServer.restart();
             bladeServer.setStatusAsNotAssignedToAnyApplication();

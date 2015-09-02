@@ -34,6 +34,7 @@ public class EnterpriseSystemTest {
     public ResourceAllocation mockedResourceAllocation;
     public EnterpriseSystemAM mockedEnterpriseSystemAM;
     public List<EnterpriseApp> applications;
+    EnterpriseSystem enterpriseSystem;
 
     @Before
     public void setUp() {
@@ -42,6 +43,8 @@ public class EnterpriseSystemTest {
         mockedResourceAllocation = mock(ResourceAllocation.class);
         mockedEnterpriseSystemAM = mock(EnterpriseSystemAM.class);
         applications = new ArrayList<EnterpriseApp>();
+        enterpriseSystem = EnterpriseSystem.Create(enterpriseSystemPOD, mockedScheduler, mockedResourceAllocation,
+                mockedEnterpriseSystemAM, applications);
     }
 
     @After
@@ -51,9 +54,6 @@ public class EnterpriseSystemTest {
 
     @Test
     public void testEnterpriseSystemCreation() {
-        EnterpriseSystem enterpriseSystem = EnterpriseSystem.Create(enterpriseSystemPOD, mockedScheduler,
-                mockedResourceAllocation, mockedEnterpriseSystemAM, applications);
-
         assertFalse(enterpriseSystem.isDone());
         assertFalse(enterpriseSystem.isThereFreeNodeforApp());
         assertFalse(enterpriseSystem.checkForViolation());
@@ -79,16 +79,13 @@ public class EnterpriseSystemTest {
 
     @Test
     public void testRunACycle_WithoutApplication() {
-        EnterpriseSystem enterpriseSystem = EnterpriseSystem.Create(enterpriseSystemPOD, mockedScheduler,
-                mockedResourceAllocation, mockedEnterpriseSystemAM, applications);
-
         try {
             assertTrue(enterpriseSystem.runAcycle());
         } catch (IOException e) {
             fail(FAIL_ERROR_MESSAGE);
         }
         assertTrue(enterpriseSystem.isDone());
-        
+
         verify(mockedResourceAllocation).initialResourceAlocator(enterpriseSystem);
         verify(mockedEnterpriseSystemAM).setManagedSystem(enterpriseSystem);
     }
@@ -99,19 +96,47 @@ public class EnterpriseSystemTest {
         when(mockedEnterpriseApp.runAcycle()).thenReturn(true);
         applications.add(mockedEnterpriseApp);
 
-        EnterpriseSystem enterpriseSystem = EnterpriseSystem.Create(enterpriseSystemPOD, mockedScheduler,
-                mockedResourceAllocation, mockedEnterpriseSystemAM, applications);
-
         try {
             assertFalse(enterpriseSystem.runAcycle());
         } catch (IOException e1) {
             fail(FAIL_ERROR_MESSAGE);
         }
         assertFalse(enterpriseSystem.isDone());
+        assertFalse(applications.isEmpty());
 
         verify(mockedResourceAllocation).initialResourceAlocator(enterpriseSystem);
         verify(mockedEnterpriseSystemAM).setManagedSystem(enterpriseSystem);
         verify(mockedEnterpriseApp).runAcycle();
+        verifyNoMoreInteractions(mockedEnterpriseApp);
+    }
+
+    @Test
+    public void testRunACycle_WithApplication_MarkAsDone() {
+        EnterpriseApp mockedEnterpriseApp = mock(EnterpriseApp.class);
+        when(mockedEnterpriseApp.runAcycle()).thenReturn(false);
+        applications.add(mockedEnterpriseApp);
+
+        try {
+            assertTrue(enterpriseSystem.runAcycle());
+        } catch (IOException e1) {
+            fail(FAIL_ERROR_MESSAGE);
+        }
+        assertTrue(enterpriseSystem.isDone());
+        assertTrue(applications.isEmpty());
+
+        verify(mockedEnterpriseSystemAM).setManagedSystem(enterpriseSystem);
+        verify(mockedResourceAllocation).initialResourceAlocator(enterpriseSystem);
+        verify(mockedResourceAllocation).resourceAloc(enterpriseSystem);
+        verify(mockedEnterpriseApp).runAcycle();
+        verify(mockedEnterpriseApp).getComputeNodeList();
+        verify(mockedEnterpriseApp).getID();
+        verify(mockedEnterpriseApp).getNumofViolation();
+
+        try {
+            verify(mockedEnterpriseApp).destroyApplication();
+        } catch (IOException e) {
+            fail(FAIL_ERROR_MESSAGE);
+        }
         verifyNoMoreInteractions(mockedEnterpriseApp);
     }
 }
