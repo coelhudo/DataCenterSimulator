@@ -109,7 +109,7 @@ public class EnterpriseSystem extends GeneralSystem {
             ResourceAllocation resourceAllocation, SLAViolationLogger slaViolationLogger) {
         EnterpriseSystem enterpriseSystem = new EnterpriseSystem(systemPOD, environment, scheduler, resourceAllocation);
         enterpriseSystem.getResourceAllocation().initialResourceAlocator(enterpriseSystem);
-        enterpriseSystem.setAM(new EnterpriseSystemAM(enterpriseSystem, environment, slaViolationLogger));
+        enterpriseSystem.setAM(new EnterpriseSystemAM(environment, slaViolationLogger));
         return enterpriseSystem;
     }
 }

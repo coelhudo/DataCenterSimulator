@@ -211,7 +211,7 @@ public class InteractiveSystem extends GeneralSystem {
     public static InteractiveSystem Create(SystemPOD systemPOD, Environment environment, DataCenter dataCenter, SLAViolationLogger slaViolationLogger) {
         InteractiveSystem interactiveSystem = new InteractiveSystem(systemPOD, environment, dataCenter, slaViolationLogger);
         interactiveSystem.getResourceAllocation().initialResourceAlocator(interactiveSystem);
-        interactiveSystem.setAM(new InteractiveSystemAM(interactiveSystem, environment));
+        interactiveSystem.setAM(new InteractiveSystemAM(environment));
         return interactiveSystem;
     }
 }

@@ -192,7 +192,7 @@ public class ComputeSystem extends GeneralSystem {
             SLAViolationLogger slaViolationLogger) {
         ComputeSystem computeSystem = new ComputeSystem(systemPOD, environment, dataCenter, slaViolationLogger);
         computeSystem.getResourceAllocation().initialResourceAloc(computeSystem);
-        computeSystem.setAM(new ComputeSystemAM(computeSystem, environment));
+        computeSystem.setAM(new ComputeSystemAM(environment));
         return computeSystem;
     }
 

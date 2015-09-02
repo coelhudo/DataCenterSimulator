@@ -5,17 +5,9 @@ import simulator.system.GeneralSystem;
 
 public abstract class SystemAM extends GeneralAM {
 
-    private GeneralSystem managedSystem;
-    
     public SystemAM(Environment environment) {
         super(environment);
     }
 
-    public GeneralSystem getManagedSystem() {
-        return managedSystem;
-    }
-
-    public void setManagedSystem(GeneralSystem managedSystem) {
-        this.managedSystem = managedSystem;
-    }
+    public abstract void setManagedSystem(GeneralSystem managedSystem);
 }

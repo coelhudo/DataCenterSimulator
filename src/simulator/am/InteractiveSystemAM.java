@@ -2,6 +2,7 @@ package simulator.am;
 
 import simulator.Environment;
 import simulator.Simulator;
+import simulator.system.GeneralSystem;
 import simulator.system.InteractiveSystem;
 
 public class InteractiveSystemAM extends SystemAM {
@@ -13,10 +14,13 @@ public class InteractiveSystemAM extends SystemAM {
     private int[] accuSLA;
     private double[] queueLengthUsr;
     private int lastTime = 0;
-    
-    public InteractiveSystemAM(InteractiveSystem interactiveSystem, Environment environment) {
+
+    public InteractiveSystemAM(Environment environment) {
         super(environment);
-        this.interatctiveSystem = interactiveSystem;
+    }
+
+    public void setManagedSystem(GeneralSystem generalSystem) {
+        this.interatctiveSystem = (InteractiveSystem) generalSystem;
         setRecForCoop(new int[interatctiveSystem.getUserList().size()]);
     }
 
@@ -68,8 +72,9 @@ public class InteractiveSystemAM extends SystemAM {
         workloadIntensity();
         for (int i = 0; i < interatctiveSystem.getUserList().size(); i++) {
             // assume epoch system 2 time epoch application
-            percentCompPwr[i] = interatctiveSystem.getUserList().get(i).getAM().percnt / ((environment().getCurrentLocalTime() - lastTime)
-                    * 3 * interatctiveSystem.getUserList().get(i).getComputeNodeList().size());// (Main.epochSys*/*3*ES.applicationList.get(i).ComputeNodeList.size());
+            percentCompPwr[i] = interatctiveSystem.getUserList().get(i).getAM().percnt
+                    / ((environment().getCurrentLocalTime() - lastTime) * 3
+                            * interatctiveSystem.getUserList().get(i).getComputeNodeList().size());// (Main.epochSys*/*3*ES.applicationList.get(i).ComputeNodeList.size());
             interatctiveSystem.getUserList().get(i).getAM().percnt = 0;
             accuSLA[i] = interatctiveSystem.getUserList().get(i).getAM().accumulativeSLA
                     / (environment().getCurrentLocalTime() - lastTime);// Main.epochSys;
@@ -144,8 +149,10 @@ public class InteractiveSystemAM extends SystemAM {
         }
         int requestedNd = 0;
         for (int i = 0; i < getAllocationVector().length; i++) {
-            int valNode = interatctiveSystem.getUserList().get(i).getComputeNodeList().size() + getAllocationVector()[i];
-            if (interatctiveSystem.getUserList().get(i).getMinProc() > valNode || interatctiveSystem.getUserList().get(i).getMaxProc() < valNode) {
+            int valNode = interatctiveSystem.getUserList().get(i).getComputeNodeList().size()
+                    + getAllocationVector()[i];
+            if (interatctiveSystem.getUserList().get(i).getMinProc() > valNode
+                    || interatctiveSystem.getUserList().get(i).getMaxProc() < valNode) {
                 // if(ES.applicationList.get(i).minProc>
                 // ES.applicationList.get(i).ComputeNodeList.size()+allocationVector[i])
                 // LOGGER.info("error requested less than min in AM
@@ -183,7 +190,8 @@ public class InteractiveSystemAM extends SystemAM {
             if (sugestForAlo[i] > interatctiveSystem.getUserList().get(i).getMaxProc()) {
                 sugestForAlo[i] = interatctiveSystem.getUserList().get(i).getMaxProc();
             }
-            getAllocationVector()[i] = sugestForAlo[i] - interatctiveSystem.getUserList().get(i).getComputeNodeList().size();
+            getAllocationVector()[i] = sugestForAlo[i]
+                    - interatctiveSystem.getUserList().get(i).getComputeNodeList().size();
         }
         for (int i = 0; i < interatctiveSystem.getUserList().size(); i++) {
             interatctiveSystem.getUserList().get(i).getAM().currentStrategy = Simulator.StrategyEnum.Green; // Green

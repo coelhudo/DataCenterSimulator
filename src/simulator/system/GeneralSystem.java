@@ -4,6 +4,7 @@ import java.io.BufferedReader;
 import java.util.List;
 
 import simulator.am.GeneralAM;
+import simulator.am.SystemAM;
 import simulator.physical.BladeServer;
 import simulator.ra.ResourceAllocation;
 import simulator.schedulers.Scheduler;
@@ -26,7 +27,7 @@ public class GeneralSystem {
     private int slaViolation;
     private boolean sysIsDone = false;
     private double power = 0;
-    private GeneralAM am;
+    private SystemAM am;
     private int accumolatedViolation = 0;
     private int numberOfActiveServ = 0;
 
@@ -116,7 +117,7 @@ public class GeneralSystem {
     public void resetNumberOfSLAViolation() {
         this.slaViolation = 0;
     }
-    
+
     public void setSLAviolation(int slaViolation) {
         this.slaViolation = slaViolation;
     }
@@ -137,12 +138,13 @@ public class GeneralSystem {
         this.power = power;
     }
 
-    public GeneralAM getAM() {
+    public SystemAM getAM() {
         return am;
     }
 
-    public void setAM(GeneralAM am) {
+    public void setAM(SystemAM am) {
         this.am = am;
+        this.am.setManagedSystem(this);
     }
 
     public int getAccumolatedViolation() {

@@ -8,11 +8,12 @@ import simulator.SLAViolationLogger;
 import simulator.Simulator;
 import simulator.system.EnterpriseApp;
 import simulator.system.EnterpriseSystem;
+import simulator.system.GeneralSystem;
 
 public class EnterpriseSystemAM extends SystemAM {
 
     private static final Logger LOGGER = Logger.getLogger(EnterpriseSystemAM.class.getName());
-    
+
     private EnterpriseSystem enterpriseSystem;
     private List<EnterpriseApp> applications;
     static int kalmanIndex = 0;
@@ -24,11 +25,15 @@ public class EnterpriseSystemAM extends SystemAM {
     private double wlkIntens = 0;
     private SLAViolationLogger slaViolationLogger;
 
-    public EnterpriseSystemAM(EnterpriseSystem enterpriseSystem, Environment environment, SLAViolationLogger slaViolationLogger) {
+    public EnterpriseSystemAM(Environment environment, SLAViolationLogger slaViolationLogger) {
         super(environment);
-        this.enterpriseSystem = enterpriseSystem;
-        this.applications = enterpriseSystem.getApplications();
         this.slaViolationLogger = slaViolationLogger;
+    }
+
+    @Override
+    public void setManagedSystem(GeneralSystem managedSystem) {
+        this.enterpriseSystem = (EnterpriseSystem) managedSystem;
+        this.applications = enterpriseSystem.getApplications();
         setRecForCoop(new int[applications.size()]);
     }
 
@@ -66,8 +71,7 @@ public class EnterpriseSystemAM extends SystemAM {
     void workloadIntensity() {
         double avg = 0.0;
         for (EnterpriseApp enterpriseApp : applications) {
-            avg = avg + (double) enterpriseApp.getNumberofBasicNode()
-                    / enterpriseApp.getMaxNumberOfRequest();
+            avg = avg + (double) enterpriseApp.getNumberofBasicNode() / enterpriseApp.getMaxNumberOfRequest();
         }
         wlkIntens = (double) avg / applications.size();
     }
@@ -81,7 +85,8 @@ public class EnterpriseSystemAM extends SystemAM {
         enterpriseSystem.resetNumberOfSLAViolation();
         workloadIntensity();
         for (int i = 0; i < applications.size(); i++) {
-            enterpriseSystem.setSLAviolation(enterpriseSystem.getSLAviolation() + applications.get(i).getSLAviolation());
+            enterpriseSystem
+                    .setSLAviolation(enterpriseSystem.getSLAviolation() + applications.get(i).getSLAviolation());
             // assume epoch system 2 time epoch application
             percentCompPwr[i] = applications.get(i).getAM().getPercnt()
                     / ((environment().getCurrentLocalTime() - lastTime) * 3
@@ -220,9 +225,8 @@ public class EnterpriseSystemAM extends SystemAM {
         if (kalmanIndex >= numberOfPredictedReq.length) {
             return;
         }
-        enterpriseSystem.setNumberOfActiveServ((int) Math
-                .floor(numberOfPredictedReq[kalmanIndex] * 5 * applications.get(0).getNumberofBasicNode()
-                        / applications.get(0).getMaxNumberOfRequest()));
+        enterpriseSystem.setNumberOfActiveServ((int) Math.floor(numberOfPredictedReq[kalmanIndex] * 5
+                * applications.get(0).getNumberofBasicNode() / applications.get(0).getMaxNumberOfRequest()));
         if (enterpriseSystem.getNumberOfActiveServ() > enterpriseSystem.getNumberOfNode()) {
             LOGGER.info("In ES : is gonna alocate this number of servers: "
                     + (enterpriseSystem.getNumberOfActiveServ() - enterpriseSystem.getNumberOfNode()));

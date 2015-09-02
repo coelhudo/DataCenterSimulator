@@ -5,6 +5,7 @@ import java.util.logging.Logger;
 import simulator.Environment;
 import simulator.physical.BladeServer;
 import simulator.system.ComputeSystem;
+import simulator.system.GeneralSystem;
 
 public class ComputeSystemAM extends SystemAM {
 
@@ -12,9 +13,12 @@ public class ComputeSystemAM extends SystemAM {
 
     private ComputeSystem computeSystem;
 
-    public ComputeSystemAM(ComputeSystem computeSytem, Environment environment) {
-        super(environment);
-        this.computeSystem = computeSytem;
+    public ComputeSystemAM(Environment environment) {
+        super(environment);      
+    }
+   
+    public void setManagedSystem(GeneralSystem managedSystem) {
+        this.computeSystem = (ComputeSystem) managedSystem;
     }
 
     @Override
