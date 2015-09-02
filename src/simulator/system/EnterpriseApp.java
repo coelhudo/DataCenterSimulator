@@ -45,9 +45,9 @@ public final class EnterpriseApp {
     private ResourceAllocation resourceAllocation;
     private Environment environment;
 
-    public EnterpriseApp(EnterpriseApplicationPOD enterpriseApplicationPOD, GeneralSystem parent,
+    public EnterpriseApp(EnterpriseApplicationPOD enterpriseApplicationPOD, Scheduler scheduler, GeneralSystem parent,
             Environment environment) {
-        this.scheduler = parent.getScheduler();
+        this.scheduler = scheduler;
         this.resourceAllocation = parent.getResourceAllocation();
         this.environment = environment;
         setComputeNodeList(new ArrayList<BladeServer>());
@@ -504,9 +504,9 @@ public final class EnterpriseApp {
         this.numberofBasicNode = numberofBasicNode;
     }
 
-    public static EnterpriseApp create(EnterpriseApplicationPOD enterpriseApplicationPOD, EnterpriseSystem parent,
+    public static EnterpriseApp create(EnterpriseApplicationPOD enterpriseApplicationPOD, Scheduler scheduler, EnterpriseSystem parent,
             Environment environment) {
-        EnterpriseApp enterpriseApplication = new EnterpriseApp(enterpriseApplicationPOD, parent, environment);
+        EnterpriseApp enterpriseApplication = new EnterpriseApp(enterpriseApplicationPOD, scheduler, parent, environment);
         enterpriseApplication.setAM(new ApplicationAM(parent, enterpriseApplication, environment));
         return enterpriseApplication;
     }

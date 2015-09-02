@@ -9,6 +9,8 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.List;
 
+import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
 
 import simulator.Environment;
@@ -26,13 +28,31 @@ public class EnterpriseAppTest {
 
     public static final String FAIL_ERROR_MESSAGE = "This was not supposed to happen";
 
+    public Scheduler mockedScheduler;
+    public EnterpriseApplicationPOD enterpriseApplicationPOD;
+    public EnterpriseSystem mockedEnterpriseSystem;
+    public Environment mockedEnvironment;
+    public BufferedReader mockedBufferedReader;
+
+    @Before
+    public void setUp() {
+        enterpriseApplicationPOD = new EnterpriseApplicationPOD();
+        mockedScheduler = mock(Scheduler.class);
+        mockedEnterpriseSystem = mock(EnterpriseSystem.class);
+        mockedEnvironment = mock(Environment.class);
+        mockedBufferedReader = mock(BufferedReader.class);
+        enterpriseApplicationPOD.setBIS(mockedBufferedReader);
+    }
+
+    @After
+    public void tearDown() {
+        verifyNoMoreInteractions(mockedBufferedReader, mockedEnterpriseSystem, mockedEnvironment);
+    }
+
     @Test
     public void testEnterpriseAppCreation() {
-        EnterpriseApplicationPOD enterpriseApplicationPOD = new EnterpriseApplicationPOD();
-        EnterpriseSystem mockedEnterpriseSystem = mock(EnterpriseSystem.class);
-        Environment mockedEnvironment = mock(Environment.class);
-        EnterpriseApp enterpriseApplication = new EnterpriseApp(enterpriseApplicationPOD, mockedEnterpriseSystem,
-                mockedEnvironment);
+        EnterpriseApp enterpriseApplication = new EnterpriseApp(enterpriseApplicationPOD, mockedScheduler,
+                mockedEnterpriseSystem, mockedEnvironment);
         assertNull(enterpriseApplication.getAM());
         assertEquals(0.0, enterpriseApplication.getAverageCPUutil(), 1.0E-8);
         assertNotEquals(0, enterpriseApplication.getAveragePwrParam().length);
@@ -51,7 +71,6 @@ public class EnterpriseAppTest {
         assertEquals(0, enterpriseApplication.getSLAviolation());
         assertEquals(0, enterpriseApplication.getTimeTreshold());
 
-        verify(mockedEnterpriseSystem).getScheduler();
         verify(mockedEnterpriseSystem).getResourceAllocation();
 
         verifyNoMoreInteractions(mockedEnterpriseSystem, mockedEnvironment);
@@ -59,11 +78,8 @@ public class EnterpriseAppTest {
 
     @Test
     public void testAddCompNodetoBundle() {
-        EnterpriseApplicationPOD enterpriseApplicationPOD = new EnterpriseApplicationPOD();
-        EnterpriseSystem mockedEnterpriseSystem = mock(EnterpriseSystem.class);
-        Environment mockedEnvironment = mock(Environment.class);
-        EnterpriseApp enterpriseApplication = new EnterpriseApp(enterpriseApplicationPOD, mockedEnterpriseSystem,
-                mockedEnvironment);
+        EnterpriseApp enterpriseApplication = new EnterpriseApp(enterpriseApplicationPOD, mockedScheduler,
+                mockedEnterpriseSystem, mockedEnvironment);
         assertTrue(enterpriseApplication.getComputeNodeList().isEmpty());
 
         BladeServer mockedBladeServer = mock(BladeServer.class);
@@ -72,38 +88,28 @@ public class EnterpriseAppTest {
         assertFalse(enterpriseApplication.getComputeNodeList().isEmpty());
 
         verify(mockedBladeServer).restart();
-        verify(mockedEnterpriseSystem).getScheduler();
         verify(mockedEnterpriseSystem).getResourceAllocation();
 
-        verifyNoMoreInteractions(mockedEnterpriseSystem, mockedEnvironment, mockedBladeServer);
     }
 
     @Test
     public void testRunACycle_MoreJobsThanCapacity() {
         final int valueToMakeMoreJobsThanCapacity = 3;
-        EnterpriseApplicationPOD enterpriseApplicationPOD = new EnterpriseApplicationPOD();
-        BufferedReader mockedBufferedReader = mock(BufferedReader.class);
         try {
             when(mockedBufferedReader.readLine()).thenReturn("1\t1");
         } catch (IOException e1) {
             fail("Ouch");
         }
 
-        enterpriseApplicationPOD.setBIS(mockedBufferedReader);
-
-        EnterpriseSystem mockedEnterpriseSystem = mock(EnterpriseSystem.class);
-
-        Scheduler mockedScheduler = mock(Scheduler.class);
         EnterpriseJob mockedEnterpriseJob = mock(EnterpriseJob.class);
         when(mockedEnterpriseJob.getNumberOfJob()).thenReturn(valueToMakeMoreJobsThanCapacity);
         when(mockedScheduler.nextJob(anyListOf(Job.class))).thenReturn(mockedEnterpriseJob);
         when(mockedEnterpriseSystem.getScheduler()).thenReturn(mockedScheduler);
 
-        Environment mockedEnvironment = mock(Environment.class);
         when(mockedEnvironment.getCurrentLocalTime()).thenReturn(5);
 
-        EnterpriseApp enterpriseApplication = new EnterpriseApp(enterpriseApplicationPOD, mockedEnterpriseSystem,
-                mockedEnvironment);
+        EnterpriseApp enterpriseApplication = new EnterpriseApp(enterpriseApplicationPOD, mockedScheduler,
+                mockedEnterpriseSystem, mockedEnvironment);
         assertTrue(enterpriseApplication.getComputeNodeList().isEmpty());
 
         BladeServer mockedBladeServer = mock(BladeServer.class);
@@ -152,44 +158,33 @@ public class EnterpriseAppTest {
             fail(FAIL_ERROR_MESSAGE);
         }
 
-        verify(mockedEnterpriseSystem).getScheduler();
         verify(mockedScheduler).nextJob(anyListOf(Job.class));
         verify(mockedEnvironment, times(2)).getCurrentLocalTime();
 
-        verify(mockedEnterpriseSystem).getScheduler();
         verify(mockedEnterpriseSystem).getResourceAllocation();
 
-        verifyNoMoreInteractions(mockedEnterpriseSystem, mockedEnvironment, mockedBladeServer, mockedBufferedReader,
-                mockedScheduler);
+        verifyNoMoreInteractions(mockedBladeServer);
     }
 
     @Test
     public void testRunACycle_CapacityEqualsZero() {
         final int valueToMakeCapacityEqualsZero = 2;
 
-        EnterpriseApplicationPOD enterpriseApplicationPOD = new EnterpriseApplicationPOD();
-        BufferedReader mockedBufferedReader = mock(BufferedReader.class);
         try {
             when(mockedBufferedReader.readLine()).thenReturn("1\t1");
         } catch (IOException e1) {
             fail("Ouch");
         }
 
-        enterpriseApplicationPOD.setBIS(mockedBufferedReader);
-
-        EnterpriseSystem mockedEnterpriseSystem = mock(EnterpriseSystem.class);
-
-        Scheduler mockedScheduler = mock(Scheduler.class);
         EnterpriseJob mockedEnterpriseJob = mock(EnterpriseJob.class);
         when(mockedEnterpriseJob.getNumberOfJob()).thenReturn(valueToMakeCapacityEqualsZero);
         when(mockedScheduler.nextJob(anyListOf(Job.class))).thenReturn(mockedEnterpriseJob);
         when(mockedEnterpriseSystem.getScheduler()).thenReturn(mockedScheduler);
 
-        Environment mockedEnvironment = mock(Environment.class);
         when(mockedEnvironment.getCurrentLocalTime()).thenReturn(5);
 
-        EnterpriseApp enterpriseApplication = new EnterpriseApp(enterpriseApplicationPOD, mockedEnterpriseSystem,
-                mockedEnvironment);
+        EnterpriseApp enterpriseApplication = new EnterpriseApp(enterpriseApplicationPOD, mockedScheduler,
+                mockedEnterpriseSystem, mockedEnvironment);
         assertTrue(enterpriseApplication.getComputeNodeList().isEmpty());
 
         BladeServer mockedBladeServer = mock(BladeServer.class);
@@ -238,44 +233,33 @@ public class EnterpriseAppTest {
             fail(FAIL_ERROR_MESSAGE);
         }
 
-        verify(mockedEnterpriseSystem).getScheduler();
         verify(mockedScheduler).nextJob(anyListOf(Job.class));
         verify(mockedEnvironment, times(2)).getCurrentLocalTime();
 
-        verify(mockedEnterpriseSystem).getScheduler();
         verify(mockedEnterpriseSystem).getResourceAllocation();
 
-        verifyNoMoreInteractions(mockedEnterpriseSystem, mockedEnvironment, mockedBladeServer, mockedBufferedReader,
-                mockedScheduler);
+        verifyNoMoreInteractions(mockedBladeServer);
     }
 
     @Test
     public void testRunACycle_CapacityGreaterThanNumberOfJobs() {
         final int valueToMakeCapacityGreaterThanNumberOfJobs = 1;
 
-        EnterpriseApplicationPOD enterpriseApplicationPOD = new EnterpriseApplicationPOD();
-        BufferedReader mockedBufferedReader = mock(BufferedReader.class);
         try {
             when(mockedBufferedReader.readLine()).thenReturn("1\t1");
         } catch (IOException e1) {
             fail(FAIL_ERROR_MESSAGE);
         }
 
-        enterpriseApplicationPOD.setBIS(mockedBufferedReader);
-
-        EnterpriseSystem mockedEnterpriseSystem = mock(EnterpriseSystem.class);
-
-        Scheduler mockedScheduler = mock(Scheduler.class);
         EnterpriseJob mockedEnterpriseJob = mock(EnterpriseJob.class);
         when(mockedEnterpriseJob.getNumberOfJob()).thenReturn(valueToMakeCapacityGreaterThanNumberOfJobs);
         when(mockedScheduler.nextJob(anyListOf(Job.class))).thenReturn(mockedEnterpriseJob);
         when(mockedEnterpriseSystem.getScheduler()).thenReturn(mockedScheduler);
 
-        Environment mockedEnvironment = mock(Environment.class);
         when(mockedEnvironment.getCurrentLocalTime()).thenReturn(5);
 
-        EnterpriseApp enterpriseApplication = new EnterpriseApp(enterpriseApplicationPOD, mockedEnterpriseSystem,
-                mockedEnvironment);
+        EnterpriseApp enterpriseApplication = new EnterpriseApp(enterpriseApplicationPOD, mockedScheduler,
+                mockedEnterpriseSystem, mockedEnvironment);
         assertTrue(enterpriseApplication.getComputeNodeList().isEmpty());
 
         BladeServer mockedBladeServer = mock(BladeServer.class);
@@ -329,32 +313,23 @@ public class EnterpriseAppTest {
         verify(mockedScheduler, times(2)).nextJob(anyListOf(Job.class));
         verify(mockedEnvironment, times(3)).getCurrentLocalTime();
 
-        verify(mockedEnterpriseSystem).getScheduler();
         verify(mockedEnterpriseSystem).getResourceAllocation();
 
-        verifyNoMoreInteractions(mockedEnterpriseSystem, mockedEnvironment, mockedBladeServer, mockedBufferedReader,
-                mockedScheduler);
+        verifyNoMoreInteractions(mockedBladeServer);
     }
 
     @Test
     public void testAppendEntepriseJobIntoQueueApplication() {
-        EnterpriseApplicationPOD enterpriseApplicationPOD = new EnterpriseApplicationPOD();
-        BufferedReader mockedBufferedReader = mock(BufferedReader.class);
         try {
             when(mockedBufferedReader.readLine()).thenReturn("2\t1");
         } catch (IOException e1) {
             fail(FAIL_ERROR_MESSAGE);
         }
 
-        enterpriseApplicationPOD.setBIS(mockedBufferedReader);
-
-        EnterpriseSystem mockedEnterpriseSystem = mock(EnterpriseSystem.class);
-
-        Environment mockedEnvironment = mock(Environment.class);
         when(mockedEnvironment.getCurrentLocalTime()).thenReturn(1);
 
-        EnterpriseApp enterpriseApplication = new EnterpriseApp(enterpriseApplicationPOD, mockedEnterpriseSystem,
-                mockedEnvironment);
+        EnterpriseApp enterpriseApplication = new EnterpriseApp(enterpriseApplicationPOD, mockedScheduler,
+                mockedEnterpriseSystem, mockedEnvironment);
         assertTrue(enterpriseApplication.getComputeNodeList().isEmpty());
 
         try {
@@ -390,41 +365,30 @@ public class EnterpriseAppTest {
             fail(FAIL_ERROR_MESSAGE);
         }
 
-        verify(mockedEnterpriseSystem).getScheduler();
         verify(mockedEnterpriseSystem).getResourceAllocation();
-
-        verifyNoMoreInteractions(mockedEnterpriseSystem, mockedEnvironment, mockedBufferedReader);
     }
 
     @Test
     public void testRunACycleMostBranchesAsPossible() {
-        EnterpriseApplicationPOD enterpriseApplicationPOD = new EnterpriseApplicationPOD();
-        BufferedReader mockedBufferedReader = mock(BufferedReader.class);
         try {
             when(mockedBufferedReader.readLine()).thenReturn("2\t1", "3\t1");
         } catch (IOException e1) {
             fail(FAIL_ERROR_MESSAGE);
         }
 
-        enterpriseApplicationPOD.setBIS(mockedBufferedReader);
-
-        EnterpriseSystem mockedEnterpriseSystem = mock(EnterpriseSystem.class);
-
-        Scheduler mockedScheduler = mock(Scheduler.class);
         EnterpriseJob mockedEnterpriseJob = mock(EnterpriseJob.class);
         when(mockedEnterpriseJob.getNumberOfJob()).thenReturn(1);
         when(mockedScheduler.nextJob(anyListOf(Job.class))).thenReturn(mockedEnterpriseJob);
         when(mockedEnterpriseSystem.getScheduler()).thenReturn(mockedScheduler);
 
-        Environment mockedEnvironment = mock(Environment.class);
         when(mockedEnvironment.getCurrentLocalTime()).thenReturn(1, 2);
 
         ResourceAllocation mockedResourceAllocation = mock(ResourceAllocation.class);
         when(mockedResourceAllocation.nextServer(anyListOf(BladeServer.class))).thenReturn(0);
         when(mockedEnterpriseSystem.getResourceAllocation()).thenReturn(mockedResourceAllocation);
 
-        EnterpriseApp enterpriseApplication = new EnterpriseApp(enterpriseApplicationPOD, mockedEnterpriseSystem,
-                mockedEnvironment);
+        EnterpriseApp enterpriseApplication = new EnterpriseApp(enterpriseApplicationPOD, mockedScheduler,
+                mockedEnterpriseSystem, mockedEnvironment);
         enterpriseApplication.setMaxNumberOfRequest(100);
         enterpriseApplication.setNumberofBasicNode(1);
 
@@ -475,7 +439,6 @@ public class EnterpriseAppTest {
 
         verify(mockedEnvironment, times(5)).getCurrentLocalTime();
 
-        verify(mockedEnterpriseSystem).getScheduler();
         verify(mockedEnterpriseSystem).getResourceAllocation();
 
         verify(mockedScheduler, times(3)).nextJob(anyListOf(Job.class));
@@ -499,21 +462,13 @@ public class EnterpriseAppTest {
             fail(FAIL_ERROR_MESSAGE);
         }
 
-        verifyNoMoreInteractions(mockedScheduler, mockedResourceAllocation, mockedEnterpriseJob, mockedEnterpriseSystem,
-                mockedEnvironment, mockedBufferedReader, mockedBladeServer);
+        verifyNoMoreInteractions(mockedBladeServer);
     }
 
     @Test
     public void testDestroyApplication() {
-        EnterpriseApplicationPOD enterpriseApplicationPOD = new EnterpriseApplicationPOD();
-
-        BufferedReader mockedBufferedReader = mock(BufferedReader.class);
-        enterpriseApplicationPOD.setBIS(mockedBufferedReader);
-
-        EnterpriseSystem mockedEnterpriseSystem = mock(EnterpriseSystem.class);
-        Environment mockedEnvironment = mock(Environment.class);
-        EnterpriseApp enterpriseApplication = new EnterpriseApp(enterpriseApplicationPOD, mockedEnterpriseSystem,
-                mockedEnvironment);
+        EnterpriseApp enterpriseApplication = new EnterpriseApp(enterpriseApplicationPOD, mockedScheduler,
+                mockedEnterpriseSystem, mockedEnvironment);
 
         BladeServer mockedBladeServer = mock(BladeServer.class);
         when(mockedBladeServer.isRunningNormal()).thenReturn(true);
@@ -548,10 +503,8 @@ public class EnterpriseAppTest {
             fail("Ouch");
         }
 
-        verify(mockedEnterpriseSystem).getScheduler();
         verify(mockedEnterpriseSystem).getResourceAllocation();
 
-        verifyNoMoreInteractions(mockedBladeServer, mockedBufferedReader, mockedEnterpriseSystem, mockedEnvironment);
-
+        verifyNoMoreInteractions(mockedBladeServer);
     }
 }

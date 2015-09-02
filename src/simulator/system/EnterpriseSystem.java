@@ -9,8 +9,6 @@ import simulator.Environment;
 import simulator.SLAViolationLogger;
 import simulator.am.EnterpriseSystemAM;
 import simulator.physical.BladeServer;
-import simulator.physical.DataCenter;
-import simulator.ra.MHR;
 import simulator.ra.ResourceAllocation;
 import simulator.schedulers.Scheduler;
 
@@ -35,7 +33,7 @@ public class EnterpriseSystem extends GeneralSystem {
     
     private void loadEnterpriseApplications(SystemPOD systemPOD) {
         for (EnterpriseApplicationPOD pod : ((EnterpriseSystemPOD) systemPOD).getApplicationPODs()) {
-            EnterpriseApp enterpriseApplication = EnterpriseApp.create(pod, this, environment);
+            EnterpriseApp enterpriseApplication = EnterpriseApp.create(pod, getScheduler(), this, environment);
             applicationList.add(enterpriseApplication);
         }
     }
