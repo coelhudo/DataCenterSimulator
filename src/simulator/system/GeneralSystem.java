@@ -3,7 +3,6 @@ package simulator.system;
 import java.io.BufferedReader;
 import java.util.List;
 
-import simulator.am.GeneralAM;
 import simulator.am.SystemAM;
 import simulator.physical.BladeServer;
 import simulator.ra.ResourceAllocation;

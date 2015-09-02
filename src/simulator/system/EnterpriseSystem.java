@@ -6,7 +6,6 @@ import java.util.List;
 import java.util.logging.Logger;
 
 import simulator.Environment;
-import simulator.SLAViolationLogger;
 import simulator.am.ApplicationAM;
 import simulator.am.EnterpriseSystemAM;
 import simulator.physical.BladeServer;
