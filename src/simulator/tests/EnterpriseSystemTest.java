@@ -22,7 +22,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import simulator.Environment;
-import simulator.SLAViolationLogger;
+import simulator.am.EnterpriseSystemAM;
 import simulator.jobs.EnterpriseJob;
 import simulator.ra.ResourceAllocation;
 import simulator.schedulers.Scheduler;
@@ -37,7 +37,7 @@ public class EnterpriseSystemTest {
     public Environment mockedEnvironment;
     public Scheduler mockedScheduler;
     public ResourceAllocation mockedResourceAllocation;
-    public SLAViolationLogger mockedSLAViolationLogger;
+    public EnterpriseSystemAM mockedEnterpriseSystemAM;
 
     @Before
     public void setUp() {
@@ -45,20 +45,20 @@ public class EnterpriseSystemTest {
         mockedEnvironment = mock(Environment.class);
         mockedScheduler = mock(Scheduler.class);
         mockedResourceAllocation = mock(ResourceAllocation.class);
-        mockedSLAViolationLogger = mock(SLAViolationLogger.class);
+        mockedEnterpriseSystemAM = mock(EnterpriseSystemAM.class);
     }
 
     @After
     public void tearDown() {
         verifyNoMoreInteractions(mockedEnvironment, mockedResourceAllocation, mockedScheduler,
-                mockedSLAViolationLogger);
+                mockedEnterpriseSystemAM);
     }
 
     @Test
     public void testEnterpriseSystemCreation() {
-        EnterpriseSystem enterpriseSystem = EnterpriseSystem.Create(enterpriseSystemPOD, mockedEnvironment, mockedScheduler,
-                mockedResourceAllocation, mockedSLAViolationLogger);
-        
+        EnterpriseSystem enterpriseSystem = EnterpriseSystem.Create(enterpriseSystemPOD, mockedEnvironment,
+                mockedScheduler, mockedResourceAllocation, mockedEnterpriseSystemAM);
+
         assertFalse(enterpriseSystem.isDone());
         assertFalse(enterpriseSystem.isThereFreeNodeforApp());
         assertFalse(enterpriseSystem.checkForViolation());
@@ -79,16 +79,14 @@ public class EnterpriseSystemTest {
         assertEquals(0, enterpriseSystem.getSLAviolation());
 
         verify(mockedResourceAllocation).initialResourceAlocator(enterpriseSystem);
-
-        verifyNoMoreInteractions(mockedEnvironment, mockedResourceAllocation, mockedScheduler,
-                mockedSLAViolationLogger);
+        verify(mockedEnterpriseSystemAM).setManagedSystem(enterpriseSystem);
     }
 
     @Test
     public void testRunACycle_WithoutApplication() {
-        EnterpriseSystem enterpriseSystem = EnterpriseSystem.Create(enterpriseSystemPOD, mockedEnvironment, mockedScheduler,
-                mockedResourceAllocation, mockedSLAViolationLogger);
-        
+        EnterpriseSystem enterpriseSystem = EnterpriseSystem.Create(enterpriseSystemPOD, mockedEnvironment,
+                mockedScheduler, mockedResourceAllocation, mockedEnterpriseSystemAM);
+
         try {
             Method runACycle = EnterpriseSystem.class.getDeclaredMethod("runAcycle");
             runACycle.setAccessible(true);
@@ -108,7 +106,7 @@ public class EnterpriseSystemTest {
         }
 
         verify(mockedResourceAllocation).initialResourceAlocator(enterpriseSystem);
-
+        verify(mockedEnterpriseSystemAM).setManagedSystem(enterpriseSystem);
     }
 
     @Test
@@ -122,10 +120,9 @@ public class EnterpriseSystemTest {
         }
         enterpriseApplicationPOD.setBIS(mockedBufferedReader);
         enterpriseSystemPOD.appendEnterpriseApplicationPOD(enterpriseApplicationPOD);
-        EnterpriseSystem enterpriseSystem = EnterpriseSystem.Create(enterpriseSystemPOD, mockedEnvironment, mockedScheduler,
-                mockedResourceAllocation, mockedSLAViolationLogger);
-    
-        
+        EnterpriseSystem enterpriseSystem = EnterpriseSystem.Create(enterpriseSystemPOD, mockedEnvironment,
+                mockedScheduler, mockedResourceAllocation, mockedEnterpriseSystemAM);
+
         when(mockedEnvironment.getCurrentLocalTime()).thenReturn(1);
         EnterpriseJob enterpriseJob = new EnterpriseJob();
         enterpriseJob.setArrivalTimeOfJob(1);
@@ -159,7 +156,7 @@ public class EnterpriseSystemTest {
         verify(mockedScheduler).nextJob(anyListOf(EnterpriseJob.class));
         verify(mockedEnvironment).getCurrentLocalTime();
         verify(mockedResourceAllocation).initialResourceAlocator(enterpriseSystem);
-
+        verify(mockedEnterpriseSystemAM).setManagedSystem(enterpriseSystem);
         verifyNoMoreInteractions(mockedBufferedReader);
     }
 }

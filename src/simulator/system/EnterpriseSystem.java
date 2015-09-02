@@ -106,10 +106,10 @@ public class EnterpriseSystem extends GeneralSystem {
     }
 
     public static EnterpriseSystem Create(SystemPOD systemPOD, Environment environment, Scheduler scheduler,
-            ResourceAllocation resourceAllocation, SLAViolationLogger slaViolationLogger) {
+            ResourceAllocation resourceAllocation, EnterpriseSystemAM enterpriseSystemAM) {
         EnterpriseSystem enterpriseSystem = new EnterpriseSystem(systemPOD, environment, scheduler, resourceAllocation);
         enterpriseSystem.getResourceAllocation().initialResourceAlocator(enterpriseSystem);
-        enterpriseSystem.setAM(new EnterpriseSystemAM(environment, slaViolationLogger));
+        enterpriseSystem.setAM(enterpriseSystemAM);
         return enterpriseSystem;
     }
 }

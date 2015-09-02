@@ -18,6 +18,7 @@ import simulator.system.InteractiveSystemPOD;
 import simulator.system.Systems;
 import simulator.system.SystemsPOD;
 import simulator.am.DataCenterAM;
+import simulator.am.EnterpriseSystemAM;
 import simulator.utils.ActivitiesLogger;
 
 public class Simulator {
@@ -53,7 +54,7 @@ public class Simulator {
         SystemsPOD systemsPOD = simulatorPOD.getSystemsPOD();
         for (EnterpriseSystemPOD enterprisesystemPOD : systemsPOD.getEnterpriseSystemsPOD()) {
             systems.addEnterpriseSystem(EnterpriseSystem.Create(enterprisesystemPOD, environment, new FIFOScheduler(),
-                    new MHR(environment, datacenter), slaViolationLogger));
+                    new MHR(environment, datacenter), new EnterpriseSystemAM(environment, slaViolationLogger)));
         }
         for (ComputeSystemPOD computeSystemPOD : systemsPOD.getComputeSystemsPOD()) {
             systems.addComputeSystem(
