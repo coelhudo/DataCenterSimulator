@@ -1,6 +1,8 @@
 package simulator;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Observable;
 import java.util.Observer;
 import java.util.logging.FileHandler;
@@ -8,15 +10,20 @@ import java.util.logging.Logger;
 
 import simulator.physical.DataCenter;
 import simulator.ra.MHR;
+import simulator.ra.ResourceAllocation;
 import simulator.system.ComputeSystem;
 import simulator.system.ComputeSystemPOD;
+import simulator.system.EnterpriseApp;
+import simulator.system.EnterpriseApplicationPOD;
 import simulator.system.EnterpriseSystem;
 import simulator.system.EnterpriseSystemPOD;
+import simulator.schedulers.Scheduler;
 import simulator.schedulers.FIFOScheduler;
 import simulator.system.InteractiveSystem;
 import simulator.system.InteractiveSystemPOD;
 import simulator.system.Systems;
 import simulator.system.SystemsPOD;
+import simulator.am.ApplicationAM;
 import simulator.am.DataCenterAM;
 import simulator.am.EnterpriseSystemAM;
 import simulator.utils.ActivitiesLogger;
@@ -52,9 +59,19 @@ public class Simulator {
         dataCenterAM = new DataCenterAM(environment, systems);
         datacenter = new DataCenter(simulatorPOD.getDataCenterPOD(), dataCenterAM, activitiesLogger, environment);
         SystemsPOD systemsPOD = simulatorPOD.getSystemsPOD();
-        for (EnterpriseSystemPOD enterprisesystemPOD : systemsPOD.getEnterpriseSystemsPOD()) {
-            systems.addEnterpriseSystem(EnterpriseSystem.Create(enterprisesystemPOD, environment, new FIFOScheduler(),
-                    new MHR(environment, datacenter), new EnterpriseSystemAM(environment, slaViolationLogger)));
+        for (EnterpriseSystemPOD enterpriseSystemPOD : systemsPOD.getEnterpriseSystemsPOD()) {
+            EnterpriseSystemAM enterpriseSystemAM = new EnterpriseSystemAM(environment, slaViolationLogger);
+            Scheduler scheduler = new FIFOScheduler();
+            ResourceAllocation resourceAllocation = new MHR(environment, datacenter);
+            List<EnterpriseApp> applications = new ArrayList<EnterpriseApp>();
+            for (EnterpriseApplicationPOD pod : enterpriseSystemPOD.getApplicationPODs()) {
+                ApplicationAM applicationAM = new ApplicationAM(applications, enterpriseSystemAM, environment);
+                EnterpriseApp enterpriseApplication = EnterpriseApp.create(pod, scheduler, resourceAllocation,
+                        environment, applicationAM);
+                applications.add(enterpriseApplication);
+            }
+            systems.addEnterpriseSystem(EnterpriseSystem.Create(enterpriseSystemPOD, scheduler,
+                    resourceAllocation, enterpriseSystemAM, applications));
         }
         for (ComputeSystemPOD computeSystemPOD : systemsPOD.getComputeSystemsPOD()) {
             systems.addComputeSystem(

@@ -15,7 +15,7 @@ import simulator.physical.BladeServer;
 import simulator.ra.ResourceAllocation;
 import simulator.schedulers.Scheduler;
 
-public final class EnterpriseApp {
+public class EnterpriseApp {
 
     private static final Logger LOGGER = Logger.getLogger(EnterpriseApp.class.getName());
 
@@ -156,7 +156,7 @@ public final class EnterpriseApp {
     }
     // False: logfile is finished and no remain job
 
-    boolean runAcycle() {
+    public boolean runAcycle() {
         int readingResult = readWebJob();
         //////// RESET READY FLAGS for all nodes
         resetReadyFlagAndCPU();

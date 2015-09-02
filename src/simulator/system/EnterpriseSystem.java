@@ -16,37 +16,25 @@ public class EnterpriseSystem extends GeneralSystem {
 
     private static final Logger LOGGER = Logger.getLogger(EnterpriseSystem.class.getName());
 
-    private List<EnterpriseApp> applicationList;
-    private Environment environment;
-
-    private EnterpriseSystem(SystemPOD systemPOD, Environment environment, Scheduler scheduler,
+    private List<EnterpriseApp> applications;
+    
+    private EnterpriseSystem(SystemPOD systemPOD, List<EnterpriseApp> applications, Scheduler scheduler,
             ResourceAllocation resourceAllocation) {
         super(systemPOD, scheduler, resourceAllocation);
-        this.environment = environment;
         setComputeNodeList(new ArrayList<BladeServer>());
         setComputeNodeIndex(new ArrayList<Integer>());
-        applicationList = new ArrayList<EnterpriseApp>();
         resetNumberOfSLAViolation();
         setNumberOfNode(systemPOD.getNumberOfNode());
         setRackIDs(systemPOD.getRackIDs());
-        loadEnterpriseApplications(systemPOD);
-    }
-
-    private void loadEnterpriseApplications(SystemPOD systemPOD) {
-        for (EnterpriseApplicationPOD pod : ((EnterpriseSystemPOD) systemPOD).getApplicationPODs()) {
-            ApplicationAM applicationAM = new ApplicationAM(applicationList, getAM(), environment);
-            EnterpriseApp enterpriseApplication = EnterpriseApp.create(pod, getScheduler(), getResourceAllocation(),
-                    environment, applicationAM);
-            applicationList.add(enterpriseApplication);
-        }
+        this.applications = applications;
     }
 
     public List<EnterpriseApp> getApplications() {
-        return applicationList;
+        return applications;
     }
 
     public boolean checkForViolation() {
-        for (EnterpriseApp enterpriseApplication : applicationList) {
+        for (EnterpriseApp enterpriseApplication : applications) {
             if (enterpriseApplication.getSLAviolation() > 0) {
                 return true;
             }
@@ -73,30 +61,30 @@ public class EnterpriseSystem extends GeneralSystem {
         return n;
     }
 
-    boolean runAcycle() throws IOException {
+    public boolean runAcycle() throws IOException {
         int finishedBundle = 0;
-        for (int i = 0; i < applicationList.size(); i++) {
+        for (int i = 0; i < applications.size(); i++) {
             // TODO: if each bundle needs some help should ask and here
             // resourceallocation should run
-            if (applicationList.get(i).runAcycle() == false) // return false if
+            if (applications.get(i).runAcycle() == false) // return false if
             // bundle set
             // jobs are
             // done, we need
             // to
             // re-resourcealocation
             {
-                setNumberofIdleNode(applicationList.get(i).getComputeNodeList().size() + getNumberofIdleNode());
-                LOGGER.info("Number of violation in " + applicationList.get(i).getID() + "th application=  "
-                        + applicationList.get(i).getNumofViolation());
-                applicationList.get(i).destroyApplication();
-                applicationList.remove(i);
+                setNumberofIdleNode(applications.get(i).getComputeNodeList().size() + getNumberofIdleNode());
+                LOGGER.info("Number of violation in " + applications.get(i).getID() + "th application=  "
+                        + applications.get(i).getNumofViolation());
+                applications.get(i).destroyApplication();
+                applications.remove(i);
                 finishedBundle++;
             }
         }
         if (finishedBundle > 0) {
             getResourceAllocation().resourceAloc(this);
         }
-        if (applicationList.isEmpty()) {
+        if (applications.isEmpty()) {
             markAsDone();
             return true;
         } else {
@@ -104,9 +92,10 @@ public class EnterpriseSystem extends GeneralSystem {
         }
     }
 
-    public static EnterpriseSystem Create(SystemPOD systemPOD, Environment environment, Scheduler scheduler,
-            ResourceAllocation resourceAllocation, EnterpriseSystemAM enterpriseSystemAM) {
-        EnterpriseSystem enterpriseSystem = new EnterpriseSystem(systemPOD, environment, scheduler, resourceAllocation);
+    public static EnterpriseSystem Create(SystemPOD systemPOD, Scheduler scheduler,
+            ResourceAllocation resourceAllocation, EnterpriseSystemAM enterpriseSystemAM, List<EnterpriseApp> applications) {
+
+        EnterpriseSystem enterpriseSystem = new EnterpriseSystem(systemPOD, applications, scheduler, resourceAllocation);
         enterpriseSystem.getResourceAllocation().initialResourceAlocator(enterpriseSystem);
         enterpriseSystem.setAM(enterpriseSystemAM);
         return enterpriseSystem;
