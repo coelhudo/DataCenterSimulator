@@ -1,5 +1,6 @@
 package simulator.am;
 
+import simulator.Environment;
 import simulator.Simulator;
 
 public abstract class GeneralAM {
@@ -9,6 +10,15 @@ public abstract class GeneralAM {
     private int[] recForCoop;
     private int SLAViolationGen;
     private Simulator.StrategyEnum strategy;
+    private Environment environment;
+    
+    public GeneralAM(Environment environment) {
+        this.environment = environment;
+    }
+    
+    protected Environment environment() {
+        return environment;
+    }
 
     public abstract void monitor();
 

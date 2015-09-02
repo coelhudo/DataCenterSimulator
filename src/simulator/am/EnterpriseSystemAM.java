@@ -22,13 +22,12 @@ public class EnterpriseSystemAM extends SystemAM {
     private int lastTime = 0;
     private int[] accuSLA;
     private double wlkIntens = 0;
-    private Environment environment;
     private SLAViolationLogger slaViolationLogger;
 
     public EnterpriseSystemAM(EnterpriseSystem enterpriseSystem, Environment environment, SLAViolationLogger slaViolationLogger) {
+        super(environment);
         this.enterpriseSystem = enterpriseSystem;
         this.applications = enterpriseSystem.getApplications();
-        this.environment = environment;
         this.slaViolationLogger = slaViolationLogger;
         setRecForCoop(new int[applications.size()]);
     }
@@ -44,7 +43,7 @@ public class EnterpriseSystemAM extends SystemAM {
     @Override
     public void planning() {
         ///// Server Provisioning for each application Bundle///////////
-        if (environment.getCurrentLocalTime() % 1200 == 0) {
+        if (environment().getCurrentLocalTime() % 1200 == 0) {
             // numberOfActiveServ=0;
             // kalmanIndex=Main.localTime/1200;
             // serverProvisioning();
@@ -85,11 +84,11 @@ public class EnterpriseSystemAM extends SystemAM {
             enterpriseSystem.setSLAviolation(enterpriseSystem.getSLAviolation() + applications.get(i).getSLAviolation());
             // assume epoch system 2 time epoch application
             percentCompPwr[i] = applications.get(i).getAM().getPercnt()
-                    / ((environment.getCurrentLocalTime() - lastTime) * 3
+                    / ((environment().getCurrentLocalTime() - lastTime) * 3
                             * applications.get(i).getComputeNodeList().size());// (Main.epochSys*/*3*ES.getApplications().get(i).ComputeNodeList.size());
             applications.get(i).getAM().setPercnt(0);
             accuSLA[i] = applications.get(i).getAM().getAccumulativeSLA()
-                    / (environment.getCurrentLocalTime() - lastTime);// Main.epochSys;
+                    / (environment().getCurrentLocalTime() - lastTime);// Main.epochSys;
             applications.get(i).getAM().setAccumulativeSLA(0);
             // for fair allocate/release node needs to know how many jobs are
             // already in each application queue
@@ -101,7 +100,7 @@ public class EnterpriseSystemAM extends SystemAM {
             enterpriseSystem.setAccumolatedViolation(enterpriseSystem.getAccumolatedViolation() + 1);
         }
         calcSysUtility();
-        lastTime = environment.getCurrentLocalTime();
+        lastTime = environment().getCurrentLocalTime();
     }
 
     public void calcSysUtility() {

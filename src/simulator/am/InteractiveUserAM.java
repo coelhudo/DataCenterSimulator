@@ -21,12 +21,11 @@ public class InteractiveUserAM extends GeneralAM {
     int accumulativeSLA = 0;
     // int cpAccumu=0;
     Simulator.StrategyEnum currentStrategy = Simulator.StrategyEnum.Green;
-    private Environment environment;
 
     public InteractiveUserAM(InteractiveSystem sys, InteractiveUser user, Environment environment) {
+        super(environment);
         this.sys = sys;
         this.user = user;
-        this.environment = environment;
     }
 
     @Override
@@ -63,8 +62,8 @@ public class InteractiveUserAM extends GeneralAM {
             }
         }
         percnt = percnt + levels[0] + 2 * levels[1] + 3 * levels[2];
-        sys.getAM().setCompPowerAppsAt(user.getID(), sys.getAM().getCompPowerAppsAt(user.getID()) + levels[0]
-                + 2 * levels[1] + 3 * levels[2]);
+        sys.getAM().setCompPowerAppsAt(user.getID(),
+                sys.getAM().getCompPowerAppsAt(user.getID()) + levels[0] + 2 * levels[1] + 3 * levels[2]);
         return percnt;
     }
 
@@ -78,7 +77,7 @@ public class InteractiveUserAM extends GeneralAM {
     // SLA Policy
 
     public void analysis_SLA(Object violation) {
-        if (environment.localTimeByEpoch()) {
+        if (environment().localTimeByEpoch()) {
             violationInEpoch = (Integer) violation + violationInEpoch;
             return;
         }
@@ -107,7 +106,7 @@ public class InteractiveUserAM extends GeneralAM {
 
     // Green policy is applied here:
     public void analysis_GR(Object violation) {
-        if (environment.localTimeByEpoch()) {
+        if (environment().localTimeByEpoch()) {
             violationInEpoch = (Integer) violation + violationInEpoch;
             return;
         }
@@ -144,7 +143,7 @@ public class InteractiveUserAM extends GeneralAM {
             for (int j = 0; j < user.getComputeNodeList().size() && tedad > 0; j++) {
                 if (user.getComputeNodeList().get(j).isIdle()) {
                     LOGGER.info(
-                            "USer GR: " + user.getID() + "\tactive a Server!\t\t @" + environment.getCurrentLocalTime()
+                            "USer GR: " + user.getID() + "\tactive a Server!\t\t @" + environment().getCurrentLocalTime()
                                     + "\tNumber of runinng:  " + user.numberofRunningNode());
                     user.getComputeNodeList().get(j).setStatusAsRunningNormal();
                     user.getComputeNodeList().get(j).setMips(1.4);
@@ -217,7 +216,7 @@ public class InteractiveUserAM extends GeneralAM {
         sys.getUserList().get(targetUsr).getComputeNodeList().add(bladeServer);
         user.getComputeNodeList().remove(index);
         LOGGER.info("User :\t" + user.getID() + " ----------> :\t\t " + targetUsr + "\t\t@:"
-                + environment.getCurrentLocalTime() + "\tRunning target node= "
+                + environment().getCurrentLocalTime() + "\tRunning target node= "
                 + sys.getUserList().get(targetUsr).numberofRunningNode() + "\tRunning this node= "
                 + user.numberofRunningNode() + "\tstrtgy= " + currentStrategy);
         currentStrategy = Simulator.StrategyEnum.SLA;

@@ -13,11 +13,10 @@ public class InteractiveSystemAM extends SystemAM {
     private int[] accuSLA;
     private double[] queueLengthUsr;
     private int lastTime = 0;
-    private Environment environment;
-
+    
     public InteractiveSystemAM(InteractiveSystem interactiveSystem, Environment environment) {
+        super(environment);
         this.interatctiveSystem = interactiveSystem;
-        this.environment = environment;
         setRecForCoop(new int[interatctiveSystem.getUserList().size()]);
     }
 
@@ -31,7 +30,7 @@ public class InteractiveSystemAM extends SystemAM {
     @Override
     public void planning() {
         ///// Server Provisioning for each application Bundle///////////
-        if (environment.getCurrentLocalTime() % 1200 == 0) {
+        if (environment().getCurrentLocalTime() % 1200 == 0) {
             // numberOfActiveServ=0;
             // kalmanIndex=Main.localTime/1200;
             // serverProvisioning();
@@ -69,18 +68,18 @@ public class InteractiveSystemAM extends SystemAM {
         workloadIntensity();
         for (int i = 0; i < interatctiveSystem.getUserList().size(); i++) {
             // assume epoch system 2 time epoch application
-            percentCompPwr[i] = interatctiveSystem.getUserList().get(i).getAM().percnt / ((environment.getCurrentLocalTime() - lastTime)
+            percentCompPwr[i] = interatctiveSystem.getUserList().get(i).getAM().percnt / ((environment().getCurrentLocalTime() - lastTime)
                     * 3 * interatctiveSystem.getUserList().get(i).getComputeNodeList().size());// (Main.epochSys*/*3*ES.applicationList.get(i).ComputeNodeList.size());
             interatctiveSystem.getUserList().get(i).getAM().percnt = 0;
             accuSLA[i] = interatctiveSystem.getUserList().get(i).getAM().accumulativeSLA
-                    / (environment.getCurrentLocalTime() - lastTime);// Main.epochSys;
+                    / (environment().getCurrentLocalTime() - lastTime);// Main.epochSys;
             interatctiveSystem.getUserList().get(i).getAM().accumulativeSLA = 0;
             // for fair allocate/release node needs to know how many jobs are
             // already in each application queue
             queueLengthUsr[i] = interatctiveSystem.getUserList().get(i).numberOfWaitingJobs();
         }
         calcSysUtility();
-        lastTime = environment.getCurrentLocalTime();
+        lastTime = environment().getCurrentLocalTime();
         setSLAViolationGen(interatctiveSystem.getSLAviolation());
     }
 

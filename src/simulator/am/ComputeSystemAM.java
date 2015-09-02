@@ -11,11 +11,10 @@ public class ComputeSystemAM extends SystemAM {
     private static final Logger LOGGER = Logger.getLogger(ComputeSystemAM.class.getName());
 
     private ComputeSystem computeSystem;
-    private Environment environment;
 
     public ComputeSystemAM(ComputeSystem computeSytem, Environment environment) {
+        super(environment);
         this.computeSystem = computeSytem;
-        this.environment = environment;
     }
 
     @Override
@@ -59,11 +58,11 @@ public class ComputeSystemAM extends SystemAM {
             int tedad = 0;
             for (BladeServer bladeServer : computeSystem.getComputeNodeList()) {
                 if (bladeServer.isIdle()) {
-                    LOGGER.info("CSys GR: " + "\tactive a Server!\t\t @" + environment.getCurrentLocalTime()
+                    LOGGER.info("CSys GR: " + "\tactive a Server!\t\t @" + environment().getCurrentLocalTime()
                             + "\tNumber of runinng:  " + computeSystem.numberOfRunningNode());
                     bladeServer.setStatusAsRunningNormal();
                     bladeServer.setMips(1.4);
-                    environment.updateNumberOfMessagesFromSystemToNodes();
+                    environment().updateNumberOfMessagesFromSystemToNodes();
                     tedad++;
                 }
                 if (tedad == hlfNumofSlept) {
@@ -91,7 +90,7 @@ public class ComputeSystemAM extends SystemAM {
             for (BladeServer bladeServer : computeSystem.getComputeNodeList()) {
                 if (bladeServer.getActiveBatchList().isEmpty() && bladeServer.getBlockedBatchList().isEmpty()
                         && bladeServer.isRunning()) {
-                    environment.updateNumberOfMessagesFromSystemToNodes();
+                    environment().updateNumberOfMessagesFromSystemToNodes();
                     bladeServer.setStatusAsIdle();
                 }
             }
@@ -110,7 +109,7 @@ public class ComputeSystemAM extends SystemAM {
                     computeSystem.getComputeNodeList().get(i).increaseFrequency();
                 }
                 if (computeSystem.getComputeNodeList().get(i).isIdle()) {
-                    environment.updateNumberOfMessagesFromSystemToNodes();
+                    environment().updateNumberOfMessagesFromSystemToNodes();
                     computeSystem.getComputeNodeList().get(i).setStatusAsRunningNormal();
                 }
             }
@@ -132,10 +131,10 @@ public class ComputeSystemAM extends SystemAM {
 
     @Override
     public void analysis(Object vilation) {
-        if (environment.localTimeByEpoch()) {
+        if (environment().localTimeByEpoch()) {
             return;
         }
-        environment.updateNumberOfMessagesFromDataCenterToSystem(); // one
+        environment().updateNumberOfMessagesFromDataCenterToSystem(); // one
         // message
         // for
         // monitoring

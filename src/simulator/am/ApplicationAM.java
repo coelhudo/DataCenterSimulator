@@ -19,16 +19,15 @@ public class ApplicationAM extends GeneralAM {
     private double percnt = 0;
     private int accumulativeSLA = 0;
     private Simulator.StrategyEnum strategySwitch = Simulator.StrategyEnum.Green;
-    private Environment environment;
     private GeneralAM am;
     private List<EnterpriseApp> applications;
 
     public ApplicationAM(List<EnterpriseApp> applications, GeneralAM am, Environment environment) {
+        super(environment);
         this.am = am;
         this.applications = applications;
-        this.environment = environment;
     }
-    
+
     public void setApplication(EnterpriseApp app) {
         this.app = app;
     }
@@ -84,8 +83,8 @@ public class ApplicationAM extends GeneralAM {
             }
         }
         setPercnt(getPercnt() + levels[0] + 2 * levels[1] + 3 * levels[2]);
-        am.setCompPowerAppsAt(app.getID(), am.getCompPowerAppsAt(app.getID()) + levels[0]
-                + 2 * levels[1] + 3 * levels[2]);
+        am.setCompPowerAppsAt(app.getID(),
+                am.getCompPowerAppsAt(app.getID()) + levels[0] + 2 * levels[1] + 3 * levels[2]);
         return getPercnt();
     }
 
@@ -128,7 +127,7 @@ public class ApplicationAM extends GeneralAM {
     // SLA Policy
 
     public void analysis_SLA(Object violation) {
-        if (environment.localTimeByEpoch()) {
+        if (environment().localTimeByEpoch()) {
             violationInEpoch = (Integer) violation + violationInEpoch;
             return;
         }
@@ -149,7 +148,7 @@ public class ApplicationAM extends GeneralAM {
                     app.getComputeNodeList().get(j).setStatusAsRunningNormal();
                     app.getComputeNodeList().get(j).setMips(1.4);
                     tedad--;
-                    environment.updateNumberOfMessagesFromDataCenterToSystem();
+                    environment().updateNumberOfMessagesFromDataCenterToSystem();
                 }
             }
         }
@@ -158,7 +157,7 @@ public class ApplicationAM extends GeneralAM {
 
     // Green policy is applied here:
     public void analysis_GR(Object violation) {
-        if (environment.localTimeByEpoch()) {
+        if (environment().localTimeByEpoch()) {
             violationInEpoch = (Integer) violation + violationInEpoch;
             return;
         }
@@ -173,12 +172,11 @@ public class ApplicationAM extends GeneralAM {
 
             for (int j = 0; j < app.getComputeNodeList().size()
                     & app.numberofRunningNode() > (app.getMinProc() + 1); j++) {
-                if (app.getComputeNodeList().get(j).isIdle()
-                        && app.getComputeNodeList().get(j).getCurrentCPU() == 0) {
+                if (app.getComputeNodeList().get(j).isIdle() && app.getComputeNodeList().get(j).getCurrentCPU() == 0) {
                     app.getComputeNodeList().get(j).makeItIdle(new EnterpriseJob());
                     // LOGGER.info("\tIdle\t\t\t\t\t@:"+Main.localTime+"\tNumber
                     // of running== "+app.numberofRunningNode());
-                    environment.updateNumberOfMessagesFromDataCenterToSystem();
+                    environment().updateNumberOfMessagesFromDataCenterToSystem();
                 }
             }
         }
@@ -195,11 +193,11 @@ public class ApplicationAM extends GeneralAM {
             for (int j = 0; j < app.getComputeNodeList().size() && tedad > 0; j++) {
                 if (app.getComputeNodeList().get(j).isIdle()) {
                     LOGGER.info("App GR: " + app.getID() + "\tactive a Server!\t\t @"
-                            + environment.getCurrentLocalTime() + "\tNumber of runinng:  " + app.numberofRunningNode());
+                            + environment().getCurrentLocalTime() + "\tNumber of runinng:  " + app.numberofRunningNode());
                     app.getComputeNodeList().get(j).setStatusAsRunningNormal();
                     app.getComputeNodeList().get(j).setMips(1.4);
                     tedad--;
-                    environment.updateNumberOfMessagesFromDataCenterToSystem();
+                    environment().updateNumberOfMessagesFromDataCenterToSystem();
                 }
             }
         }
@@ -269,7 +267,7 @@ public class ApplicationAM extends GeneralAM {
         applications.get(targetApp).getComputeNodeList().add(bladeServer);
         app.getComputeNodeList().remove(index);
         LOGGER.info("app:\t" + app.getID() + " ----------> :\t\t " + targetApp + "\t\t@:"
-                + environment.getCurrentLocalTime() + "\tRunning target node= "
+                + environment().getCurrentLocalTime() + "\tRunning target node= "
                 + applications.get(targetApp).numberofRunningNode() + "\tRunning this node= "
                 + app.numberofRunningNode() + "\tstrtgy= " + getStrategySwitch());
         setStrategySwitch(Simulator.StrategyEnum.SLA);
