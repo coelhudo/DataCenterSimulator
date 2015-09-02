@@ -6,11 +6,11 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
-import static org.mockito.Mockito.verify;
 import static org.mockito.Matchers.anyListOf;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
+import static org.mockito.Mockito.when;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -21,12 +21,12 @@ import org.junit.Test;
 
 import simulator.Environment;
 import simulator.SLAViolationLogger;
-import simulator.physical.DataCenter;
 import simulator.jobs.EnterpriseJob;
+import simulator.ra.ResourceAllocation;
 import simulator.schedulers.Scheduler;
+import simulator.system.EnterpriseApplicationPOD;
 import simulator.system.EnterpriseSystem;
 import simulator.system.EnterpriseSystemPOD;
-import simulator.system.EnterpriseApplicationPOD;
 import simulator.system.SystemPOD;
 
 public class EnterpriseSystemTest {
@@ -38,10 +38,10 @@ public class EnterpriseSystemTest {
         SystemPOD systemPOD = new EnterpriseSystemPOD();
         Environment mockedEnvironment = mock(Environment.class);
         Scheduler mockedScheduler = mock(Scheduler.class);
-        DataCenter mockedDataCenter = mock(DataCenter.class);
+        ResourceAllocation mockedResourceAllocation = mock(ResourceAllocation.class);
         SLAViolationLogger mockedSLAViolationLogger = mock(SLAViolationLogger.class);
         EnterpriseSystem enterpriseSystem = EnterpriseSystem.Create(systemPOD, mockedEnvironment, mockedScheduler,
-                mockedDataCenter, mockedSLAViolationLogger);
+                mockedResourceAllocation, mockedSLAViolationLogger);
 
         assertFalse(enterpriseSystem.isDone());
         assertFalse(enterpriseSystem.isThereFreeNodeforApp());
@@ -61,8 +61,11 @@ public class EnterpriseSystemTest {
         assertNotNull(enterpriseSystem.getResourceAllocation());
         assertNotNull(enterpriseSystem.getScheduler());
         assertEquals(0, enterpriseSystem.getSLAviolation());
+        
+        verify(mockedResourceAllocation).initialResourceAlocator(enterpriseSystem);
 
-        verifyNoMoreInteractions(mockedEnvironment, mockedDataCenter, mockedScheduler, mockedSLAViolationLogger);
+        verifyNoMoreInteractions(mockedEnvironment, mockedResourceAllocation, mockedScheduler,
+                mockedSLAViolationLogger);
     }
 
     @Test
@@ -70,10 +73,10 @@ public class EnterpriseSystemTest {
         SystemPOD systemPOD = new EnterpriseSystemPOD();
         Environment mockedEnvironment = mock(Environment.class);
         Scheduler mockedScheduler = mock(Scheduler.class);
-        DataCenter mockedDataCenter = mock(DataCenter.class);
+        ResourceAllocation mockedResourceAllocation = mock(ResourceAllocation.class);
         SLAViolationLogger mockedSLAViolationLogger = mock(SLAViolationLogger.class);
         EnterpriseSystem enterpriseSystem = EnterpriseSystem.Create(systemPOD, mockedEnvironment, mockedScheduler,
-                mockedDataCenter, mockedSLAViolationLogger);
+                mockedResourceAllocation, mockedSLAViolationLogger);
 
         try {
             Method runACycle = EnterpriseSystem.class.getDeclaredMethod("runAcycle");
@@ -93,7 +96,10 @@ public class EnterpriseSystemTest {
             fail(FAIL_ERROR_MESSAGE);
         }
 
-        verifyNoMoreInteractions(mockedEnvironment, mockedDataCenter, mockedScheduler, mockedSLAViolationLogger);
+        verify(mockedResourceAllocation).initialResourceAlocator(enterpriseSystem);
+        
+        verifyNoMoreInteractions(mockedEnvironment, mockedResourceAllocation, mockedScheduler,
+                mockedSLAViolationLogger);
     }
 
     @Test
@@ -116,10 +122,10 @@ public class EnterpriseSystemTest {
         enterpriseJob.setArrivalTimeOfJob(1);
         enterpriseJob.setNumberOfJob(1);
         when(mockedScheduler.nextJob(anyListOf(EnterpriseJob.class))).thenReturn(enterpriseJob);
-        DataCenter mockedDataCenter = mock(DataCenter.class);
+        ResourceAllocation mockedResourceAllocation = mock(ResourceAllocation.class);
         SLAViolationLogger mockedSLAViolationLogger = mock(SLAViolationLogger.class);
         EnterpriseSystem enterpriseSystem = EnterpriseSystem.Create(systemPOD, mockedEnvironment, mockedScheduler,
-                mockedDataCenter, mockedSLAViolationLogger);
+                mockedResourceAllocation, mockedSLAViolationLogger);
 
         try {
             Method runACycle = EnterpriseSystem.class.getDeclaredMethod("runAcycle");
@@ -147,7 +153,9 @@ public class EnterpriseSystemTest {
 
         verify(mockedScheduler).nextJob(anyListOf(EnterpriseJob.class));
         verify(mockedEnvironment).getCurrentLocalTime();
+        verify(mockedResourceAllocation).initialResourceAlocator(enterpriseSystem);
 
-        verifyNoMoreInteractions(mockedBufferedReader, mockedEnvironment, mockedDataCenter, mockedScheduler, mockedSLAViolationLogger);
+        verifyNoMoreInteractions(mockedBufferedReader, mockedEnvironment, mockedResourceAllocation, mockedScheduler,
+                mockedSLAViolationLogger);
     }
 }

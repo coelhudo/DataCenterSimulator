@@ -7,6 +7,7 @@ import java.util.logging.FileHandler;
 import java.util.logging.Logger;
 
 import simulator.physical.DataCenter;
+import simulator.ra.MHR;
 import simulator.system.ComputeSystem;
 import simulator.system.ComputeSystemPOD;
 import simulator.system.EnterpriseSystem;
@@ -52,7 +53,8 @@ public class Simulator {
         SystemsPOD systemsPOD = simulatorPOD.getSystemsPOD();
         for (EnterpriseSystemPOD enterprisesystemPOD : systemsPOD.getEnterpriseSystemsPOD()) {
             systems.addEnterpriseSystem(
-                    EnterpriseSystem.Create(enterprisesystemPOD, environment, new FIFOScheduler(), datacenter, slaViolationLogger));
+EnterpriseSystem.Create(enterprisesystemPOD, environment, new FIFOScheduler(),
+                    new MHR(environment, datacenter), slaViolationLogger));
         }
         for (ComputeSystemPOD computeSystemPOD : systemsPOD.getComputeSystemsPOD()) {
             systems.addComputeSystem(

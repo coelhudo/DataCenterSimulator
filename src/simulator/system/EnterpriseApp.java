@@ -504,7 +504,7 @@ public final class EnterpriseApp {
         this.numberofBasicNode = numberofBasicNode;
     }
 
-    public static EnterpriseApp Create(EnterpriseApplicationPOD enterpriseApplicationPOD, EnterpriseSystem parent,
+    public static EnterpriseApp create(EnterpriseApplicationPOD enterpriseApplicationPOD, EnterpriseSystem parent,
             Environment environment) {
         EnterpriseApp enterpriseApplication = new EnterpriseApp(enterpriseApplicationPOD, parent, environment);
         enterpriseApplication.setAM(new ApplicationAM(parent, enterpriseApplication, environment));

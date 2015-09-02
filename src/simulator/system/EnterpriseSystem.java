@@ -11,6 +11,7 @@ import simulator.am.EnterpriseSystemAM;
 import simulator.physical.BladeServer;
 import simulator.physical.DataCenter;
 import simulator.ra.MHR;
+import simulator.ra.ResourceAllocation;
 import simulator.schedulers.Scheduler;
 
 public class EnterpriseSystem extends GeneralSystem {
@@ -20,8 +21,8 @@ public class EnterpriseSystem extends GeneralSystem {
     private List<EnterpriseApp> applicationList;
     private Environment environment;
     
-    private EnterpriseSystem(SystemPOD systemPOD, Environment environment, Scheduler scheduler, DataCenter dataCenter) {
-        super(systemPOD, scheduler, new MHR(environment, dataCenter));
+    private EnterpriseSystem(SystemPOD systemPOD, Environment environment, Scheduler scheduler, ResourceAllocation resourceAllocation) {
+        super(systemPOD, scheduler, resourceAllocation);
         this.environment = environment;
         setComputeNodeList(new ArrayList<BladeServer>());
         setComputeNodeIndex(new ArrayList<Integer>());
@@ -34,7 +35,7 @@ public class EnterpriseSystem extends GeneralSystem {
     
     private void loadEnterpriseApplications(SystemPOD systemPOD) {
         for (EnterpriseApplicationPOD pod : ((EnterpriseSystemPOD) systemPOD).getApplicationPODs()) {
-            EnterpriseApp enterpriseApplication = EnterpriseApp.Create(pod, this, environment);
+            EnterpriseApp enterpriseApplication = EnterpriseApp.create(pod, this, environment);
             applicationList.add(enterpriseApplication);
         }
     }
@@ -102,9 +103,9 @@ public class EnterpriseSystem extends GeneralSystem {
         }
     }
 
-    public static EnterpriseSystem Create(SystemPOD systemPOD, Environment environment, Scheduler scheduler, DataCenter dataCenter,
+    public static EnterpriseSystem Create(SystemPOD systemPOD, Environment environment, Scheduler scheduler, ResourceAllocation resourceAllocation,
             SLAViolationLogger slaViolationLogger) {
-        EnterpriseSystem enterpriseSystem = new EnterpriseSystem(systemPOD, environment, scheduler, dataCenter);
+        EnterpriseSystem enterpriseSystem = new EnterpriseSystem(systemPOD, environment, scheduler, resourceAllocation);
         enterpriseSystem.getResourceAllocation().initialResourceAlocator(enterpriseSystem);
         //FIXME: why violation is logged in the AM class instead the system class
         enterpriseSystem.setAM(new EnterpriseSystemAM(enterpriseSystem, environment, slaViolationLogger));
