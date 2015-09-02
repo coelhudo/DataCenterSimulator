@@ -23,7 +23,7 @@ public class GeneralSystem {
     private List<BladeServer> computeNodeList;
     private List<Integer> computeNodeIndex;
     private BufferedReader bis = null;
-    protected int slaViolation;
+    private int slaViolation;
     private boolean sysIsDone = false;
     private double power = 0;
     private GeneralAM am;

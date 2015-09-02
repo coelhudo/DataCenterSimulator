@@ -149,11 +149,11 @@ public class ComputeSystem extends GeneralSystem {
         // resourceIsAvailable
         {
             SLAViolationType = Violation.COMPUTE_NODE_SHORTAGE;
-            slaViolation++;
+            setSLAviolation(getSLAviolation()+1);
         }
         if (flag == Violation.DEADLINE_PASSED) {
             SLAViolationType = Violation.DEADLINE_PASSED;
-            slaViolation++;
+            setSLAviolation(getSLAviolation()+1);
         }
         if (SLAViolationType != Violation.NOTHING) {
             slaViolationLogger.logHPCViolation(getName(), SLAViolationType);
