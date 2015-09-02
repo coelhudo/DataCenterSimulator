@@ -8,7 +8,7 @@ public abstract class GeneralAM {
     protected double[] SlaApps = new double[256];
     private int[] recForCoop;
     private int SLAViolationGen;
-    Simulator.StrategyEnum strategy;
+    private Simulator.StrategyEnum strategy;
 
     public abstract void monitor();
 
@@ -44,5 +44,13 @@ public abstract class GeneralAM {
 
     protected void setSLAViolationGen(int sLAViolationGen) {
         SLAViolationGen = sLAViolationGen;
+    }
+
+    public Simulator.StrategyEnum getStrategy() {
+        return strategy;
+    }
+
+    public void setStrategy(Simulator.StrategyEnum strategy) {
+        this.strategy = strategy;
     }
 }

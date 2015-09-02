@@ -57,14 +57,7 @@ public final class EnterpriseApp {
         minProc = enterpriseApplicationPOD.getMinProc();
         timeTreshold = enterpriseApplicationPOD.getTimeTreshold();
         slaPercentage = enterpriseApplicationPOD.getSLAPercentage();
-        maxNumberOfRequest = enterpriseApplicationPOD.getMaxNumberOfRequest(); // #
-                                                                               // of
-                                                                               // Request
-                                                                               // can
-                                                                               // be
-                                                                               // handled
-                                                                               // by
-                                                                               // number
+        maxNumberOfRequest = enterpriseApplicationPOD.getMaxNumberOfRequest();
         numberofBasicNode = enterpriseApplicationPOD.getNumberofBasicNode();
         maxExpectedResTime = enterpriseApplicationPOD.getMaxExpectedResTime();
         bis = enterpriseApplicationPOD.getBIS();

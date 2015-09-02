@@ -5,7 +5,6 @@ import java.util.logging.Logger;
 
 import simulator.Environment;
 import simulator.Simulator;
-import simulator.Simulator.StrategyEnum;
 import simulator.system.ComputeSystem;
 import simulator.system.Systems;
 
@@ -50,13 +49,13 @@ public class DataCenterAM extends GeneralAM {
          * SLA based If (SLA is not violated) Switch to green strategy end
          */
         for (int i = 0; i < SLAVioCS.length; i++) {
-            if (SLAVioCS[i] > 0 && computeSystems.get(i).getAM().strategy == Simulator.StrategyEnum.Green) {
-                computeSystems.get(i).getAM().strategy = Simulator.StrategyEnum.SLA;
+            if (SLAVioCS[i] > 0 && computeSystems.get(i).getAM().getStrategy() == Simulator.StrategyEnum.Green) {
+                computeSystems.get(i).getAM().setStrategy(Simulator.StrategyEnum.SLA);
                 LOGGER.info("AM in DC Switch HPC system: " + i + " to SLA  @  " + environment.getCurrentLocalTime());
             }
-            if (SLAVioCS[i] == 0 && computeSystems.get(i).getAM().strategy == Simulator.StrategyEnum.SLA) {
+            if (SLAVioCS[i] == 0 && computeSystems.get(i).getAM().getStrategy() == Simulator.StrategyEnum.SLA) {
                 LOGGER.info("AM in DC Switch HPC system: " + i + "  to Green @  " + environment.getCurrentLocalTime());
-                computeSystems.get(i).getAM().strategy = Simulator.StrategyEnum.Green;
+                computeSystems.get(i).getAM().setStrategy(Simulator.StrategyEnum.Green);
             }
         }
         /*
@@ -80,7 +79,7 @@ public class DataCenterAM extends GeneralAM {
                 LOGGER.info("A system is blocked and we have this # of systems:  " + computeSystems.size()
                         + "@ time= \t" + environment.getCurrentLocalTime());
                 // Every system should work in Greeeen
-                computeSystems.get(1).getAM().strategy = Simulator.StrategyEnum.Green;
+                computeSystems.get(1).getAM().setStrategy(Simulator.StrategyEnum.Green);
             } else {
                 LOGGER.info("AM in data center level : HPC system is already blocked nothing can do here @: "
                         + environment.getCurrentLocalTime());
@@ -97,10 +96,6 @@ public class DataCenterAM extends GeneralAM {
 
     @Override
     public void execution() {
-    }
-
-    public void setStrategy(StrategyEnum strategy) {
-        this.strategy = strategy;
     }
 
     public void resetBlockTimer() {
