@@ -18,7 +18,7 @@ public class ApplicationAM extends GeneralAM {
     private double util = 0;
     private double percnt = 0;
     private int accumulativeSLA = 0;
-    Simulator.StrategyEnum StrategyWsitch = Simulator.StrategyEnum.Green;
+    private Simulator.StrategyEnum strategySwitch = Simulator.StrategyEnum.Green;
     private Environment environment;
     private GeneralAM am;
     private List<EnterpriseApp> applications;
@@ -119,7 +119,7 @@ public class ApplicationAM extends GeneralAM {
 
     @Override
     public void analysis(Object violation) {
-        if (StrategyWsitch == Simulator.StrategyEnum.Green) {
+        if (getStrategySwitch() == Simulator.StrategyEnum.Green) {
             analysis_GR(violation);
         } else {
             analysis_SLA(violation);
@@ -271,8 +271,8 @@ public class ApplicationAM extends GeneralAM {
         LOGGER.info("app:\t" + app.getID() + " ----------> :\t\t " + targetApp + "\t\t@:"
                 + environment.getCurrentLocalTime() + "\tRunning target node= "
                 + applications.get(targetApp).numberofRunningNode() + "\tRunning this node= "
-                + app.numberofRunningNode() + "\tstrtgy= " + StrategyWsitch);
-        StrategyWsitch = Simulator.StrategyEnum.SLA;
+                + app.numberofRunningNode() + "\tstrtgy= " + getStrategySwitch());
+        setStrategySwitch(Simulator.StrategyEnum.SLA);
         return true;
     }
 
@@ -298,5 +298,13 @@ public class ApplicationAM extends GeneralAM {
 
     protected void setAccumulativeSLA(int accumulativeSLA) {
         this.accumulativeSLA = accumulativeSLA;
+    }
+
+    public Simulator.StrategyEnum getStrategySwitch() {
+        return strategySwitch;
+    }
+
+    public void setStrategySwitch(Simulator.StrategyEnum strategySwitch) {
+        this.strategySwitch = strategySwitch;
     }
 }

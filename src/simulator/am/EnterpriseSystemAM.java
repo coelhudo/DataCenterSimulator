@@ -1,10 +1,12 @@
 package simulator.am;
 
+import java.util.List;
 import java.util.logging.Logger;
 
 import simulator.Environment;
 import simulator.SLAViolationLogger;
 import simulator.Simulator;
+import simulator.system.EnterpriseApp;
 import simulator.system.EnterpriseSystem;
 
 public class EnterpriseSystemAM extends GeneralAM {
@@ -12,6 +14,7 @@ public class EnterpriseSystemAM extends GeneralAM {
     private static final Logger LOGGER = Logger.getLogger(EnterpriseSystemAM.class.getName());
     
     private EnterpriseSystem enterpriseSystem;
+    private List<EnterpriseApp> applications;
     static int kalmanIndex = 0;
     double[] percentCompPwr;
     double[] queueLengthApps;
@@ -24,9 +27,10 @@ public class EnterpriseSystemAM extends GeneralAM {
 
     public EnterpriseSystemAM(EnterpriseSystem enterpriseSystem, Environment environment, SLAViolationLogger slaViolationLogger) {
         this.enterpriseSystem = enterpriseSystem;
+        this.applications = enterpriseSystem.getApplications();
         this.environment = environment;
         this.slaViolationLogger = slaViolationLogger;
-        setRecForCoop(new int[enterpriseSystem.getApplications().size()]);
+        setRecForCoop(new int[applications.size()]);
     }
 
     @Override
@@ -62,34 +66,34 @@ public class EnterpriseSystemAM extends GeneralAM {
 
     void workloadIntensity() {
         double avg = 0.0;
-        for (int i = 0; i < enterpriseSystem.getApplications().size(); i++) {
-            avg = avg + (double) enterpriseSystem.getApplications().get(i).getNumberofBasicNode()
-                    / enterpriseSystem.getApplications().get(i).getMaxNumberOfRequest();
+        for (EnterpriseApp enterpriseApp : applications) {
+            avg = avg + (double) enterpriseApp.getNumberofBasicNode()
+                    / enterpriseApp.getMaxNumberOfRequest();
         }
-        wlkIntens = (double) avg / enterpriseSystem.getApplications().size();
+        wlkIntens = (double) avg / applications.size();
     }
 
     @Override
     public void monitor() {
-        percentCompPwr = new double[enterpriseSystem.getApplications().size()];
-        allocationVector = new int[enterpriseSystem.getApplications().size()];
-        accuSLA = new int[enterpriseSystem.getApplications().size()];
-        queueLengthApps = new double[enterpriseSystem.getApplications().size()];
+        percentCompPwr = new double[applications.size()];
+        allocationVector = new int[applications.size()];
+        accuSLA = new int[applications.size()];
+        queueLengthApps = new double[applications.size()];
         enterpriseSystem.resetNumberOfSLAViolation();
         workloadIntensity();
-        for (int i = 0; i < enterpriseSystem.getApplications().size(); i++) {
-            enterpriseSystem.setSLAviolation(enterpriseSystem.getSLAviolation() + enterpriseSystem.getApplications().get(i).getSLAviolation());
+        for (int i = 0; i < applications.size(); i++) {
+            enterpriseSystem.setSLAviolation(enterpriseSystem.getSLAviolation() + applications.get(i).getSLAviolation());
             // assume epoch system 2 time epoch application
-            percentCompPwr[i] = enterpriseSystem.getApplications().get(i).getAM().getPercnt()
+            percentCompPwr[i] = applications.get(i).getAM().getPercnt()
                     / ((environment.getCurrentLocalTime() - lastTime) * 3
-                            * enterpriseSystem.getApplications().get(i).getComputeNodeList().size());// (Main.epochSys*/*3*ES.getApplications().get(i).ComputeNodeList.size());
-            enterpriseSystem.getApplications().get(i).getAM().setPercnt(0);
-            accuSLA[i] = enterpriseSystem.getApplications().get(i).getAM().getAccumulativeSLA()
+                            * applications.get(i).getComputeNodeList().size());// (Main.epochSys*/*3*ES.getApplications().get(i).ComputeNodeList.size());
+            applications.get(i).getAM().setPercnt(0);
+            accuSLA[i] = applications.get(i).getAM().getAccumulativeSLA()
                     / (environment.getCurrentLocalTime() - lastTime);// Main.epochSys;
-            enterpriseSystem.getApplications().get(i).getAM().setAccumulativeSLA(0);
+            applications.get(i).getAM().setAccumulativeSLA(0);
             // for fair allocate/release node needs to know how many jobs are
             // already in each application queue
-            queueLengthApps[i] = enterpriseSystem.getApplications().get(i).numberOfWaitingJobs();
+            queueLengthApps[i] = applications.get(i).numberOfWaitingJobs();
         }
         setSLAViolationGen(enterpriseSystem.getSLAviolation());
         if (enterpriseSystem.getSLAviolation() > 0) {
@@ -103,10 +107,10 @@ public class EnterpriseSystemAM extends GeneralAM {
     public void calcSysUtility() {
         int localUtil = 0;
         // int globalUtil;
-        for (int i = 0; i < enterpriseSystem.getApplications().size(); i++) {
-            localUtil += enterpriseSystem.getApplications().get(i).getAM().getUtil();
+        for (int i = 0; i < applications.size(); i++) {
+            localUtil += applications.get(i).getAM().getUtil();
         }
-        localUtil = localUtil / enterpriseSystem.getApplications().size();
+        localUtil = localUtil / applications.size();
 
         // if(ES.getApplications().isEmpty())
         // { super.utility=-1;
@@ -120,11 +124,11 @@ public class EnterpriseSystemAM extends GeneralAM {
     }
 
     void iterativeAlg() {
-        for (int i = 0; i < enterpriseSystem.getApplications().size(); i++) {
-            enterpriseSystem.getApplications().get(i).getAM().StrategyWsitch = Simulator.StrategyEnum.Green;
+        for (int i = 0; i < applications.size(); i++) {
+            applications.get(i).getAM().setStrategySwitch(Simulator.StrategyEnum.Green);
             double wkIntensApp;
-            wkIntensApp = (double) enterpriseSystem.getApplications().get(i).getNumberofBasicNode()
-                    / enterpriseSystem.getApplications().get(i).getMaxNumberOfRequest();
+            wkIntensApp = (double) applications.get(i).getNumberofBasicNode()
+                    / applications.get(i).getMaxNumberOfRequest();
             // if cpmPwr > 50% & violation then allocate a server
             allocationVector[i] = 0;
             if (percentCompPwr[i] > 0.5 && accuSLA[i] > 0) {
@@ -140,8 +144,7 @@ public class EnterpriseSystemAM extends GeneralAM {
                 allocationVector[i] = 1 + bishtar;// +(int)Math.abs((Math.floor((wlkIntens-wkIntensApp)/wlkIntens)));
                 // LOGGER.info("Switching Strategy in Application =" +i
                 // +" to SLA ");
-                enterpriseSystem.getApplications().get(i).getAM().StrategyWsitch = Simulator.StrategyEnum.SLA;// SLA
-                // strategy
+                applications.get(i).getAM().setStrategySwitch(Simulator.StrategyEnum.SLA);
             }
             // if cpmPwr < 50% & violation is less then release a server
             if (percentCompPwr[i] <= 0.5 && accuSLA[i] == 0) {
@@ -154,14 +157,13 @@ public class EnterpriseSystemAM extends GeneralAM {
                 allocationVector[i] = 1;
                 // LOGGER.info("Switching Strategy in Application =" +i
                 // +" to SLA ");
-                enterpriseSystem.getApplications().get(i).getAM().StrategyWsitch = Simulator.StrategyEnum.SLA; // SLA
-                // strategy
+                applications.get(i).getAM().setStrategySwitch(Simulator.StrategyEnum.SLA);
             }
         }
         int requestedNd = 0;
         for (int i = 0; i < allocationVector.length; i++) {
-            int valNode = enterpriseSystem.getApplications().get(i).getComputeNodeList().size() + allocationVector[i];
-            if (enterpriseSystem.getApplications().get(i).getMinProc() > valNode || enterpriseSystem.getApplications().get(i).getMaxProc() < valNode) {
+            int valNode = applications.get(i).getComputeNodeList().size() + allocationVector[i];
+            if (applications.get(i).getMinProc() > valNode || applications.get(i).getMaxProc() < valNode) {
                 // if(ES.getApplications().get(i).minProc>
                 // ES.getApplications().get(i).ComputeNodeList.size()+allocationVector[i])
                 // LOGGER.info("error requested less than min in AM
@@ -181,34 +183,32 @@ public class EnterpriseSystemAM extends GeneralAM {
     // determining aloc/release vector and active strategy
 
     void averageWeight() {
-        double[] cofficient = new double[enterpriseSystem.getApplications().size()];
-        int[] sugestForAlo = new int[enterpriseSystem.getApplications().size()];
+        double[] cofficient = new double[applications.size()];
+        int[] sugestForAlo = new int[applications.size()];
         double sumCoff = 0;
         // in each app calculate the expected Coefficient which is
         // multiplication SLA violation and queue Length
-        for (int i = 0; i < enterpriseSystem.getApplications().size(); i++) {
+        for (int i = 0; i < applications.size(); i++) {
             cofficient[i] = queueLengthApps[i] * accuSLA[i] + accuSLA[i] + queueLengthApps[i];
             sumCoff = sumCoff + cofficient[i];
         }
         int totalNode = enterpriseSystem.getComputeNodeList().size();
-        for (int i = 0; i < enterpriseSystem.getApplications().size(); i++) {
+        for (int i = 0; i < applications.size(); i++) {
             sugestForAlo[i] = (int) (cofficient[i] * totalNode / sumCoff);
-            if (sugestForAlo[i] < enterpriseSystem.getApplications().get(i).getMinProc()) {
-                sugestForAlo[i] = enterpriseSystem.getApplications().get(i).getMinProc();
+            if (sugestForAlo[i] < applications.get(i).getMinProc()) {
+                sugestForAlo[i] = applications.get(i).getMinProc();
             }
-            if (sugestForAlo[i] > enterpriseSystem.getApplications().get(i).getMaxProc()) {
-                sugestForAlo[i] = enterpriseSystem.getApplications().get(i).getMaxProc();
+            if (sugestForAlo[i] > applications.get(i).getMaxProc()) {
+                sugestForAlo[i] = applications.get(i).getMaxProc();
             }
-            allocationVector[i] = sugestForAlo[i] - enterpriseSystem.getApplications().get(i).getComputeNodeList().size();
+            allocationVector[i] = sugestForAlo[i] - applications.get(i).getComputeNodeList().size();
         }
-        for (int i = 0; i < enterpriseSystem.getApplications().size(); i++) {
-            enterpriseSystem.getApplications().get(i).getAM().StrategyWsitch = Simulator.StrategyEnum.Green; // Green
-            // Strategy
+        for (int i = 0; i < applications.size(); i++) {
+            applications.get(i).getAM().setStrategySwitch(Simulator.StrategyEnum.Green);
             if (accuSLA[i] > 0) {
                 // LOGGER.info("Switching Strategy in Application =" +i
                 // +" to SLA ");
-                enterpriseSystem.getApplications().get(i).getAM().StrategyWsitch = Simulator.StrategyEnum.SLA;// SLA
-                // strategy
+                applications.get(i).getAM().setStrategySwitch(Simulator.StrategyEnum.SLA);
             }
         }
     }
@@ -222,8 +222,8 @@ public class EnterpriseSystemAM extends GeneralAM {
             return;
         }
         enterpriseSystem.setNumberOfActiveServ((int) Math
-                .floor(numberOfPredictedReq[kalmanIndex] * 5 * enterpriseSystem.getApplications().get(0).getNumberofBasicNode()
-                        / enterpriseSystem.getApplications().get(0).getMaxNumberOfRequest()));
+                .floor(numberOfPredictedReq[kalmanIndex] * 5 * applications.get(0).getNumberofBasicNode()
+                        / applications.get(0).getMaxNumberOfRequest()));
         if (enterpriseSystem.getNumberOfActiveServ() > enterpriseSystem.getNumberOfNode()) {
             LOGGER.info("In ES : is gonna alocate this number of servers: "
                     + (enterpriseSystem.getNumberOfActiveServ() - enterpriseSystem.getNumberOfNode()));
@@ -235,19 +235,16 @@ public class EnterpriseSystemAM extends GeneralAM {
     }
 
     void utilityBasedPlanning() {
-        for (int i = 0; i < enterpriseSystem.getApplications().size(); i++) {
-            enterpriseSystem.getApplications().get(i).getAM().StrategyWsitch = Simulator.StrategyEnum.Green; // Green
-            // Strategy
+        for (int i = 0; i < applications.size(); i++) {
+            applications.get(i).getAM().setStrategySwitch(Simulator.StrategyEnum.Green);
             allocationVector[i] = 0;
             if (sigmoid(queueLengthApps[i]) > 0.5 && accuSLA[i] > 0) {
-                enterpriseSystem.getApplications().get(i).getAM().StrategyWsitch = Simulator.StrategyEnum.SLA;// SLA
-                // strategy
+                applications.get(i).getAM().setStrategySwitch(Simulator.StrategyEnum.SLA);
                 allocationVector[i] = 1;
                 // LOGGER.info("allocate system!!!!! ");
             }
             if (sigmoid(queueLengthApps[i]) < 0.5 && accuSLA[i] > 0) {
-                enterpriseSystem.getApplications().get(i).getAM().StrategyWsitch = Simulator.StrategyEnum.SLA;// SLA
-                // strategy
+                applications.get(i).getAM().setStrategySwitch(Simulator.StrategyEnum.SLA);
             }
             if (sigmoid(queueLengthApps[i]) <= 0.5 && accuSLA[i] == 0) {
                 allocationVector[i] = -1;
@@ -256,8 +253,8 @@ public class EnterpriseSystemAM extends GeneralAM {
         }
         int requestedNd = 0;
         for (int i = 0; i < allocationVector.length; i++) {
-            int valNode = enterpriseSystem.getApplications().get(i).getComputeNodeList().size() + allocationVector[i];
-            if (enterpriseSystem.getApplications().get(i).getMinProc() > valNode || enterpriseSystem.getApplications().get(i).getMaxProc() < valNode) {
+            int valNode = applications.get(i).getComputeNodeList().size() + allocationVector[i];
+            if (applications.get(i).getMinProc() > valNode || applications.get(i).getMaxProc() < valNode) {
                 // if(ES.getApplications().get(i).minProc>
                 // ES.getApplications().get(i).ComputeNodeList.size()+allocationVector[i])
                 // LOGGER.info("error requested less than min in AM
