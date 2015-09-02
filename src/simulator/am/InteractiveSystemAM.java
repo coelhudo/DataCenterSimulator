@@ -4,7 +4,7 @@ import simulator.Environment;
 import simulator.Simulator;
 import simulator.system.InteractiveSystem;
 
-public class InteractiveSystemAM extends GeneralAM {
+public class InteractiveSystemAM extends SystemAM {
 
     InteractiveSystem interatctiveSystem;
     double[] percentCompPwr;

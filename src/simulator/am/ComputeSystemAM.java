@@ -6,7 +6,7 @@ import simulator.Environment;
 import simulator.physical.BladeServer;
 import simulator.system.ComputeSystem;
 
-public class ComputeSystemAM extends GeneralAM {
+public class ComputeSystemAM extends SystemAM {
 
     private static final Logger LOGGER = Logger.getLogger(ComputeSystemAM.class.getName());
 

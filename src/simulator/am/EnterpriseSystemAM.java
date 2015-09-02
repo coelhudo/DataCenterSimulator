@@ -9,7 +9,7 @@ import simulator.Simulator;
 import simulator.system.EnterpriseApp;
 import simulator.system.EnterpriseSystem;
 
-public class EnterpriseSystemAM extends GeneralAM {
+public class EnterpriseSystemAM extends SystemAM {
 
     private static final Logger LOGGER = Logger.getLogger(EnterpriseSystemAM.class.getName());
     
