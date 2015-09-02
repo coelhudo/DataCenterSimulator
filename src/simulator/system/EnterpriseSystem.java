@@ -18,8 +18,9 @@ public class EnterpriseSystem extends GeneralSystem {
 
     private List<EnterpriseApp> applicationList;
     private Environment environment;
-    
-    private EnterpriseSystem(SystemPOD systemPOD, Environment environment, Scheduler scheduler, ResourceAllocation resourceAllocation) {
+
+    private EnterpriseSystem(SystemPOD systemPOD, Environment environment, Scheduler scheduler,
+            ResourceAllocation resourceAllocation) {
         super(systemPOD, scheduler, resourceAllocation);
         this.environment = environment;
         setComputeNodeList(new ArrayList<BladeServer>());
@@ -30,10 +31,11 @@ public class EnterpriseSystem extends GeneralSystem {
         setRackIDs(systemPOD.getRackIDs());
         loadEnterpriseApplications(systemPOD);
     }
-    
+
     private void loadEnterpriseApplications(SystemPOD systemPOD) {
         for (EnterpriseApplicationPOD pod : ((EnterpriseSystemPOD) systemPOD).getApplicationPODs()) {
-            EnterpriseApp enterpriseApplication = EnterpriseApp.create(pod, getScheduler(), this, environment);
+            EnterpriseApp enterpriseApplication = EnterpriseApp.create(pod, getScheduler(), getResourceAllocation(),
+                    this, environment);
             applicationList.add(enterpriseApplication);
         }
     }
@@ -101,11 +103,12 @@ public class EnterpriseSystem extends GeneralSystem {
         }
     }
 
-    public static EnterpriseSystem Create(SystemPOD systemPOD, Environment environment, Scheduler scheduler, ResourceAllocation resourceAllocation,
-            SLAViolationLogger slaViolationLogger) {
+    public static EnterpriseSystem Create(SystemPOD systemPOD, Environment environment, Scheduler scheduler,
+            ResourceAllocation resourceAllocation, SLAViolationLogger slaViolationLogger) {
         EnterpriseSystem enterpriseSystem = new EnterpriseSystem(systemPOD, environment, scheduler, resourceAllocation);
         enterpriseSystem.getResourceAllocation().initialResourceAlocator(enterpriseSystem);
-        //FIXME: why violation is logged in the AM class instead the system class
+        // FIXME: why violation is logged in the AM class instead the system
+        // class
         enterpriseSystem.setAM(new EnterpriseSystemAM(enterpriseSystem, environment, slaViolationLogger));
         return enterpriseSystem;
     }

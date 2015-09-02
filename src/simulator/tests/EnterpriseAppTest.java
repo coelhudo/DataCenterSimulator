@@ -1,7 +1,18 @@
 package simulator.tests;
 
-import static org.junit.Assert.*;
-import static org.mockito.Mockito.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotEquals;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+import static org.mockito.Matchers.anyInt;
+import static org.mockito.Matchers.anyListOf;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
+import static org.mockito.Mockito.when;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -22,37 +33,38 @@ import simulator.ra.ResourceAllocation;
 import simulator.schedulers.Scheduler;
 import simulator.system.EnterpriseApp;
 import simulator.system.EnterpriseApplicationPOD;
-import simulator.system.EnterpriseSystem;
 
 public class EnterpriseAppTest {
 
     public static final String FAIL_ERROR_MESSAGE = "This was not supposed to happen";
 
     public Scheduler mockedScheduler;
+    public ResourceAllocation mockedResourceAllocation;
     public EnterpriseApplicationPOD enterpriseApplicationPOD;
-    public EnterpriseSystem mockedEnterpriseSystem;
     public Environment mockedEnvironment;
     public BufferedReader mockedBufferedReader;
+    public EnterpriseApp enterpriseApplication;
 
     @Before
     public void setUp() {
         enterpriseApplicationPOD = new EnterpriseApplicationPOD();
         mockedScheduler = mock(Scheduler.class);
-        mockedEnterpriseSystem = mock(EnterpriseSystem.class);
+        mockedResourceAllocation = mock(ResourceAllocation.class);
         mockedEnvironment = mock(Environment.class);
         mockedBufferedReader = mock(BufferedReader.class);
         enterpriseApplicationPOD.setBIS(mockedBufferedReader);
+        
+        enterpriseApplication = new EnterpriseApp(enterpriseApplicationPOD, mockedScheduler,
+                mockedResourceAllocation, mockedEnvironment);
     }
 
     @After
     public void tearDown() {
-        verifyNoMoreInteractions(mockedBufferedReader, mockedEnterpriseSystem, mockedEnvironment);
+        verifyNoMoreInteractions(mockedBufferedReader, mockedResourceAllocation, mockedScheduler, mockedEnvironment);
     }
 
     @Test
     public void testEnterpriseAppCreation() {
-        EnterpriseApp enterpriseApplication = new EnterpriseApp(enterpriseApplicationPOD, mockedScheduler,
-                mockedEnterpriseSystem, mockedEnvironment);
         assertNull(enterpriseApplication.getAM());
         assertEquals(0.0, enterpriseApplication.getAverageCPUutil(), 1.0E-8);
         assertNotEquals(0, enterpriseApplication.getAveragePwrParam().length);
@@ -70,16 +82,10 @@ public class EnterpriseAppTest {
         assertEquals(0, enterpriseApplication.getSLAPercentage());
         assertEquals(0, enterpriseApplication.getSLAviolation());
         assertEquals(0, enterpriseApplication.getTimeTreshold());
-
-        verify(mockedEnterpriseSystem).getResourceAllocation();
-
-        verifyNoMoreInteractions(mockedEnterpriseSystem, mockedEnvironment);
     }
 
     @Test
     public void testAddCompNodetoBundle() {
-        EnterpriseApp enterpriseApplication = new EnterpriseApp(enterpriseApplicationPOD, mockedScheduler,
-                mockedEnterpriseSystem, mockedEnvironment);
         assertTrue(enterpriseApplication.getComputeNodeList().isEmpty());
 
         BladeServer mockedBladeServer = mock(BladeServer.class);
@@ -88,8 +94,8 @@ public class EnterpriseAppTest {
         assertFalse(enterpriseApplication.getComputeNodeList().isEmpty());
 
         verify(mockedBladeServer).restart();
-        verify(mockedEnterpriseSystem).getResourceAllocation();
 
+        verifyNoMoreInteractions(mockedBladeServer);
     }
 
     @Test
@@ -104,12 +110,9 @@ public class EnterpriseAppTest {
         EnterpriseJob mockedEnterpriseJob = mock(EnterpriseJob.class);
         when(mockedEnterpriseJob.getNumberOfJob()).thenReturn(valueToMakeMoreJobsThanCapacity);
         when(mockedScheduler.nextJob(anyListOf(Job.class))).thenReturn(mockedEnterpriseJob);
-        when(mockedEnterpriseSystem.getScheduler()).thenReturn(mockedScheduler);
 
         when(mockedEnvironment.getCurrentLocalTime()).thenReturn(5);
 
-        EnterpriseApp enterpriseApplication = new EnterpriseApp(enterpriseApplicationPOD, mockedScheduler,
-                mockedEnterpriseSystem, mockedEnvironment);
         assertTrue(enterpriseApplication.getComputeNodeList().isEmpty());
 
         BladeServer mockedBladeServer = mock(BladeServer.class);
@@ -160,8 +163,6 @@ public class EnterpriseAppTest {
 
         verify(mockedScheduler).nextJob(anyListOf(Job.class));
         verify(mockedEnvironment, times(2)).getCurrentLocalTime();
-
-        verify(mockedEnterpriseSystem).getResourceAllocation();
 
         verifyNoMoreInteractions(mockedBladeServer);
     }
@@ -179,12 +180,9 @@ public class EnterpriseAppTest {
         EnterpriseJob mockedEnterpriseJob = mock(EnterpriseJob.class);
         when(mockedEnterpriseJob.getNumberOfJob()).thenReturn(valueToMakeCapacityEqualsZero);
         when(mockedScheduler.nextJob(anyListOf(Job.class))).thenReturn(mockedEnterpriseJob);
-        when(mockedEnterpriseSystem.getScheduler()).thenReturn(mockedScheduler);
 
         when(mockedEnvironment.getCurrentLocalTime()).thenReturn(5);
 
-        EnterpriseApp enterpriseApplication = new EnterpriseApp(enterpriseApplicationPOD, mockedScheduler,
-                mockedEnterpriseSystem, mockedEnvironment);
         assertTrue(enterpriseApplication.getComputeNodeList().isEmpty());
 
         BladeServer mockedBladeServer = mock(BladeServer.class);
@@ -236,8 +234,6 @@ public class EnterpriseAppTest {
         verify(mockedScheduler).nextJob(anyListOf(Job.class));
         verify(mockedEnvironment, times(2)).getCurrentLocalTime();
 
-        verify(mockedEnterpriseSystem).getResourceAllocation();
-
         verifyNoMoreInteractions(mockedBladeServer);
     }
 
@@ -254,12 +250,9 @@ public class EnterpriseAppTest {
         EnterpriseJob mockedEnterpriseJob = mock(EnterpriseJob.class);
         when(mockedEnterpriseJob.getNumberOfJob()).thenReturn(valueToMakeCapacityGreaterThanNumberOfJobs);
         when(mockedScheduler.nextJob(anyListOf(Job.class))).thenReturn(mockedEnterpriseJob);
-        when(mockedEnterpriseSystem.getScheduler()).thenReturn(mockedScheduler);
 
         when(mockedEnvironment.getCurrentLocalTime()).thenReturn(5);
 
-        EnterpriseApp enterpriseApplication = new EnterpriseApp(enterpriseApplicationPOD, mockedScheduler,
-                mockedEnterpriseSystem, mockedEnvironment);
         assertTrue(enterpriseApplication.getComputeNodeList().isEmpty());
 
         BladeServer mockedBladeServer = mock(BladeServer.class);
@@ -313,8 +306,6 @@ public class EnterpriseAppTest {
         verify(mockedScheduler, times(2)).nextJob(anyListOf(Job.class));
         verify(mockedEnvironment, times(3)).getCurrentLocalTime();
 
-        verify(mockedEnterpriseSystem).getResourceAllocation();
-
         verifyNoMoreInteractions(mockedBladeServer);
     }
 
@@ -328,8 +319,6 @@ public class EnterpriseAppTest {
 
         when(mockedEnvironment.getCurrentLocalTime()).thenReturn(1);
 
-        EnterpriseApp enterpriseApplication = new EnterpriseApp(enterpriseApplicationPOD, mockedScheduler,
-                mockedEnterpriseSystem, mockedEnvironment);
         assertTrue(enterpriseApplication.getComputeNodeList().isEmpty());
 
         try {
@@ -365,7 +354,6 @@ public class EnterpriseAppTest {
             fail(FAIL_ERROR_MESSAGE);
         }
 
-        verify(mockedEnterpriseSystem).getResourceAllocation();
     }
 
     @Test
@@ -379,16 +367,11 @@ public class EnterpriseAppTest {
         EnterpriseJob mockedEnterpriseJob = mock(EnterpriseJob.class);
         when(mockedEnterpriseJob.getNumberOfJob()).thenReturn(1);
         when(mockedScheduler.nextJob(anyListOf(Job.class))).thenReturn(mockedEnterpriseJob);
-        when(mockedEnterpriseSystem.getScheduler()).thenReturn(mockedScheduler);
 
         when(mockedEnvironment.getCurrentLocalTime()).thenReturn(1, 2);
 
-        ResourceAllocation mockedResourceAllocation = mock(ResourceAllocation.class);
         when(mockedResourceAllocation.nextServer(anyListOf(BladeServer.class))).thenReturn(0);
-        when(mockedEnterpriseSystem.getResourceAllocation()).thenReturn(mockedResourceAllocation);
 
-        EnterpriseApp enterpriseApplication = new EnterpriseApp(enterpriseApplicationPOD, mockedScheduler,
-                mockedEnterpriseSystem, mockedEnvironment);
         enterpriseApplication.setMaxNumberOfRequest(100);
         enterpriseApplication.setNumberofBasicNode(1);
 
@@ -439,8 +422,6 @@ public class EnterpriseAppTest {
 
         verify(mockedEnvironment, times(5)).getCurrentLocalTime();
 
-        verify(mockedEnterpriseSystem).getResourceAllocation();
-
         verify(mockedScheduler, times(3)).nextJob(anyListOf(Job.class));
         verify(mockedResourceAllocation).nextServer(anyListOf(BladeServer.class));
 
@@ -467,9 +448,6 @@ public class EnterpriseAppTest {
 
     @Test
     public void testDestroyApplication() {
-        EnterpriseApp enterpriseApplication = new EnterpriseApp(enterpriseApplicationPOD, mockedScheduler,
-                mockedEnterpriseSystem, mockedEnvironment);
-
         BladeServer mockedBladeServer = mock(BladeServer.class);
         when(mockedBladeServer.isRunningNormal()).thenReturn(true);
         when(mockedBladeServer.getCurrentCPU()).thenReturn(10.0);
@@ -502,8 +480,6 @@ public class EnterpriseAppTest {
         } catch (IOException e) {
             fail("Ouch");
         }
-
-        verify(mockedEnterpriseSystem).getResourceAllocation();
 
         verifyNoMoreInteractions(mockedBladeServer);
     }
