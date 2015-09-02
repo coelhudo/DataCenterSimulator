@@ -8,7 +8,6 @@ import simulator.Simulator;
 import simulator.jobs.EnterpriseJob;
 import simulator.physical.BladeServer;
 import simulator.system.EnterpriseApp;
-import simulator.system.EnterpriseSystem;
 
 public class ApplicationAM extends GeneralAM {
 
@@ -24,9 +23,9 @@ public class ApplicationAM extends GeneralAM {
     private GeneralAM am;
     private List<EnterpriseApp> applications;
 
-    public ApplicationAM(EnterpriseSystem sys, Environment environment) {
-        this.am = sys.getAM();
-        this.applications = sys.getApplications();
+    public ApplicationAM(List<EnterpriseApp> applications, GeneralAM am, Environment environment) {
+        this.am = am;
+        this.applications = applications;
         this.environment = environment;
     }
     

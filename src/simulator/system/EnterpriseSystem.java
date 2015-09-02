@@ -35,7 +35,7 @@ public class EnterpriseSystem extends GeneralSystem {
 
     private void loadEnterpriseApplications(SystemPOD systemPOD) {
         for (EnterpriseApplicationPOD pod : ((EnterpriseSystemPOD) systemPOD).getApplicationPODs()) {
-            ApplicationAM applicationAM = new ApplicationAM(this, environment);
+            ApplicationAM applicationAM = new ApplicationAM(applicationList, getAM(), environment);
             EnterpriseApp enterpriseApplication = EnterpriseApp.create(pod, getScheduler(), getResourceAllocation(),
                     environment, applicationAM);
             applicationList.add(enterpriseApplication);
