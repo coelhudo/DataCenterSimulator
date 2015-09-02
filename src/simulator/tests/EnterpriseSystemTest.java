@@ -9,6 +9,7 @@ import static org.junit.Assert.fail;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Matchers.anyListOf;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 
 import java.io.BufferedReader;
@@ -21,23 +22,27 @@ import org.junit.Test;
 import simulator.Environment;
 import simulator.SLAViolationLogger;
 import simulator.physical.DataCenter;
+import simulator.jobs.EnterpriseJob;
+import simulator.schedulers.Scheduler;
 import simulator.system.EnterpriseSystem;
 import simulator.system.EnterpriseSystemPOD;
 import simulator.system.EnterpriseApplicationPOD;
 import simulator.system.SystemPOD;
 
 public class EnterpriseSystemTest {
-    
+
     public static final String FAIL_ERROR_MESSAGE = "This was not supposed to happen";
 
     @Test
-    public void testEnterpriseSystemCreation() { 
+    public void testEnterpriseSystemCreation() {
         SystemPOD systemPOD = new EnterpriseSystemPOD();
         Environment mockedEnvironment = mock(Environment.class);
+        Scheduler mockedScheduler = mock(Scheduler.class);
         DataCenter mockedDataCenter = mock(DataCenter.class);
         SLAViolationLogger mockedSLAViolationLogger = mock(SLAViolationLogger.class);
-        EnterpriseSystem enterpriseSystem = EnterpriseSystem.Create(systemPOD, mockedEnvironment, mockedDataCenter, mockedSLAViolationLogger);
-        
+        EnterpriseSystem enterpriseSystem = EnterpriseSystem.Create(systemPOD, mockedEnvironment, mockedScheduler,
+                mockedDataCenter, mockedSLAViolationLogger);
+
         assertFalse(enterpriseSystem.isDone());
         assertFalse(enterpriseSystem.isThereFreeNodeforApp());
         assertFalse(enterpriseSystem.checkForViolation());
@@ -56,18 +61,20 @@ public class EnterpriseSystemTest {
         assertNotNull(enterpriseSystem.getResourceAllocation());
         assertNotNull(enterpriseSystem.getScheduler());
         assertEquals(0, enterpriseSystem.getSLAviolation());
-        
-        verifyNoMoreInteractions(mockedEnvironment, mockedDataCenter, mockedSLAViolationLogger);    
+
+        verifyNoMoreInteractions(mockedEnvironment, mockedDataCenter, mockedScheduler, mockedSLAViolationLogger);
     }
-    
+
     @Test
-    public void testRunACycle_WithoutApplication () {
+    public void testRunACycle_WithoutApplication() {
         SystemPOD systemPOD = new EnterpriseSystemPOD();
         Environment mockedEnvironment = mock(Environment.class);
+        Scheduler mockedScheduler = mock(Scheduler.class);
         DataCenter mockedDataCenter = mock(DataCenter.class);
         SLAViolationLogger mockedSLAViolationLogger = mock(SLAViolationLogger.class);
-        EnterpriseSystem enterpriseSystem = EnterpriseSystem.Create(systemPOD, mockedEnvironment, mockedDataCenter, mockedSLAViolationLogger);
-        
+        EnterpriseSystem enterpriseSystem = EnterpriseSystem.Create(systemPOD, mockedEnvironment, mockedScheduler,
+                mockedDataCenter, mockedSLAViolationLogger);
+
         try {
             Method runACycle = EnterpriseSystem.class.getDeclaredMethod("runAcycle");
             runACycle.setAccessible(true);
@@ -85,14 +92,14 @@ public class EnterpriseSystemTest {
         } catch (InvocationTargetException e) {
             fail(FAIL_ERROR_MESSAGE);
         }
-        
-        verifyNoMoreInteractions(mockedEnvironment, mockedDataCenter, mockedSLAViolationLogger);
+
+        verifyNoMoreInteractions(mockedEnvironment, mockedDataCenter, mockedScheduler, mockedSLAViolationLogger);
     }
-    
+
     @Test
     public void testRunACycle_WithApplication_MarkAsNotDone() {
         EnterpriseSystemPOD systemPOD = new EnterpriseSystemPOD();
-        
+
         EnterpriseApplicationPOD enterpriseApplicationPOD = new EnterpriseApplicationPOD();
         BufferedReader mockedBufferedReader = mock(BufferedReader.class);
         try {
@@ -104,10 +111,16 @@ public class EnterpriseSystemTest {
         systemPOD.appendEnterpriseApplicationPOD(enterpriseApplicationPOD);
         Environment mockedEnvironment = mock(Environment.class);
         when(mockedEnvironment.getCurrentLocalTime()).thenReturn(1);
+        Scheduler mockedScheduler = mock(Scheduler.class);
+        EnterpriseJob enterpriseJob = new EnterpriseJob();
+        enterpriseJob.setArrivalTimeOfJob(1);
+        enterpriseJob.setNumberOfJob(1);
+        when(mockedScheduler.nextJob(anyListOf(EnterpriseJob.class))).thenReturn(enterpriseJob);
         DataCenter mockedDataCenter = mock(DataCenter.class);
         SLAViolationLogger mockedSLAViolationLogger = mock(SLAViolationLogger.class);
-        EnterpriseSystem enterpriseSystem = EnterpriseSystem.Create(systemPOD, mockedEnvironment, mockedDataCenter, mockedSLAViolationLogger);
-        
+        EnterpriseSystem enterpriseSystem = EnterpriseSystem.Create(systemPOD, mockedEnvironment, mockedScheduler,
+                mockedDataCenter, mockedSLAViolationLogger);
+
         try {
             Method runACycle = EnterpriseSystem.class.getDeclaredMethod("runAcycle");
             runACycle.setAccessible(true);
@@ -125,15 +138,16 @@ public class EnterpriseSystemTest {
         } catch (InvocationTargetException e) {
             fail(FAIL_ERROR_MESSAGE);
         }
-        
+
         try {
             verify(mockedBufferedReader).readLine();
         } catch (IOException e) {
             fail(FAIL_ERROR_MESSAGE);
         }
-        
+
+        verify(mockedScheduler).nextJob(anyListOf(EnterpriseJob.class));
         verify(mockedEnvironment).getCurrentLocalTime();
-        
-        verifyNoMoreInteractions(mockedBufferedReader, mockedEnvironment, mockedDataCenter, mockedSLAViolationLogger);
+
+        verifyNoMoreInteractions(mockedBufferedReader, mockedEnvironment, mockedDataCenter, mockedScheduler, mockedSLAViolationLogger);
     }
 }

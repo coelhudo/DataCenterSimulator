@@ -11,7 +11,7 @@ import simulator.am.EnterpriseSystemAM;
 import simulator.physical.BladeServer;
 import simulator.physical.DataCenter;
 import simulator.ra.MHR;
-import simulator.schedulers.FIFOScheduler;
+import simulator.schedulers.Scheduler;
 
 public class EnterpriseSystem extends GeneralSystem {
 
@@ -20,8 +20,8 @@ public class EnterpriseSystem extends GeneralSystem {
     private List<EnterpriseApp> applicationList;
     private Environment environment;
     
-    private EnterpriseSystem(SystemPOD systemPOD, Environment environment, DataCenter dataCenter) {
-        super(systemPOD, new FIFOScheduler(), new MHR(environment, dataCenter));
+    private EnterpriseSystem(SystemPOD systemPOD, Environment environment, Scheduler scheduler, DataCenter dataCenter) {
+        super(systemPOD, scheduler, new MHR(environment, dataCenter));
         this.environment = environment;
         setComputeNodeList(new ArrayList<BladeServer>());
         setComputeNodeIndex(new ArrayList<Integer>());
@@ -102,9 +102,9 @@ public class EnterpriseSystem extends GeneralSystem {
         }
     }
 
-    public static EnterpriseSystem Create(SystemPOD systemPOD, Environment environment, DataCenter dataCenter,
+    public static EnterpriseSystem Create(SystemPOD systemPOD, Environment environment, Scheduler scheduler, DataCenter dataCenter,
             SLAViolationLogger slaViolationLogger) {
-        EnterpriseSystem enterpriseSystem = new EnterpriseSystem(systemPOD, environment, dataCenter);
+        EnterpriseSystem enterpriseSystem = new EnterpriseSystem(systemPOD, environment, scheduler, dataCenter);
         enterpriseSystem.getResourceAllocation().initialResourceAlocator(enterpriseSystem);
         //FIXME: why violation is logged in the AM class instead the system class
         enterpriseSystem.setAM(new EnterpriseSystemAM(enterpriseSystem, environment, slaViolationLogger));

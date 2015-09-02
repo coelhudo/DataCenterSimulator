@@ -11,6 +11,7 @@ import simulator.system.ComputeSystem;
 import simulator.system.ComputeSystemPOD;
 import simulator.system.EnterpriseSystem;
 import simulator.system.EnterpriseSystemPOD;
+import simulator.schedulers.FIFOScheduler;
 import simulator.system.InteractiveSystem;
 import simulator.system.InteractiveSystemPOD;
 import simulator.system.Systems;
@@ -51,7 +52,7 @@ public class Simulator {
         SystemsPOD systemsPOD = simulatorPOD.getSystemsPOD();
         for (EnterpriseSystemPOD enterprisesystemPOD : systemsPOD.getEnterpriseSystemsPOD()) {
             systems.addEnterpriseSystem(
-                    EnterpriseSystem.Create(enterprisesystemPOD, environment, datacenter, slaViolationLogger));
+                    EnterpriseSystem.Create(enterprisesystemPOD, environment, new FIFOScheduler(), datacenter, slaViolationLogger));
         }
         for (ComputeSystemPOD computeSystemPOD : systemsPOD.getComputeSystemsPOD()) {
             systems.addComputeSystem(
