@@ -26,6 +26,7 @@ import simulator.system.SystemsPOD;
 import simulator.am.ApplicationAM;
 import simulator.am.DataCenterAM;
 import simulator.am.EnterpriseSystemAM;
+import simulator.am.GeneralAM;
 import simulator.utils.ActivitiesLogger;
 
 public class Simulator {
@@ -59,20 +60,7 @@ public class Simulator {
         dataCenterAM = new DataCenterAM(environment, systems);
         datacenter = new DataCenter(simulatorPOD.getDataCenterPOD(), dataCenterAM, activitiesLogger, environment);
         SystemsPOD systemsPOD = simulatorPOD.getSystemsPOD();
-        for (EnterpriseSystemPOD enterpriseSystemPOD : systemsPOD.getEnterpriseSystemsPOD()) {
-            EnterpriseSystemAM enterpriseSystemAM = new EnterpriseSystemAM(environment, slaViolationLogger);
-            Scheduler scheduler = new FIFOScheduler();
-            ResourceAllocation resourceAllocation = new MHR(environment, datacenter);
-            List<EnterpriseApp> applications = new ArrayList<EnterpriseApp>();
-            for (EnterpriseApplicationPOD pod : enterpriseSystemPOD.getApplicationPODs()) {
-                ApplicationAM applicationAM = new ApplicationAM(applications, enterpriseSystemAM, environment);
-                EnterpriseApp enterpriseApplication = EnterpriseApp.create(pod, scheduler, resourceAllocation,
-                        environment, applicationAM);
-                applications.add(enterpriseApplication);
-            }
-            systems.addEnterpriseSystem(EnterpriseSystem.Create(enterpriseSystemPOD, scheduler,
-                    resourceAllocation, enterpriseSystemAM, applications));
-        }
+        loadEnterpriseSystemIntoSystems(systems, systemsPOD.getEnterpriseSystemsPOD());
         for (ComputeSystemPOD computeSystemPOD : systemsPOD.getComputeSystemsPOD()) {
             systems.addComputeSystem(
                     ComputeSystem.Create(computeSystemPOD, environment, datacenter, slaViolationLogger));
@@ -92,6 +80,30 @@ public class Simulator {
         }
 
         systems.addObserver(new DataCenterAMXunxo());
+    }
+    
+    private void loadEnterpriseSystemIntoSystems(Systems systems, List<EnterpriseSystemPOD> enterpriseSystemPODs) {
+        for (EnterpriseSystemPOD enterpriseSystemPOD : enterpriseSystemPODs) {
+            EnterpriseSystemAM enterpriseSystemAM = new EnterpriseSystemAM(environment, slaViolationLogger);
+            Scheduler scheduler = new FIFOScheduler();
+            ResourceAllocation resourceAllocation = new MHR(environment, datacenter);
+            List<EnterpriseApp> applications = loadEnterpriseSystemApplications(
+                    enterpriseSystemPOD.getApplicationPODs(), enterpriseSystemAM, resourceAllocation, scheduler);
+            systems.addEnterpriseSystem(EnterpriseSystem.Create(enterpriseSystemPOD, scheduler,
+                    resourceAllocation, enterpriseSystemAM, applications));
+        }
+    }
+    
+    private List<EnterpriseApp> loadEnterpriseSystemApplications(List<EnterpriseApplicationPOD> enterpriseApplicationPODs, GeneralAM enterpriseSystemAM, ResourceAllocation resourceAllocation, Scheduler scheduler) {
+        List<EnterpriseApp> applications = new ArrayList<EnterpriseApp>();
+        for (EnterpriseApplicationPOD pod : enterpriseApplicationPODs) {
+            ApplicationAM applicationAM = new ApplicationAM(applications, enterpriseSystemAM, environment);
+            EnterpriseApp enterpriseApplication = EnterpriseApp.create(pod, scheduler, resourceAllocation,
+                    environment, applicationAM);
+            applications.add(enterpriseApplication);
+        }
+        
+        return applications;
     }
 
     // private int epochSys = 120, epochSideApp = 120;
