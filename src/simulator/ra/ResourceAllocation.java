@@ -157,7 +157,7 @@ public abstract class ResourceAllocation {
             for (int i = 0; i < difference; i++) {
                 for (int j = 0; j < enterpriseSystem.getComputeNodeList().size(); j++) {
                     if (enterpriseSystem.getComputeNodeList().get(j).isNotApplicationAssigned()
-                            | enterpriseSystem.getComputeNodeList().get(j).isIdle()) {
+                            || enterpriseSystem.getComputeNodeList().get(j).isIdle()) {
                         int indexServer = enterpriseSystem.getComputeNodeList().get(j).getServerID();
                         int indexChassis = enterpriseSystem.getComputeNodeList().get(j).getChassisID();
                         BladeServer server = dataCenter.getServer(indexChassis,
