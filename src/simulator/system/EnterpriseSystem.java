@@ -5,8 +5,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Logger;
 
-import simulator.Environment;
-import simulator.am.ApplicationAM;
 import simulator.am.EnterpriseSystemAM;
 import simulator.physical.BladeServer;
 import simulator.ra.ResourceAllocation;
