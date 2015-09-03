@@ -242,4 +242,46 @@ public class MHRTest {
         
         verifyNoMoreInteractions(mockedComputeSystem);
     }
+    
+    @Test
+    public void testInicialResourceAllocation_ComputeSystem_WithRackIDs_ComputeSystemWithNode() {
+        ComputeSystem mockedComputeSystem = mock(ComputeSystem.class);
+        List<Integer> rackIDs = Arrays.asList(0);
+        
+        Chassis mockedChassis = mock(Chassis.class);
+        when(mockedChassis.getRackID()).thenReturn(0);
+        when(mockedChassis.getChassisID()).thenReturn(0);
+        
+        BladeServer mockedBladeServer = mock(BladeServer.class);
+        when(mockedBladeServer.isNotSystemAssigned()).thenReturn(true);
+        List<BladeServer> mockedBladeServers = Arrays.asList(mockedBladeServer);
+        
+        when(mockedChassis.getServers()).thenReturn(mockedBladeServers);
+        
+        List<Chassis> chassisSet = Arrays.asList(mockedChassis);
+        when(mockedDataCenter.getChassisSet()).thenReturn(chassisSet);
+        when(mockedDataCenter.getServer(0, 0)).thenReturn(mockedBladeServer);
+        
+        when(mockedComputeSystem.getNumberOfNode()).thenReturn(1);
+        when(mockedComputeSystem.getRackIDs()).thenReturn(rackIDs);
+        
+        mininumHeatRecirculation.initialResourceAloc(mockedComputeSystem);
+        
+        verify(mockedComputeSystem).getRackIDs();
+        verify(mockedComputeSystem, times(2)).getNumberOfNode();
+        verify(mockedComputeSystem).addComputeNodeToSys(mockedBladeServer);
+        verify(mockedComputeSystem).appendBladeServerIndexIntoComputeNodeIndex(0);
+        
+        verify(mockedChassis).getRackID();
+        verify(mockedChassis).getChassisID();
+        verify(mockedChassis, times(2)).getServers();
+        
+        verify(mockedBladeServer).isNotSystemAssigned();
+        verify(mockedBladeServer).setStatusAsRunningNormal();
+        
+        verify(mockedDataCenter, times(3)).getChassisSet();       
+        verify(mockedDataCenter).getServer(0, 0);
+        
+        verifyNoMoreInteractions(mockedComputeSystem, mockedChassis, mockedBladeServer);
+    }
 }

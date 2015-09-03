@@ -176,32 +176,16 @@ public abstract class ResourceAllocation {
             }
         }
     }
-    /////////////////////////////////////////////////////////////////////////////////////////////
-    ////////////////////////////////////////////////// COMPUTING////////////////////////////////////
-    /////////////////////////////////////////////////////////////////////////////////////////////
-
+    
     public void initialResourceAloc(ComputeSystem computeSystem) {
         // Best fit resource allocation
-        List<Integer> myChassisList = createChassisArray(computeSystem.getRackIDs());// creats
-        // a
-        // list
-        // of
-        // servers
-        // ID
-        // that
-        // will
-        // be
-        // used
-        // for
-        // resource
-        // allocation
+        List<Integer> myChassisList = createChassisArray(computeSystem.getRackIDs());
         for (int i = 0; i < computeSystem.getNumberOfNode(); i++) {
             int[] serverIndex = nextServerSys(myChassisList);
             if (serverIndex.length == 2 && serverIndex[0] == -2 && serverIndex[1] == -2) {
                 LOGGER.info("-2 index in which server  initialResourceAloc(ComputeSystem CS)  iiiii" + i);
                 return;
             }
-            // LOGGER.info(serverIndex);
             int indexChassis = serverIndex[0];
             int indexServer = serverIndex[1];
             final BladeServer server = dataCenter.getServer(indexChassis, indexServer);
