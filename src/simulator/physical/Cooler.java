@@ -1,8 +1,12 @@
 package simulator.physical;
 
-public class Cooler {
+public final class Cooler {
+    
+    private Cooler() {
+        
+    }
 
-    double getCOP(double temperature) {
+    public static double getCoP(double temperature) {
         return 0.0068 * temperature * temperature + 0.0008 * temperature + 0.458;
     }
 }

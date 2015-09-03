@@ -11,7 +11,6 @@ public class DataCenter {
 
     private int overRed = 0;
     private double totalPowerConsumption = 0;
-    private Cooler cooler1 = new Cooler();
     private List<Chassis> chassisSet = new ArrayList<Chassis>();
     private int redTemperature;
     private double[][] D;
@@ -72,7 +71,7 @@ public class DataCenter {
             am.setSlowDownFromCooler(false);
         }
 
-        final double cop = cooler1.getCOP(maxTemp);
+        final double cop = Cooler.getCoP(maxTemp);
 
         activitiesLogger.write(((int) (computingPower * (1 + 1.0 / cop))) + "\t" + (int) computingPower + "\t"
                 + environment.getCurrentLocalTime() + "\n");
