@@ -1,7 +1,3 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package simulator.ra;
 
 import java.util.List;
@@ -22,7 +18,6 @@ public class FirstFit extends ResourceAllocation {
         super(environment, dataCenter);
     }
 
-    @Override
     public int nextServer(List<BladeServer> bs) {
         for (int j = 0; j < bs.size(); j++) {
             if (bs.get(j).isRunningNormal()) {
@@ -33,7 +28,6 @@ public class FirstFit extends ResourceAllocation {
         return -2;
     }
 
-    @Override
     public int[] nextServerSys(List<Integer> chassisList) {
         int[] retValue = new int[2];
         retValue[0] = -2;
@@ -51,7 +45,6 @@ public class FirstFit extends ResourceAllocation {
         return retValue;
     }
 
-    @Override
     public int[] allocateSystemLevelServer(List<BladeServer> ComputeNodeList, int list[]) {
         int j = 0, i = 0;
         int totalReadyNodes = 0;

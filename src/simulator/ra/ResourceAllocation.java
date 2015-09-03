@@ -21,21 +21,15 @@ public abstract class ResourceAllocation {
     protected DataCenter dataCenter;
     private Environment environment;
 
-    public int[] nextServerSys(List<Integer> chassisList) {
-        return null;
-    }
+    public abstract int[] nextServerSys(List<Integer> chassisList);
 
     public int nextServerInSys(List<BladeServer> bs) {
         return 0;
     }
 
-    public int nextServer(List<BladeServer> bladeList) {
-        return 0;
-    }
-
-    public int[] allocateSystemLevelServer(List<BladeServer> bs, int list[]) {
-        return null;
-    }
+    public abstract int nextServer(List<BladeServer> bladeList);
+    
+    public abstract int[] allocateSystemLevelServer(List<BladeServer> bs, int list[]);
 
     public ResourceAllocation(Environment environment, DataCenter dataCenter) {
         this.environment = environment;

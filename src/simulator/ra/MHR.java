@@ -1,7 +1,3 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package simulator.ra;
 
 import java.util.List;
@@ -25,7 +21,6 @@ public class MHR extends ResourceAllocation {
     int[] powIndex = { 15, 31, 16, 11, 36, 10, 30, 6, 20, 21, 35, 32, 17, 26, 25, 7, 27, 12, 42, 37, 41, 5, 2, 1, 0, 22,
             40, 47, 46, 13, 45, 29, 23, 8, 28, 43, 48, 9, 38, 33, 18, 3, 34, 44, 24, 14, 49, 19, 39, 4 };
 
-    @Override
     public int nextServer(List<BladeServer> bs) {
         int i = 0, j = 0;
         for (i = 0; i < powIndex.length; i++) {
@@ -53,7 +48,6 @@ public class MHR extends ResourceAllocation {
         return -2;
     }
 
-    @Override
     public int[] nextServerSys(List<Integer> chassisList) {
         int[] retValue = new int[2];
         retValue[0] = -2;
