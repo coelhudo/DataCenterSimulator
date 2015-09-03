@@ -229,7 +229,7 @@ public class MHRTest {
         verifyNoMoreInteractions(mockedComputeSystem);
     }
     
-    //@Test
+    @Test
     public void testInicialResourceAllocation_ComputeSystem_EmptyRackIDs_ComputeSystemWithNode() {
         ComputeSystem mockedComputeSystem = mock(ComputeSystem.class);
         List<Integer> rackIDs = Arrays.asList();

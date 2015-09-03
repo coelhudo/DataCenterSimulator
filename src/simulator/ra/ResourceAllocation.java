@@ -197,7 +197,7 @@ public abstract class ResourceAllocation {
         // allocation
         for (int i = 0; i < computeSystem.getNumberOfNode(); i++) {
             int[] serverIndex = nextServerSys(myChassisList);
-            if (serverIndex == null) {
+            if (serverIndex.length == 2 && serverIndex[0] == -2 && serverIndex[1] == -2) {
                 LOGGER.info("-2 index in which server  initialResourceAloc(ComputeSystem CS)  iiiii" + i);
                 return;
             }
