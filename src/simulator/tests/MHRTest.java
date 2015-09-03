@@ -42,7 +42,7 @@ public class MHRTest {
     }
 
     @Test
-    public void testNextServer_NonEmptyBladeServers_NotRunning() {
+    public void testNextServer_NonEmptyBladeServers_NotRunningNormal() {
         BladeServer mockedBladeServer = mock(BladeServer.class);
         when(mockedBladeServer.isRunningNormal()).thenReturn(false);
         List<BladeServer> bladeServers = Arrays.asList(mockedBladeServer);
@@ -83,7 +83,7 @@ public class MHRTest {
     }
 
     @Test
-    public void testNextServerSys_ChassisExpected_BladeServerNotSystemAssigned() {
+    public void testNextServerSys_ChassisExpected_BladeServerSystemAssigned() {
         List<Integer> chassisIndex = Arrays.asList(0);
         Chassis mockedChassis = mock(Chassis.class);
         List<Chassis> chassis = Arrays.asList(mockedChassis);
@@ -92,11 +92,11 @@ public class MHRTest {
         List<BladeServer> bladeServers = Arrays.asList(mockedBladeServer);
         when(mockedChassis.getServers()).thenReturn(bladeServers);
         when(mockedBladeServer.isNotSystemAssigned()).thenReturn(false);
-        
+
         int[] result = mininumHeatRecirculation.nextServerSys(chassisIndex);
         assertEquals(-2, result[0]);
         assertEquals(-2, result[1]);
-        
+
         verify(mockedDataCenter, times(3)).getChassisSet();
         verify(mockedChassis, times(3)).getServers();
         verify(mockedBladeServer).isNotSystemAssigned();
@@ -104,6 +104,87 @@ public class MHRTest {
         verifyNoMoreInteractions(mockedChassis, mockedBladeServer);
     }
 
-    // nextServerSys
-    // allocateSystemLevelServer
+    @Test
+    public void testNextServerSys_ChassisExpected_BladeServerNotSystemAssigned() {
+        List<Integer> chassisIndex = Arrays.asList(0);
+        Chassis mockedChassis = mock(Chassis.class);
+        List<Chassis> chassis = Arrays.asList(mockedChassis);
+        when(mockedDataCenter.getChassisSet()).thenReturn(chassis);
+        BladeServer mockedBladeServer = mock(BladeServer.class);
+        List<BladeServer> bladeServers = Arrays.asList(mockedBladeServer);
+        when(mockedChassis.getServers()).thenReturn(bladeServers);
+        when(mockedBladeServer.isNotSystemAssigned()).thenReturn(true);
+
+        int[] result = mininumHeatRecirculation.nextServerSys(chassisIndex);
+        assertEquals(0, result[0]);
+        assertEquals(0, result[1]);
+
+        verify(mockedDataCenter, times(2)).getChassisSet();
+        verify(mockedChassis, times(2)).getServers();
+        verify(mockedBladeServer).isNotSystemAssigned();
+
+        verifyNoMoreInteractions(mockedChassis, mockedBladeServer);
+    }
+
+    @Test
+    public void testAllocateSystemLevelServer_WithoutBladeServers() {
+        int[] result = { 0 };
+        List<BladeServer> bladeServers = Arrays.asList();
+        
+        mininumHeatRecirculation.allocateSystemLevelServer(bladeServers, result);
+        
+        assertEquals(-2, result[0]);
+    }
+    
+    @Test
+    public void testAllocateSystemLevelServer_BladeServerNotRunningNormal() {
+        int[] result = { 0 };
+        BladeServer mockedBladeServer = mock(BladeServer.class);
+        when(mockedBladeServer.isRunningNormal()).thenReturn(false);
+        List<BladeServer> bladeServers = Arrays.asList(mockedBladeServer);
+        
+        mininumHeatRecirculation.allocateSystemLevelServer(bladeServers, result);
+        
+        assertEquals(-2, result[0]);
+        
+        verify(mockedBladeServer).isRunningNormal();
+        
+        verifyNoMoreInteractions(mockedBladeServer);
+    }
+    
+    @Test
+    public void testAllocateSystemLevelServer_BladeServerRunningNormal_ChassisNotExpected() {
+        int[] result = { 0 };
+        BladeServer mockedBladeServer = mock(BladeServer.class);
+        when(mockedBladeServer.isRunningNormal()).thenReturn(true);
+        when(mockedBladeServer.getChassisID()).thenReturn(51);
+        List<BladeServer> bladeServers = Arrays.asList(mockedBladeServer);
+        
+        mininumHeatRecirculation.allocateSystemLevelServer(bladeServers, result);
+        
+        assertEquals(-2, result[0]);
+        
+        verify(mockedBladeServer, times(51)).isRunningNormal();
+        verify(mockedBladeServer, times(50)).getChassisID();
+        
+        verifyNoMoreInteractions(mockedBladeServer);
+    }
+    
+    @Test
+    public void testAllocateSystemLevelServer_BladeServerRunningNormal() {
+        int[] result = { -2 };
+        BladeServer mockedBladeServer = mock(BladeServer.class);
+        when(mockedBladeServer.isRunningNormal()).thenReturn(true);
+        List<BladeServer> bladeServers = Arrays.asList(mockedBladeServer);
+        
+        mininumHeatRecirculation.allocateSystemLevelServer(bladeServers, result);
+        
+        assertEquals(0, result[0]);
+        
+        verify(mockedBladeServer, times(27)).isRunningNormal();
+        verify(mockedBladeServer, times(26)).getChassisID();
+        
+        verifyNoMoreInteractions(mockedBladeServer);
+    }
+
 }
