@@ -182,7 +182,6 @@ public abstract class ResourceAllocation {
 
     public void initialResourceAloc(ComputeSystem computeSystem) {
         // Best fit resource allocation
-        int[] serverIndex = new int[2];
         List<Integer> myChassisList = createChassisArray(computeSystem.getRackIDs());// creats
         // a
         // list
@@ -197,7 +196,7 @@ public abstract class ResourceAllocation {
         // resource
         // allocation
         for (int i = 0; i < computeSystem.getNumberOfNode(); i++) {
-            serverIndex = nextServerSys(myChassisList);
+            int[] serverIndex = nextServerSys(myChassisList);
             if (serverIndex == null) {
                 LOGGER.info("-2 index in which server  initialResourceAloc(ComputeSystem CS)  iiiii" + i);
                 return;

@@ -12,6 +12,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import simulator.ra.MHR;
+import simulator.system.ComputeSystem;
 import simulator.Environment;
 import simulator.physical.BladeServer;
 import simulator.physical.Chassis;
@@ -213,4 +214,32 @@ public class MHRTest {
         verifyNoMoreInteractions(mockedBladeServerOne, mockedBladeServerTwo, mockedBladeServerThree);
     }
 
+    
+    @Test
+    public void testInicialResourceAllocation_ComputeSystem_EmptyRackIDs_ComputeSystemWithoutNode() {
+        ComputeSystem mockedComputeSystem = mock(ComputeSystem.class);
+        List<Integer> rackIDs = Arrays.asList();
+        when(mockedComputeSystem.getNumberOfNode()).thenReturn(0);
+        when(mockedComputeSystem.getRackIDs()).thenReturn(rackIDs);
+        mininumHeatRecirculation.initialResourceAloc(mockedComputeSystem);
+        
+        verify(mockedComputeSystem).getRackIDs();
+        verify(mockedComputeSystem).getNumberOfNode();
+        
+        verifyNoMoreInteractions(mockedComputeSystem);
+    }
+    
+    //@Test
+    public void testInicialResourceAllocation_ComputeSystem_EmptyRackIDs_ComputeSystemWithNode() {
+        ComputeSystem mockedComputeSystem = mock(ComputeSystem.class);
+        List<Integer> rackIDs = Arrays.asList();
+        when(mockedComputeSystem.getNumberOfNode()).thenReturn(1);
+        when(mockedComputeSystem.getRackIDs()).thenReturn(rackIDs);
+        mininumHeatRecirculation.initialResourceAloc(mockedComputeSystem);
+        
+        verify(mockedComputeSystem).getRackIDs();
+        verify(mockedComputeSystem).getNumberOfNode();
+        
+        verifyNoMoreInteractions(mockedComputeSystem);
+    }
 }
