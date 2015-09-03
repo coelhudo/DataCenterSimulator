@@ -71,7 +71,7 @@ public class DataCenter {
             am.setSlowDownFromCooler(false);
         }
 
-        final double cop = Cooler.getCoP(maxTemp);
+        final double cop = Cooler.getCOP(maxTemp);
 
         activitiesLogger.write(((int) (computingPower * (1 + 1.0 / cop))) + "\t" + (int) computingPower + "\t"
                 + environment.getCurrentLocalTime() + "\n");
