@@ -186,5 +186,31 @@ public class MHRTest {
         
         verifyNoMoreInteractions(mockedBladeServer);
     }
+    
+    @Test
+    public void testAllocateSystemLevelServer_BladeServerRunningNormal_MultipleResults() {
+        int[] result = { -2 , -2 };
+        BladeServer mockedBladeServerOne = mock(BladeServer.class);
+        when(mockedBladeServerOne.isRunningNormal()).thenReturn(true);
+        BladeServer mockedBladeServerTwo = mock(BladeServer.class);
+        when(mockedBladeServerTwo.isRunningNormal()).thenReturn(false);
+        BladeServer mockedBladeServerThree = mock(BladeServer.class);
+        when(mockedBladeServerThree.isRunningNormal()).thenReturn(true);
+        List<BladeServer> bladeServers = Arrays.asList(mockedBladeServerOne, mockedBladeServerTwo, mockedBladeServerThree);
+        
+        mininumHeatRecirculation.allocateSystemLevelServer(bladeServers, result);
+        
+        assertEquals(0, result[0]);
+        assertEquals(2, result[1]);
+        
+        verify(mockedBladeServerOne, times(27)).isRunningNormal();
+        verify(mockedBladeServerOne, times(26)).getChassisID();
+        verify(mockedBladeServerTwo, times(27)).isRunningNormal();
+        verify(mockedBladeServerThree, times(27)).isRunningNormal();
+        verify(mockedBladeServerThree, times(26)).getChassisID();
+        
+        
+        verifyNoMoreInteractions(mockedBladeServerOne, mockedBladeServerTwo, mockedBladeServerThree);
+    }
 
 }
