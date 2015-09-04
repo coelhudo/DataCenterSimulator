@@ -71,7 +71,7 @@ public class EnterpriseSystem extends GeneralSystem {
             // to
             // re-resourcealocation
             {
-                setNumberofIdleNode(applications.get(i).getComputeNodeList().size() + getNumberofIdleNode());
+                setNumberOfIdleNode(applications.get(i).getComputeNodeList().size() + getNumberOfIdleNode());
                 LOGGER.info("Number of violation in " + applications.get(i).getID() + "th application=  "
                         + applications.get(i).getNumofViolation());
                 applications.get(i).destroyApplication();

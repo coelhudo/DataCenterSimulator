@@ -71,11 +71,6 @@ public class BladeServer {
         setResponseList(new ArrayList<ResponseTime>());
         setResponseListWeb(new ArrayList<ResponseTime>());
         setQueueLength(0);
-        // -3 means it is not assigned to any system yet
-        // -2: it is in a system but is not assigned to an application
-        // -1 idle
-        // 0 or 1 is ready or not just the matter of CPU utilization over 100%
-        // or not
         setStatusAsNotAssignedToAnySystem();
         setTotalFinishedJob(0);
         setMips(1.4);
@@ -103,31 +98,27 @@ public class BladeServer {
     }
 
     public double getPower() {
-        double pw = 0, w = 0, a = 0, cpu = 0;
+        double w = 0, a = 0, cpu = 0;
         int j;
         cpu = getCurrentCPU();
         if (getMips() == 0) {
-            pw = pw + idleConsumption;
             LOGGER.info("MIPS Zero!!!!");
-        } else {
-            for (j = 0; j < 3; j++) {
-                if (frequencyLevel[j] == mips) {
-                    break;
-                }
-            }
-            w = powerIdle[j];
-            a = powerBusy[j] - w;
-            if (isNotSystemAssigned() || isNotApplicationAssigned() || isIdle()) {
-                // if the server is in idle state
-
-                a = 0;
-                w = idleConsumption;
-                // LOGGER.info(Main.localTime);
-            }
-            pw = pw + a * cpu / 100 + w;
-
+            return idleConsumption;
         }
-        return pw;
+
+        for (j = 0; j < 3; j++) {
+            if (frequencyLevel[j] == mips) {
+                break;
+            }
+        }
+        w = powerIdle[j];
+        a = powerBusy[j] - w;
+        if (isNotSystemAssigned() || isNotApplicationAssigned() || isIdle()) {
+            a = 0;
+            w = idleConsumption;
+        }
+
+        return a * cpu / 100 + w;
     }
 
     public void restart() {
@@ -276,7 +267,7 @@ public class BladeServer {
                 if (shareUtilizationRatio.isInfinite()) {
                     throw new ArithmeticException("Division by Zero");
                 }
-                
+
                 if (shareUtilizationRatio > 1) {
                     LOGGER.info("share more than one!\t" + share_t + "\t" + share + "\t" + utilization + "\t"
                             + environment.getCurrentLocalTime());
@@ -317,7 +308,7 @@ public class BladeServer {
             job.setIsChangedThisTime(0);
             getActiveBatchList().remove(job);// still exsits in other nodes
             if (job.allDone()) {
-                
+
                 setRespTime(job.Finish(environment.getCurrentLocalTime()) + getResponseTime());
 
                 setTotalFinishedJob(getTotalFinishedJob() + 1);
@@ -437,27 +428,27 @@ public class BladeServer {
     public void setTotalJobEpoch(double totalJobEpoch) {
         this.totalJobEpoch = totalJobEpoch;
     }
-    
+
     public boolean isNotSystemAssigned() {
         return ready == BladeServerStatus.NOT_ASSIGNED_TO_ANY_SYSTEM;
     }
-    
+
     public boolean isNotApplicationAssigned() {
         return ready == BladeServerStatus.NOT_ASSIGNED_TO_ANY_APPLICATION;
     }
-    
+
     public boolean isIdle() {
         return ready == BladeServerStatus.IDLE;
     }
-    
+
     public boolean isRunningNormal() {
         return ready == BladeServerStatus.RUNNING_NORMAL;
     }
-    
+
     public boolean isRunningBusy() {
         return ready == BladeServerStatus.RUNNING_BUSY;
     }
-    
+
     public boolean isRunning() {
         return ready == BladeServerStatus.RUNNING_BUSY || ready == BladeServerStatus.RUNNING_NORMAL;
     }

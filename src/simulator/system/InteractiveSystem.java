@@ -34,7 +34,7 @@ public class InteractiveSystem extends GeneralSystem {
         setWaitingQueueWL(new ArrayList<InteractiveUser>());
         resetNumberOfSLAViolation();
         setNumberOfNode(systemPOD.getNumberOfNode());
-        setNumberofIdleNode(systemPOD.getNumberOfNode());
+        setNumberOfIdleNode(systemPOD.getNumberOfNode());
         setBis(systemPOD.getBis());
         setRackIDs(systemPOD.getRackIDs());
     }
@@ -79,7 +79,7 @@ public class InteractiveSystem extends GeneralSystem {
             // re-resourcealocation
             {
                 finishedBundle++;
-                setNumberofIdleNode(getUserList().get(i).getComputeNodeList().size() + getNumberofIdleNode());
+                setNumberOfIdleNode(getUserList().get(i).getComputeNodeList().size() + getNumberOfIdleNode());
                 getUserList().get(i).destroyWLBundle();// restart its servers
                 getUserList().remove(i);
             }

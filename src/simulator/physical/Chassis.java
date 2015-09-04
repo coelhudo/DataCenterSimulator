@@ -33,6 +33,11 @@ public class Chassis {
         return chassisID;
     }
 
+    /**
+     * This model does not take into account the power consumption of the
+     * chassis, just the blades.
+     * @return total power consumed
+     */
     public double power() {
         double pw = 0;
         for (BladeServer bladeServer : servers) {

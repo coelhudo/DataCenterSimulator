@@ -81,7 +81,7 @@ public class Simulator {
 
         systems.addObserver(new DataCenterAMXunxo());
     }
-    
+
     private void loadEnterpriseSystemIntoSystems(Systems systems, List<EnterpriseSystemPOD> enterpriseSystemPODs) {
         for (EnterpriseSystemPOD enterpriseSystemPOD : enterpriseSystemPODs) {
             EnterpriseSystemAM enterpriseSystemAM = new EnterpriseSystemAM(environment, slaViolationLogger);
@@ -89,20 +89,22 @@ public class Simulator {
             ResourceAllocation resourceAllocation = new MHR(environment, datacenter);
             List<EnterpriseApp> applications = loadEnterpriseSystemApplications(
                     enterpriseSystemPOD.getApplicationPODs(), enterpriseSystemAM, resourceAllocation, scheduler);
-            systems.addEnterpriseSystem(EnterpriseSystem.Create(enterpriseSystemPOD, scheduler,
-                    resourceAllocation, enterpriseSystemAM, applications));
+            systems.addEnterpriseSystem(EnterpriseSystem.Create(enterpriseSystemPOD, scheduler, resourceAllocation,
+                    enterpriseSystemAM, applications));
         }
     }
-    
-    private List<EnterpriseApp> loadEnterpriseSystemApplications(List<EnterpriseApplicationPOD> enterpriseApplicationPODs, GeneralAM enterpriseSystemAM, ResourceAllocation resourceAllocation, Scheduler scheduler) {
+
+    private List<EnterpriseApp> loadEnterpriseSystemApplications(
+            List<EnterpriseApplicationPOD> enterpriseApplicationPODs, GeneralAM enterpriseSystemAM,
+            ResourceAllocation resourceAllocation, Scheduler scheduler) {
         List<EnterpriseApp> applications = new ArrayList<EnterpriseApp>();
         for (EnterpriseApplicationPOD pod : enterpriseApplicationPODs) {
             ApplicationAM applicationAM = new ApplicationAM(applications, enterpriseSystemAM, environment);
-            EnterpriseApp enterpriseApplication = EnterpriseApp.create(pod, scheduler, resourceAllocation,
-                    environment, applicationAM);
+            EnterpriseApp enterpriseApplication = EnterpriseApp.create(pod, scheduler, resourceAllocation, environment,
+                    applicationAM);
             applications.add(enterpriseApplication);
         }
-        
+
         return applications;
     }
 

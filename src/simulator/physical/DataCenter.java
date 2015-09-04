@@ -19,11 +19,12 @@ public class DataCenter {
 
     private Environment environment;
 
-    public DataCenter(DataCenterPOD dataCenterPOD, DataCenterAM dataCenterAM, ActivitiesLogger activitiesLogger, Environment environment) {
+    public DataCenter(DataCenterPOD dataCenterPOD, DataCenterAM dataCenterAM, ActivitiesLogger activitiesLogger,
+            Environment environment) {
         this.activitiesLogger = activitiesLogger;
         am = dataCenterAM;
         this.environment = environment;
-        for(ChassisPOD chassisPOD : dataCenterPOD.getChassisPOD()) {
+        for (ChassisPOD chassisPOD : dataCenterPOD.getChassisPOD()) {
             Chassis chassis = new Chassis(chassisPOD, environment);
             chassisSet.add(chassis);
         }
@@ -39,25 +40,29 @@ public class DataCenter {
         return i / chassisSet.get(0).getServers().size();
     }
 
+    /**
+     * Calculate Power using Equation 6 from doi:10.1016/j.comnet.2009.06.008
+     */
     public void calculatePower() {
         int m = chassisSet.size();
         double computingPower = 0;
-        double[] temprature = new double[m];
-        for (int i = 0; i < m; i++) {
-            double temp = chassisSet.get(i).power();
-            activitiesLogger.write((int) temp + "\t");
-            computingPower = computingPower + temp;
+        double[] temperature = new double[m];
+        for (Chassis chassis : chassisSet) {
+            final double chassisComputingPower = chassis.power();
+            activitiesLogger.write((int) chassis.power() + "\t");
+            computingPower = computingPower + chassisComputingPower;
         }
+        
         for (int i = 0; i < m; i++) {
             for (int j = 0; j < m; j++) {
-                temprature[i] = temprature[i] + D[i][j] * chassisSet.get(j).power();
+                temperature[i] = temperature[i] + D[i][j] * chassisSet.get(j).power();
             }
         }
 
-        double maxTemp = temprature[0];
+        double maxTemp = temperature[0];
         for (int i = 0; i < m; i++) {
-            if (maxTemp < temprature[i]) {
-                maxTemp = temprature[i];
+            if (maxTemp < temperature[i]) {
+                maxTemp = temperature[i];
             }
         }
 
@@ -66,16 +71,16 @@ public class DataCenter {
         if (maxTemp <= 0) {
             am.setSlowDownFromCooler(true);
             overRed++;
-
         } else {
             am.setSlowDownFromCooler(false);
         }
 
         final double cop = Cooler.getCOP(maxTemp);
+        final double currentTotalEnergyConsumption = computingPower * (1 + 1.0 / cop);
 
-        activitiesLogger.write(((int) (computingPower * (1 + 1.0 / cop))) + "\t" + (int) computingPower + "\t"
+        activitiesLogger.write(((int) currentTotalEnergyConsumption) + "\t" + (int) computingPower + "\t"
                 + environment.getCurrentLocalTime() + "\n");
-        totalPowerConsumption = totalPowerConsumption + computingPower * (1 + 1.0 / cop);
+        totalPowerConsumption = totalPowerConsumption + currentTotalEnergyConsumption;
     }
 
     public void shutDownDC() {

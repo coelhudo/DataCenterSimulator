@@ -13,6 +13,8 @@ import org.junit.Test;
 
 import simulator.ra.MHR;
 import simulator.system.ComputeSystem;
+import simulator.system.EnterpriseApp;
+import simulator.system.EnterpriseSystem;
 import simulator.Environment;
 import simulator.physical.BladeServer;
 import simulator.physical.Chassis;
@@ -216,7 +218,7 @@ public class MHRTest {
 
     
     @Test
-    public void testInicialResourceAllocation_ComputeSystem_EmptyRackIDs_ComputeSystemWithoutNode() {
+    public void testInicialResourceAllocation_ComputeSystem_EmptyRackIDs_WithoutNode() {
         ComputeSystem mockedComputeSystem = mock(ComputeSystem.class);
         List<Integer> rackIDs = Arrays.asList();
         when(mockedComputeSystem.getNumberOfNode()).thenReturn(0);
@@ -230,7 +232,7 @@ public class MHRTest {
     }
     
     @Test
-    public void testInicialResourceAllocation_ComputeSystem_EmptyRackIDs_ComputeSystemWithNode() {
+    public void testInicialResourceAllocation_ComputeSystem_EmptyRackIDs_WithNode() {
         ComputeSystem mockedComputeSystem = mock(ComputeSystem.class);
         List<Integer> rackIDs = Arrays.asList();
         when(mockedComputeSystem.getNumberOfNode()).thenReturn(1);
@@ -244,7 +246,7 @@ public class MHRTest {
     }
     
     @Test
-    public void testInicialResourceAllocation_ComputeSystem_WithRackIDs_ComputeSystemWithNode() {
+    public void testInicialResourceAllocation_ComputeSystem_WithRackIDs_WithNode() {
         ComputeSystem mockedComputeSystem = mock(ComputeSystem.class);
         List<Integer> rackIDs = Arrays.asList(0);
         
@@ -283,5 +285,27 @@ public class MHRTest {
         verify(mockedDataCenter).getServer(0, 0);
         
         verifyNoMoreInteractions(mockedComputeSystem, mockedChassis, mockedBladeServer);
+    }
+    
+    @Test
+    public void testInicialResourceAllocation_EnterpriseSystem_EmptyRackIDs_WithoutNode_WithoutApplication() {
+        EnterpriseSystem mockedEnterpriseSystem = mock(EnterpriseSystem.class);
+        when(mockedEnterpriseSystem.getNumberOfNode()).thenReturn(0);
+        List<Integer> rackIDs = Arrays.asList();
+        when(mockedEnterpriseSystem.getRackIDs()).thenReturn(rackIDs);
+        List<EnterpriseApp> applications = Arrays.asList();
+        when(mockedEnterpriseSystem.getApplications()).thenReturn(applications);
+        List<BladeServer> bladeServers = Arrays.asList();
+        when(mockedEnterpriseSystem.getComputeNodeList()).thenReturn(bladeServers);
+        mininumHeatRecirculation.initialResourceAlocator(mockedEnterpriseSystem);
+        
+        verify(mockedEnterpriseSystem).getRackIDs();
+        verify(mockedEnterpriseSystem).getNumberOfNode();
+        verify(mockedEnterpriseSystem).getApplications();
+        verify(mockedEnterpriseSystem).setNumberOfIdleNode(0);
+        verify(mockedEnterpriseSystem).getComputeNodeList();
+        verify(mockedEnterpriseSystem, times(2)).getNumberOfIdleNode();
+        
+        verifyNoMoreInteractions(mockedEnterpriseSystem);
     }
 }

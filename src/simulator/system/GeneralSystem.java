@@ -61,11 +61,11 @@ public class GeneralSystem {
         return scheduler;
     }
 
-    public int getNumberofIdleNode() {
+    public int getNumberOfIdleNode() {
         return numberofIdleNode;
     }
 
-    public void setNumberofIdleNode(int numberofIdleNode) {
+    public void setNumberOfIdleNode(int numberofIdleNode) {
         this.numberofIdleNode = numberofIdleNode;
     }
 

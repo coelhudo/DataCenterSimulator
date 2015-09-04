@@ -65,7 +65,7 @@ public class EnterpriseSystemTest {
         assertTrue(enterpriseSystem.getComputeNodeList().isEmpty());
         assertNull(enterpriseSystem.getName());
         assertEquals(0, enterpriseSystem.getNumberOfActiveServ());
-        assertEquals(0, enterpriseSystem.getNumberofIdleNode());
+        assertEquals(0, enterpriseSystem.getNumberOfIdleNode());
         assertEquals(0, enterpriseSystem.getNumberOfNode());
         assertEquals(0, enterpriseSystem.getPower(), 1.0E-8);
         assertTrue(enterpriseSystem.getRackIDs().isEmpty());
