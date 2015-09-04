@@ -98,27 +98,21 @@ public class BladeServer {
     }
 
     public double getPower() {
-        double w = 0, a = 0, cpu = 0;
-        int j;
-        cpu = getCurrentCPU();
-        if (getMips() == 0) {
-            LOGGER.info("MIPS Zero!!!!");
+        if (getMips() == 0 || !isRunning()) {
             return idleConsumption;
         }
 
+        int j;
         for (j = 0; j < 3; j++) {
             if (frequencyLevel[j] == mips) {
                 break;
             }
         }
-        w = powerIdle[j];
-        a = powerBusy[j] - w;
-        if (isNotSystemAssigned() || isNotApplicationAssigned() || isIdle()) {
-            a = 0;
-            w = idleConsumption;
-        }
+        
+        final double w = powerIdle[j];
+        final double a = powerBusy[j] - w;
 
-        return a * cpu / 100 + w;
+        return a * getCurrentCPU() / 100 + w;
     }
 
     public void restart() {
