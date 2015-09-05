@@ -248,7 +248,6 @@ public class MHRTest {
     @Test
     public void testInicialResourceAllocation_ComputeSystem_WithRackIDs_WithNode() {
         ComputeSystem mockedComputeSystem = mock(ComputeSystem.class);
-        List<Integer> rackIDs = Arrays.asList(0);
         
         Chassis mockedChassis = mock(Chassis.class);
         when(mockedChassis.getRackID()).thenReturn(0);
@@ -256,16 +255,14 @@ public class MHRTest {
         
         BladeServer mockedBladeServer = mock(BladeServer.class);
         when(mockedBladeServer.isNotSystemAssigned()).thenReturn(true);
-        List<BladeServer> mockedBladeServers = Arrays.asList(mockedBladeServer);
         
-        when(mockedChassis.getServers()).thenReturn(mockedBladeServers);
+        when(mockedChassis.getServers()).thenReturn(Arrays.asList(mockedBladeServer));
         
-        List<Chassis> chassisSet = Arrays.asList(mockedChassis);
-        when(mockedDataCenter.getChassisSet()).thenReturn(chassisSet);
+        when(mockedDataCenter.getChassisSet()).thenReturn(Arrays.asList(mockedChassis));
         when(mockedDataCenter.getServer(0, 0)).thenReturn(mockedBladeServer);
         
         when(mockedComputeSystem.getNumberOfNode()).thenReturn(1);
-        when(mockedComputeSystem.getRackIDs()).thenReturn(rackIDs);
+        when(mockedComputeSystem.getRackIDs()).thenReturn(Arrays.asList(0));
         
         mininumHeatRecirculation.initialResourceAloc(mockedComputeSystem);
         
@@ -307,5 +304,51 @@ public class MHRTest {
         verify(mockedEnterpriseSystem, times(2)).getNumberOfIdleNode();
         
         verifyNoMoreInteractions(mockedEnterpriseSystem);
+    }
+    
+    @Test
+    public void testInicialResourceAllocation_EnterpriseSystem_WithRackIDs_WithNode_WithoutApplication() {
+        EnterpriseSystem mockedEnterpriseSystem = mock(EnterpriseSystem.class);
+        when(mockedEnterpriseSystem.getNumberOfNode()).thenReturn(1);
+        
+        when(mockedEnterpriseSystem.getRackIDs()).thenReturn(Arrays.asList(0));
+           
+        Chassis mockedChassis = mock(Chassis.class);
+        BladeServer mockedBladeServer = mock(BladeServer.class);
+        when(mockedBladeServer.isNotSystemAssigned()).thenReturn(true);
+        when(mockedChassis.getServers()).thenReturn(Arrays.asList(mockedBladeServer));
+        List<Chassis> chassisSet = Arrays.asList(mockedChassis);
+        when(mockedDataCenter.getChassisSet()).thenReturn(chassisSet);
+        when(mockedDataCenter.getServer(0, 0)).thenReturn(mockedBladeServer);
+        
+        List<EnterpriseApp> applications = Arrays.asList();
+        when(mockedEnterpriseSystem.getApplications()).thenReturn(applications);
+        
+        List<BladeServer> bladeServers = Arrays.asList();
+        when(mockedEnterpriseSystem.getComputeNodeList()).thenReturn(bladeServers);
+        mininumHeatRecirculation.initialResourceAlocator(mockedEnterpriseSystem);
+        
+        verify(mockedEnterpriseSystem).getRackIDs();
+        verify(mockedEnterpriseSystem, times(2)).getNumberOfNode();
+        verify(mockedEnterpriseSystem).getApplications();
+        verify(mockedEnterpriseSystem).setNumberOfIdleNode(0);
+        verify(mockedEnterpriseSystem).getComputeNodeList();
+        verify(mockedEnterpriseSystem, times(2)).getNumberOfIdleNode();
+        
+        verify(mockedDataCenter, times(3)).getChassisSet();
+        verify(mockedDataCenter).getServer(0, 0);
+        
+        verify(mockedEnterpriseSystem).addComputeNodeToSys(mockedBladeServer);
+        verify(mockedEnterpriseSystem).appendBladeServerIndexIntoComputeNodeIndex(0);
+        
+        
+        verify(mockedChassis).getRackID();
+        verify(mockedChassis).getChassisID();
+        verify(mockedChassis, times(2)).getServers();
+        
+        verify(mockedBladeServer).isNotSystemAssigned();
+        verify(mockedBladeServer).setStatusAsNotAssignedToAnyApplication();
+        
+        verifyNoMoreInteractions(mockedEnterpriseSystem, mockedBladeServer, mockedChassis);
     }
 }
