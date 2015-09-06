@@ -26,7 +26,7 @@ public class ComputeSystemAM extends SystemAM {
         getPercentageOfComputingPwr();
     }
 
-    public double getPercentageOfComputingPwr() {
+    private double getPercentageOfComputingPwr() {
         double percnt = 0;
         int[] levels = { 0, 0, 0 };
         int index = 0;
