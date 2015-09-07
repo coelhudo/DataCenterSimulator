@@ -29,7 +29,7 @@ public abstract class ResourceAllocation {
 
     public abstract int nextServer(List<BladeServer> bladeList);
 
-    public abstract int[] allocateSystemLevelServer(List<BladeServer> bs, int list[]);
+    public abstract int[] allocateSystemLevelServer(List<BladeServer> bs, int[] list);
 
     public ResourceAllocation(Environment environment, DataCenter dataCenter) {
         this.environment = environment;
@@ -42,9 +42,9 @@ public abstract class ResourceAllocation {
     void resourceAlocViolation(InteractiveSystem interactiveSystem) {
     }
 
-    abstract public void resourceAloc(EnterpriseSystem enterpriseSystem);
+    public abstract void resourceAloc(EnterpriseSystem enterpriseSystem);
 
-    abstract public void resourceAloc(InteractiveSystem interactiveSystem);
+    public abstract void resourceAloc(InteractiveSystem interactiveSystem);
 
     void resourceRelease(EnterpriseSystem enterpriseSystem, int predicdetNumber) {
 
@@ -67,66 +67,66 @@ public abstract class ResourceAllocation {
     public void resourceProvision(EnterpriseSystem enterpriseSystem, int[] alocVectr) {
         // release first
         for (int i = 0; i < alocVectr.length; i++) {
-            if (alocVectr[i] < 0) {
-                for (int ii = 0; ii < (-1 * alocVectr[i]); ii++) {
-                    int indexi = enterpriseSystem.getApplications().get(i).myFirstIdleNode();
-                    if (indexi == -2) {
-                        LOGGER.info("kkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkk");
-                        return;
-                    }
-                    int indexServer = enterpriseSystem.getApplications().get(i).getComputeNodeList().get(indexi)
-                            .getServerID();
-                    int indexChassis = enterpriseSystem.getApplications().get(i).getComputeNodeList().get(indexi)
-                            .getChassisID();
-                    enterpriseSystem.getApplications().get(i).getComputeNodeList().remove(indexi);
-                    final BladeServer server = dataCenter.getServer(indexChassis,
-                            findServerInChasis(indexChassis, indexServer));
-                    server.setStatusAsNotAssignedToAnyApplication();
-                    server.setSLAPercentage(0);
-                    server.setTimeTreshold(0);
-                    /////
-                    if (enterpriseSystem.getApplications().get(i).numberofRunningNode() == 0) {
-                        enterpriseSystem.getApplications().get(i).activeOneNode();
-                    }
-                    LOGGER.info("Release:app: " + i + "\t#of comp Node="
-                            + enterpriseSystem.getApplications().get(i).getComputeNodeList().size()
-                            + "\t system Rdy to aloc=" + enterpriseSystem.numberofAvailableNodetoAlocate() + "\t@:"
-                            + environment.getCurrentLocalTime() + "\tNumber of running = "
-                            + enterpriseSystem.getApplications().get(i).numberofRunningNode());
-                    environment.updateNumberOfMessagesFromDataCenterToSystem();
+            if (alocVectr[i] >= 0) {
+                continue;
+            }
+
+            for (int ii = 0; ii < (-1 * alocVectr[i]); ii++) {
+                EnterpriseApp enterpriseApp = enterpriseSystem.getApplications().get(i);
+                int indexi = enterpriseApp.myFirstIdleNode();
+                if (indexi == -2) {
+                    LOGGER.info("kkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkk");
+                    return;
                 }
+                int indexServer = enterpriseApp.getComputeNodeList().get(indexi).getServerID();
+                int indexChassis = enterpriseApp.getComputeNodeList().get(indexi).getChassisID();
+                enterpriseApp.getComputeNodeList().remove(indexi);
+                final BladeServer server = dataCenter.getServer(indexChassis,
+                        findServerInChasis(indexChassis, indexServer));
+                server.setStatusAsNotAssignedToAnyApplication();
+                server.setSLAPercentage(0);
+                server.setTimeTreshold(0);
+
+                if (enterpriseApp.numberofRunningNode() == 0) {
+                    enterpriseApp.activeOneNode();
+                }
+                LOGGER.info("Release:app: " + i + "\t#of comp Node=" + enterpriseApp.getComputeNodeList().size()
+                        + "\t system Rdy to aloc=" + enterpriseSystem.numberofAvailableNodetoAlocate() + "\t@:"
+                        + environment.getCurrentLocalTime() + "\tNumber of running = "
+                        + enterpriseSystem.getApplications().get(i).numberofRunningNode());
+                environment.updateNumberOfMessagesFromDataCenterToSystem();
             }
         }
         // Allocation part come in second
         for (int i = 0; i < alocVectr.length; i++) {
-            if (alocVectr[i] >= 1) {
-                for (int ii = 0; ii < alocVectr[i]; ii++) {
-                    int indexInComputeList = nextServerInSys(enterpriseSystem.getComputeNodeList());
-                    if (indexInComputeList == -2) {
-                        // LOGGER.info("nashod alocate konim! for this
-                        // application ->"+i +"\tsize quueue 0->"+
-                        // ES.getApplications().get(0).queueApp.size()+"\t1->"+ES.getApplications().get(1).queueApp.size());
-                        enterpriseSystem.getAM().setRecForCoopAt(i, 1);
-                    } else {
-                        int indexServer = enterpriseSystem.getComputeNodeList().get(indexInComputeList).getServerID();
-                        int indexChassis = enterpriseSystem.getComputeNodeList().get(indexInComputeList).getChassisID();
-                        final BladeServer server = dataCenter.getServer(indexChassis,
-                                findServerInChasis(indexChassis, indexServer));
-                        enterpriseSystem.getApplications().get(i).addCompNodetoBundle(server);
-                        // ES.getApplications().get(i).ComputeNodeIndex.add(indexChassis);
-                        // //need to think about that!
-                        // now the node is assinged to a application and is
-                        // ready!
-                        server.setStatusAsRunningNormal();
-                        server.setSLAPercentage(enterpriseSystem.getApplications().get(i).getSLAPercentage());
-                        server.setTimeTreshold(enterpriseSystem.getApplications().get(i).getTimeTreshold());
-                        LOGGER.info("Alloc: to app:" + i + "\t#of comp Node="
-                                + enterpriseSystem.getApplications().get(i).getComputeNodeList().size()
-                                + "\tsys Rdy to aloc=" + enterpriseSystem.numberofAvailableNodetoAlocate() + "\t@:"
-                                + environment.getCurrentLocalTime() + "\tsys Number of running = "
-                                + enterpriseSystem.getApplications().get(i).numberofRunningNode());
-                        environment.updateNumberOfMessagesFromDataCenterToSystem();
-                    }
+            if (alocVectr[i] < 1) {
+                continue;
+            }
+
+            for (int ii = 0; ii < alocVectr[i]; ii++) {
+                int indexInComputeList = nextServerInSys(enterpriseSystem.getComputeNodeList());
+                if (indexInComputeList == -2) {
+                    // LOGGER.info("nashod alocate konim! for this
+                    // application ->"+i +"\tsize quueue 0->"+
+                    enterpriseSystem.getAM().setRecForCoopAt(i, 1);
+                } else {
+                    EnterpriseApp enterpriseApp = enterpriseSystem.getApplications().get(i);
+                    int indexServer = enterpriseSystem.getComputeNodeList().get(indexInComputeList).getServerID();
+                    int indexChassis = enterpriseSystem.getComputeNodeList().get(indexInComputeList).getChassisID();
+                    final BladeServer server = dataCenter.getServer(indexChassis,
+                            findServerInChasis(indexChassis, indexServer));
+                    enterpriseSystem.getApplications().get(i).addCompNodetoBundle(server);
+                    // need to think about that!
+                    // now the node is assinged to a application and is
+                    // ready!
+                    server.setStatusAsRunningNormal();
+                    server.setSLAPercentage(enterpriseApp.getSLAPercentage());
+                    server.setTimeTreshold(enterpriseApp.getTimeTreshold());
+                    LOGGER.info("Alloc: to app:" + i + "\t#of comp Node=" + enterpriseApp.getComputeNodeList().size()
+                            + "\tsys Rdy to aloc=" + enterpriseSystem.numberofAvailableNodetoAlocate() + "\t@:"
+                            + environment.getCurrentLocalTime() + "\tsys Number of running = "
+                            + enterpriseApp.numberofRunningNode());
+                    environment.updateNumberOfMessagesFromDataCenterToSystem();
                 }
             }
         }
@@ -140,37 +140,31 @@ public abstract class ResourceAllocation {
         // LOGGER.info("resourceProvision : request for=" + "\t" +
         // predicdetNumber +"\t now has=\t"+currentInvolved+ "\t localTime=
         // "+Main.localTime);
-        if (currentInvolved == predicdetNumber | predicdetNumber <= 0) {
+        if (currentInvolved == predicdetNumber || predicdetNumber <= 0) {
             return;
         }
-        if (currentInvolved > predicdetNumber && enterpriseSystem.getSLAviolation() == 0) // got
-        // to
-        // release
-        // some
-        // nodes
-        {
+        if (currentInvolved > predicdetNumber && enterpriseSystem.getSLAviolation() == 0) {
             resourceRelease(enterpriseSystem, predicdetNumber);
-        } // we already have more server involved and dont change the state
-        else // need to provide more server
-        {
-            int difference = predicdetNumber - currentInvolved;
+            // we already have more server involved and dont change the state
+        } else {
+            final int difference = predicdetNumber - currentInvolved;
             for (int i = 0; i < difference; i++) {
                 for (int j = 0; j < enterpriseSystem.getComputeNodeList().size(); j++) {
-                    if (enterpriseSystem.getComputeNodeList().get(j).isNotApplicationAssigned()
-                            || enterpriseSystem.getComputeNodeList().get(j).isIdle()) {
-                        int indexServer = enterpriseSystem.getComputeNodeList().get(j).getServerID();
-                        int indexChassis = enterpriseSystem.getComputeNodeList().get(j).getChassisID();
+                    BladeServer bladeServer = enterpriseSystem.getComputeNodeList().get(j);
+                    if (bladeServer.isNotApplicationAssigned() || bladeServer.isIdle()) {
+                        int indexServer = bladeServer.getServerID();
+                        int indexChassis = bladeServer.getChassisID();
                         BladeServer server = dataCenter.getServer(indexChassis,
                                 findServerInChasis(indexChassis, indexServer));
-                        enterpriseSystem.getApplications().get(0).addCompNodetoBundle(server);
-                        // ES.getApplications().get(0).ComputeNodeIndex.add(indexChassis);
-                        // //need to think about that!
+                        EnterpriseApp enterpriseApp = enterpriseSystem.getApplications().get(0);
+                        enterpriseApp.addCompNodetoBundle(server);
+                        // need to think about that!
                         // now the node is assinged to a application and is
                         // ready!
 
                         server.setStatusAsRunningNormal();
-                        server.setSLAPercentage(enterpriseSystem.getApplications().get(0).getSLAPercentage());
-                        server.setTimeTreshold(enterpriseSystem.getApplications().get(0).getTimeTreshold());
+                        server.setSLAPercentage(enterpriseApp.getSLAPercentage());
+                        server.setTimeTreshold(enterpriseApp.getTimeTreshold());
                         enterpriseSystem.setNumberOfIdleNode(enterpriseSystem.getNumberOfIdleNode() - 1);
                         // here means we increased number of running nodes,
                         // needs to inform underneath AM
