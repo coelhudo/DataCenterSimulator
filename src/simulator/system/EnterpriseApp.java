@@ -20,23 +20,18 @@ public class EnterpriseApp {
     private static final Logger LOGGER = Logger.getLogger(EnterpriseApp.class.getName());
 
     private int id = 0;
-    // int usedNode=0;
     private int maxProc = 0;
     private int minProc = 0;
     private int maxExpectedResTime = 0;
     private List<BladeServer> computeNodeList;
-    // ArrayList <Integer> ComputeNodeIndex;
     private List<EnterpriseJob> queueApp;
     private List<ResponseTime> responseList;
-    // jobPlacement placement;
     private int timeTreshold = 0;
     private int slaPercentage;
     private int slaViolation = 0;
     private int numOfViolation = 0;
     private BufferedReader bis = null;
     private ApplicationAM am;
-    // EnterpriseSystem mySys; //Application knows in which Sys it is located.
-    // initialize in EnterpriseSystem
     private int maxNumberOfRequest = 0; // # of Request can be handled by number
     // of basic node which for 100% CPU
     // utilization
@@ -45,8 +40,8 @@ public class EnterpriseApp {
     private ResourceAllocation resourceAllocation;
     private Environment environment;
 
-    public EnterpriseApp(EnterpriseApplicationPOD enterpriseApplicationPOD, Scheduler scheduler, ResourceAllocation resourceAllocation,
-            Environment environment) {
+    public EnterpriseApp(EnterpriseApplicationPOD enterpriseApplicationPOD, Scheduler scheduler,
+            ResourceAllocation resourceAllocation, Environment environment) {
         this.scheduler = scheduler;
         this.resourceAllocation = resourceAllocation;
         this.environment = environment;
@@ -136,19 +131,16 @@ public class EnterpriseApp {
         // "+retReadLogfile);
         return retReadLogfile;
     }
-    // reset all working node ready flag and CPU utilization
 
+    /**
+     * Reset all working node ready flag and CPU utilization.
+     * 
+     * Legacy Obs.: If it is idle do not change it! it is responsibility of its AM to change
+     * it.
+     */
     void resetReadyFlagAndCPU() {
         for (BladeServer bladeServer : getComputeNodeList()) {
-            if (!bladeServer.isIdle()) { // if it is idle
-                // dont
-                // change it! it
-                // is
-                // responsibility
-                // of
-                // its AM to
-                // change
-                // it
+            if (!bladeServer.isIdle()) {
                 bladeServer.setCurrentCPU(0);
                 bladeServer.setStatusAsRunningNormal();
             }
@@ -158,7 +150,6 @@ public class EnterpriseApp {
 
     public boolean runAcycle() {
         int readingResult = readWebJob();
-        //////// RESET READY FLAGS for all nodes
         resetReadyFlagAndCPU();
         // need more thought
         if (readingResult == 0) {
@@ -169,64 +160,60 @@ public class EnterpriseApp {
             // no jobs are in the queue and in logfile
             return false;
         }
-        double CPUpercentage = 0;
+        double cpuPercentage = 0;
         int numberofReadyNodes = 0;
         int beenRunJobs = 0; // number of jobs have been run so far
         for (BladeServer bladeServer : getComputeNodeList()) {
             if (bladeServer.isRunningNormal()) {
-                CPUpercentage = (100.0 - bladeServer.getCurrentCPU()) * bladeServer.getMips() + CPUpercentage;
+                cpuPercentage = (100.0 - bladeServer.getCurrentCPU()) * bladeServer.getMips() + cpuPercentage;
                 numberofReadyNodes++;
             }
         }
         int capacityOfNode = (int) Math
-                .ceil((getMaxNumberOfRequest() * CPUpercentage) / (getNumberofBasicNode() * 100.0));
+                .ceil((getMaxNumberOfRequest() * cpuPercentage) / (getNumberofBasicNode() * 100.0));
         int capacityOfNode_COPY = capacityOfNode;
         EnterpriseJob jj = (EnterpriseJob) scheduler.nextJob(getQueueApp());
         while (capacityOfNode > 0) {
             capacityOfNode = capacityOfNode - jj.getNumberOfJob();
+            final int time = environment.getCurrentLocalTime() - jj.getArrivalTimeOfJob() + 1;
             if (capacityOfNode == 0) {
-                addToresponseArray(jj.getNumberOfJob(),
-                        (environment.getCurrentLocalTime() - jj.getArrivalTimeOfJob() + 1));
+                addToresponseArray(jj.getNumberOfJob(), time);
                 beenRunJobs = beenRunJobs + jj.getNumberOfJob();
                 getQueueApp().remove(jj);
                 break;
             }
             if (capacityOfNode < 0) {
                 // there are more jobs than capacity
-                addToresponseArray(capacityOfNode + jj.getNumberOfJob(),
-                        (environment.getCurrentLocalTime() - jj.getArrivalTimeOfJob() + 1));
+                addToresponseArray(capacityOfNode + jj.getNumberOfJob(), time);
                 beenRunJobs = beenRunJobs + capacityOfNode + jj.getNumberOfJob();
                 jj.setNumberOfJob(-1 * capacityOfNode);
                 break;
             }
             if (capacityOfNode > 0) {
                 // still we have capacity to run the jobs
-                addToresponseArray(jj.getNumberOfJob(),
-                        (environment.getCurrentLocalTime() - jj.getArrivalTimeOfJob() + 1));
+                addToresponseArray(jj.getNumberOfJob(), time);
                 beenRunJobs = beenRunJobs + jj.getNumberOfJob();
                 getQueueApp().remove(jj);
                 while (!getQueueApp().isEmpty()) {
                     jj = (EnterpriseJob) scheduler.nextJob(getQueueApp());
                     int copyTedat = capacityOfNode;
                     capacityOfNode = capacityOfNode - jj.getNumberOfJob();
+                    final int responseTime = environment.getCurrentLocalTime() - jj.getArrivalTimeOfJob() + 1;
                     if (capacityOfNode == 0) {
-                        addToresponseArray(jj.getNumberOfJob(),
-                                (environment.getCurrentLocalTime() - jj.getArrivalTimeOfJob() + 1));
+                        addToresponseArray(jj.getNumberOfJob(), responseTime);
                         beenRunJobs = beenRunJobs + jj.getNumberOfJob();
                         getQueueApp().remove(0);
                         break;
                     }
                     if (capacityOfNode < 0) {
                         // there are more jobs than 1000.0*MIPS
-                        addToresponseArray(copyTedat,
-                                (environment.getCurrentLocalTime() - jj.getArrivalTimeOfJob() + 1));
+                        addToresponseArray(copyTedat, responseTime);
                         jj.setNumberOfJob(-1 * capacityOfNode);
                         beenRunJobs = beenRunJobs + copyTedat;
                         break;
                     }
                     if (capacityOfNode > 0) {
-                        addToresponseArray(jj.getNumberOfJob(),
-                                (environment.getCurrentLocalTime() - jj.getArrivalTimeOfJob() + 1));
+                        addToresponseArray(jj.getNumberOfJob(), responseTime);
                         beenRunJobs = beenRunJobs + jj.getNumberOfJob();
                         getQueueApp().remove(0);
                     }
@@ -370,20 +357,6 @@ public class EnterpriseApp {
         }
         return -2;
     }
-    // Check the responseTime of each server for setting the frequency level for
-    // the next time slot
-    /*
-     * double finalized () { try { bis.close(); } catch (IOException ex) {
-     * Logger.getLogger(application.class.getName()).log(Level.SEVERE, null,
-     * ex); } double meanResponsetime=0; double totalJob=0; for(int
-     * i=0;i<Main.responseList.size();i++) { meanResponsetime=meanResponsetime+
-     * Main.responseList.get(i).responseTime*Main.responseList.get(i).
-     * numberOfJob; totalJob+=Main.responseList.get(i).numberOfJob;
-     * //LOGGER.info("respTime="+serverList.get(i).respTime+ "\t TotalJob="
-     * +serverList.get(i).totalJob); }
-     * 
-     * return meanResponsetime;///totalJob; }
-     */
 
     public int getID() {
         return id;
@@ -498,9 +471,10 @@ public class EnterpriseApp {
         this.numberofBasicNode = numberofBasicNode;
     }
 
-    public static EnterpriseApp create(EnterpriseApplicationPOD enterpriseApplicationPOD, Scheduler scheduler, ResourceAllocation resourceAllocation,
-            Environment environment, ApplicationAM applicationAM) {
-        EnterpriseApp enterpriseApplication = new EnterpriseApp(enterpriseApplicationPOD, scheduler, resourceAllocation, environment);
+    public static EnterpriseApp create(EnterpriseApplicationPOD enterpriseApplicationPOD, Scheduler scheduler,
+            ResourceAllocation resourceAllocation, Environment environment, ApplicationAM applicationAM) {
+        EnterpriseApp enterpriseApplication = new EnterpriseApp(enterpriseApplicationPOD, scheduler, resourceAllocation,
+                environment);
         enterpriseApplication.setAM(applicationAM);
         return enterpriseApplication;
     }
