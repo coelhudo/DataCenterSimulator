@@ -25,11 +25,11 @@ public class ComputeSystemBuilder extends SystemBuilder {
         NodeList childNodes = node.getChildNodes();
         for (int i = 0; i < childNodes.getLength(); i++) {
             if (childNodes.item(i).getNodeType() == Node.ELEMENT_NODE) {
-                if (childNodes.item(i).getNodeName().equalsIgnoreCase("ResourceAllocationAlg"))
+                if ("ResourceAllocationAlg".equalsIgnoreCase(childNodes.item(i).getNodeName()))
                     ;
-                if (childNodes.item(i).getNodeName().equalsIgnoreCase("Scheduler"))
+                if ("Scheduler".equalsIgnoreCase(childNodes.item(i).getNodeName()))
                     ; // TODO
-                if (childNodes.item(i).getNodeName().equalsIgnoreCase("Workload")) {
+                if ("Workload".equalsIgnoreCase(childNodes.item(i).getNodeName())) {
                     String fileName = path + "/" + childNodes.item(i).getChildNodes().item(0).getNodeValue().trim();
                     try {
                         logFile = new File(fileName);
@@ -41,10 +41,10 @@ public class ComputeSystemBuilder extends SystemBuilder {
                         LOGGER.info("Uh oh, got an IOException error!" + e.getMessage());
                     }
                 }
-                if (childNodes.item(i).getNodeName().equalsIgnoreCase("ComputeNode")) {
+                if ("ComputeNode".equalsIgnoreCase(childNodes.item(i).getNodeName())) {
                     systemPOD.setNumberofNode(Integer.parseInt(childNodes.item(i).getChildNodes().item(0).getNodeValue().trim()));
                 }
-                if (childNodes.item(i).getNodeName().equalsIgnoreCase("Rack")) {
+                if ("Rack".equalsIgnoreCase(childNodes.item(i).getNodeName())) {
                     String str = childNodes.item(i).getChildNodes().item(0).getNodeValue().trim();
                     String[] split = str.split(",");
                     for (int j = 0; j < split.length; j++) {

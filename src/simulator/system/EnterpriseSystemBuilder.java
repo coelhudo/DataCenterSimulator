@@ -23,21 +23,21 @@ public class EnterpriseSystemBuilder extends SystemBuilder {
         NodeList childNodes = node.getChildNodes();
         for (int i = 0; i < childNodes.getLength(); i++) {
             if (childNodes.item(i).getNodeType() == Node.ELEMENT_NODE) {
-                if (childNodes.item(i).getNodeName().equalsIgnoreCase("ComputeNode")) {
+                if ("ComputeNode".equalsIgnoreCase(childNodes.item(i).getNodeName())) {
                     systemPOD.setNumberofNode(Integer.parseInt(childNodes.item(i).getChildNodes().item(0).getNodeValue().trim()));
                 }
-                if (childNodes.item(i).getNodeName().equalsIgnoreCase("Rack")) {
+                if ("Rack".equalsIgnoreCase(childNodes.item(i).getNodeName())) {
                     String str = childNodes.item(i).getChildNodes().item(0).getNodeValue().trim();
                     String[] split = str.split(",");
                     for (int j = 0; j < split.length; j++) {
                         systemPOD.appendRackID(Integer.parseInt(split[j]));
                     }
                 }
-                if (childNodes.item(i).getNodeName().equalsIgnoreCase("ResourceAllocationAlg"))
+                if ("ResourceAllocationAlg".equalsIgnoreCase(childNodes.item(i).getNodeName()))
                     ;
-                if (childNodes.item(i).getNodeName().equalsIgnoreCase("Scheduler"))
+                if ("Scheduler".equalsIgnoreCase(childNodes.item(i).getNodeName()))
                     ;
-                if (childNodes.item(i).getNodeName().equalsIgnoreCase("EnterpriseApplication")) {
+                if ("EnterpriseApplication".equalsIgnoreCase(childNodes.item(i).getNodeName())) {
                     EnterpriseApplicationPOD enterpriseApplicationPOD = getEnterpriseApplicationPOD(childNodes.item(i), path);
                     ((EnterpriseSystemPOD) systemPOD).appendEnterpriseApplicationPOD(enterpriseApplicationPOD);
                 }
@@ -52,13 +52,13 @@ public class EnterpriseSystemBuilder extends SystemBuilder {
         NodeList childNodes = node.getChildNodes();
         for (int i = 0; i < childNodes.getLength(); i++) {
             if (childNodes.item(i).getNodeType() == Node.ELEMENT_NODE) {
-                if (childNodes.item(i).getNodeName().equalsIgnoreCase("id")) {
+                if ("id".equalsIgnoreCase(childNodes.item(i).getNodeName())) {
                     enterpriseApplicationPOD.setID(Integer.parseInt(childNodes.item(i).getChildNodes().item(0).getNodeValue().trim())); // Id
                     // of
                     // the
                     // application
                 }
-                if (childNodes.item(i).getNodeName().equalsIgnoreCase("EnterpriseApplicationWorkLoad")) {
+                if ("EnterpriseApplicationWorkLoad".equalsIgnoreCase(childNodes.item(i).getNodeName())) {
                     String fileName = path + "/" + childNodes.item(i).getChildNodes().item(0).getNodeValue().trim();
                     try {
                         logFile = new File(fileName);
@@ -67,26 +67,26 @@ public class EnterpriseSystemBuilder extends SystemBuilder {
                         LOGGER.info("Uh oh, got an IOException error!" + e.getMessage());
                     }
                 }
-                if (childNodes.item(i).getNodeName().equalsIgnoreCase("MaxNumberOfRequest")) {
+                if ("MaxNumberOfRequest".equalsIgnoreCase(childNodes.item(i).getNodeName())) {
                     enterpriseApplicationPOD.setMaxNumberOfRequest(
                             Integer.parseInt(childNodes.item(i).getChildNodes().item(0).getNodeValue().trim()));
                 }
-                if (childNodes.item(i).getNodeName().equalsIgnoreCase("NumberofBasicNode")) {
+                if ("NumberofBasicNode".equalsIgnoreCase(childNodes.item(i).getNodeName())) {
                     enterpriseApplicationPOD.setNumberofBasicNode(
                             Integer.parseInt(childNodes.item(i).getChildNodes().item(0).getNodeValue().trim()));
                 }
-                if (childNodes.item(i).getNodeName().equalsIgnoreCase("timeTreshold")) {
+                if ("timeTreshold".equalsIgnoreCase(childNodes.item(i).getNodeName())) {
                     enterpriseApplicationPOD.setTimeTreshold(Integer.parseInt(childNodes.item(i).getChildNodes().item(0).getNodeValue().trim())); //
                     enterpriseApplicationPOD.setMaxExpectedResTime(enterpriseApplicationPOD.getTimeTreshold());
                 }
-                if (childNodes.item(i).getNodeName().equalsIgnoreCase("Percentage")) {
+                if ("Percentage".equalsIgnoreCase(childNodes.item(i).getNodeName())) {
                     enterpriseApplicationPOD.setSLAPercentage(
                             Integer.parseInt(childNodes.item(i).getChildNodes().item(0).getNodeValue().trim())); //
                 } // We dont have server list now but may be in future we had
-                if (childNodes.item(i).getNodeName().equalsIgnoreCase("minProcessor")) {
+                if ("minProcessor".equalsIgnoreCase(childNodes.item(i).getNodeName())) {
                     enterpriseApplicationPOD.setMinProc(Integer.parseInt(childNodes.item(i).getChildNodes().item(0).getNodeValue().trim()));
                 }
-                if (childNodes.item(i).getNodeName().equalsIgnoreCase("maxProcessor")) {
+                if ("maxProcessor".equalsIgnoreCase(childNodes.item(i).getNodeName())) {
                     enterpriseApplicationPOD.setMaxProc(Integer.parseInt(childNodes.item(i).getChildNodes().item(0).getNodeValue().trim()));
                 }
 
