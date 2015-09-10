@@ -238,7 +238,9 @@ public class BladeServer {
                     index++;
                     job.setIsChangedThisTime(1);
                     tempCpu = job.getUtilization() + tempCpu;
-                    i = i - done(job, share_t);
+                    if (done(job, share_t)) {
+                        i--;
+                    }
                 }
             }
             for (BatchJob batchJob : getActiveBatchList()) {
@@ -254,6 +256,7 @@ public class BladeServer {
                 break;
             }
         }
+
         for (int i = 0; i < getActiveBatchList().size(); i++) {
             BatchJob job = getActiveBatchList().get(i);
             if (job.getIsChangedThisTime() == 0) {
@@ -268,7 +271,9 @@ public class BladeServer {
                             + environment.getCurrentLocalTime());
                 }
                 job.setIsChangedThisTime(1);
-                i = i - done(job, shareUtilizationRatio);
+                if (done(job, shareUtilizationRatio)) {
+                    i--;
+                }
                 tempCpu = tempCpu + share;
             }
         }
@@ -283,38 +288,39 @@ public class BladeServer {
         return 1;
     }
 
-    public int done(BatchJob job, double share) {
+    public boolean done(BatchJob job, double share) {
         // return 1 means: a job has been finished
         if (share == 0) {
             LOGGER.info(
                     "In DONE share== zero00000000000000000000000000000000000000oo,revise the code  need some work!");
             job.setExitTime(environment.getCurrentLocalTime());
             getActiveBatchList().remove(job);
-            return 1;
+            return true;
         }
-        
+
         final int ki = job.getThisNodeIndex(getServerID());
-        
+
         if (ki == -1) {
             LOGGER.info("Blade server is wrong in BladeServer!!!");
         }
 
         job.setRemainAt(ki, job.getRemainAt(ki) - share);
-        if (job.getRemainAt(ki) > 0)
-            return 0;
+        if (job.getRemainAt(ki) > 0) {
+            return false;
+        }
 
         getBlockedBatchList().add(job);
         job.setIsChangedThisTime(0);
         getActiveBatchList().remove(job);
-        
+
         if (!job.allDone()) {
-            return 0;
+            return false;
         }
-    
+
         setRespTime(job.Finish(environment.getCurrentLocalTime()) + getResponseTime());
         setTotalFinishedJob(getTotalFinishedJob() + 1);
-        
-        return 1;
+
+        return true;
 
     }
 

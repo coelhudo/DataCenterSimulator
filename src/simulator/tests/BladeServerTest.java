@@ -454,7 +454,7 @@ public class BladeServerTest {
         assertEquals(0, bladeServer.getTotalFinishedJob());
 
         final double share = 0.0;
-        assertEquals(1, bladeServer.done(mockedBatchJob, share));
+        assertTrue(bladeServer.done(mockedBatchJob, share));
 
         assertTrue(bladeServer.getBlockedBatchList().isEmpty());
         assertTrue(bladeServer.getActiveBatchList().isEmpty());
@@ -479,7 +479,7 @@ public class BladeServerTest {
         when(mockedBatchJob.getRemainAt(0)).thenReturn(2.0, 1.0);
 
         final double share = 1.0;
-        assertEquals(0, bladeServer.done(mockedBatchJob, share));
+        assertFalse(bladeServer.done(mockedBatchJob, share));
 
         verify(mockedBatchJob).getUtilization();
         verify(mockedBatchJob).getThisNodeIndex(0);
@@ -503,7 +503,7 @@ public class BladeServerTest {
         when(mockedBatchJob.allDone()).thenReturn(false);
 
         final double share = 1.0;
-        assertEquals(0, bladeServer.done(mockedBatchJob, share));
+        assertFalse(bladeServer.done(mockedBatchJob, share));
 
         verify(mockedBatchJob).getUtilization();
         verify(mockedBatchJob).getThisNodeIndex(0);
@@ -531,7 +531,7 @@ public class BladeServerTest {
         when(mockedBatchJob.allDone()).thenReturn(true);
 
         final double share = 1.0;
-        assertEquals(1, bladeServer.done(mockedBatchJob, share));
+        assertTrue(bladeServer.done(mockedBatchJob, share));
 
         verify(mockedBatchJob).getUtilization();
         verify(mockedBatchJob).getThisNodeIndex(0);
