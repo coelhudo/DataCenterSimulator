@@ -108,7 +108,7 @@ public class BladeServer {
                 break;
             }
         }
-        
+
         final double w = powerIdle[j];
         final double a = powerBusy[j] - w;
 
@@ -217,8 +217,8 @@ public class BladeServer {
     }
 
     public int run() {
-        int num = getActiveBatchList().size(), index = 0, index_1 = 0, rmpart = 0;
-        double extraShare = 0;
+        final int num = getActiveBatchList().size();
+        int index = 0, index_1 = 0;
         if (num == 0) {
             setStatusAsRunningNormal();
             setCurrentCPU(0);
@@ -228,10 +228,12 @@ public class BladeServer {
         final double share_t = share;
         double tempCpu = 0;
         while (index < num) {
+            double rmpart = 0;
+            double extraShare = 0;
             index_1 = index;
             for (int i = 0; i < getActiveBatchList().size(); i++) {
                 BatchJob job = getActiveBatchList().get(i);
-                if (job.getUtilization() <= share & job.getIsChangedThisTime() == 0) {
+                if (job.getUtilization() <= share && job.getIsChangedThisTime() == 0) {
                     extraShare = extraShare + share - job.getUtilization();
                     index++;
                     job.setIsChangedThisTime(1);
@@ -247,8 +249,7 @@ public class BladeServer {
             if (rmpart != 0) {
                 share = share + extraShare / rmpart;
             }
-            rmpart = 0;
-            extraShare = 0;
+
             if (index == index_1) {
                 break;
             }
@@ -291,25 +292,30 @@ public class BladeServer {
             getActiveBatchList().remove(job);
             return 1;
         }
-        int ki = job.getThisNodeIndex(getServerID());
+        
+        final int ki = job.getThisNodeIndex(getServerID());
+        
         if (ki == -1) {
             LOGGER.info("Blade server is wrong in BladeServer!!!");
         }
 
         job.setRemainAt(ki, job.getRemainAt(ki) - share);
-        if (job.getRemainAt(ki) <= 0) {
-            getBlockedBatchList().add(job);
-            job.setIsChangedThisTime(0);
-            getActiveBatchList().remove(job);// still exsits in other nodes
-            if (job.allDone()) {
+        if (job.getRemainAt(ki) > 0)
+            return 0;
 
-                setRespTime(job.Finish(environment.getCurrentLocalTime()) + getResponseTime());
-
-                setTotalFinishedJob(getTotalFinishedJob() + 1);
-                return 1;
-            }
+        getBlockedBatchList().add(job);
+        job.setIsChangedThisTime(0);
+        getActiveBatchList().remove(job);
+        
+        if (!job.allDone()) {
+            return 0;
         }
-        return 0;
+    
+        setRespTime(job.Finish(environment.getCurrentLocalTime()) + getResponseTime());
+        setTotalFinishedJob(getTotalFinishedJob() + 1);
+        
+        return 1;
+
     }
 
     public void setReady() {

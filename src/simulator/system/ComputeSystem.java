@@ -108,11 +108,10 @@ public class ComputeSystem extends GeneralSystem {
         }
         BatchJob job = (BatchJob) (getScheduler().nextJob(waitingList));
         while (job.getStartTime() <= environment.getCurrentLocalTime()) {
-            int[] indexes = new int[job.getNumOfNode()]; // number of node the
-            // last job wants
+            int[] indexes = new int[job.getNumOfNode()];
             if (getResourceAllocation().allocateSystemLevelServer(getComputeNodeList(), indexes)[0] == -2) {
                 setSLAviolation(Violation.COMPUTE_NODE_SHORTAGE);
-                return; // can not find the bunch of requested node for the job
+                return;
             }
             int[] listServer = makeListofServer(indexes);
             job.setListOfServer(listServer);
