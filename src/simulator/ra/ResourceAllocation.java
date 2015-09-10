@@ -143,35 +143,37 @@ public abstract class ResourceAllocation {
         if (currentInvolved == predicdetNumber || predicdetNumber <= 0) {
             return;
         }
+        
         if (currentInvolved > predicdetNumber && enterpriseSystem.getSLAviolation() == 0) {
             resourceRelease(enterpriseSystem, predicdetNumber);
+            return;
             // we already have more server involved and dont change the state
-        } else {
-            final int difference = predicdetNumber - currentInvolved;
-            for (int i = 0; i < difference; i++) {
-                for (int j = 0; j < enterpriseSystem.getComputeNodeList().size(); j++) {
-                    BladeServer bladeServer = enterpriseSystem.getComputeNodeList().get(j);
-                    if (bladeServer.isNotApplicationAssigned() || bladeServer.isIdle()) {
-                        int indexServer = bladeServer.getServerID();
-                        int indexChassis = bladeServer.getChassisID();
-                        BladeServer server = dataCenter.getServer(indexChassis,
-                                findServerInChasis(indexChassis, indexServer));
-                        EnterpriseApp enterpriseApp = enterpriseSystem.getApplications().get(0);
-                        enterpriseApp.addCompNodetoBundle(server);
-                        // need to think about that!
-                        // now the node is assinged to a application and is
-                        // ready!
+        }
+        
+        final int difference = predicdetNumber - currentInvolved;
+        for (int i = 0; i < difference; i++) {
+            for (int j = 0; j < enterpriseSystem.getComputeNodeList().size(); j++) {
+                BladeServer bladeServer = enterpriseSystem.getComputeNodeList().get(j);
+                if (bladeServer.isNotApplicationAssigned() || bladeServer.isIdle()) {
+                    int indexServer = bladeServer.getServerID();
+                    int indexChassis = bladeServer.getChassisID();
+                    BladeServer server = dataCenter.getServer(indexChassis,
+                            findServerInChasis(indexChassis, indexServer));
+                    EnterpriseApp enterpriseApp = enterpriseSystem.getApplications().get(0);
+                    enterpriseApp.addCompNodetoBundle(server);
+                    // need to think about that!
+                    // now the node is assinged to a application and is
+                    // ready!
 
-                        server.setStatusAsRunningNormal();
-                        server.setSLAPercentage(enterpriseApp.getSLAPercentage());
-                        server.setTimeTreshold(enterpriseApp.getTimeTreshold());
-                        enterpriseSystem.setNumberOfIdleNode(enterpriseSystem.getNumberOfIdleNode() - 1);
-                        // here means we increased number of running nodes,
-                        // needs to inform underneath AM
-                        // Simulator.getInstance().communicationAM = 1;
-                        break; // found one free server go for another one if
-                               // needed
-                    }
+                    server.setStatusAsRunningNormal();
+                    server.setSLAPercentage(enterpriseApp.getSLAPercentage());
+                    server.setTimeTreshold(enterpriseApp.getTimeTreshold());
+                    enterpriseSystem.setNumberOfIdleNode(enterpriseSystem.getNumberOfIdleNode() - 1);
+                    // here means we increased number of running nodes,
+                    // needs to inform underneath AM
+                    // Simulator.getInstance().communicationAM = 1;
+                    break; // found one free server go for another one if
+                           // needed
                 }
             }
         }
@@ -285,19 +287,7 @@ public abstract class ResourceAllocation {
     public void initialResourceAlocator(InteractiveSystem interactiveSystem) {
         /// Initial alocation of compute node
         int[] serverIndex = new int[2];
-        List<Integer> myChassisList = createChassisArray(interactiveSystem.getRackIDs());// creats
-        // a
-        // list
-        // of
-        // servers
-        // ID
-        // that
-        // will
-        // be
-        // used
-        // for
-        // resource
-        // allocation
+        List<Integer> myChassisList = createChassisArray(interactiveSystem.getRackIDs());
         for (int i = 0; i < interactiveSystem.getNumberOfNode(); i++) {
             serverIndex = nextServerSys(myChassisList);
             if (serverIndex[0] == -2) {
@@ -332,16 +322,10 @@ public abstract class ResourceAllocation {
                     break;
                 }
             }
-            if (i == interactiveSystem.getComputeNodeList().size()) // just in
-                                                                    // case!
-                                                                    // this
-            // condition has been
-            // checked before ,no
-            // node is ready in this
-            // system
-            {
+            if (i == interactiveSystem.getComputeNodeList().size()) {
                 return -1;
             }
+            
             int serverId = interactiveSystem.getComputeNodeList().get(i).getServerID();
             int indexChassis = interactiveSystem.getComputeNodeList().get(i).getChassisID();
             serverId = findServerInChasis(indexChassis, serverId);
