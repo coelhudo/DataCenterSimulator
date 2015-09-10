@@ -140,14 +140,9 @@ public class BladeServer {
     }
 
     public void feedWork(InteractiveJob interactiveJob) {
-        int nums = interactiveJob.getNumberOfJob();
-        int time = interactiveJob.getArrivalTimeOfJob();
+        final int nums = interactiveJob.getNumberOfJob();
         setQueueLength(getQueueLength() + nums);
-        // FIXME: Create a clone method for InteractiveJob
-        InteractiveJob wJob = new InteractiveJob();
-        wJob.setArrivalTimeOfJob(time);
-        wJob.setNumberOfJob(nums);
-        getInteractiveList().add(wJob);
+        getInteractiveList().add(new InteractiveJob(interactiveJob));
         setTotalJob(getTotalJob() + nums);
     }
     // feeding batch type Job to blade server
@@ -160,14 +155,9 @@ public class BladeServer {
     // feeding webbased type Job to blade server
 
     public void feedWork(EnterpriseJob enterpriseJob) {
-        int nums = enterpriseJob.getNumberOfJob();
-        int time = enterpriseJob.getArrivalTimeOfJob();
+        final int nums = enterpriseJob.getNumberOfJob();
         setQueueLength(getQueueLength() + nums);
-        // FIXME: Create a clone method for EnterpriseJob
-        EnterpriseJob wJob = new EnterpriseJob();
-        wJob.setArrivalTimeOfJob(time);
-        wJob.setNumberOfJob(nums);
-        getEnterpriseList().add(wJob);
+        getEnterpriseList().add(new EnterpriseJob(enterpriseJob));
         setTotalJob(nums + getTotalJob());
     }
 
@@ -289,8 +279,7 @@ public class BladeServer {
     public boolean done(BatchJob job, double share) {
         // return 1 means: a job has been finished
         if (share == 0) {
-            LOGGER.info(
-                    "In DONE share== zero00000000000000000000000000000000000000oo,revise the code  need some work!");
+            LOGGER.info("In DONE share== zero,revise the code  need some work!");
             job.setExitTime(environment.getCurrentLocalTime());
             getActiveBatchList().remove(job);
             return true;

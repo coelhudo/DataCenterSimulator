@@ -9,6 +9,11 @@ public class EnterpriseJob extends Job {
         setNumberOfJob(0);
         setArrivalTimeOfJob(0);
     }
+    
+    public EnterpriseJob(EnterpriseJob other) {
+        setNumberOfJob(other.numberOfJob);
+        setArrivalTimeOfJob(other.arrivalTimeOfJob);
+    }
 
     public int getNumberOfJob() {
         return numberOfJob;

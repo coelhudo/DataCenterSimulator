@@ -9,6 +9,11 @@ public class InteractiveJob extends Job {
         setArrivalTimeOfJob(0);
         setNumberOfJob(0);
     }
+    
+    public InteractiveJob(InteractiveJob other) {
+        setArrivalTimeOfJob(other.arrivalTimeOfJob);
+        setNumberOfJob(other.numberOfJob);
+    }
 
     public int getNumberOfJob() {
         return numberOfJob;
