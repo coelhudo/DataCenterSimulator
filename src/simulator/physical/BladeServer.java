@@ -186,33 +186,31 @@ public class BladeServer {
         if (getCurrentFreqLevel() == 2) {
             return 0; // FIXME: This should be 2 i think. That's my conclusion
                       // based on the behaviour of decreaseFrequency
-        } else {
-            setMips(frequencyLevel[getCurrentFreqLevel() + 1]); // getCurrentFrequency
-            // already
-            // increased
-            // the
-            // freq
-            // level
-            environment.updateNumberOfMessagesFromDataCenterToSystem();
         }
+
+        // getCurrentFrequency already increased the freq level
+        setMips(frequencyLevel[getCurrentFreqLevel() + 1]);
+        environment.updateNumberOfMessagesFromDataCenterToSystem();
+
         if (getMips() == 0) {
             LOGGER.info("Mipss sefr shoodd!!!");
         }
+
         return 1;
     }
 
     public int decreaseFrequency() {
-        // LOGGER.info("Decreasing frequency");
-        if (getCurrentFreqLevel() == 0) {// LOGGER.info("Minimum
-            // Frequency Level ~~~ ");
+        if (getCurrentFreqLevel() == 0) {
             return 0;
-        } else {
-            setMips(frequencyLevel[getCurrentFreqLevel() - 1]);
-            environment.updateNumberOfMessagesFromDataCenterToSystem();
         }
+
+        setMips(frequencyLevel[getCurrentFreqLevel() - 1]);
+        environment.updateNumberOfMessagesFromDataCenterToSystem();
+
         if (getMips() == 0) {
             LOGGER.info("Mipss sefr shoodd!!!");
         }
+
         return 1;
     }
 
@@ -337,31 +335,6 @@ public class BladeServer {
             setStatusAsRunningNormal();
         }
     }
-
-    // void addToresponseArray(double num,int time)
-    // {
-    // responseTime t= new responseTime();
-    // t.numberOfJob=num;
-    // t.responseTime=time;
-    // responseList.add(t);
-    // }
-    // void addToresponseArrayWeb(double num,int time)
-    // {
-    // if(time>maxExpectedRes)
-    // SLAviolation=true;
-    // responseTime t= new responseTime();
-    // t.numberOfJob=num;
-    // t.responseTime=time;
-    // responseList.add(t);
-    // }
-    // int whichServer(int i)
-    // {
-    // return i%DataCenter.theDataCenter.chassisSet.get(0).servers.size();
-    // }
-    // int whichChasiss (int i)
-    // {
-    // return i/DataCenter.theDataCenter.chassisSet.get(0).servers.size();
-    // }
 
     public List<ResponseTime> getResponseList() {
         return responseList;
