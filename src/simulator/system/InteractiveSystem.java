@@ -18,13 +18,14 @@ import simulator.schedulers.Scheduler;
 public class InteractiveSystem extends GeneralSystem {
 
     private static final Logger LOGGER = Logger.getLogger(InteractiveSystem.class.getName());
-    
+
     private List<InteractiveUser> UserList;
     private List<InteractiveUser> waitingQueueWL;
     private Environment environment;
     private SLAViolationLogger slaViolationLogger;
 
-    public InteractiveSystem(SystemPOD systemPOD, Environment environment, DataCenter dataCenter, SLAViolationLogger slaViolationLogger) {
+    public InteractiveSystem(SystemPOD systemPOD, Environment environment, DataCenter dataCenter,
+            SLAViolationLogger slaViolationLogger) {
         super(systemPOD, new FIFOScheduler(), new MHR(environment, dataCenter));
         this.environment = environment;
         this.slaViolationLogger = slaViolationLogger;
@@ -60,41 +61,31 @@ public class InteractiveSystem extends GeneralSystem {
     // Return False means everything is finished!
 
     boolean runAcycle() throws IOException {
-        if (!getUserList().isEmpty() & checkForViolation()) // &
-        // Main.localTime%Main.epochSys==0)
+        if (!getUserList().isEmpty() & checkForViolation())
         {
             // AM.monitor();
             // AM.analysis(SLAviolation);
             // AM.planning();
             // AM.execution();
         }
-        int finishedBundle = 0;
         for (int i = 0; i < getUserList().size(); i++) {
             // TODO: if each bundle needs some help should ask and here
             // resourceallocation should run
-            if (getUserList().get(i).runAcycle() == false) // return false if
-            // bundle set jobs
-            // are done, we need
-            // to
-            // re-resourcealocation
-            {
-                finishedBundle++;
+            if (!getUserList().get(i).runAcycle()) {
                 setNumberOfIdleNode(getUserList().get(i).getComputeNodeList().size() + getNumberOfIdleNode());
                 getUserList().get(i).destroyWLBundle();// restart its servers
                 getUserList().remove(i);
             }
         }
-        violationCheckandSet();
         /// TODO : some decisiones needed based on SLAviolation
-        if (finishedBundle > 0) {
-            getResourceAllocation().resourceAloc(this);
-        }
+        violationCheckandSet();
+
         if (getUserList().isEmpty() && getWaitingQueueWL().isEmpty()) {
             markAsDone();
             return true;
-        } else {
-            return false;
         }
+        
+        return false;
     }
     // First time resource Allocation
 
@@ -208,8 +199,10 @@ public class InteractiveSystem extends GeneralSystem {
         this.waitingQueueWL = waitingQueueWL;
     }
 
-    public static InteractiveSystem Create(SystemPOD systemPOD, Environment environment, DataCenter dataCenter, SLAViolationLogger slaViolationLogger) {
-        InteractiveSystem interactiveSystem = new InteractiveSystem(systemPOD, environment, dataCenter, slaViolationLogger);
+    public static InteractiveSystem Create(SystemPOD systemPOD, Environment environment, DataCenter dataCenter,
+            SLAViolationLogger slaViolationLogger) {
+        InteractiveSystem interactiveSystem = new InteractiveSystem(systemPOD, environment, dataCenter,
+                slaViolationLogger);
         interactiveSystem.getResourceAllocation().initialResourceAlocator(interactiveSystem);
         interactiveSystem.setAM(new InteractiveSystemAM(environment));
         return interactiveSystem;

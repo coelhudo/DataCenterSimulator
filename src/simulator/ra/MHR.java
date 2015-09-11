@@ -5,8 +5,6 @@ import java.util.List;
 import simulator.Environment;
 import simulator.physical.BladeServer;
 import simulator.physical.DataCenter;
-import simulator.system.EnterpriseSystem;
-import simulator.system.InteractiveSystem;
 
 /**
  *
@@ -107,14 +105,5 @@ public class MHR extends ResourceAllocation {
         }
 
         return list;
-    }
-
-    @Override
-    public void resourceAloc(InteractiveSystem WS) {
-        // ToDo
-    }
-
-    @Override
-    public void resourceAloc(EnterpriseSystem ES) {
     }
 }

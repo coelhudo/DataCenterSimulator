@@ -15,7 +15,7 @@ public class EnterpriseSystem extends GeneralSystem {
     private static final Logger LOGGER = Logger.getLogger(EnterpriseSystem.class.getName());
 
     private List<EnterpriseApp> applications;
-    
+
     private EnterpriseSystem(SystemPOD systemPOD, List<EnterpriseApp> applications, Scheduler scheduler,
             ResourceAllocation resourceAllocation) {
         super(systemPOD, scheduler, resourceAllocation);
@@ -60,7 +60,6 @@ public class EnterpriseSystem extends GeneralSystem {
     }
 
     public boolean runAcycle() throws IOException {
-        int finishedBundle = 0;
         for (int i = 0; i < applications.size(); i++) {
             // TODO: if each bundle needs some help should ask and here
             // resourceallocation should run
@@ -76,24 +75,23 @@ public class EnterpriseSystem extends GeneralSystem {
                         + applications.get(i).getNumofViolation());
                 applications.get(i).destroyApplication();
                 applications.remove(i);
-                finishedBundle++;
             }
         }
-        if (finishedBundle > 0) {
-            getResourceAllocation().resourceAloc(this);
-        }
+
         if (applications.isEmpty()) {
             markAsDone();
             return true;
-        } else {
-            return false;
         }
+
+        return false;
     }
 
     public static EnterpriseSystem Create(SystemPOD systemPOD, Scheduler scheduler,
-            ResourceAllocation resourceAllocation, EnterpriseSystemAM enterpriseSystemAM, List<EnterpriseApp> applications) {
+            ResourceAllocation resourceAllocation, EnterpriseSystemAM enterpriseSystemAM,
+            List<EnterpriseApp> applications) {
 
-        EnterpriseSystem enterpriseSystem = new EnterpriseSystem(systemPOD, applications, scheduler, resourceAllocation);
+        EnterpriseSystem enterpriseSystem = new EnterpriseSystem(systemPOD, applications, scheduler,
+                resourceAllocation);
         enterpriseSystem.getResourceAllocation().initialResourceAlocator(enterpriseSystem);
         enterpriseSystem.setAM(enterpriseSystemAM);
         return enterpriseSystem;

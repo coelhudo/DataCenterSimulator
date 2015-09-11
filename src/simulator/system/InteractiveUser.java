@@ -120,6 +120,9 @@ public class InteractiveUser {
         return retReadLogfile;
     }
 
+    /**
+     * @return false if bundle set jobs are done
+     */
     boolean runAcycle() {
         setSLAviolation(0);
         int readingResult = readWebJob();

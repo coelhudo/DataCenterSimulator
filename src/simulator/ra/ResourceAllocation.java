@@ -42,10 +42,6 @@ public abstract class ResourceAllocation {
     void resourceAlocViolation(InteractiveSystem interactiveSystem) {
     }
 
-    public abstract void resourceAloc(EnterpriseSystem enterpriseSystem);
-
-    public abstract void resourceAloc(InteractiveSystem interactiveSystem);
-
     void resourceRelease(EnterpriseSystem enterpriseSystem, int predicdetNumber) {
 
         int currentInvolved = enterpriseSystem.getComputeNodeList().size() - enterpriseSystem.getNumberOfIdleNode();

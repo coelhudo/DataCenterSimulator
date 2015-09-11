@@ -126,7 +126,6 @@ public class EnterpriseSystemTest {
 
         verify(mockedEnterpriseSystemAM).setManagedSystem(enterpriseSystem);
         verify(mockedResourceAllocation).initialResourceAlocator(enterpriseSystem);
-        verify(mockedResourceAllocation).resourceAloc(enterpriseSystem);
         verify(mockedEnterpriseApp).runAcycle();
         verify(mockedEnterpriseApp).getComputeNodeList();
         verify(mockedEnterpriseApp).getID();

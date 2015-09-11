@@ -1,7 +1,11 @@
 package simulator.tests;
 
-import static org.junit.Assert.*;
-import static org.mockito.Mockito.*;
+import static org.junit.Assert.assertEquals;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
+import static org.mockito.Mockito.when;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -11,14 +15,11 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
-import simulator.ra.MHR;
-import simulator.system.ComputeSystem;
-import simulator.system.EnterpriseApp;
-import simulator.system.EnterpriseSystem;
 import simulator.Environment;
 import simulator.physical.BladeServer;
 import simulator.physical.Chassis;
 import simulator.physical.DataCenter;
+import simulator.ra.MHR;
 
 public class MHRTest {
 

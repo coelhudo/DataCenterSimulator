@@ -21,7 +21,6 @@ import simulator.ra.ResourceAllocation;
 import simulator.system.ComputeSystem;
 import simulator.system.EnterpriseApp;
 import simulator.system.EnterpriseSystem;
-import simulator.system.InteractiveSystem;
 
 public class ResourceAllocationTest {
 
@@ -50,16 +49,6 @@ public class ResourceAllocationTest {
             list[0] = bs.get(0).getChassisID();
             list[1] = bs.get(0).getServerID();
             return list;
-        }
-
-        @Override
-        public void resourceAloc(EnterpriseSystem enterpriseSystem) {
-            
-        }
-
-        @Override
-        public void resourceAloc(InteractiveSystem interactiveSystem) {
-            
         }
         
         public void setNextServerSysResult(int [] result) {
