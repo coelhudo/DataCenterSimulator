@@ -53,7 +53,8 @@ public class DataCenterAM extends GeneralAM {
                 LOGGER.info("AM in DC Switch HPC system: " + i + " to SLA  @  " + environment().getCurrentLocalTime());
             }
             if (SLAVioCS[i] == 0 && computeSystems.get(i).getAM().getStrategy() == Simulator.StrategyEnum.SLA) {
-                LOGGER.info("AM in DC Switch HPC system: " + i + "  to Green @  " + environment().getCurrentLocalTime());
+                LOGGER.info(
+                        "AM in DC Switch HPC system: " + i + "  to Green @  " + environment().getCurrentLocalTime());
                 computeSystems.get(i).getAM().setStrategy(Simulator.StrategyEnum.Green);
             }
         }
@@ -62,11 +63,8 @@ public class DataCenterAM extends GeneralAM {
          * start a timer: “block timer” end if available nodes in system
          * allocate one node to the SOS sender
          */
-        if (getBlockTimer() == 0 && computeSystems.get(0).isBlocked()) // time
-                                                                       // to
-        // unblock
-        // hpc system
-        {
+        if (getBlockTimer() == 0 && computeSystems.get(0).isBlocked()) {
+            // time to unblock hpc system
             computeSystems.get(0).setBlocked(false);
             computeSystems.get(0).makeSystemaUnBlocked();
             LOGGER.info("unblocked a system@ time : \t" + environment().getCurrentLocalTime());

@@ -63,13 +63,9 @@ public class EnterpriseSystem extends GeneralSystem {
         for (int i = 0; i < applications.size(); i++) {
             // TODO: if each bundle needs some help should ask and here
             // resourceallocation should run
-            if (applications.get(i).runAcycle() == false) // return false if
-            // bundle set
-            // jobs are
-            // done, we need
-            // to
-            // re-resourcealocation
-            {
+            if (applications.get(i).runAcycle() == false) {
+                // if returns false if bundle set jobs are done, we need to
+                // re-resourcealocation
                 setNumberOfIdleNode(applications.get(i).getComputeNodeList().size() + getNumberOfIdleNode());
                 LOGGER.info("Number of violation in " + applications.get(i).getID() + "th application=  "
                         + applications.get(i).getNumofViolation());

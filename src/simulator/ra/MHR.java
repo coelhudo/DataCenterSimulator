@@ -58,9 +58,7 @@ public class MHR extends ResourceAllocation {
                     break;
                 }
             }
-            if (l != chassisList.size()) // in found chassis looking for a ready
-            // server
-            {
+            if (l != chassisList.size()) {
                 for (int k = 0; k < dataCenter.getChassisSet().get(chassisList.get(l)).getServers().size(); k++) {
                     if (dataCenter.getChassisSet().get(chassisList.get(l)).getServers().get(k).isNotSystemAssigned()) {
                         retValue[0] = chassisList.get(l); // chassis id
@@ -94,8 +92,7 @@ public class MHR extends ResourceAllocation {
         int k = powIndex.length - 1;
         for (; k >= 0 && j < list.length; k--) {
             for (i = 0; i < computeNodeList.size(); i++) {
-                if (computeNodeList.get(i).isRunningNormal() && powIndex[k] == computeNodeList.get(i).getChassisID())
-                {
+                if (computeNodeList.get(i).isRunningNormal() && powIndex[k] == computeNodeList.get(i).getChassisID()) {
                     list[j++] = i;
                     if (j == list.length) {
                         break;

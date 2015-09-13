@@ -141,12 +141,7 @@ public class ComputeSystem extends GeneralSystem {
 
     void setSLAviolation(Violation flag) {
         SLAViolationType = Violation.NOTHING;
-        if (flag == Violation.COMPUTE_NODE_SHORTAGE) // means there is not
-        // enough compute nodes for
-        // job, this function is
-        // called from
-        // resourceIsAvailable
-        {
+        if (flag == Violation.COMPUTE_NODE_SHORTAGE) {
             SLAViolationType = Violation.COMPUTE_NODE_SHORTAGE;
             setSLAviolation(getSLAviolation()+1);
         }
