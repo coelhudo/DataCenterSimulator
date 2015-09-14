@@ -182,7 +182,7 @@ public class ComputeSystem extends GeneralSystem {
         return BladeServerCollectionOperations.totalResponseTime(getComputeNodeList());
     }
 
-    public static ComputeSystem Create(SystemPOD systemPOD, Environment environment, DataCenter dataCenter,
+    public static ComputeSystem create(SystemPOD systemPOD, Environment environment, DataCenter dataCenter,
             SLAViolationLogger slaViolationLogger) {
         ComputeSystem computeSystem = new ComputeSystem(systemPOD, environment, dataCenter, slaViolationLogger);
         computeSystem.getResourceAllocation().initialResourceAloc(computeSystem);

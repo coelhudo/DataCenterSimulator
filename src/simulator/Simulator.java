@@ -63,11 +63,11 @@ public class Simulator {
         loadEnterpriseSystemIntoSystems(systems, systemsPOD.getEnterpriseSystemsPOD());
         for (ComputeSystemPOD computeSystemPOD : systemsPOD.getComputeSystemsPOD()) {
             systems.addComputeSystem(
-                    ComputeSystem.Create(computeSystemPOD, environment, datacenter, slaViolationLogger));
+                    ComputeSystem.create(computeSystemPOD, environment, datacenter, slaViolationLogger));
         }
         for (InteractiveSystemPOD interactivePOD : systemsPOD.getInteractiveSystemsPOD()) {
             systems.addInteractiveSystem(
-                    InteractiveSystem.Create(interactivePOD, environment, datacenter, slaViolationLogger));
+                    InteractiveSystem.create(interactivePOD, environment, datacenter, slaViolationLogger));
         }
 
         datacenter.getAM().setStrategy(StrategyEnum.Green);
@@ -89,7 +89,7 @@ public class Simulator {
             ResourceAllocation resourceAllocation = new MHR(environment, datacenter);
             List<EnterpriseApp> applications = loadEnterpriseSystemApplications(
                     enterpriseSystemPOD.getApplicationPODs(), enterpriseSystemAM, resourceAllocation, scheduler);
-            systems.addEnterpriseSystem(EnterpriseSystem.Create(enterpriseSystemPOD, scheduler, resourceAllocation,
+            systems.addEnterpriseSystem(EnterpriseSystem.create(enterpriseSystemPOD, scheduler, resourceAllocation,
                     enterpriseSystemAM, applications));
         }
     }

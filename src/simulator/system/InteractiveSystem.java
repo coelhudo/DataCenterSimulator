@@ -199,7 +199,7 @@ public class InteractiveSystem extends GeneralSystem {
         this.waitingQueueWL = waitingQueueWL;
     }
 
-    public static InteractiveSystem Create(SystemPOD systemPOD, Environment environment, DataCenter dataCenter,
+    public static InteractiveSystem create(SystemPOD systemPOD, Environment environment, DataCenter dataCenter,
             SLAViolationLogger slaViolationLogger) {
         InteractiveSystem interactiveSystem = new InteractiveSystem(systemPOD, environment, dataCenter,
                 slaViolationLogger);

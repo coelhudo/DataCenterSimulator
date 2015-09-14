@@ -43,7 +43,7 @@ public class EnterpriseSystemTest {
         mockedResourceAllocation = mock(ResourceAllocation.class);
         mockedEnterpriseSystemAM = mock(EnterpriseSystemAM.class);
         applications = new ArrayList<EnterpriseApp>();
-        enterpriseSystem = EnterpriseSystem.Create(enterpriseSystemPOD, mockedScheduler, mockedResourceAllocation,
+        enterpriseSystem = EnterpriseSystem.create(enterpriseSystemPOD, mockedScheduler, mockedResourceAllocation,
                 mockedEnterpriseSystemAM, applications);
     }
 

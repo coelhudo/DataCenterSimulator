@@ -82,7 +82,7 @@ public class EnterpriseSystem extends GeneralSystem {
         return false;
     }
 
-    public static EnterpriseSystem Create(SystemPOD systemPOD, Scheduler scheduler,
+    public static EnterpriseSystem create(SystemPOD systemPOD, Scheduler scheduler,
             ResourceAllocation resourceAllocation, EnterpriseSystemAM enterpriseSystemAM,
             List<EnterpriseApp> applications) {
 

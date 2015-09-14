@@ -85,7 +85,7 @@ public class ComputeSystemIT {
         SLAViolationLogger slaViolationLogger = mock(SLAViolationLogger.class);
         Systems systems = new Systems(mockedEnvironment);
         systems.addComputeSystem(
-                ComputeSystem.Create(computerSystemPOD, mockedEnvironment, dataCenter, slaViolationLogger));
+                ComputeSystem.create(computerSystemPOD, mockedEnvironment, dataCenter, slaViolationLogger));
 
         when(mockedEnvironment.getCurrentLocalTime()).thenReturn(1);
         assertFalse(systems.allJobsDone());
@@ -177,7 +177,7 @@ public class ComputeSystemIT {
         SLAViolationLogger slaViolationLogger = mock(SLAViolationLogger.class);
         Systems systems = new Systems(mockedEnvironment);
         systems.addComputeSystem(
-                ComputeSystem.Create(computerSystemPOD, mockedEnvironment, dataCenter, slaViolationLogger));
+                ComputeSystem.create(computerSystemPOD, mockedEnvironment, dataCenter, slaViolationLogger));
 
         when(mockedEnvironment.getCurrentLocalTime()).thenReturn(1);
         assertFalse(systems.allJobsDone());
@@ -263,7 +263,7 @@ public class ComputeSystemIT {
         SLAViolationLogger slaViolationLogger = mock(SLAViolationLogger.class);
         Systems systems = new Systems(mockedEnvironment);
         systems.addComputeSystem(
-                ComputeSystem.Create(computerSystemPOD, mockedEnvironment, dataCenter, slaViolationLogger));
+                ComputeSystem.create(computerSystemPOD, mockedEnvironment, dataCenter, slaViolationLogger));
 
         when(mockedEnvironment.getCurrentLocalTime()).thenReturn(1);
         assertFalse(systems.allJobsDone());
