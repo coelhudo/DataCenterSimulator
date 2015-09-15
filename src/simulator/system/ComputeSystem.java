@@ -32,7 +32,7 @@ public class ComputeSystem extends GeneralSystem {
     private ComputeSystem(SystemPOD systemPOD, Environment environment, DataCenter dataCenter,
             SLAViolationLogger slaViolationLogger) {
         super(systemPOD, new LeastRemainFirstScheduler(), new MHR(environment, dataCenter));
-        this.jobProducer = systemPOD.getJobProducer();
+        this.jobProducer = ((ComputeSystemPOD)systemPOD).getJobProducer();
         this.environment = environment;
         this.dataCenter = dataCenter;
         this.slaViolationLogger = slaViolationLogger;

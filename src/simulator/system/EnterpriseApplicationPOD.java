@@ -1,6 +1,6 @@
 package simulator.system;
 
-import java.io.BufferedReader;
+import simulator.jobs.JobProducer;
 
 public class EnterpriseApplicationPOD {
     
@@ -12,7 +12,7 @@ public class EnterpriseApplicationPOD {
     private int MaxNumberOfRequest = 0; // # of Request can be handled by number
     private int numberofBasicNode = 0;
     private int maxExpectedResTime = 0;
-    private BufferedReader bis = null;
+    private JobProducer jobProducer;
 
     public int getMaxProc() {
         return maxProc;
@@ -78,11 +78,11 @@ public class EnterpriseApplicationPOD {
         this.maxExpectedResTime = maxExpectedResTime;
     }
 
-    public BufferedReader getBIS() {
-        return bis;
+    public void setJobProducer(JobProducer jobProducer) {
+        this.jobProducer= jobProducer;
     }
-
-    public void setBIS(BufferedReader bis) {
-        this.bis = bis;
+    
+    public JobProducer getJobProducer() {
+        return jobProducer;
     }
 }

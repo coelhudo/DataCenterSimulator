@@ -1,16 +1,14 @@
 package simulator.system;
 
-import java.io.BufferedReader;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import simulator.Environment;
 import simulator.ResponseTime;
 import simulator.am.ApplicationAM;
 import simulator.jobs.EnterpriseJob;
+import simulator.jobs.JobProducer;
 import simulator.physical.BladeServer;
 import simulator.ra.ResourceAllocation;
 import simulator.schedulers.Scheduler;
@@ -30,7 +28,6 @@ public class EnterpriseApp {
     private int slaPercentage;
     private int slaViolation = 0;
     private int numOfViolation = 0;
-    private BufferedReader bis = null;
     private ApplicationAM am;
     private int maxNumberOfRequest = 0; // # of Request can be handled by number
     // of basic node which for 100% CPU
@@ -39,6 +36,7 @@ public class EnterpriseApp {
     private Scheduler scheduler;
     private ResourceAllocation resourceAllocation;
     private Environment environment;
+    private JobProducer jobProducer;
 
     public EnterpriseApp(EnterpriseApplicationPOD enterpriseApplicationPOD, Scheduler scheduler,
             ResourceAllocation resourceAllocation, Environment environment) {
@@ -55,7 +53,7 @@ public class EnterpriseApp {
         maxNumberOfRequest = enterpriseApplicationPOD.getMaxNumberOfRequest();
         numberofBasicNode = enterpriseApplicationPOD.getNumberofBasicNode();
         maxExpectedResTime = enterpriseApplicationPOD.getMaxExpectedResTime();
-        bis = enterpriseApplicationPOD.getBIS();
+        jobProducer = enterpriseApplicationPOD.getJobProducer();
         configSLAallcomputingNode();
     }
 
@@ -86,57 +84,28 @@ public class EnterpriseApp {
         bladeServer.setStatusAsNotAssignedToAnyApplication();
         getComputeNodeList().remove(bladeServer);
     }
-    /*
-     * Return Values: 1: read successfully 0:put in waiting list -1: end of file
-     * or error
-     */
-
-    int readingLogFile() {
-        try {
-            String line = bis.readLine();
-            if (line == null) {
-                return -2;
-            }
-            line = line.replace("\t", " ");
-            String[] numbers = new String[2];
-            numbers = line.trim().split(" ");
-            if (numbers.length < 2) {
-                return -2;
-            }
-            EnterpriseJob j = new EnterpriseJob();
-            j.setArrivalTimeOfJob(Integer.parseInt(numbers[0]));
-            j.setNumberOfJob(Integer.parseInt(numbers[1]));
-            getQueueApp().add(j);
-            return 1;
-            // LOGGER.info("Readed inputTime= " + inputTime + " Job
-            // Reqested Time=" + j.startTime+" Total job so far="+ total);
-        } catch (IOException ex) {
-            LOGGER.info("readJOB EXC readJOB false ");
-            Logger.getLogger(Scheduler.class.getName()).log(Level.SEVERE, null, ex);
-            return -2;
-        }
-    }
 
     int readWebJob() {
-        int retReadLogfile = readingLogFile();
-        if (!getQueueApp().isEmpty()) {
-            if (getQueueApp().get(0).getArrivalTimeOfJob() <= environment.getCurrentLocalTime()) {
-                return 1;
-            } else {
-                return 0;
-            }
+        if(jobProducer.hasNext()) {
+            getQueueApp().add((EnterpriseJob) jobProducer.next());
         }
-        // ending condition means there is no job in the logfile
-        // LOGGER.info(" One dispacher !!! in the readWebJob enterprise
-        // "+retReadLogfile);
-        return retReadLogfile;
+        
+        if (getQueueApp().isEmpty()) {
+            return -2;
+        }
+
+        if (getQueueApp().get(0).getArrivalTimeOfJob() <= environment.getCurrentLocalTime()) {
+            return 1;
+        }
+        
+        return 0;
     }
 
     /**
      * Reset all working node ready flag and CPU utilization.
      * 
-     * Legacy Obs.: If it is idle do not change it! it is responsibility of its AM to change
-     * it.
+     * Legacy Obs.: If it is idle do not change it! it is responsibility of its
+     * AM to change it.
      */
     void resetReadyFlagAndCPU() {
         for (BladeServer bladeServer : getComputeNodeList()) {
@@ -329,12 +298,11 @@ public class EnterpriseApp {
         return ret;
     }
 
-    public void destroyApplication() throws IOException {
+    public void destroyApplication() {
         for (BladeServer bladeServer : getComputeNodeList()) {
             bladeServer.restart();
             bladeServer.setStatusAsNotAssignedToAnyApplication();
         }
-        bis.close();
     }
 
     boolean isThereIdleNode() {

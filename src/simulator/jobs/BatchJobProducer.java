@@ -35,6 +35,7 @@ public class BatchJobProducer implements JobProducer {
                 batchJob.setStartTime(Double.parseDouble(numbers[0]));
                 availableJobs.add(batchJob);
             }
+            bufferedReader.close();
         } catch (IOException ex) {
             LOGGER.log(Level.SEVERE, "loadJobs", ex);
         }

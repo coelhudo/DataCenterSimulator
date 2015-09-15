@@ -34,6 +34,7 @@ public class EnterpriseJobProducer implements JobProducer {
                 j.setNumberOfJob(Integer.parseInt(numbers[1]));
                 availableJobs.add(j);
             }
+            bufferedReader.close();
         } catch (IOException ex) {
             LOGGER.severe(ex.getMessage());
         }

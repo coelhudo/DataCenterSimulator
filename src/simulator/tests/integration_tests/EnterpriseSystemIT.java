@@ -1,25 +1,23 @@
 package simulator.tests.integration_tests;
 
-import static org.junit.Assert.*;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.mock;
 
-import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
 import java.util.logging.Logger;
 
 import org.junit.Test;
 
-import simulator.SLAViolationLogger;
 import simulator.Environment;
+import simulator.SLAViolationLogger;
 import simulator.am.EnterpriseSystemAM;
 import simulator.ra.ResourceAllocation;
 import simulator.schedulers.Scheduler;
-import simulator.system.EnterpriseSystem;
 import simulator.system.EnterpriseApp;
 import simulator.system.EnterpriseApplicationPOD;
-import simulator.system.SystemPOD;
+import simulator.system.EnterpriseSystem;
 import simulator.system.EnterpriseSystemPOD;
+import simulator.system.SystemPOD;
 
 public class EnterpriseSystemIT {
     

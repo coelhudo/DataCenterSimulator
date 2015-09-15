@@ -14,8 +14,6 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 
-import java.io.BufferedReader;
-import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.List;
@@ -28,6 +26,7 @@ import simulator.Environment;
 import simulator.ResponseTime;
 import simulator.jobs.EnterpriseJob;
 import simulator.jobs.Job;
+import simulator.jobs.JobProducer;
 import simulator.physical.BladeServer;
 import simulator.ra.ResourceAllocation;
 import simulator.schedulers.Scheduler;
@@ -42,7 +41,7 @@ public class EnterpriseAppTest {
     public ResourceAllocation mockedResourceAllocation;
     public EnterpriseApplicationPOD enterpriseApplicationPOD;
     public Environment mockedEnvironment;
-    public BufferedReader mockedBufferedReader;
+    public JobProducer mockedJobProducer;
     public EnterpriseApp enterpriseApplication;
 
     @Before
@@ -51,16 +50,16 @@ public class EnterpriseAppTest {
         mockedScheduler = mock(Scheduler.class);
         mockedResourceAllocation = mock(ResourceAllocation.class);
         mockedEnvironment = mock(Environment.class);
-        mockedBufferedReader = mock(BufferedReader.class);
-        enterpriseApplicationPOD.setBIS(mockedBufferedReader);
-        
-        enterpriseApplication = new EnterpriseApp(enterpriseApplicationPOD, mockedScheduler,
-                mockedResourceAllocation, mockedEnvironment);
+        mockedJobProducer = mock(JobProducer.class);
+        enterpriseApplicationPOD.setJobProducer(mockedJobProducer);
+
+        enterpriseApplication = new EnterpriseApp(enterpriseApplicationPOD, mockedScheduler, mockedResourceAllocation,
+                mockedEnvironment);
     }
 
     @After
     public void tearDown() {
-        verifyNoMoreInteractions(mockedBufferedReader, mockedResourceAllocation, mockedScheduler, mockedEnvironment);
+        verifyNoMoreInteractions(mockedJobProducer, mockedResourceAllocation, mockedScheduler, mockedEnvironment);
     }
 
     @Test
@@ -101,11 +100,12 @@ public class EnterpriseAppTest {
     @Test
     public void testRunACycle_MoreJobsThanCapacity() {
         final int valueToMakeMoreJobsThanCapacity = 3;
-        try {
-            when(mockedBufferedReader.readLine()).thenReturn("1\t1");
-        } catch (IOException e1) {
-            fail("Ouch");
-        }
+
+        EnterpriseJob enterpriseJob = new EnterpriseJob();
+        enterpriseJob.setArrivalTimeOfJob(1);
+        enterpriseJob.setNumberOfJob(1);
+        when(mockedJobProducer.hasNext()).thenReturn(true);
+        when(mockedJobProducer.next()).thenReturn(enterpriseJob);
 
         EnterpriseJob mockedEnterpriseJob = mock(EnterpriseJob.class);
         when(mockedEnterpriseJob.getNumberOfJob()).thenReturn(valueToMakeMoreJobsThanCapacity);
@@ -124,24 +124,7 @@ public class EnterpriseAppTest {
         enterpriseApplication.setNumberofBasicNode(1);
         enterpriseApplication.setMaxNumberOfRequest(1);
 
-        try {
-            Method runAcycleMethod = EnterpriseApp.class.getDeclaredMethod("runAcycle");
-            runAcycleMethod.setAccessible(true);
-
-            Boolean result = (Boolean) runAcycleMethod.invoke(enterpriseApplication);
-
-            assertTrue(result);
-        } catch (NoSuchMethodException e) {
-            fail(FAIL_ERROR_MESSAGE);
-        } catch (SecurityException e) {
-            fail(FAIL_ERROR_MESSAGE);
-        } catch (IllegalAccessException e) {
-            fail(FAIL_ERROR_MESSAGE);
-        } catch (IllegalArgumentException e) {
-            fail(FAIL_ERROR_MESSAGE);
-        } catch (InvocationTargetException e) {
-            fail(FAIL_ERROR_MESSAGE);
-        }
+        assertTrue(enterpriseApplication.runAcycle());
 
         assertFalse(enterpriseApplication.getComputeNodeList().isEmpty());
         assertFalse(enterpriseApplication.getQueueApp().isEmpty());
@@ -155,11 +138,8 @@ public class EnterpriseAppTest {
         verify(mockedBladeServer).getCurrentCPU();
         verify(mockedBladeServer).getMips();
 
-        try {
-            verify(mockedBufferedReader).readLine();
-        } catch (IOException e) {
-            fail(FAIL_ERROR_MESSAGE);
-        }
+        verify(mockedJobProducer).hasNext();
+        verify(mockedJobProducer).next();
 
         verify(mockedScheduler).nextJob(anyListOf(Job.class));
         verify(mockedEnvironment, times(2)).getCurrentLocalTime();
@@ -171,11 +151,11 @@ public class EnterpriseAppTest {
     public void testRunACycle_CapacityEqualsZero() {
         final int valueToMakeCapacityEqualsZero = 2;
 
-        try {
-            when(mockedBufferedReader.readLine()).thenReturn("1\t1");
-        } catch (IOException e1) {
-            fail("Ouch");
-        }
+        EnterpriseJob enterpriseJob = new EnterpriseJob();
+        enterpriseJob.setArrivalTimeOfJob(1);
+        enterpriseJob.setNumberOfJob(1);
+        when(mockedJobProducer.hasNext()).thenReturn(true);
+        when(mockedJobProducer.next()).thenReturn(enterpriseJob);
 
         EnterpriseJob mockedEnterpriseJob = mock(EnterpriseJob.class);
         when(mockedEnterpriseJob.getNumberOfJob()).thenReturn(valueToMakeCapacityEqualsZero);
@@ -194,24 +174,7 @@ public class EnterpriseAppTest {
         enterpriseApplication.setNumberofBasicNode(1);
         enterpriseApplication.setMaxNumberOfRequest(1);
 
-        try {
-            Method runAcycleMethod = EnterpriseApp.class.getDeclaredMethod("runAcycle");
-            runAcycleMethod.setAccessible(true);
-
-            Boolean result = (Boolean) runAcycleMethod.invoke(enterpriseApplication);
-
-            assertTrue(result);
-        } catch (NoSuchMethodException e) {
-            fail(FAIL_ERROR_MESSAGE);
-        } catch (SecurityException e) {
-            fail(FAIL_ERROR_MESSAGE);
-        } catch (IllegalAccessException e) {
-            fail(FAIL_ERROR_MESSAGE);
-        } catch (IllegalArgumentException e) {
-            fail(FAIL_ERROR_MESSAGE);
-        } catch (InvocationTargetException e) {
-            fail(FAIL_ERROR_MESSAGE);
-        }
+        assertTrue(enterpriseApplication.runAcycle());
 
         assertFalse(enterpriseApplication.getComputeNodeList().isEmpty());
         assertFalse(enterpriseApplication.getQueueApp().isEmpty());
@@ -225,11 +188,8 @@ public class EnterpriseAppTest {
         verify(mockedBladeServer).getCurrentCPU();
         verify(mockedBladeServer).getMips();
 
-        try {
-            verify(mockedBufferedReader).readLine();
-        } catch (IOException e) {
-            fail(FAIL_ERROR_MESSAGE);
-        }
+        verify(mockedJobProducer).next();
+        verify(mockedJobProducer).hasNext();
 
         verify(mockedScheduler).nextJob(anyListOf(Job.class));
         verify(mockedEnvironment, times(2)).getCurrentLocalTime();
@@ -241,11 +201,11 @@ public class EnterpriseAppTest {
     public void testRunACycle_CapacityGreaterThanNumberOfJobs() {
         final int valueToMakeCapacityGreaterThanNumberOfJobs = 1;
 
-        try {
-            when(mockedBufferedReader.readLine()).thenReturn("1\t1");
-        } catch (IOException e1) {
-            fail(FAIL_ERROR_MESSAGE);
-        }
+        EnterpriseJob enterpriseJob = new EnterpriseJob();
+        enterpriseJob.setArrivalTimeOfJob(1);
+        enterpriseJob.setNumberOfJob(1);
+        when(mockedJobProducer.hasNext()).thenReturn(true);
+        when(mockedJobProducer.next()).thenReturn(enterpriseJob);
 
         EnterpriseJob mockedEnterpriseJob = mock(EnterpriseJob.class);
         when(mockedEnterpriseJob.getNumberOfJob()).thenReturn(valueToMakeCapacityGreaterThanNumberOfJobs);
@@ -264,24 +224,7 @@ public class EnterpriseAppTest {
         enterpriseApplication.setNumberofBasicNode(1);
         enterpriseApplication.setMaxNumberOfRequest(1);
 
-        try {
-            Method runAcycleMethod = EnterpriseApp.class.getDeclaredMethod("runAcycle");
-            runAcycleMethod.setAccessible(true);
-
-            Boolean result = (Boolean) runAcycleMethod.invoke(enterpriseApplication);
-
-            assertTrue(result);
-        } catch (NoSuchMethodException e) {
-            fail(FAIL_ERROR_MESSAGE);
-        } catch (SecurityException e) {
-            fail(FAIL_ERROR_MESSAGE);
-        } catch (IllegalAccessException e) {
-            fail(FAIL_ERROR_MESSAGE);
-        } catch (IllegalArgumentException e) {
-            fail(FAIL_ERROR_MESSAGE);
-        } catch (InvocationTargetException e) {
-            fail(FAIL_ERROR_MESSAGE);
-        }
+        assertTrue(enterpriseApplication.runAcycle());
 
         assertFalse(enterpriseApplication.getComputeNodeList().isEmpty());
 
@@ -297,11 +240,8 @@ public class EnterpriseAppTest {
         verify(mockedEnterpriseJob, times(2)).getArrivalTimeOfJob();
         verify(mockedEnterpriseJob, times(6)).getNumberOfJob();
 
-        try {
-            verify(mockedBufferedReader).readLine();
-        } catch (IOException e) {
-            fail(FAIL_ERROR_MESSAGE);
-        }
+        verify(mockedJobProducer).next();
+        verify(mockedJobProducer, times(1)).hasNext();
 
         verify(mockedScheduler, times(2)).nextJob(anyListOf(Job.class));
         verify(mockedEnvironment, times(3)).getCurrentLocalTime();
@@ -311,58 +251,41 @@ public class EnterpriseAppTest {
 
     @Test
     public void testAppendEntepriseJobIntoQueueApplication() {
-        try {
-            when(mockedBufferedReader.readLine()).thenReturn("2\t1");
-        } catch (IOException e1) {
-            fail(FAIL_ERROR_MESSAGE);
-        }
+        EnterpriseJob enterpriseJob = new EnterpriseJob();
+        enterpriseJob.setArrivalTimeOfJob(2);
+        enterpriseJob.setNumberOfJob(1);
+        when(mockedJobProducer.hasNext()).thenReturn(true);
+        when(mockedJobProducer.next()).thenReturn(enterpriseJob);
 
         when(mockedEnvironment.getCurrentLocalTime()).thenReturn(1);
 
         assertTrue(enterpriseApplication.getComputeNodeList().isEmpty());
 
-        try {
-            Method runAcycleMethod = EnterpriseApp.class.getDeclaredMethod("runAcycle");
-            runAcycleMethod.setAccessible(true);
-
-            // Because job arrivalTime is less than
-            // environment.getCurrentLocalTime()
-            // then nothing is going to be executed. The only thing that is
-            // supposed to happen is the queue become filled
-            for (int i = 1; i <= 3; i++) {
-                assertTrue((Boolean) runAcycleMethod.invoke(enterpriseApplication));
-                assertEquals(i, enterpriseApplication.getQueueApp().size());
-            }
-
-        } catch (NoSuchMethodException e) {
-            fail(FAIL_ERROR_MESSAGE);
-        } catch (SecurityException e) {
-            fail(FAIL_ERROR_MESSAGE);
-        } catch (IllegalAccessException e) {
-            fail(FAIL_ERROR_MESSAGE);
-        } catch (IllegalArgumentException e) {
-            fail(FAIL_ERROR_MESSAGE);
-        } catch (InvocationTargetException e) {
-            fail(FAIL_ERROR_MESSAGE);
+        // Because job arrivalTime is less than
+        // environment.getCurrentLocalTime()
+        // then nothing is going to be executed. The only thing that is
+        // supposed to happen is the queue become filled
+        for (int i = 1; i <= 3; i++) {
+            assertTrue(enterpriseApplication.runAcycle());
+            assertEquals(i, enterpriseApplication.getQueueApp().size());
         }
 
         verify(mockedEnvironment, times(3)).getCurrentLocalTime();
 
-        try {
-            verify(mockedBufferedReader, times(3)).readLine();
-        } catch (IOException e) {
-            fail(FAIL_ERROR_MESSAGE);
-        }
-
+        verify(mockedJobProducer, times(3)).next();
+        verify(mockedJobProducer, times(3)).hasNext();
     }
 
     @Test
     public void testRunACycleMostBranchesAsPossible() {
-        try {
-            when(mockedBufferedReader.readLine()).thenReturn("2\t1", "3\t1");
-        } catch (IOException e1) {
-            fail(FAIL_ERROR_MESSAGE);
-        }
+        EnterpriseJob firstEnterpriseJob = new EnterpriseJob();
+        firstEnterpriseJob.setArrivalTimeOfJob(2);
+        firstEnterpriseJob.setNumberOfJob(1);
+        EnterpriseJob secondEnterpriseJob = new EnterpriseJob();
+        secondEnterpriseJob.setArrivalTimeOfJob(3);
+        secondEnterpriseJob.setNumberOfJob(1);
+        when(mockedJobProducer.hasNext()).thenReturn(true);
+        when(mockedJobProducer.next()).thenReturn(firstEnterpriseJob, secondEnterpriseJob);
 
         EnterpriseJob mockedEnterpriseJob = mock(EnterpriseJob.class);
         when(mockedEnterpriseJob.getNumberOfJob()).thenReturn(1);
@@ -382,31 +305,15 @@ public class EnterpriseAppTest {
 
         enterpriseApplication.addCompNodetoBundle(mockedBladeServer);
 
-        try {
-            Method runAcycleMethod = EnterpriseApp.class.getDeclaredMethod("runAcycle");
-            runAcycleMethod.setAccessible(true);
+        // Will insert job in the queue, but because of the arrival time
+        // will not execute
+        assertTrue(enterpriseApplication.runAcycle());
+        assertFalse(enterpriseApplication.getQueueApp().isEmpty());
 
-            // Will insert job in the queue, but because of the arrival time
-            // will not execute
-            assertTrue((Boolean) runAcycleMethod.invoke(enterpriseApplication));
-            assertFalse(enterpriseApplication.getQueueApp().isEmpty());
-
-            // Now it will execute the previous job and the current one. Hence
-            // the queue will be consumed
-            assertTrue((Boolean) runAcycleMethod.invoke(enterpriseApplication));
-            assertTrue(enterpriseApplication.getQueueApp().isEmpty());
-
-        } catch (NoSuchMethodException e) {
-            fail(FAIL_ERROR_MESSAGE);
-        } catch (SecurityException e) {
-            fail(FAIL_ERROR_MESSAGE);
-        } catch (IllegalAccessException e) {
-            fail(FAIL_ERROR_MESSAGE);
-        } catch (IllegalArgumentException e) {
-            fail(FAIL_ERROR_MESSAGE);
-        } catch (InvocationTargetException e) {
-            fail(FAIL_ERROR_MESSAGE);
-        }
+        // Now it will execute the previous job and the current one. Hence
+        // the queue will be consumed
+        assertTrue(enterpriseApplication.runAcycle());
+        assertTrue(enterpriseApplication.getQueueApp().isEmpty());
 
         List<ResponseTime> responses = enterpriseApplication.getResponseList();
         assertFalse(responses.isEmpty());
@@ -437,11 +344,8 @@ public class EnterpriseAppTest {
         verify(mockedBladeServer, times(2)).getMips();
         verify(mockedBladeServer, times(2)).getCurrentCPU();
 
-        try {
-            verify(mockedBufferedReader, times(2)).readLine();
-        } catch (IOException e) {
-            fail(FAIL_ERROR_MESSAGE);
-        }
+        verify(mockedJobProducer, times(2)).next();
+        verify(mockedJobProducer, times(2)).hasNext();
 
         verifyNoMoreInteractions(mockedBladeServer);
     }
@@ -474,12 +378,6 @@ public class EnterpriseAppTest {
 
         verify(mockedBladeServer, times(2)).restart();
         verify(mockedBladeServer).setStatusAsNotAssignedToAnyApplication();
-
-        try {
-            verify(mockedBufferedReader).close();
-        } catch (IOException e) {
-            fail("Ouch");
-        }
 
         verifyNoMoreInteractions(mockedBladeServer);
     }

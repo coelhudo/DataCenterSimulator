@@ -55,6 +55,7 @@ public class EnterpriseJobProducerTest {
 
         try {
             verify(mockedBufferedReader, times(2)).readLine();
+            verify(mockedBufferedReader).close();
         } catch (IOException e) {
             fail(FAIL_ERROR_MESSAGE + e.getMessage());
         }
@@ -90,6 +91,7 @@ public class EnterpriseJobProducerTest {
 
         try {
             verify(mockedBufferedReader, times(2)).readLine();
+            verify(mockedBufferedReader).close();
         } catch (IOException e) {
             fail(FAIL_ERROR_MESSAGE + e.getMessage());
         }
@@ -114,6 +116,7 @@ public class EnterpriseJobProducerTest {
 
         try {
             verify(mockedBufferedReader, times(3)).readLine();
+            verify(mockedBufferedReader).close();
         } catch (IOException e) {
             fail(FAIL_ERROR_MESSAGE + e.getMessage());
         }
@@ -186,6 +189,7 @@ public class EnterpriseJobProducerTest {
 
         try {
             verify(mockedBufferedReader, times(4)).readLine();
+            verify(mockedBufferedReader).close();
         } catch (IOException e) {
             fail(FAIL_ERROR_MESSAGE + e.getMessage());
         }

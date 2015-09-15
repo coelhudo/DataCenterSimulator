@@ -131,11 +131,7 @@ public class EnterpriseSystemTest {
         verify(mockedEnterpriseApp).getID();
         verify(mockedEnterpriseApp).getNumofViolation();
 
-        try {
-            verify(mockedEnterpriseApp).destroyApplication();
-        } catch (IOException e) {
-            fail(FAIL_ERROR_MESSAGE);
-        }
+        verify(mockedEnterpriseApp).destroyApplication();
         verifyNoMoreInteractions(mockedEnterpriseApp);
     }
 }

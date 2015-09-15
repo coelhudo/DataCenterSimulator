@@ -21,7 +21,7 @@ public class ComputeSystemBuilder extends SystemBuilder {
     }
 
     protected SystemPOD readFromNode(Node node, String path) {
-        SystemPOD systemPOD = new ComputeSystemPOD();
+        ComputeSystemPOD systemPOD = new ComputeSystemPOD();
         NodeList childNodes = node.getChildNodes();
         for (int i = 0; i < childNodes.getLength(); i++) {
             if (childNodes.item(i).getNodeType() == Node.ELEMENT_NODE) {

@@ -66,7 +66,7 @@ public class ComputeSystemTest {
 
     @Test
     public void testRunACycleWithoutAnyJob() {
-        SystemPOD systemPOD = new ComputeSystemPOD();
+        ComputeSystemPOD systemPOD = new ComputeSystemPOD();
         JobProducer mockedJobProducer = mock(JobProducer.class);
 
         when(mockedJobProducer.hasNext()).thenReturn(false);
@@ -99,7 +99,7 @@ public class ComputeSystemTest {
 
     @Test
     public void testRunACycleWithOneJob_SystemNotDone_ViolationComputeShortage() {
-        SystemPOD systemPOD = new ComputeSystemPOD();
+        ComputeSystemPOD systemPOD = new ComputeSystemPOD();
         JobProducer mockedJobProducer = mock(JobProducer.class);
 
         BatchJob batchJob = new BatchJob();
@@ -142,7 +142,7 @@ public class ComputeSystemTest {
 
     @Test
     public void testRunACycleWithOneJob_SystemNotDone_ViolationDeadlinePassed() {
-        SystemPOD systemPOD = new ComputeSystemPOD();
+        ComputeSystemPOD systemPOD = new ComputeSystemPOD();
         JobProducer mockedJobProducer = mock(JobProducer.class);
 
         BatchJob batchJob = new BatchJob();
@@ -201,7 +201,7 @@ public class ComputeSystemTest {
 
     @Test
     public void testRunACycleWithOneJob() {
-        SystemPOD systemPOD = new ComputeSystemPOD();
+        ComputeSystemPOD systemPOD = new ComputeSystemPOD();
         JobProducer mockedJobProducer = mock(JobProducer.class);
 
         BatchJob batchJob = new BatchJob();
@@ -267,7 +267,7 @@ public class ComputeSystemTest {
 
     @Test
     public void testRunACycleWithOneJob_MissingDeadline() {
-        SystemPOD systemPOD = new ComputeSystemPOD();
+        ComputeSystemPOD systemPOD = new ComputeSystemPOD();
         JobProducer mockedJobProducer = mock(JobProducer.class);
 
         BatchJob batchJob = new BatchJob();
@@ -328,7 +328,7 @@ public class ComputeSystemTest {
 
     @Test
     public void testMoveWaitingJobsToBladeServer() {
-        SystemPOD systemPOD = new ComputeSystemPOD();
+        ComputeSystemPOD systemPOD = new ComputeSystemPOD();
         JobProducer mockedJobProducer = mock(JobProducer.class);
 
         DataCenter mockedDataCenter = mock(DataCenter.class);
