@@ -48,6 +48,14 @@ Current dependencies are listed in the pom.xml file.
 * *mvn test* to execute only units tests
 * *mvn verify* to execute units tests and integration tests
 
+## Using web frontend
+
+* "Dependencies:" jython (2.7.0), autobahn (0.10.7 and its dependencies). Obs.: Some codefrom autobahn need to be commented (the method that contains "yield from") because 2.7, that's why (¯\(°_o)/¯).
+
+* *mvn compile* : to generate the jar that contains the simulator
+* *jython backend.py* :a lot of information will appear in the console
+* *open index.html on your favorite browser* (tested on Firefox 40) and push the button execute
+
 # Publications
 
 The following publications provide more information about the
