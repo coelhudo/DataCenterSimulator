@@ -20,10 +20,10 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
-import simulator.jobs.BatchJob;
-import simulator.jobs.BatchJobProducer;
+import simulator.jobs.EnterpriseJob;
+import simulator.jobs.EnterpriseJobProducer;
 
-public class BatchJobProducerTest {
+public class EnterpriseJobProducerTest {
 
     private static final String FAIL_ERROR_MESSAGE = "That was supposed not to happen ";
     public BufferedReader mockedBufferedReader;
@@ -38,20 +38,20 @@ public class BatchJobProducerTest {
 
     @Test
     public void testHasNext() {
-        BatchJobProducer batchJobProducer = new BatchJobProducer(mockedBufferedReader);
+        EnterpriseJobProducer enterpriseJobProducer = new EnterpriseJobProducer(mockedBufferedReader);
 
-        assertFalse(batchJobProducer.hasNext());
+        assertFalse(enterpriseJobProducer.hasNext());
 
         try {
             String stopValue = null;
-            when(mockedBufferedReader.readLine()).thenReturn("1\t1\t1\t1\t1", stopValue);
+            when(mockedBufferedReader.readLine()).thenReturn("1\t1", stopValue);
         } catch (IOException e) {
             fail(FAIL_ERROR_MESSAGE + e.getMessage());
         }
 
-        batchJobProducer.loadJobs();
+        enterpriseJobProducer.loadJobs();
 
-        assertTrue(batchJobProducer.hasNext());
+        assertTrue(enterpriseJobProducer.hasNext());
 
         try {
             verify(mockedBufferedReader, times(2)).readLine();
@@ -64,15 +64,12 @@ public class BatchJobProducerTest {
 
     @Test
     public void testLoadJobs() {
-        BatchJobProducer batchJobProducer = new BatchJobProducer(mockedBufferedReader);
+        EnterpriseJobProducer enterpriseJobProducer = new EnterpriseJobProducer(mockedBufferedReader);
 
-        final int jobStartTime = 4;
-        final double remainingTime = 8;
-        final double utilization = 15;
-        final int numberOfNodes = 16;
-        final double deadline = 23;
-        final String jobAttributes = jobStartTime + "\t" + remainingTime + "\t" + utilization + "\t" + numberOfNodes
-                + "\t" + deadline;
+        final int arrivalTimeOfJob = 8;
+        final int numberOfJob = 4;
+        final String jobAttributes = arrivalTimeOfJob + "\t" + numberOfJob;
+        
         try {
             String stopValue = null;
             when(mockedBufferedReader.readLine()).thenReturn(jobAttributes, stopValue);
@@ -80,19 +77,16 @@ public class BatchJobProducerTest {
             fail(FAIL_ERROR_MESSAGE + e.getMessage());
         }
 
-        assertFalse(batchJobProducer.hasNext());
-        batchJobProducer.loadJobs();
+        assertFalse(enterpriseJobProducer.hasNext());
+        enterpriseJobProducer.loadJobs();
 
-        assertTrue(batchJobProducer.hasNext());
+        assertTrue(enterpriseJobProducer.hasNext());
 
-        BatchJob batchJob = (BatchJob) batchJobProducer.next();
-        assertEquals(jobStartTime, batchJob.getStartTime(), 1.0E-8);
-        assertEquals(remainingTime, batchJob.getRemainAt(0), 1.0E-8);
-        assertEquals(utilization / 100.0, batchJob.getUtilization(), 1.0E-8);
-        assertEquals(numberOfNodes, batchJob.getNumOfNode());
-        assertEquals(deadline, batchJob.getDeadline(), 1.0E-8);
-
-        assertFalse(batchJobProducer.hasNext());
+        EnterpriseJob enterpriseJob = (EnterpriseJob) enterpriseJobProducer.next();
+        assertEquals(numberOfJob, enterpriseJob.getNumberOfJob(), 1.0E-8);
+        assertEquals(arrivalTimeOfJob, enterpriseJob.getArrivalTimeOfJob());
+        
+        assertFalse(enterpriseJobProducer.hasNext());
 
         try {
             verify(mockedBufferedReader, times(2)).readLine();
@@ -105,18 +99,18 @@ public class BatchJobProducerTest {
 
     @Test
     public void testLoadJobsMalformedEntry() {
-        BatchJobProducer batchJobProducer = new BatchJobProducer(mockedBufferedReader);
+        EnterpriseJobProducer enterpriseJobProducer = new EnterpriseJobProducer(mockedBufferedReader);
 
         try {
             String stopValue = null;
-            when(mockedBufferedReader.readLine()).thenReturn("1\t1", "1\t1\t1\t1\t1\t1", stopValue);
+            when(mockedBufferedReader.readLine()).thenReturn("1\t1\t1", "1", stopValue);
         } catch (IOException e) {
             fail(FAIL_ERROR_MESSAGE + e.getMessage());
         }
 
-        assertFalse(batchJobProducer.hasNext());
-        batchJobProducer.loadJobs();
-        assertFalse(batchJobProducer.hasNext());
+        assertFalse(enterpriseJobProducer.hasNext());
+        enterpriseJobProducer.loadJobs();
+        assertFalse(enterpriseJobProducer.hasNext());
 
         try {
             verify(mockedBufferedReader, times(3)).readLine();
@@ -129,7 +123,7 @@ public class BatchJobProducerTest {
 
     @Test
     public void testLoadJobsIOException() {
-        BatchJobProducer batchJobProducer = new BatchJobProducer(mockedBufferedReader);
+        EnterpriseJobProducer enterpriseJobProducer = new EnterpriseJobProducer(mockedBufferedReader);
 
         try {
             when(mockedBufferedReader.readLine()).thenThrow(new IOException("Ouch!"));
@@ -137,9 +131,9 @@ public class BatchJobProducerTest {
             fail(FAIL_ERROR_MESSAGE + e.getMessage());
         }
 
-        assertFalse(batchJobProducer.hasNext());
-        batchJobProducer.loadJobs();
-        assertFalse(batchJobProducer.hasNext());
+        assertFalse(enterpriseJobProducer.hasNext());
+        enterpriseJobProducer.loadJobs();
+        assertFalse(enterpriseJobProducer.hasNext());
 
         try {
             verify(mockedBufferedReader).readLine();
@@ -152,41 +146,43 @@ public class BatchJobProducerTest {
 
     @Test
     public void testNextFail() {
-        BatchJobProducer batchJobProducer = new BatchJobProducer(mockedBufferedReader);
+        EnterpriseJobProducer enterpriseJobProducer = new EnterpriseJobProducer(mockedBufferedReader);
 
-        assertFalse(batchJobProducer.hasNext());
+        assertFalse(enterpriseJobProducer.hasNext());
         expected.expect(NoSuchElementException.class);
-        assertNotNull(batchJobProducer.next());
+        assertNotNull(enterpriseJobProducer.next());
 
         verifyNoMoreInteractions(mockedBufferedReader);
     }
 
     @Test
     public void testNextMoreThanOneJob() {
-        BatchJobProducer batchJobProducer = new BatchJobProducer(mockedBufferedReader);
+        EnterpriseJobProducer enterpriseJobProducer = new EnterpriseJobProducer(mockedBufferedReader);
 
-        assertFalse(batchJobProducer.hasNext());
+        assertFalse(enterpriseJobProducer.hasNext());
 
         try {
             String stopValue = null;
-            when(mockedBufferedReader.readLine()).thenReturn("1\t1\t1\t1\t1", "2\t1\t1\t1\t1", "3\t1\t1\t1\t1",
-                    stopValue);
+            when(mockedBufferedReader.readLine()).thenReturn("1\t10", "2\t20", "3\t30", stopValue);
         } catch (IOException e) {
             fail(FAIL_ERROR_MESSAGE + e.getMessage());
         }
 
-        batchJobProducer.loadJobs();
+        enterpriseJobProducer.loadJobs();
 
-        assertTrue(batchJobProducer.hasNext());
-        BatchJob batchJob = (BatchJob) batchJobProducer.next();
-        assertEquals(1.0, batchJob.getStartTime(), 1.0E-8);
-        assertTrue(batchJobProducer.hasNext());
-        batchJob = (BatchJob) batchJobProducer.next();
-        assertEquals(2.0, batchJob.getStartTime(), 1.0E-8);
-        assertTrue(batchJobProducer.hasNext());
-        batchJob = (BatchJob) batchJobProducer.next();
-        assertEquals(3.0, batchJob.getStartTime(), 1.0E-8);
-        assertFalse(batchJobProducer.hasNext());
+        assertTrue(enterpriseJobProducer.hasNext());
+        EnterpriseJob enterpriseJob = (EnterpriseJob) enterpriseJobProducer.next();
+        assertEquals(1, enterpriseJob.getArrivalTimeOfJob());
+        assertEquals(10, enterpriseJob.getNumberOfJob());
+        assertTrue(enterpriseJobProducer.hasNext());
+        enterpriseJob = (EnterpriseJob) enterpriseJobProducer.next();
+        assertEquals(2, enterpriseJob.getArrivalTimeOfJob());
+        assertEquals(20, enterpriseJob.getNumberOfJob());
+        assertTrue(enterpriseJobProducer.hasNext());
+        enterpriseJob = (EnterpriseJob) enterpriseJobProducer.next();
+        assertEquals(3, enterpriseJob.getArrivalTimeOfJob());
+        assertEquals(30, enterpriseJob.getNumberOfJob());
+        assertFalse(enterpriseJobProducer.hasNext());
 
         try {
             verify(mockedBufferedReader, times(4)).readLine();
