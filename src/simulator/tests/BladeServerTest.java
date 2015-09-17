@@ -365,7 +365,7 @@ public class BladeServerTest {
 
         when(mockedBatchJob.getRemainAt(0)).thenReturn(5.0, 3.6);
         when(mockedBatchJob.getUtilization()).thenReturn(1.0);
-        when(mockedBatchJob.getIsChangedThisTime()).thenReturn(0, 1);
+        when(mockedBatchJob.isChangedThisTime()).thenReturn(false, true);
 
         assertEquals(1, bladeServer.run());
 
@@ -373,9 +373,9 @@ public class BladeServerTest {
         assertEquals(71.42857, bladeServer.getCurrentCPU(), 1.0E-5);
 
         verify(mockedBatchJob, times(5)).getUtilization();
-        verify(mockedBatchJob, times(3)).getIsChangedThisTime();
-        verify(mockedBatchJob).setIsChangedThisTime(1);
-        verify(mockedBatchJob).setIsChangedThisTime(0);
+        verify(mockedBatchJob, times(3)).isChangedThisTime();
+        verify(mockedBatchJob).setChangedThisTime();
+        verify(mockedBatchJob).setNotChangedThisTime();
         verify(mockedBatchJob).getThisNodeIndex(0);
         verify(mockedBatchJob).setRemainAt(0, 3.6);
         verify(mockedBatchJob, times(2)).getRemainAt(0);
@@ -395,15 +395,15 @@ public class BladeServerTest {
 
         when(mockedBatchJob.getRemainAt(0)).thenReturn(5.0, 3.6);
         when(mockedBatchJob.getUtilization()).thenReturn(0.0);
-        when(mockedBatchJob.getIsChangedThisTime()).thenReturn(1, 1, 0);
+        when(mockedBatchJob.isChangedThisTime()).thenReturn(true, true, false);
 
         expectedException.expect(ArithmeticException.class);
         assertEquals(1, bladeServer.run());
 
         verify(mockedBatchJob, times(5)).getUtilization();
-        verify(mockedBatchJob, times(3)).getIsChangedThisTime();
-        verify(mockedBatchJob).setIsChangedThisTime(1);
-        verify(mockedBatchJob).setIsChangedThisTime(0);
+        verify(mockedBatchJob, times(3)).isChangedThisTime();
+        verify(mockedBatchJob).setChangedThisTime();
+        verify(mockedBatchJob).setNotChangedThisTime();
         verify(mockedBatchJob).getThisNodeIndex(0);
         verify(mockedBatchJob).setRemainAt(0, 3.6);
         verify(mockedBatchJob, times(2)).getRemainAt(0);
@@ -423,7 +423,7 @@ public class BladeServerTest {
 
         when(mockedBatchJob.getRemainAt(0)).thenReturn(5.0);
         when(mockedBatchJob.getUtilization()).thenReturn(0.1);
-        when(mockedBatchJob.getIsChangedThisTime()).thenReturn(1, 1, 0);
+        when(mockedBatchJob.isChangedThisTime()).thenReturn(true, true, false);
 
         assertEquals(1, bladeServer.run());
 
@@ -431,9 +431,9 @@ public class BladeServerTest {
         assertEquals(100, bladeServer.getCurrentCPU(), 1.0E-5);
 
         verify(mockedBatchJob, times(4)).getUtilization();
-        verify(mockedBatchJob, times(3)).getIsChangedThisTime();
-        verify(mockedBatchJob).setIsChangedThisTime(1);
-        verify(mockedBatchJob).setIsChangedThisTime(0);
+        verify(mockedBatchJob, times(3)).isChangedThisTime();
+        verify(mockedBatchJob).setChangedThisTime();
+        verify(mockedBatchJob).setNotChangedThisTime();
         verify(mockedBatchJob).getThisNodeIndex(0);
         final ArgumentCaptor<Double> captor = ArgumentCaptor.forClass(Double.class);
         verify(mockedBatchJob).setRemainAt(Matchers.eq(0), captor.capture());
@@ -508,7 +508,7 @@ public class BladeServerTest {
         verify(mockedBatchJob).getUtilization();
         verify(mockedBatchJob).getThisNodeIndex(0);
         verify(mockedBatchJob).setRemainAt(0, 0.0);
-        verify(mockedBatchJob).setIsChangedThisTime(0);
+        verify(mockedBatchJob).setNotChangedThisTime();
         verify(mockedBatchJob, times(2)).getRemainAt(0);
         verify(mockedBatchJob).allDone();
 
@@ -536,7 +536,7 @@ public class BladeServerTest {
         verify(mockedBatchJob).getUtilization();
         verify(mockedBatchJob).getThisNodeIndex(0);
         verify(mockedBatchJob).setRemainAt(0, 0.0);
-        verify(mockedBatchJob).setIsChangedThisTime(0);
+        verify(mockedBatchJob).setNotChangedThisTime();
         verify(mockedBatchJob, times(2)).getRemainAt(0);
         verify(mockedBatchJob).allDone();
         verify(mockedBatchJob).Finish(anyInt());

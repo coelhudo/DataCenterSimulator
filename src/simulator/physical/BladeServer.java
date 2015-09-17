@@ -221,10 +221,10 @@ public class BladeServer {
             index_1 = index;
             for (int i = 0; i < getActiveBatchList().size(); i++) {
                 BatchJob job = getActiveBatchList().get(i);
-                if (job.getUtilization() <= share && job.getIsChangedThisTime() == 0) {
+                if (job.getUtilization() <= share && !job.isChangedThisTime()) {
                     extraShare = extraShare + share - job.getUtilization();
                     index++;
-                    job.setIsChangedThisTime(1);
+                    job.setChangedThisTime();
                     tempCpu = job.getUtilization() + tempCpu;
                     if (done(job, share_t)) {
                         i--;
@@ -232,7 +232,7 @@ public class BladeServer {
                 }
             }
             for (BatchJob batchJob : getActiveBatchList()) {
-                if (batchJob.getIsChangedThisTime() == 0) {
+                if (!batchJob.isChangedThisTime()) {
                     rmpart++;
                 }
             }
@@ -247,7 +247,7 @@ public class BladeServer {
 
         for (int i = 0; i < getActiveBatchList().size(); i++) {
             BatchJob job = getActiveBatchList().get(i);
-            if (job.getIsChangedThisTime() == 0) {
+            if (!job.isChangedThisTime()) {
                 final double utilization = job.getUtilization();
                 final Double shareUtilizationRatio = share / utilization;
                 if (shareUtilizationRatio.isInfinite()) {
@@ -258,7 +258,7 @@ public class BladeServer {
                     LOGGER.info("share more than one!\t" + share_t + "\t" + share + "\t" + utilization + "\t"
                             + environment.getCurrentLocalTime());
                 }
-                job.setIsChangedThisTime(1);
+                job.setChangedThisTime();
                 if (done(job, shareUtilizationRatio)) {
                     i--;
                 }
@@ -267,7 +267,7 @@ public class BladeServer {
         }
 
         for (BatchJob job : getActiveBatchList()) {
-            job.setIsChangedThisTime(0);
+            job.setNotChangedThisTime();
         }
         // Inja be nazaram /MIPS ham mikhad ke sad beshe fek konam MIPS ro dar
         // nazar nagereftam!
@@ -297,7 +297,7 @@ public class BladeServer {
         }
 
         getBlockedBatchList().add(job);
-        job.setIsChangedThisTime(0);
+        job.setNotChangedThisTime();
         getActiveBatchList().remove(job);
 
         if (!job.allDone()) {
