@@ -206,58 +206,60 @@ public class BladeServer {
 
     public int run() {
         final int num = getActiveBatchList().size();
-        int index = 0, index_1 = 0;
+        int index = 0;
         if (num == 0) {
             setStatusAsRunningNormal();
             setCurrentCPU(0);
             return 0;
         }
         double share = getMips() / num;
-        final double share_t = share;
+        final double originalShare = share;
         double tempCpu = 0;
-        while (index < num) {
-            
+        boolean anyJobModified = true;
+        while (index < num && anyJobModified) {
+
             double extraShare = 0;
-            index_1 = index;
+            anyJobModified = false;
             for (int i = 0; i < getActiveBatchList().size(); i++) {
                 BatchJob job = getActiveBatchList().get(i);
-                if (job.getUtilization() <= share && !job.isModified()) {
-                    extraShare = extraShare + share - job.getUtilization();
-                    index++;
-                    job.setAsModified();
-                    tempCpu = job.getUtilization() + tempCpu;
-                    if (done(job, share_t)) {
-                        i--;
-                    }
+                if (job.getUtilization() > share || job.isModified()) {
+                    continue;
+                }
+                
+                extraShare = extraShare + share - job.getUtilization();
+                index++;
+                anyJobModified = true;
+                job.setAsModified();
+                tempCpu = job.getUtilization() + tempCpu;
+                if (done(job, originalShare)) {
+                    i--;
                 }
             }
-            
-            share = adjustShare(share, extraShare);
 
-            if (index == index_1) {
-                break;
-            }
+            share = adjustShare(share, extraShare);
         }
 
         for (int i = 0; i < getActiveBatchList().size(); i++) {
             BatchJob job = getActiveBatchList().get(i);
-            if (!job.isModified()) {
-                final double utilization = job.getUtilization();
-                final Double shareUtilizationRatio = share / utilization;
-                if (shareUtilizationRatio.isInfinite()) {
-                    throw new ArithmeticException("Division by Zero");
-                }
-
-                if (shareUtilizationRatio > 1) {
-                    LOGGER.info("share more than one!\t" + share_t + "\t" + share + "\t" + utilization + "\t"
-                            + environment.getCurrentLocalTime());
-                }
-                job.setAsModified();
-                if (done(job, shareUtilizationRatio)) {
-                    i--;
-                }
-                tempCpu = tempCpu + share;
+            if (job.isModified()) {
+                continue;
             }
+
+            final double utilization = job.getUtilization();
+            final Double shareUtilizationRatio = share / utilization;
+            if (shareUtilizationRatio.isInfinite()) {
+                throw new ArithmeticException("Division by Zero");
+            }
+
+            if (shareUtilizationRatio > 1) {
+                LOGGER.info("share more than one!\t" + originalShare + "\t" + share + "\t" + utilization + "\t"
+                        + environment.getCurrentLocalTime());
+            }
+            job.setAsModified();
+            if (done(job, shareUtilizationRatio)) {
+                i--;
+            }
+            tempCpu = tempCpu + share;
         }
 
         for (BatchJob job : getActiveBatchList()) {
@@ -277,11 +279,11 @@ public class BladeServer {
                 countJobsNotModified++;
             }
         }
-        
+
         if (countJobsNotModified != 0) {
             share = share + extraShare / countJobsNotModified;
         }
-        
+
         return share;
     }
 
