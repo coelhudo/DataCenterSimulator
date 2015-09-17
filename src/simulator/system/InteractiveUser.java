@@ -285,12 +285,16 @@ public class InteractiveUser {
         return getComputeNodeIndex();
     }
 
-    void destroyWLBundle() throws IOException {
+    void destroyWLBundle() {
         for (BladeServer bladeServer : getComputeNodeList()) {
             bladeServer.restart();
         }
 
-        bis.close();
+        try {
+            bis.close();
+        } catch (IOException e) {
+            LOGGER.severe(e.getMessage());
+        }
     }
 
     public int numberofRunningNode() {

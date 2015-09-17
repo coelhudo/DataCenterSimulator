@@ -1,6 +1,5 @@
 package simulator.system;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Logger;
@@ -59,7 +58,8 @@ public class EnterpriseSystem extends GeneralSystem {
         return n;
     }
 
-    public boolean runAcycle() throws IOException {
+    @Override
+    public boolean runAcycle() {
         for (int i = 0; i < applications.size(); i++) {
             // TODO: if each bundle needs some help should ask and here
             // resourceallocation should run

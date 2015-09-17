@@ -138,11 +138,11 @@ public class Simulator {
         return systems.allJobsDone();
     }
 
-    public void allSystemRunACycle() throws IOException {
+    public void allSystemRunACycle() {
         systems.runACycle();
     }
 
-    public void allSystemCalculatePower() throws IOException {
+    public void allSystemCalculatePower() {
         systems.calculatePower();
     }
 

@@ -5,13 +5,11 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -79,11 +77,7 @@ public class EnterpriseSystemTest {
 
     @Test
     public void testRunACycle_WithoutApplication() {
-        try {
-            assertTrue(enterpriseSystem.runAcycle());
-        } catch (IOException e) {
-            fail(FAIL_ERROR_MESSAGE);
-        }
+        assertTrue(enterpriseSystem.runAcycle());
         assertTrue(enterpriseSystem.isDone());
 
         verify(mockedResourceAllocation).initialResourceAlocator(enterpriseSystem);
@@ -96,11 +90,7 @@ public class EnterpriseSystemTest {
         when(mockedEnterpriseApp.runAcycle()).thenReturn(true);
         applications.add(mockedEnterpriseApp);
 
-        try {
-            assertFalse(enterpriseSystem.runAcycle());
-        } catch (IOException e1) {
-            fail(FAIL_ERROR_MESSAGE);
-        }
+        assertFalse(enterpriseSystem.runAcycle());
         assertFalse(enterpriseSystem.isDone());
         assertFalse(applications.isEmpty());
 
@@ -116,11 +106,7 @@ public class EnterpriseSystemTest {
         when(mockedEnterpriseApp.runAcycle()).thenReturn(false);
         applications.add(mockedEnterpriseApp);
 
-        try {
-            assertTrue(enterpriseSystem.runAcycle());
-        } catch (IOException e1) {
-            fail(FAIL_ERROR_MESSAGE);
-        }
+        assertTrue(enterpriseSystem.runAcycle());
         assertTrue(enterpriseSystem.isDone());
         assertTrue(applications.isEmpty());
 

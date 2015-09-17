@@ -60,7 +60,8 @@ public class InteractiveSystem extends GeneralSystem {
     }
     // Return False means everything is finished!
 
-    boolean runAcycle() throws IOException {
+    @Override
+    public boolean runAcycle() {
         if (!getUserList().isEmpty() & checkForViolation())
         {
             // AM.monitor();
@@ -149,7 +150,7 @@ public class InteractiveSystem extends GeneralSystem {
         }
     }
 
-    void violationCheckandSet() throws IOException {
+    void violationCheckandSet() {
         resetNumberOfSLAViolation();
         for (InteractiveUser interactiveUser : getUserList()) {
             setSLAviolation(+interactiveUser.getSLAviolation());

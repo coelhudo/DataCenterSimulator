@@ -1,6 +1,5 @@
 package simulator.system;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Observable;
@@ -9,42 +8,43 @@ import java.util.logging.Logger;
 import simulator.Environment;
 
 public class Systems extends Observable {
-    
+
     private static final Logger LOGGER = Logger.getLogger(Systems.class.getName());
-    
+
     private List<InteractiveSystem> interactiveSystems = new ArrayList<InteractiveSystem>();
     private List<EnterpriseSystem> enterpriseSystems = new ArrayList<EnterpriseSystem>();
     private List<ComputeSystem> computeSystems = new ArrayList<ComputeSystem>();
-    
+
     private Environment environment;
+
     public Systems(Environment environment) {
         this.environment = environment;
     }
-    
+
     public List<InteractiveSystem> getInteractiveSystems() {
         return interactiveSystems;
     }
-    
+
     public void setInteractiveSystems(List<InteractiveSystem> interactiveSystems) {
         this.interactiveSystems = interactiveSystems;
     }
-    
+
     public List<EnterpriseSystem> getEnterpriseSystems() {
         return enterpriseSystems;
     }
-    
+
     public void setEnterpriseSystems(List<EnterpriseSystem> enterpriseSystems) {
         this.enterpriseSystems = enterpriseSystems;
     }
-    
+
     public List<ComputeSystem> getComputeSystems() {
         return computeSystems;
     }
-    
+
     public void setComputeSystems(List<ComputeSystem> computeSystems) {
         this.computeSystems = computeSystems;
     }
-    
+
     public boolean allJobsDone() {
         for (EnterpriseSystem enterpriseSystem : enterpriseSystems) {
             if (!enterpriseSystem.isDone()) {
@@ -63,7 +63,7 @@ public class Systems extends Observable {
         }
         return true;
     }
-    
+
     public boolean removeJobsThatAreDone() {
         boolean retValue = true;
         for (int i = 0; i < enterpriseSystems.size(); i++) {
@@ -95,8 +95,11 @@ public class Systems extends Observable {
                 i--;
 
                 // opps !! hardcoded policy
-                //datacenter.getAM().resetBlockTimer();
-                notifyObservers(); //FIXME: did this to avoid another dependency. After I figure out how everything works, them it will be removed (i guess)
+                // datacenter.getAM().resetBlockTimer();
+                notifyObservers(); // FIXME: did this to avoid another
+                                   // dependency. After I figure out how
+                                   // everything works, them it will be removed
+                                   // (i guess)
             }
         }
         for (int i = 0; i < computeSystems.size(); i++) {
@@ -114,29 +117,22 @@ public class Systems extends Observable {
             }
         }
         return retValue; // there is no job left in all system
-    }    
-    
-    
-    public void runACycle() throws IOException {
-        for (EnterpriseSystem enterpriseSystem : enterpriseSystems) {
-            if (!enterpriseSystem.isDone()) {
-                enterpriseSystem.runAcycle();
-            }
-        }
+    }
 
-        for (ComputeSystem computeSystem : computeSystems) {
-            if (!computeSystem.isDone()) {
-                computeSystem.runAcycle();
-            }
-        }
-
-        for (InteractiveSystem interactiveSystem : interactiveSystems) {
-            if (!interactiveSystem.isDone()) {
-                interactiveSystem.runAcycle();
+    public void runACycle() {
+        runACycle(enterpriseSystems);
+        runACycle(computeSystems);
+        runACycle(interactiveSystems);
+    }
+     
+    private void runACycle(List<? extends GeneralSystem> systems) {
+        for (GeneralSystem system : systems) {
+            if (!system.isDone()) {
+                system.runAcycle();
             }
         }
     }
-    
+
     public void calculatePower() {
         for (EnterpriseSystem enterpriseSystem : enterpriseSystems) {
             enterpriseSystem.calculatePower();
@@ -148,7 +144,7 @@ public class Systems extends Observable {
             interactiveSystem.calculatePower();
         }
     }
-    
+
     public void logTotalResponseTimeComputeSystem() {
         for (int i = 0; i < computeSystems.size(); i++) {
             LOGGER.info("Total Response Time in CS " + i + "th CS = " + computeSystems.get(i).finalized());
@@ -161,12 +157,11 @@ public class Systems extends Observable {
 
     public void addInteractiveSystem(InteractiveSystem wb1) {
         this.interactiveSystems.add(wb1);
-        
+
     }
 
     public void addComputeSystem(ComputeSystem cP) {
         this.computeSystems.add(cP);
     }
 
-    
 }

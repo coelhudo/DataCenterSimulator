@@ -52,6 +52,8 @@ public class EnterpriseAppTest {
         mockedEnvironment = mock(Environment.class);
         mockedJobProducer = mock(JobProducer.class);
         enterpriseApplicationPOD.setJobProducer(mockedJobProducer);
+        enterpriseApplicationPOD.setNumberofBasicNode(1);
+        enterpriseApplicationPOD.setMaxNumberOfRequest(1);
 
         enterpriseApplication = new EnterpriseApp(enterpriseApplicationPOD, mockedScheduler, mockedResourceAllocation,
                 mockedEnvironment);
@@ -70,10 +72,10 @@ public class EnterpriseAppTest {
         assertTrue(enterpriseApplication.getComputeNodeList().isEmpty());
         assertEquals(0, enterpriseApplication.getID());
         assertEquals(0, enterpriseApplication.getMaxExpectedResTime());
-        assertEquals(0, enterpriseApplication.getMaxNumberOfRequest());
+        assertEquals(1, enterpriseApplication.getMaxNumberOfRequest());
         assertEquals(0, enterpriseApplication.getMaxProc());
         assertEquals(0, enterpriseApplication.getMinProc());
-        assertEquals(0, enterpriseApplication.getNumberofBasicNode());
+        assertEquals(1, enterpriseApplication.getNumberofBasicNode());
         assertEquals(0, enterpriseApplication.getNumofViolation());
         assertEquals(0, enterpriseApplication.getNumofViolation());
         assertTrue(enterpriseApplication.getQueueApp().isEmpty());
@@ -121,9 +123,7 @@ public class EnterpriseAppTest {
         when(mockedBladeServer.getCurrentCPU()).thenReturn(10.0);
         when(mockedBladeServer.getMips()).thenReturn(1.4);
         enterpriseApplication.addCompNodetoBundle(mockedBladeServer);
-        enterpriseApplication.setNumberofBasicNode(1);
-        enterpriseApplication.setMaxNumberOfRequest(1);
-
+        
         assertTrue(enterpriseApplication.runAcycle());
 
         assertFalse(enterpriseApplication.getComputeNodeList().isEmpty());
@@ -171,7 +171,6 @@ public class EnterpriseAppTest {
         when(mockedBladeServer.getCurrentCPU()).thenReturn(10.0);
         when(mockedBladeServer.getMips()).thenReturn(1.4);
         enterpriseApplication.addCompNodetoBundle(mockedBladeServer);
-        enterpriseApplication.setNumberofBasicNode(1);
         enterpriseApplication.setMaxNumberOfRequest(1);
 
         assertTrue(enterpriseApplication.runAcycle());
@@ -221,7 +220,6 @@ public class EnterpriseAppTest {
         when(mockedBladeServer.getCurrentCPU()).thenReturn(10.0);
         when(mockedBladeServer.getMips()).thenReturn(1.4);
         enterpriseApplication.addCompNodetoBundle(mockedBladeServer);
-        enterpriseApplication.setNumberofBasicNode(1);
         enterpriseApplication.setMaxNumberOfRequest(1);
 
         assertTrue(enterpriseApplication.runAcycle());
@@ -296,8 +294,7 @@ public class EnterpriseAppTest {
         when(mockedResourceAllocation.nextServer(anyListOf(BladeServer.class))).thenReturn(0);
 
         enterpriseApplication.setMaxNumberOfRequest(100);
-        enterpriseApplication.setNumberofBasicNode(1);
-
+        
         BladeServer mockedBladeServer = mock(BladeServer.class);
         when(mockedBladeServer.isRunningNormal()).thenReturn(true);
         when(mockedBladeServer.getCurrentCPU()).thenReturn(10.0);

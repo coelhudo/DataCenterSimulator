@@ -86,10 +86,10 @@ public class EnterpriseApp {
     }
 
     int readWebJob() {
-        if(jobProducer.hasNext()) {
+        if (jobProducer.hasNext()) {
             getQueueApp().add((EnterpriseJob) jobProducer.next());
         }
-        
+
         if (getQueueApp().isEmpty()) {
             return -2;
         }
@@ -97,7 +97,7 @@ public class EnterpriseApp {
         if (getQueueApp().get(0).getArrivalTimeOfJob() <= environment.getCurrentLocalTime()) {
             return 1;
         }
-        
+
         return 0;
     }
 
@@ -330,32 +330,16 @@ public class EnterpriseApp {
         return id;
     }
 
-    public void setID(int id) {
-        this.id = id;
-    }
-
     public int getMaxProc() {
         return maxProc;
-    }
-
-    public void setMaxProc(int maxProc) {
-        this.maxProc = maxProc;
     }
 
     public int getMinProc() {
         return minProc;
     }
 
-    public void setMinProc(int minProc) {
-        this.minProc = minProc;
-    }
-
     public int getMaxExpectedResTime() {
         return maxExpectedResTime;
-    }
-
-    public void setMaxExpectedResTime(int maxExpectedResTime) {
-        this.maxExpectedResTime = maxExpectedResTime;
     }
 
     public List<BladeServer> getComputeNodeList() {
@@ -386,16 +370,8 @@ public class EnterpriseApp {
         return timeTreshold;
     }
 
-    public void setTimeTreshold(int timeTreshold) {
-        this.timeTreshold = timeTreshold;
-    }
-
     public int getSLAPercentage() {
         return slaPercentage;
-    }
-
-    public void setSLAPercentage(int slaPercentage) {
-        this.slaPercentage = slaPercentage;
     }
 
     public int getNumofViolation() {
@@ -433,10 +409,6 @@ public class EnterpriseApp {
 
     public int getNumberofBasicNode() {
         return numberofBasicNode;
-    }
-
-    public void setNumberofBasicNode(int numberofBasicNode) {
-        this.numberofBasicNode = numberofBasicNode;
     }
 
     public static EnterpriseApp create(EnterpriseApplicationPOD enterpriseApplicationPOD, Scheduler scheduler,

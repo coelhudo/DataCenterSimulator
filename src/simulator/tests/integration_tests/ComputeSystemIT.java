@@ -3,14 +3,12 @@ package simulator.tests.integration_tests;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 
-import java.io.IOException;
 import java.util.List;
 
 import org.junit.Test;
@@ -89,11 +87,7 @@ public class ComputeSystemIT {
 
         when(mockedEnvironment.getCurrentLocalTime()).thenReturn(1);
         assertFalse(systems.allJobsDone());
-        try {
-            systems.runACycle();
-        } catch (IOException e) {
-            fail("Something not right went wrong");
-        }
+        systems.runACycle();
         assertTrue(systems.allJobsDone());
         assertEquals(0, systems.getComputeSystems().get(0).getAccumolatedViolation());
 
@@ -181,11 +175,7 @@ public class ComputeSystemIT {
 
         when(mockedEnvironment.getCurrentLocalTime()).thenReturn(1);
         assertFalse(systems.allJobsDone());
-        try {
-            systems.runACycle();
-        } catch (IOException e) {
-            fail("Somethin bad happened");
-        }
+        systems.runACycle();
         assertTrue(systems.allJobsDone());
         assertEquals(0, systems.getComputeSystems().get(0).getAccumolatedViolation());
 
@@ -267,11 +257,7 @@ public class ComputeSystemIT {
 
         when(mockedEnvironment.getCurrentLocalTime()).thenReturn(1);
         assertFalse(systems.allJobsDone());
-        try {
-            systems.runACycle();
-        } catch (IOException e) {
-            fail("Whaaat?");
-        }
+        systems.runACycle();
         assertFalse(systems.allJobsDone());
         assertEquals(1, systems.getComputeSystems().get(0).getAccumolatedViolation());
 

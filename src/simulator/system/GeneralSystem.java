@@ -12,7 +12,7 @@ import simulator.schedulers.Scheduler;
  *
  * @author fnorouz
  */
-public class GeneralSystem {
+public abstract class GeneralSystem {
 
     private String name;
     private ResourceAllocation resourceAllocation;
@@ -46,8 +46,9 @@ public class GeneralSystem {
         for (BladeServer bladeServer : getComputeNodeList()) {
             setPower(getPower() + bladeServer.getPower());
         }
-
     }
+    
+    public abstract boolean runAcycle();
 
     public String getName() {
         return name;
@@ -133,7 +134,7 @@ public class GeneralSystem {
         return power;
     }
 
-    public void setPower(double power) {
+    private void setPower(double power) {
         this.power = power;
     }
 

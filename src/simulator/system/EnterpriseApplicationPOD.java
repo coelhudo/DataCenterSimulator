@@ -2,14 +2,14 @@ package simulator.system;
 
 import simulator.jobs.JobProducer;
 
-public class EnterpriseApplicationPOD {
+public final class EnterpriseApplicationPOD {
     
     private int id = 0;
     private int maxProc = 0;
     private int minProc = 0;
     private int timeTreshold = 0;
-    private int SLAPercentage;
-    private int MaxNumberOfRequest = 0; // # of Request can be handled by number
+    private int slaPercentage;
+    private int maxNumberOfRequest = 0;
     private int numberofBasicNode = 0;
     private int maxExpectedResTime = 0;
     private JobProducer jobProducer;
@@ -18,15 +18,15 @@ public class EnterpriseApplicationPOD {
         return maxProc;
     }
 
-    void setMaxProc(int maxProc) {
+    public void setMaxProc(int maxProc) {
         this.maxProc = maxProc;
     }
 
-    int getMinProc() {
+    public int getMinProc() {
         return minProc;
     }
 
-    void setMinProc(int minProc) {
+    public void setMinProc(int minProc) {
         this.minProc = minProc;
     }
 
@@ -34,31 +34,31 @@ public class EnterpriseApplicationPOD {
         return timeTreshold;
     }
 
-    void setTimeTreshold(int timeTreshold) {
+    public void setTimeTreshold(int timeTreshold) {
         this.timeTreshold = timeTreshold;
     }
 
     public int getSLAPercentage() {
-        return SLAPercentage;
+        return slaPercentage;
     }
 
-    void setSLAPercentage(int sLAPercentage) {
-        SLAPercentage = sLAPercentage;
+    public void setSLAPercentage(int sLAPercentage) {
+        slaPercentage = sLAPercentage;
     }
 
     public int getMaxNumberOfRequest() {
-        return MaxNumberOfRequest;
+        return maxNumberOfRequest;
     }
 
-    void setMaxNumberOfRequest(int maxNumberOfRequest) {
-        MaxNumberOfRequest = maxNumberOfRequest;
+    public void setMaxNumberOfRequest(int maxNumberOfRequest) {
+        this.maxNumberOfRequest = maxNumberOfRequest;
     }
 
     public int getID() {
         return id;
     }
     
-    void setID(int id) {
+    public void setID(int id) {
         this.id = id;
     }
 
@@ -74,7 +74,7 @@ public class EnterpriseApplicationPOD {
         return maxExpectedResTime;
     }
 
-    void setMaxExpectedResTime(int maxExpectedResTime) {
+    public void setMaxExpectedResTime(int maxExpectedResTime) {
         this.maxExpectedResTime = maxExpectedResTime;
     }
 
