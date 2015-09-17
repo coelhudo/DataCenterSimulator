@@ -1,6 +1,7 @@
 package simulator.system;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Observable;
 import java.util.logging.Logger;
@@ -46,77 +47,72 @@ public class Systems extends Observable {
     }
 
     public boolean allJobsDone() {
-        for (EnterpriseSystem enterpriseSystem : enterpriseSystems) {
-            if (!enterpriseSystem.isDone()) {
+        return allJobsDone(enterpriseSystems) && allJobsDone(interactiveSystems) && allJobsDone(computeSystems);
+    }
+
+    private boolean allJobsDone(List<? extends GeneralSystem> systems) {
+        for (GeneralSystem system : systems) {
+            if (!system.isDone()) {
                 return false;
             }
         }
-        for (InteractiveSystem interactiveSytem : interactiveSystems) {
-            if (!interactiveSytem.isDone()) {
-                return false;
-            }
-        }
-        for (ComputeSystem computeSystem : computeSystems) {
-            if (!computeSystem.isDone()) {
-                return false;
-            }
-        }
+
         return true;
     }
 
     public boolean removeJobsThatAreDone() {
         boolean retValue = true;
-        for (int i = 0; i < enterpriseSystems.size(); i++) {
-            if (!enterpriseSystems.get(i).isDone()) {
+        Iterator<EnterpriseSystem> it = enterpriseSystems.iterator();
+        while (it.hasNext()) {
+            EnterpriseSystem current = it.next();
+            if (!current.isDone()) {
                 retValue = false;
             } else {
-                LOGGER.info("finishing Time EnterSys: " + enterpriseSystems.get(i).getName() + " at time: "
+                LOGGER.info("finishing Time EnterSys: " + current.getName() + " at time: "
                         + environment.getCurrentLocalTime());
-                LOGGER.info("Computing Power Consumed by  " + enterpriseSystems.get(i).getName() + " is: "
-                        + enterpriseSystems.get(i).getPower());
-                // LOGGER.info("Number of violation:
-                // "+ES.get(i).accumolatedViolation);
-
-                enterpriseSystems.remove(i);
-                i--;
+                LOGGER.info("Computing Power Consumed by  " + current.getName() + " is: " + current.getPower());
+                it.remove();
             }
         }
-        for (int i = 0; i < interactiveSystems.size(); i++) {
-            if (!interactiveSystems.get(i).isDone()) {
+
+        Iterator<InteractiveSystem> interactiveIt = interactiveSystems.iterator();
+        while (it.hasNext()) {
+            InteractiveSystem current = interactiveIt.next();
+            if (!current.isDone()) {
                 retValue = false;
             } else {
-                LOGGER.info("finishing Time Interactive sys:  " + interactiveSystems.get(i).getName() + " at time: "
+                LOGGER.info("finishing Time Interactive sys:  " + current.getName() + " at time: "
                         + environment.getCurrentLocalTime());
-                LOGGER.info(
-                        "Interactive sys: Number of violation: " + interactiveSystems.get(i).getAccumolatedViolation());
-                LOGGER.info("Computing Power Consumed by  " + interactiveSystems.get(i).getName() + " is: "
-                        + interactiveSystems.get(i).getPower());
-                interactiveSystems.remove(i);
-                i--;
+                LOGGER.info("Interactive sys: Number of violation: " + current.getAccumolatedViolation());
+                LOGGER.info("Computing Power Consumed by  " + current.getName() + " is: " + current.getPower());
+                interactiveIt.remove();
 
                 // opps !! hardcoded policy
                 // datacenter.getAM().resetBlockTimer();
-                notifyObservers(); // FIXME: did this to avoid another
-                                   // dependency. After I figure out how
-                                   // everything works, them it will be removed
-                                   // (i guess)
+                // FIXME: did this to avoid another
+                // dependency. After I figure out how
+                // everything works, them it will be removed
+                // (i guess)
+                notifyObservers();
             }
         }
-        for (int i = 0; i < computeSystems.size(); i++) {
-            if (!computeSystems.get(i).isDone()) {
-                retValue = false; // means still we have work to do
+
+        Iterator<ComputeSystem> computeIt = computeSystems.iterator();
+        while (computeIt.hasNext()) {
+            ComputeSystem current = computeIt.next();
+            if (!current.isDone()) {
+                retValue = false;
             } else {
-                LOGGER.info("finishing Time HPC_Sys:  " + computeSystems.get(i).getName() + " at time: "
+                LOGGER.info("finishing Time HPC_Sys:  " + current.getName() + " at time: "
                         + environment.getCurrentLocalTime());
-                LOGGER.info("Total Response Time= " + computeSystems.get(i).finalized());
-                LOGGER.info("Number of violation HPC : " + computeSystems.get(i).getAccumolatedViolation());
-                LOGGER.info("Computing Power Consumed by  " + computeSystems.get(i).getName() + " is: "
-                        + computeSystems.get(i).getPower());
-                computeSystems.remove(i);
-                i--;
+                LOGGER.info("Total Response Time= " + current.finalized());
+                LOGGER.info("Number of violation HPC : " + current.getAccumolatedViolation());
+                LOGGER.info("Computing Power Consumed by  " + current.getName() + " is: " + current.getPower());
+                computeIt.remove();
             }
         }
-        return retValue; // there is no job left in all system
+
+        return retValue;
     }
 
     public void runACycle() {
@@ -124,7 +120,7 @@ public class Systems extends Observable {
         runACycle(computeSystems);
         runACycle(interactiveSystems);
     }
-     
+
     private void runACycle(List<? extends GeneralSystem> systems) {
         for (GeneralSystem system : systems) {
             if (!system.isDone()) {
@@ -134,14 +130,14 @@ public class Systems extends Observable {
     }
 
     public void calculatePower() {
-        for (EnterpriseSystem enterpriseSystem : enterpriseSystems) {
-            enterpriseSystem.calculatePower();
-        }
-        for (ComputeSystem computeSystem : computeSystems) {
-            computeSystem.calculatePower();
-        }
-        for (InteractiveSystem interactiveSystem : interactiveSystems) {
-            interactiveSystem.calculatePower();
+        calculatePower(enterpriseSystems);
+        calculatePower(computeSystems);
+        calculatePower(interactiveSystems);
+    }
+
+    private void calculatePower(List<? extends GeneralSystem> systems) {
+        for (GeneralSystem system : systems) {
+            system.calculatePower();
         }
     }
 
