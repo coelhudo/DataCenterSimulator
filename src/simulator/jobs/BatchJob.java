@@ -12,7 +12,7 @@ public class BatchJob extends Job {
     private double startTime;
     private double exitTime;
     private double deadline;
-    private boolean isChangedThisTime = false;
+    private boolean modified = false;
     private double reqTime;
     private double utilization;
     private double[] remain;
@@ -105,16 +105,16 @@ public class BatchJob extends Job {
         this.deadline = deadline;
     }
 
-    public boolean isChangedThisTime() {
-        return isChangedThisTime;
+    public boolean isModified() {
+        return modified;
     }
 
-    public void setChangedThisTime() {
-        this.isChangedThisTime = true;
+    public void setAsModified() {
+        this.modified = true;
     }
     
-    public void setNotChangedThisTime() {
-        this.isChangedThisTime = false;
+    public void setAsNotModified() {
+        this.modified = false;
     }
 
     public double getReqTime() {
