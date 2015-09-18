@@ -46,7 +46,7 @@ public class Chassis {
         return pw;
     }
 
-    protected String getChassisType() {
+    public String getChassisType() {
         return chassisType;
     }
 }

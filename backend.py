@@ -3,6 +3,7 @@ from autobahn.twisted.websocket import WebSocketServerProtocol, \
 import sys
 sys.path.append('./target/ADCMSimulator-adcmsim-0.1.jar')
 from simulator import *
+import json
 
 class MyServerProtocol(WebSocketServerProtocol):
 
@@ -19,29 +20,54 @@ class MyServerProtocol(WebSocketServerProtocol):
             print("Text message received: {0}".format(payload.decode('utf8')))
 
             if payload.decode('utf8') == "execute":
-                self.sendMessage('Executing simulator'.encode('utf8'))
                 dataCenterBuilder = SimulatorBuilder("configs/DC_Logic.xml")
                 simulatorPOD = dataCenterBuilder.build()
                 environment = Environment()
-                self.sendMessage('Environment created'.encode('utf8'))
                 simulator = Simulator(simulatorPOD, environment)
-                self.sendMessage('Simulator created'.encode('utf8'))
+
+                dataCenter = simulator.getDatacenter()
+                dataCenterSpecificationPayload = json.dumps(dataCenterToJSON(dataCenter), ensure_ascii = False).encode('utf8')
+                self.sendMessage(dataCenterSpecificationPayload)
                 results = simulator.execute()
 
-                payload = lambda message_prefix,result: message_prefix.format(result).encode('utf8')
-
-                self.sendMessage(payload('Total energy Consumption= {} \n', results.getTotalPowerConsumption()))
-                self.sendMessage(payload('LocalTime= {} \n', results.getLocalTime()))
-                self.sendMessage(payload('Mean Power Consumption= {} \n', results.getMeanPowerConsumption()))
-                self.sendMessage(payload('Over RED\t {} \n', results.getOverRedTemperatureNumber()))
-                self.sendMessage(payload('\t# of Messages DC to sys= {} \n', results.getNumberOfMessagesFromDataCenterToSystem()))
-                self.sendMessage(payload('\t# of Messages sys to nodes= {} \n', results.getNumberOfMessagesFromSystemToNodes()))
-
-                self.sendMessage('Simulation finished'.encode('utf8'))
+                self.sendMessage(json.dumps(resultAsJSON(results), ensure_ascii = False).encode('utf8'))
 
     def onClose(self, wasClean, code, reason):
         print("WebSocket connection closed: {0}".format(reason))
 
+def resultAsJSON(results):
+    return {'Total energy Consumption' : results.getTotalPowerConsumption(),
+            'LocalTime' : results.getLocalTime(),
+            'Mean Power Consumption' : results.getMeanPowerConsumption(),
+            'Over RED' : results.getOverRedTemperatureNumber(),
+            'Messages' : {
+                '# of Messages DC to sys' : results.getNumberOfMessagesFromDataCenterToSystem(),
+                '# of Messages sys to nodes' : results.getNumberOfMessagesFromSystemToNodes()
+            }
+    }
+
+def dataCenterToJSON(dataCenter):
+    dataCenterSpecification = {}
+    dataCenterSpecification['dataCenter'] = chassisToJSON(dataCenter.getChassisSet())
+    return dataCenterSpecification
+
+def chassisToJSON(chassis):
+    chassisSpecification = list()
+    for currentChassis in chassis:
+        singleChassisSpecification = dict()
+        singleChassisSpecification['id'] = currentChassis.getChassisID()
+        singleChassisSpecification['type'] = currentChassis.getChassisType()
+        singleChassisSpecification['servers'] = serversToJSON(currentChassis.getServers())
+        chassisSpecification.append(singleChassisSpecification)
+    return chassisSpecification
+
+def serversToJSON(servers):
+    serversSpecification = list()
+    for server in servers:
+        serverSpecification = dict()
+        serverSpecification['id'] = server.getServerID()
+        serversSpecification.append(serverSpecification)
+    return serversSpecification
 
 if __name__ == '__main__':
 
