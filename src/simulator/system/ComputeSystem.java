@@ -109,15 +109,15 @@ public class ComputeSystem extends GeneralSystem {
         }
         BatchJob job = (BatchJob) (getScheduler().nextJob(waitingList));
         while (job.getStartTime() <= environment.getCurrentLocalTime()) {
-            int[] indexes = new int[job.getNumOfNode()];
-            if (getResourceAllocation().allocateSystemLevelServer(getComputeNodeList(), indexes)[0] == -2) {
+            List<BladeServer> allocatedServers = getResourceAllocation().allocateSystemLevelServer(getComputeNodeList(), job.getNumOfNode());
+            if (allocatedServers == null) {
                 setSLAviolation(Violation.COMPUTE_NODE_SHORTAGE);
                 return;
             }
-            int[] listServer = makeListofServer(indexes);
+            int[] listServer = makeListofServer(allocatedServers);
             job.setListOfServer(listServer);
-            for (int i = 0; i < indexes.length; i++) {
-                getComputeNodeList().get(indexes[i]).feedWork(job);
+            for (BladeServer bladeServer : allocatedServers) {
+                bladeServer.feedWork(job);
             }
 
             if (environment.getCurrentLocalTime() - job.getStartTime() > job.getDeadline()) {
@@ -132,10 +132,12 @@ public class ComputeSystem extends GeneralSystem {
         }
     }
 
-    int[] makeListofServer(int[] list) {
-        int[] retList = new int[list.length];
-        for (int i = 0; i < list.length; i++) {
-            retList[i] = getComputeNodeList().get(list[i]).getServerID();
+    int[] makeListofServer(List<BladeServer> requestedServers) {
+        int[] retList = new int[requestedServers.size()];
+        int i = 0;
+        for (BladeServer bladeServer : requestedServers) {
+            retList[i] = bladeServer.getServerID();
+            i++;
         }
         return retList;
     }

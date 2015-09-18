@@ -6,7 +6,9 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
 
 import org.junit.After;
@@ -45,10 +47,10 @@ public class ResourceAllocationTest {
         }
 
         @Override
-        public int[] allocateSystemLevelServer(List<BladeServer> bs, int[] list) {
-            list[0] = bs.get(0).getChassisID();
-            list[1] = bs.get(0).getServerID();
-            return list;
+        public List<BladeServer> allocateSystemLevelServer(List<BladeServer> bs, int numberOfRequestedServers) {
+            List<BladeServer> requestedServers = new ArrayList<BladeServer>();
+            requestedServers.add(bs.get(0));
+            return requestedServers;
         }
         
         public void setNextServerSysResult(int [] result) {

@@ -1,9 +1,11 @@
 package simulator.ra;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import simulator.Environment;
 import simulator.physical.BladeServer;
+import simulator.physical.BladeServerCollectionOperations;
 import simulator.physical.DataCenter;
 
 /**
@@ -43,30 +45,24 @@ public class FirstFit extends ResourceAllocation {
         return retValue;
     }
 
-    public int[] allocateSystemLevelServer(List<BladeServer> ComputeNodeList, int list[]) {
-        int j = 0, i = 0;
-        int totalReadyNodes = 0;
-        for (i = 0; i < list.length; i++) {
-            list[i] = -2;
+    public List<BladeServer> allocateSystemLevelServer(List<BladeServer> availableBladeServers, int numberOfRequestedServers) {
+        List<BladeServer> requestedBladeServers = null;
+        
+        if (BladeServerCollectionOperations.countRunningNormal(availableBladeServers) < numberOfRequestedServers) {
+            return requestedBladeServers; 
         }
-        for (int k = 0; k < ComputeNodeList.size(); k++) {
-            if (ComputeNodeList.get(k).isRunningNormal()) {
-                totalReadyNodes++;
-            }
-        }
-        if (totalReadyNodes < list.length) {
-            return list; // there is not enought ready node to accept this job
-        } // in CS which compute node is ready just save its index
-        i = 0;
-        for (j = 0; j < list.length; j++) {
-            for (; i < ComputeNodeList.size(); i++) {
-                if (ComputeNodeList.get(i).isRunningNormal()) {
-                    list[j] = i++;
+        
+        requestedBladeServers = new ArrayList<BladeServer>();
+        
+        for (int j = 0; j < numberOfRequestedServers; j++) {
+            for (BladeServer bladeServer : availableBladeServers) {
+                if (bladeServer.isRunningNormal()) {
+                    requestedBladeServers.add(bladeServer);
                     break;
                 }
             }
         }
 
-        return list;
+        return requestedBladeServers;
     }
 }

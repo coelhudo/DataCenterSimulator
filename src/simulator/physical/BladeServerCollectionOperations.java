@@ -58,4 +58,14 @@ public final class BladeServerCollectionOperations {
         }
         return count;
     }
+    
+    public static int countRunningNormal(List<BladeServer> bladeServers) {
+        int count = 0;
+        for (BladeServer bladeServer : bladeServers) {
+            if (bladeServer.isRunningNormal()) {
+                count++;
+            }
+        }
+        return count;
+    }
 }

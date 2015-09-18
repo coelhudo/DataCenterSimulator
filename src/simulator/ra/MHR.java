@@ -1,9 +1,11 @@
 package simulator.ra;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import simulator.Environment;
 import simulator.physical.BladeServer;
+import simulator.physical.BladeServerCollectionOperations;
 import simulator.physical.DataCenter;
 
 /**
@@ -58,13 +60,15 @@ public class MHR extends ResourceAllocation {
                     break;
                 }
             }
-            if (l != chassisList.size()) {
-                for (int k = 0; k < dataCenter.getChassisSet().get(chassisList.get(l)).getServers().size(); k++) {
-                    if (dataCenter.getChassisSet().get(chassisList.get(l)).getServers().get(k).isNotSystemAssigned()) {
-                        retValue[0] = chassisList.get(l); // chassis id
-                        retValue[1] = k; // Server ID
-                        return retValue;
-                    }
+            if (l == chassisList.size()) {
+                continue;
+            }
+            
+            for (int k = 0; k < dataCenter.getChassisSet().get(chassisList.get(l)).getServers().size(); k++) {
+                if (dataCenter.getChassisSet().get(chassisList.get(l)).getServers().get(k).isNotSystemAssigned()) {
+                    retValue[0] = chassisList.get(l); // chassis id
+                    retValue[1] = k; // Server ID
+                    return retValue;
                 }
             }
         }
@@ -73,34 +77,29 @@ public class MHR extends ResourceAllocation {
     // this funtion is used in ComputeSystem for allocating resources
     // List is array of compute nodes
 
-    public int[] allocateSystemLevelServer(List<BladeServer> computeNodeList, int list[]) {
-        int j = 0, i = 0;
-        int totalReadyNodes = 0;
-        for (i = 0; i < list.length; i++) {
-            list[i] = -2;
+    public List<BladeServer> allocateSystemLevelServer(List<BladeServer> availableBladeServers, int numberOfRequestedServers) {
+        List<BladeServer> requestedBladeServers = null;
+        
+        if (BladeServerCollectionOperations.countRunningNormal(availableBladeServers) < numberOfRequestedServers) {
+            return null;
         }
-        for (BladeServer bladeServer : computeNodeList) {
-            if (bladeServer.isRunningNormal()) {
-                totalReadyNodes++;
-            }
-        }
-        if (totalReadyNodes < list.length) {
-            return list; // there is not enought ready node to accept this job
-        } // in CS which compute node is ready just save its index
-        i = 0;
-        j = 0;
-        int k = powIndex.length - 1;
-        for (; k >= 0 && j < list.length; k--) {
-            for (i = 0; i < computeNodeList.size(); i++) {
-                if (computeNodeList.get(i).isRunningNormal() && powIndex[k] == computeNodeList.get(i).getChassisID()) {
-                    list[j++] = i;
-                    if (j == list.length) {
+        
+        requestedBladeServers = new ArrayList<BladeServer>();
+        
+        int j = 0;
+        for (int k = powIndex.length - 1; k >= 0 && j < numberOfRequestedServers; k--) {
+            for (int i = 0; i < availableBladeServers.size(); i++) {
+                BladeServer current = availableBladeServers.get(i);
+                if (current.isRunningNormal() && powIndex[k] == current.getChassisID()) {
+                    requestedBladeServers.add(current);
+                    j++;
+                    if (j == numberOfRequestedServers) {
                         break;
                     }
                 }
             }
         }
 
-        return list;
+        return requestedBladeServers;
     }
 }

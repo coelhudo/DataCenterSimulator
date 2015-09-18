@@ -281,7 +281,7 @@ public class BladeServer {
         }
 
         if (countJobsNotModified != 0) {
-            share = share + extraShare / countJobsNotModified;
+            return share + extraShare / countJobsNotModified;
         }
 
         return share;

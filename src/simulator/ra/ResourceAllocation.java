@@ -29,7 +29,14 @@ public abstract class ResourceAllocation {
 
     public abstract int nextServer(List<BladeServer> bladeList);
 
-    public abstract int[] allocateSystemLevelServer(List<BladeServer> bs, int[] list);
+    /**
+     * @param availableBladeServers
+     * @param numberOfServersRequested
+     * @return a collection containing blade server selected by the allocator or
+     *         null if it is not possible to fulfill the request
+     */
+    public abstract List<BladeServer> allocateSystemLevelServer(List<BladeServer> availableBladeServers,
+            int numberOfServersRequested);
 
     public ResourceAllocation(Environment environment, DataCenter dataCenter) {
         this.environment = environment;
@@ -139,13 +146,13 @@ public abstract class ResourceAllocation {
         if (currentInvolved == predicdetNumber || predicdetNumber <= 0) {
             return;
         }
-        
+
         if (currentInvolved > predicdetNumber && enterpriseSystem.getSLAviolation() == 0) {
             resourceRelease(enterpriseSystem, predicdetNumber);
             return;
             // we already have more server involved and dont change the state
         }
-        
+
         final int difference = predicdetNumber - currentInvolved;
         for (int i = 0; i < difference; i++) {
             for (int j = 0; j < enterpriseSystem.getComputeNodeList().size(); j++) {
@@ -321,7 +328,7 @@ public abstract class ResourceAllocation {
             if (i == interactiveSystem.getComputeNodeList().size()) {
                 return -1;
             }
-            
+
             int serverId = interactiveSystem.getComputeNodeList().get(i).getServerID();
             int indexChassis = interactiveSystem.getComputeNodeList().get(i).getChassisID();
             serverId = findServerInChasis(indexChassis, serverId);
