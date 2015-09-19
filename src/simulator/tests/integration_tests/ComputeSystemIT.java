@@ -23,6 +23,7 @@ import simulator.physical.BladeServerPOD;
 import simulator.physical.ChassisPOD;
 import simulator.physical.DataCenter;
 import simulator.physical.DataCenterPOD;
+import simulator.physical.RackPOD;
 import simulator.system.ComputeSystem;
 import simulator.system.ComputeSystemPOD;
 import simulator.system.Systems;
@@ -52,9 +53,13 @@ public class ComputeSystemIT {
         chassisPOD.setChassisType("DummyChassisType");
         chassisPOD.setID(0);
         chassisPOD.setRackID(0);
+        
+        RackPOD rackPOD = new RackPOD();
+        rackPOD.appendChassis(chassisPOD);
 
         DataCenterPOD dataCenterPOD = new DataCenterPOD();
         dataCenterPOD.appendChassis(chassisPOD);
+        dataCenterPOD.appendRack(rackPOD);
         dataCenterPOD.setD(0, 0, 100);
 
         Environment mockedEnvironment = mock(Environment.class);
@@ -134,13 +139,18 @@ public class ComputeSystemIT {
         firstChassisPOD.setID(0);
         firstChassisPOD.setRackID(0);
 
-        ChassisPOD secondChassisPOS = new ChassisPOD(firstChassisPOD);
-        secondChassisPOS.setID(1);
-        secondChassisPOS.getServerPODs().get(0).setServerID(1);
+        ChassisPOD secondChassisPOD = new ChassisPOD(firstChassisPOD);
+        secondChassisPOD.setID(1);
+        secondChassisPOD.getServerPODs().get(0).setServerID(1);
+        
+        RackPOD rackPOD = new RackPOD();
+        rackPOD.appendChassis(firstChassisPOD);
+        rackPOD.appendChassis(secondChassisPOD);
 
         DataCenterPOD dataCenterPOD = new DataCenterPOD();
         dataCenterPOD.appendChassis(firstChassisPOD);
-        dataCenterPOD.appendChassis(secondChassisPOS);
+        dataCenterPOD.appendChassis(secondChassisPOD);
+        dataCenterPOD.appendRack(rackPOD);
         dataCenterPOD.setD(0, 0, 100);
         dataCenterPOD.setD(0, 1, 100);
         dataCenterPOD.setD(1, 0, 100);
@@ -223,9 +233,14 @@ public class ComputeSystemIT {
         chassisPOD.setChassisType("DummyChassisType");
         chassisPOD.setID(0);
         chassisPOD.setRackID(0);
+        
+        RackPOD rackPOD = new RackPOD();
+        rackPOD.appendChassis(chassisPOD);
+
 
         DataCenterPOD dataCenterPOD = new DataCenterPOD();
         dataCenterPOD.appendChassis(chassisPOD);
+        dataCenterPOD.appendRack(rackPOD);
         dataCenterPOD.setD(0, 0, 100);
 
         Environment mockedEnvironment = mock(Environment.class);

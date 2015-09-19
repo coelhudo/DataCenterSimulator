@@ -19,6 +19,7 @@ import simulator.physical.BladeServerPOD;
 import simulator.physical.ChassisPOD;
 import simulator.physical.DataCenter;
 import simulator.physical.DataCenterPOD;
+import simulator.physical.RackPOD;
 import simulator.ra.MHR;
 import simulator.ra.ResourceAllocation;
 import simulator.schedulers.FIFOScheduler;
@@ -55,9 +56,13 @@ public class EnterpriseSystemIT {
         chassisPOD.setChassisType("DummyChassisType");
         chassisPOD.setID(0);
         chassisPOD.setRackID(0);
+        
+        RackPOD rackPOD = new RackPOD();
+        rackPOD.appendChassis(chassisPOD);
 
         DataCenterPOD dataCenterPOD = new DataCenterPOD();
         dataCenterPOD.appendChassis(chassisPOD);
+        dataCenterPOD.appendRack(rackPOD);
         dataCenterPOD.setD(0, 0, 100);
 
         ActivitiesLogger mockedActivitiesLogger = mock(ActivitiesLogger.class);

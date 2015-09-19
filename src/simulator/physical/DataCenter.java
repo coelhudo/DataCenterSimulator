@@ -24,9 +24,11 @@ public class DataCenter {
         this.activitiesLogger = activitiesLogger;
         am = dataCenterAM;
         this.environment = environment;
-        for (ChassisPOD chassisPOD : dataCenterPOD.getChassisPOD()) {
-            Chassis chassis = new Chassis(chassisPOD, environment);
-            chassisSet.add(chassis);
+        for (RackPOD rackPOD : dataCenterPOD.getRackPODs()) {
+            for (ChassisPOD chassisPOD : rackPOD.getChassisPODs()) {
+                Chassis chassis = new Chassis(chassisPOD, environment);
+                chassisSet.add(chassis);
+            }
         }
         redTemperature = dataCenterPOD.getRedTemperature();
         D = dataCenterPOD.getD();
@@ -52,7 +54,7 @@ public class DataCenter {
             activitiesLogger.write((int) chassis.power() + "\t");
             computingPower = computingPower + chassisComputingPower;
         }
-        
+
         for (int i = 0; i < m; i++) {
             for (int j = 0; j < m; j++) {
                 temperature[i] = temperature[i] + D[i][j] * chassisSet.get(j).power();

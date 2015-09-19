@@ -22,6 +22,7 @@ import simulator.physical.ChassisPOD;
 import simulator.physical.DataCenter;
 import simulator.physical.DataCenterBuilder;
 import simulator.physical.DataCenterPOD;
+import simulator.physical.RackPOD;
 import simulator.utils.ActivitiesLogger;
 
 public class DataCenterTest {
@@ -30,6 +31,7 @@ public class DataCenterTest {
     public static final double[] POWER_IDLE = { 100, 100, 128 };
     public static final double[] POWER_BUSY = { 300, 336, 448 };
     public BladeServerPOD bladeServerPOD;
+    public RackPOD rackPOD;
     public ChassisPOD chassisPOD;
 
     @Before
@@ -41,6 +43,8 @@ public class DataCenterTest {
         bladeServerPOD.setIdleConsumption(5.0);
         chassisPOD = new ChassisPOD();
         chassisPOD.appendServerPOD(bladeServerPOD);
+        rackPOD = new RackPOD();
+        rackPOD.appendChassis(chassisPOD);
     }
 
     @Test
@@ -67,6 +71,7 @@ public class DataCenterTest {
     public void testCalculatePowerSlowingDownFromCooler() {
         DataCenterPOD dataCenterPOD = new DataCenterPOD();
         dataCenterPOD.appendChassis(chassisPOD);
+        dataCenterPOD.appendRack(rackPOD);
         dataCenterPOD.setD(0, 0, 200.0);
         dataCenterPOD.setRedTemperature(0);
 
@@ -91,6 +96,7 @@ public class DataCenterTest {
     public void testCalculatePowerNotSlowingDownFromCooler() {
         DataCenterPOD dataCenterPOD = new DataCenterPOD();
         dataCenterPOD.appendChassis(chassisPOD);
+        dataCenterPOD.appendRack(rackPOD);
         dataCenterPOD.setD(0, 0, 1.0);
         dataCenterPOD.setRedTemperature(10);
 

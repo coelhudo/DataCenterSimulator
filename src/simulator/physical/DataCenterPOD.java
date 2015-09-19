@@ -5,9 +5,11 @@ import java.util.List;
 
 public class DataCenterPOD {
     private List<ChassisPOD> chassisSet = new ArrayList<ChassisPOD>();
+    private List<RackPOD> rackPODs = new ArrayList<RackPOD>();
     private int redTemperature;
     private double[][] D;
 
+    @Deprecated
     public List<ChassisPOD> getChassisPOD() {
         return chassisSet;
     }
@@ -37,11 +39,11 @@ public class DataCenterPOD {
         D[row][column] = value;
     }
 
-    public void clearChassis() {
-        chassisSet.clear();
+    public void appendRack(RackPOD rackPOD) {
+        rackPODs.add(rackPOD);
     }
-
-    public int getNumberOfChassis() {
-        return chassisSet.size();
+    
+    public List<RackPOD> getRackPODs() {
+        return rackPODs;
     }
 }

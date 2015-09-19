@@ -123,6 +123,7 @@ public class DataCenterBuilder {
     }
 
     void loadChassisIntoRack(Node node) {
+        RackPOD rackPOD = new RackPOD();
         NodeList childNodes = node.getChildNodes();
         int rackID = 0;
         int tedad = 0;
@@ -148,6 +149,7 @@ public class DataCenterBuilder {
                 }
                 if ("Rack_ID".equalsIgnoreCase(childNodes.item(i).getNodeName())) {
                     rackID = Integer.parseInt(childNodes.item(i).getChildNodes().item(0).getNodeValue().trim());
+                    rackPOD.setID(rackID);
                 }
             }
         }
@@ -156,23 +158,25 @@ public class DataCenterBuilder {
             for (kk = 0; kk < tedadinRack[loop]; kk++) {
                 for (ChassisPOD currentChassisPOD :  chassisPODs) {
                     if (s[loop].equalsIgnoreCase(currentChassisPOD.getChassisType())) {
-                        loadChassisIntoDataCenter(currentChassisPOD, rackID, kk);
+                        loadChassisIntoDataCenter(currentChassisPOD, rackPOD, kk);
                     }
                 }
 
             }
             numbOfSofarChassis += kk;
         }
+        dataCenterPOD.appendRack(rackPOD);
     }
     
-    void loadChassisIntoDataCenter(ChassisPOD currentChassisPOD, int rackID, int kk) {
+    void loadChassisIntoDataCenter(ChassisPOD currentChassisPOD, RackPOD rackPOD, int kk) {
         ChassisPOD chassisPOD = new ChassisPOD(currentChassisPOD);
         chassisPOD.setID(numbOfSofarChassis + kk);
-        chassisPOD.setRackID(rackID);
+        chassisPOD.setRackID(rackPOD.getID());
         for(BladeServerPOD bladeServerPOD : chassisPOD.getServerPODs()) {
             bladeServerPOD.setServerID(numberOfServersSoFar);
             numberOfServersSoFar++;
         }
+        rackPOD.appendChassis(chassisPOD);
         dataCenterPOD.appendChassis(chassisPOD);
     }
 
@@ -195,7 +199,7 @@ public class DataCenterBuilder {
             LOGGER.log(Level.SEVERE, this.getClass().getName(), e);
         }
 
-        final int numberOfChassis = dataCenterPOD.getNumberOfChassis();
+        final int numberOfChassis = dataCenterPOD.getChassisPOD().size();
         for (int k = 0; k < numberOfChassis; k++) {
             try {
                 String line = bis.readLine();
