@@ -5,13 +5,14 @@ import java.util.List;
 
 import simulator.Environment;
 
-public class Chassis {
+public class Chassis extends DataCenterEntity {
 
     private List<BladeServer> servers = new ArrayList<BladeServer>();
     private int chassisID, rackID;
     private String chassisType;
-
+    
     public Chassis(ChassisPOD chassisPOD, Environment environment) {
+        super(chassisPOD.getID());
         chassisType = chassisPOD.getChassisType();
         chassisID = chassisPOD.getChassisID();
         rackID = chassisPOD.getRackID();

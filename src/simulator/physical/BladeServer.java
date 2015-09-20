@@ -11,7 +11,7 @@ import simulator.jobs.BatchJob;
 import simulator.jobs.EnterpriseJob;
 import simulator.jobs.InteractiveJob;
 
-public class BladeServer {
+public class BladeServer extends DataCenterEntity {
 
     private static final Logger LOGGER = Logger.getLogger(BladeServer.class.getName());
 
@@ -49,9 +49,9 @@ public class BladeServer {
     // WorkLoad Bundle
     private int maxExpectedRes = 0;
     private Environment environment;
-    private DataCenterEntityID id;
 
     public BladeServer(BladeServerPOD bladeServerPOD, Environment environment) {
+        super(bladeServerPOD.getID());
         this.environment = environment;
         setRespTime(0);
         // if it is -1 means that it is not put in the proper position yet ID
@@ -59,7 +59,6 @@ public class BladeServer {
         chassisID = bladeServerPOD.getChassisID();
         rackId = bladeServerPOD.getRackID();
         serverID = bladeServerPOD.getServerID();
-        id = bladeServerPOD.getID();
         bladeType = bladeServerPOD.getBladeType();
         powerBusy = bladeServerPOD.getPowerBusy();
         powerIdle = bladeServerPOD.getPowerIdle();
@@ -227,7 +226,7 @@ public class BladeServer {
                 if (job.getUtilization() > share || job.isModified()) {
                     continue;
                 }
-                
+
                 extraShare = extraShare + share - job.getUtilization();
                 index++;
                 anyJobModified = true;
@@ -576,10 +575,6 @@ public class BladeServer {
 
     public double getIdleConsumption() {
         return idleConsumption;
-    }
-    
-    public DataCenterEntityID getID() {
-        return id;
     }
 
     /*

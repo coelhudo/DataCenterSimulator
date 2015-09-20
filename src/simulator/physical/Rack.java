@@ -5,20 +5,21 @@ import java.util.List;
 
 import simulator.Environment;
 
-public class Rack {
+public class Rack extends DataCenterEntity {
 
     private List<Chassis> chassis = new ArrayList<Chassis>();
-    private int id;
+    private int rackID;
     
     public Rack(RackPOD rackPOD, Environment environment) {
-        id = rackPOD.getRackID();
+        super(rackPOD.getID());
+        rackID = rackPOD.getRackID();
         for (ChassisPOD chassisPOD : rackPOD.getChassisPODs()) {
             chassis.add(new Chassis(chassisPOD, environment));
         }
     }
     
     public int getRackID() {
-        return id;
+        return rackID;
     }
     
     public List<Chassis> getChassis() {
