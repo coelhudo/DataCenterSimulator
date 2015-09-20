@@ -199,7 +199,7 @@ public class DataCenterBuilder {
             LOGGER.log(Level.SEVERE, this.getClass().getName(), e);
         }
 
-        final int numberOfChassis = dataCenterPOD.getChassisPOD().size();
+        final int numberOfChassis = countChassis();
         for (int k = 0; k < numberOfChassis; k++) {
             try {
                 String line = bis.readLine();
@@ -224,6 +224,15 @@ public class DataCenterBuilder {
             }
         }
         return true;
+    }
+    
+    private int countChassis() {
+        int count = 0;
+        for(RackPOD rackPOD : dataCenterPOD.getRackPODs()) {
+            count += rackPOD.getChassisPODs().size();
+        }
+        
+        return count;
     }
 
     static BladeServerPOD bladeServerParser(Node node) {

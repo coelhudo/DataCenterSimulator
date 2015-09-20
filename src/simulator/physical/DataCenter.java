@@ -107,7 +107,6 @@ public class DataCenter {
         return chassisSet.get(indexChassis).getServers().get(indexServer);
     }
 
-    @Deprecated
     public List<Chassis> getChassisSet() {
         return chassisSet;
     }

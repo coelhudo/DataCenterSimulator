@@ -9,11 +9,6 @@ public class DataCenterPOD {
     private int redTemperature;
     private double[][] D;
 
-    @Deprecated
-    public List<ChassisPOD> getChassisPOD() {
-        return chassisSet;
-    }
-
     public int getRedTemperature() {
         return redTemperature;
     }
