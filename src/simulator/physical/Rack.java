@@ -11,7 +11,7 @@ public class Rack {
     private int id;
     
     public Rack(RackPOD rackPOD, Environment environment) {
-        id = rackPOD.getID();
+        id = rackPOD.getRackID();
         for (ChassisPOD chassisPOD : rackPOD.getChassisPODs()) {
             chassis.add(new Chassis(chassisPOD, environment));
         }

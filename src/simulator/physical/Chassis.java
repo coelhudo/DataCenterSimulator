@@ -13,7 +13,7 @@ public class Chassis {
 
     public Chassis(ChassisPOD chassisPOD, Environment environment) {
         chassisType = chassisPOD.getChassisType();
-        chassisID = chassisPOD.getID();
+        chassisID = chassisPOD.getChassisID();
         rackID = chassisPOD.getRackID();
         for (BladeServerPOD bladeServerPOD : chassisPOD.getServerPODs()) {
             BladeServer bladeServer = new BladeServer(bladeServerPOD, environment);

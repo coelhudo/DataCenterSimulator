@@ -171,7 +171,7 @@ public class DataCenterBuilder {
     void loadChassisIntoDataCenter(ChassisPOD currentChassisPOD, RackPOD rackPOD, int kk) {
         ChassisPOD chassisPOD = new ChassisPOD(currentChassisPOD);
         chassisPOD.setID(numbOfSofarChassis + kk);
-        chassisPOD.setRackID(rackPOD.getID());
+        chassisPOD.setRackID(rackPOD.getRackID());
         for(BladeServerPOD bladeServerPOD : chassisPOD.getServerPODs()) {
             bladeServerPOD.setServerID(numberOfServersSoFar);
             numberOfServersSoFar++;

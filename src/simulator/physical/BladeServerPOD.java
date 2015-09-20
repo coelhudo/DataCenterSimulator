@@ -10,6 +10,7 @@ public class BladeServerPOD {
     private int bladeServerID;
     private int rackID;
     private int chassisID;
+    private DataCenterEntityID id;
 
     public BladeServerPOD() {
 
@@ -27,6 +28,7 @@ public class BladeServerPOD {
         rackID = bladeServerPOD.rackID;
         chassisID = bladeServerPOD.chassisID;
         bladeServerID = bladeServerPOD.bladeServerID;
+        id = bladeServerPOD.id;
     }
 
     public void setServerID(int bladeServerID) {
@@ -106,6 +108,14 @@ public class BladeServerPOD {
 
     public int getChassisID() {
         return chassisID;
+    }
+    
+    public void setID(DataCenterEntityID id) {
+        this.id = id;
+    }
+
+    public DataCenterEntityID getID() {
+        return id;
     }
 
 }

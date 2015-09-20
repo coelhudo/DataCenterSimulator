@@ -5,7 +5,7 @@ import java.util.List;
 
 public class ChassisPOD {
 
-    private int id;
+    private int chassisID;
     private int rackID;
     private String chassisType;
     private String bladeType;
@@ -15,7 +15,7 @@ public class ChassisPOD {
     }
 
     public ChassisPOD(ChassisPOD chassisPOD) {
-        id = chassisPOD.id;
+        chassisID = chassisPOD.chassisID;
         rackID = chassisPOD.rackID;
         chassisType = chassisPOD.chassisType;
         bladeType = chassisPOD.bladeType;
@@ -40,14 +40,14 @@ public class ChassisPOD {
         return serverPOD;
     }
 
-    public int getID() {
-        return id;
+    public int getChassisID() {
+        return chassisID;
     }
 
-    public void setID(int id) {
-        this.id = id;
+    public void setID(int chassisID) {
+        this.chassisID = chassisID;
         for(BladeServerPOD bladeServerPOD : serverPOD) {
-            bladeServerPOD.setChassisID(this.id);
+            bladeServerPOD.setChassisID(this.chassisID);
         }
     }
 
