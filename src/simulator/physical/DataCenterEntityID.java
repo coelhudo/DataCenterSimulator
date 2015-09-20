@@ -12,6 +12,8 @@ public final class DataCenterEntityID {
     private final int chassisID;
     private final int serverID;
 
+    public final static DataCenterEntityID INVALID_ID = new DataCenterEntityID(-1, -1, -1);
+
     private DataCenterEntityID(int rackID, int chassisID, int serverID) {
         this.rackID = rackID;
         this.chassisID = chassisID;
@@ -50,6 +52,14 @@ public final class DataCenterEntityID {
         }
 
         return new DataCenterEntityID(rackID, 0, 0);
+    }
+
+    public static DataCenterEntityID toChassis(DataCenterEntityID id) {
+        return createChassisID(id.rackID, id.chassisID);
+    }
+
+    public static DataCenterEntityID toRack(DataCenterEntityID id) {
+        return createChassisID(id.rackID, id.chassisID);
     }
 
     @Override

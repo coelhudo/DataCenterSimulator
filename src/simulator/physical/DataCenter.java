@@ -99,6 +99,7 @@ public class DataCenter {
         return overRed;
     }
 
+    @Deprecated
     public BladeServer getServer(int i) {
         return chassisSet.get(getChasisIndex(i)).getServers().get(getServerIndex(i));
     }
@@ -109,7 +110,7 @@ public class DataCenter {
     }
     
     public BladeServer getServer(DataCenterEntityID id) {
-        return chassisSet.get(id.getChassisID()).getServers().get(id.getServerID());
+        return chassisSet.get(getChasisIndex(id.getServerID())).getServers().get(getServerIndex(id.getServerID()));
     }
 
     public List<Chassis> getChassisSet() {
