@@ -12,6 +12,7 @@ public class DataCenter {
     private int overRed = 0;
     private double totalPowerConsumption = 0;
     private List<Chassis> chassisSet = new ArrayList<Chassis>();
+    private List<Rack> racks = new ArrayList<Rack>();
     private int redTemperature;
     private double[][] D;
     private DataCenterAM am;
@@ -25,6 +26,7 @@ public class DataCenter {
         am = dataCenterAM;
         this.environment = environment;
         for (RackPOD rackPOD : dataCenterPOD.getRackPODs()) {
+            racks.add(new Rack(rackPOD, environment));
             for (ChassisPOD chassisPOD : rackPOD.getChassisPODs()) {
                 Chassis chassis = new Chassis(chassisPOD, environment);
                 chassisSet.add(chassis);
@@ -105,11 +107,16 @@ public class DataCenter {
         return chassisSet.get(indexChassis).getServers().get(indexServer);
     }
 
+    @Deprecated
     public List<Chassis> getChassisSet() {
         return chassisSet;
     }
 
     public double getTotalPowerConsumption() {
         return totalPowerConsumption;
+    }
+
+    public List<Rack> getRacks() {
+        return racks;
     }
 }
