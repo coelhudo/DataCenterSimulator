@@ -51,7 +51,7 @@ public class ComputeSystemIT {
         chassisPOD.appendServerPOD(bladeServerPOD);
         chassisPOD.setBladeType("DummyType");
         chassisPOD.setChassisType("DummyChassisType");
-        chassisPOD.setID(0);
+        chassisPOD.setChassisID(0);
         chassisPOD.setRackID(0);
         
         RackPOD rackPOD = new RackPOD();
@@ -136,11 +136,11 @@ public class ComputeSystemIT {
         firstChassisPOD.appendServerPOD(bladeServerPOD);
         firstChassisPOD.setBladeType("DummyType");
         firstChassisPOD.setChassisType("DummyChassisType");
-        firstChassisPOD.setID(0);
+        firstChassisPOD.setChassisID(0);
         firstChassisPOD.setRackID(0);
 
         ChassisPOD secondChassisPOD = new ChassisPOD(firstChassisPOD);
-        secondChassisPOD.setID(1);
+        secondChassisPOD.setChassisID(1);
         secondChassisPOD.getServerPODs().get(0).setServerID(1);
         
         RackPOD rackPOD = new RackPOD();
@@ -231,7 +231,7 @@ public class ComputeSystemIT {
         chassisPOD.appendServerPOD(bladeServerPOD);
         chassisPOD.setBladeType("DummyType");
         chassisPOD.setChassisType("DummyChassisType");
-        chassisPOD.setID(0);
+        chassisPOD.setChassisID(0);
         chassisPOD.setRackID(0);
         
         RackPOD rackPOD = new RackPOD();

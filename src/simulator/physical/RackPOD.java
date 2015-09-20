@@ -6,9 +6,10 @@ import java.util.List;
 public class RackPOD {
     
     private int rackID;
+    private DataCenterEntityID id;
     private List<ChassisPOD> chassisPODs = new ArrayList<ChassisPOD>();
 
-    public void setID(int rackID) {
+    public void setRackID(int rackID) {
         this.rackID = rackID;
     }
     
@@ -22,6 +23,14 @@ public class RackPOD {
     
     public List<ChassisPOD> getChassisPODs() {
         return chassisPODs;
+    }
+
+    public void setID(DataCenterEntityID id) {
+        this.id = id;
+    }
+    
+    public DataCenterEntityID getID() {
+        return id;
     }
 
 }

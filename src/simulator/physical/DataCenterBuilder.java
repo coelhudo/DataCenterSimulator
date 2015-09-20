@@ -149,14 +149,14 @@ public class DataCenterBuilder {
                 }
                 if ("Rack_ID".equalsIgnoreCase(childNodes.item(i).getNodeName())) {
                     rackID = Integer.parseInt(childNodes.item(i).getChildNodes().item(0).getNodeValue().trim());
-                    rackPOD.setID(rackID);
+                    rackPOD.setRackID(rackID);
                 }
             }
         }
         int kk = 0;
         for (int loop = 0; loop < tedad; loop++) {
             for (kk = 0; kk < tedadinRack[loop]; kk++) {
-                for (ChassisPOD currentChassisPOD :  chassisPODs) {
+                for (ChassisPOD currentChassisPOD : chassisPODs) {
                     if (s[loop].equalsIgnoreCase(currentChassisPOD.getChassisType())) {
                         loadChassisIntoDataCenter(currentChassisPOD, rackPOD, kk);
                     }
@@ -165,14 +165,31 @@ public class DataCenterBuilder {
             }
             numbOfSofarChassis += kk;
         }
+
+        loadIDIntoEntities(rackPOD);
+
         dataCenterPOD.appendRack(rackPOD);
     }
-    
+
+    private void loadIDIntoEntities(RackPOD rackPOD) {
+        rackPOD.setID(DataCenterEntityID.create(rackPOD.getRackID() + 1, 0, 0));
+        LOGGER.info(RackPOD.class.getName() + " " + rackPOD.getID().toString());
+        for (ChassisPOD chassisPOD : rackPOD.getChassisPODs()) {
+            chassisPOD.setID(DataCenterEntityID.create(rackPOD.getRackID() + 1, chassisPOD.getChassisID() + 1, 0));
+            LOGGER.info(ChassisPOD.class.getName() + " " + chassisPOD.getID().toString());
+            for (BladeServerPOD bladeServerPOD : chassisPOD.getServerPODs()) {
+                bladeServerPOD.setID(DataCenterEntityID.create(rackPOD.getRackID() + 1, chassisPOD.getChassisID() + 1,
+                        bladeServerPOD.getServerID() + 1));
+                LOGGER.info(BladeServerPOD.class.getName() + " " + bladeServerPOD.getID().toString());
+            }
+        }
+    }
+
     void loadChassisIntoDataCenter(ChassisPOD currentChassisPOD, RackPOD rackPOD, int kk) {
         ChassisPOD chassisPOD = new ChassisPOD(currentChassisPOD);
-        chassisPOD.setID(numbOfSofarChassis + kk);
+        chassisPOD.setChassisID(numbOfSofarChassis + kk);
         chassisPOD.setRackID(rackPOD.getRackID());
-        for(BladeServerPOD bladeServerPOD : chassisPOD.getServerPODs()) {
+        for (BladeServerPOD bladeServerPOD : chassisPOD.getServerPODs()) {
             bladeServerPOD.setServerID(numberOfServersSoFar);
             numberOfServersSoFar++;
         }
@@ -225,13 +242,13 @@ public class DataCenterBuilder {
         }
         return true;
     }
-    
+
     private int countChassis() {
         int count = 0;
-        for(RackPOD rackPOD : dataCenterPOD.getRackPODs()) {
+        for (RackPOD rackPOD : dataCenterPOD.getRackPODs()) {
             count += rackPOD.getChassisPODs().size();
         }
-        
+
         return count;
     }
 

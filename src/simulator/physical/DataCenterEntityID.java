@@ -44,10 +44,11 @@ public class DataCenterEntityID implements Comparable<DataCenterEntityID> {
         final boolean validRackIDValue = rackID > 0 && chassisID == 0 && serverID == 0;
         final boolean validChassisValue = rackID > 0 && chassisID > 0 && serverID == 0;
         final boolean validServerValue = rackID > 0 && chassisID > 0 && serverID > 0;
-        
+
         if (!(validRackIDValue || validChassisValue || validServerValue)) {
-            throw new RuntimeException("Invalid Data Center Entity ID creating. Only values >= 1 are accepted"
-                    + "for rackID or >= 1 for chassis ID and server ID.");
+            throw new RuntimeException(String.format(
+                    "Invalid Data Center Entity ID parameters. Received rack %d, chassis %d and server %d", rackID,
+                    chassisID, serverID));
         }
 
         return new DataCenterEntityID(rackID, chassisID, serverID);

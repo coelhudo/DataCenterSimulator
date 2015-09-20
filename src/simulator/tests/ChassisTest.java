@@ -35,7 +35,7 @@ public class ChassisTest {
         Environment mockedEnvironment = mock(Environment.class);
         final int chassisID = 1;
         ChassisPOD chassisPOD = new ChassisPOD();
-        chassisPOD.setID(1);
+        chassisPOD.setChassisID(1);
         Chassis chassis = new Chassis(chassisPOD, mockedEnvironment);
         assertEquals(chassisID, chassis.getChassisID());
         assertEquals(0, chassis.getRackID());

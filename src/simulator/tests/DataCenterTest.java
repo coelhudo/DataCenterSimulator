@@ -21,6 +21,7 @@ import simulator.physical.Chassis;
 import simulator.physical.ChassisPOD;
 import simulator.physical.DataCenter;
 import simulator.physical.DataCenterBuilder;
+import simulator.physical.DataCenterEntityID;
 import simulator.physical.DataCenterPOD;
 import simulator.physical.RackPOD;
 import simulator.utils.ActivitiesLogger;
@@ -37,13 +38,16 @@ public class DataCenterTest {
     @Before
     public void setUp() {
         bladeServerPOD = new BladeServerPOD();
+        bladeServerPOD.setID(DataCenterEntityID.create(1, 1, 1));
         bladeServerPOD.setFrequencyLevel(FREQUENCY_LEVEL);
         bladeServerPOD.setPowerIdle(POWER_IDLE);
         bladeServerPOD.setPowerBusy(POWER_BUSY);
         bladeServerPOD.setIdleConsumption(5.0);
         chassisPOD = new ChassisPOD();
+        chassisPOD.setID(DataCenterEntityID.create(1, 1, 0));
         chassisPOD.appendServerPOD(bladeServerPOD);
         rackPOD = new RackPOD();
+        rackPOD.setID(DataCenterEntityID.create(1, 0, 0));
         rackPOD.appendChassis(chassisPOD);
     }
 

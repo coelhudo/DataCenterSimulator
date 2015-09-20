@@ -7,6 +7,7 @@ public class ChassisPOD {
 
     private int chassisID;
     private int rackID;
+    private DataCenterEntityID id;
     private String chassisType;
     private String bladeType;
     private List<BladeServerPOD> serverPOD = new ArrayList<BladeServerPOD>();
@@ -44,7 +45,7 @@ public class ChassisPOD {
         return chassisID;
     }
 
-    public void setID(int chassisID) {
+    public void setChassisID(int chassisID) {
         this.chassisID = chassisID;
         for(BladeServerPOD bladeServerPOD : serverPOD) {
             bladeServerPOD.setChassisID(this.chassisID);
@@ -68,5 +69,13 @@ public class ChassisPOD {
 
     public String getBladeType() {
         return bladeType;
+    }
+
+    public void setID(DataCenterEntityID id) {
+        this.id = id;
+    }
+    
+    public DataCenterEntityID getID() {
+        return id;
     }
 }

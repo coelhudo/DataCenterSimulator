@@ -54,7 +54,7 @@ public class EnterpriseSystemIT {
         chassisPOD.appendServerPOD(bladeServerPOD);
         chassisPOD.setBladeType("DummyType");
         chassisPOD.setChassisType("DummyChassisType");
-        chassisPOD.setID(0);
+        chassisPOD.setChassisID(0);
         chassisPOD.setRackID(0);
         
         RackPOD rackPOD = new RackPOD();
