@@ -43,12 +43,6 @@ public abstract class ResourceAllocation {
         this.dataCenter = dataCenter;
     }
 
-    void resourceAlocViolation(EnterpriseSystem enterpriseSystem) {
-    }
-
-    void resourceAlocViolation(InteractiveSystem interactiveSystem) {
-    }
-
     void resourceRelease(EnterpriseSystem enterpriseSystem, int predicdetNumber) {
 
         int currentInvolved = enterpriseSystem.getComputeNodeList().size() - enterpriseSystem.getNumberOfIdleNode();
@@ -345,21 +339,6 @@ public abstract class ResourceAllocation {
         interactiveSystem.getUserList().add(test);
         interactiveSystem.getWaitingQueueWL().remove(test);
         return 0;
-    }
-
-    List<Integer> createServerArray(int[] myRackID) {
-        List<Integer> myServerId = new ArrayList<Integer>();
-        for (int i = 0; i < myRackID.length; i++) {
-            for (Chassis chassis : dataCenter.getChassisSet()) {
-                if (chassis.getRackID() == myRackID[i]) {
-                    for (BladeServer bladeServer : chassis.getServers()) {
-                        myServerId.add(bladeServer.getServerID());
-                    }
-                }
-            }
-        }
-
-        return myServerId;
     }
 
     List<Integer> createChassisArray(List<Integer> myRackID) {
