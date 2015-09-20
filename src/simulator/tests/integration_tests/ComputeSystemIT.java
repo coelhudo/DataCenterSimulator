@@ -14,8 +14,6 @@ import java.util.List;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
 
-import com.sun.jndi.cosnaming.CNNameParser;
-
 import simulator.Environment;
 import simulator.SLAViolationLogger;
 import simulator.am.DataCenterAM;

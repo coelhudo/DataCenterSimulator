@@ -103,8 +103,13 @@ public class DataCenter {
         return chassisSet.get(getChasisIndex(i)).getServers().get(getServerIndex(i));
     }
 
+    @Deprecated
     public BladeServer getServer(int indexChassis, int indexServer) {
         return chassisSet.get(indexChassis).getServers().get(indexServer);
+    }
+    
+    public BladeServer getServer(DataCenterEntityID id) {
+        return chassisSet.get(id.getChassisID()).getServers().get(id.getServerID());
     }
 
     public List<Chassis> getChassisSet() {

@@ -8,6 +8,7 @@ import simulator.Environment;
 import simulator.physical.BladeServer;
 import simulator.physical.Chassis;
 import simulator.physical.DataCenter;
+import simulator.physical.DataCenterEntityID;
 import simulator.system.ComputeSystem;
 import simulator.system.EnterpriseApp;
 import simulator.system.EnterpriseSystem;
@@ -398,11 +399,8 @@ public abstract class ResourceAllocation {
                                 + interactiveSystem.getUserList().get(2).getQueueWL().size());
                         interactiveSystem.getAM().setRecForCoopAt(i, 1);
                     } else {
-                        int indexServer = interactiveSystem.getComputeNodeList().get(indexInComputeList).getID().getServerID();
-                        int indexChassis = interactiveSystem.getComputeNodeList().get(indexInComputeList)
-                                .getID().getChassisID();
-                        final BladeServer server = dataCenter.getServer(indexChassis,
-                                findServerInChasis(indexChassis, indexServer));
+                        DataCenterEntityID id = interactiveSystem.getComputeNodeList().get(indexInComputeList).getID();
+                        final BladeServer server = dataCenter.getServer(id);
                         interactiveSystem.getUserList().get(i).addCompNodetoBundle(server);
                         // ES.getApplications().get(i).ComputeNodeIndex.add(indexChassis);
                         // //need to think about that!
