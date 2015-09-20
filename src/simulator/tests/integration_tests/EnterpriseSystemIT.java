@@ -18,6 +18,7 @@ import simulator.jobs.EnterpriseJobProducer;
 import simulator.physical.BladeServerPOD;
 import simulator.physical.ChassisPOD;
 import simulator.physical.DataCenter;
+import simulator.physical.DataCenterEntityID;
 import simulator.physical.DataCenterPOD;
 import simulator.physical.RackPOD;
 import simulator.ra.MHR;
@@ -49,6 +50,7 @@ public class EnterpriseSystemIT {
         bladeServerPOD.setPowerBusy(POWER_BUSY);
         bladeServerPOD.setPowerIdle(POWER_IDLE);
         bladeServerPOD.setIdleConsumption(5);
+        bladeServerPOD.setID(DataCenterEntityID.create(1, 1, 1));
 
         ChassisPOD chassisPOD = new ChassisPOD();
         chassisPOD.appendServerPOD(bladeServerPOD);
@@ -56,9 +58,11 @@ public class EnterpriseSystemIT {
         chassisPOD.setChassisType("DummyChassisType");
         chassisPOD.setChassisID(0);
         chassisPOD.setRackID(0);
+        chassisPOD.setID(DataCenterEntityID.create(1, 1, 0));
         
         RackPOD rackPOD = new RackPOD();
         rackPOD.appendChassis(chassisPOD);
+        rackPOD.setID(DataCenterEntityID.create(1, 0, 0));
 
         DataCenterPOD dataCenterPOD = new DataCenterPOD();
         dataCenterPOD.appendChassis(chassisPOD);

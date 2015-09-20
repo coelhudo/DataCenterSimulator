@@ -18,6 +18,7 @@ import simulator.Environment;
 import simulator.physical.BladeServer;
 import simulator.physical.Chassis;
 import simulator.physical.DataCenter;
+import simulator.physical.DataCenterEntityID;
 import simulator.ra.ResourceAllocation;
 import simulator.system.ComputeSystem;
 import simulator.system.EnterpriseApp;
@@ -207,6 +208,12 @@ public class ResourceAllocationTest {
 
     @Test
     public void testInicialResourceAllocation_EnterpriseSystem_WithRackIDs_WithNode_WithApplication() {
+        
+        DataCenterEntityID mockedID = mock(DataCenterEntityID.class);
+        when(mockedID.getServerID()).thenReturn(0);
+        when(mockedID.getChassisID()).thenReturn(0);
+        when(mockedID.getRackID()).thenReturn(0);
+        
         EnterpriseSystem mockedEnterpriseSystem = mock(EnterpriseSystem.class);
         when(mockedEnterpriseSystem.getNumberOfNode()).thenReturn(1);
 
@@ -214,7 +221,9 @@ public class ResourceAllocationTest {
 
         Chassis mockedChassis = mock(Chassis.class);
         BladeServer mockedBladeServer = mock(BladeServer.class);
+        when(mockedBladeServer.getID()).thenReturn(mockedID);
         when(mockedBladeServer.isNotSystemAssigned()).thenReturn(true);
+        when(mockedChassis.getID()).thenReturn(mockedID);
         when(mockedChassis.getServers()).thenReturn(Arrays.asList(mockedBladeServer));
         List<Chassis> chassisSet = Arrays.asList(mockedChassis);
         when(mockedDataCenter.getChassisSet()).thenReturn(chassisSet);
@@ -242,9 +251,9 @@ public class ResourceAllocationTest {
         verify(mockedChassis).getRackID();
         verify(mockedChassis).getChassisID();
         verify(mockedChassis, times(2)).getServers();
-
-        verify(mockedBladeServer).getChassisID();
-        verify(mockedBladeServer, times(2)).getServerID();
+        
+        verify(mockedBladeServer, times(3)).getID();
+        verify(mockedBladeServer, times(3)).getID();
         verify(mockedBladeServer).setStatusAsNotAssignedToAnyApplication();
         verify(mockedBladeServer).setStatusAsRunningNormal();
         verify(mockedBladeServer).setSLAPercentage(0);

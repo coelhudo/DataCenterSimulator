@@ -53,4 +53,16 @@ public class DataCenterEntityID implements Comparable<DataCenterEntityID> {
 
         return new DataCenterEntityID(rackID, chassisID, serverID);
     }
+    
+    public int getRackID() {
+        return rackID-1;
+    }
+    
+    public int getChassisID() {
+        return chassisID-1;
+    }
+    
+    public int getServerID() {
+        return serverID-1;
+    }
 }

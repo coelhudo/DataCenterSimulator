@@ -27,6 +27,7 @@ import simulator.jobs.BatchJob;
 import simulator.jobs.JobProducer;
 import simulator.physical.BladeServer;
 import simulator.physical.DataCenter;
+import simulator.physical.DataCenterEntityID;
 import simulator.system.ComputeSystem;
 import simulator.system.ComputeSystemPOD;
 import simulator.system.SystemPOD;
@@ -162,6 +163,9 @@ public class ComputeSystemTest {
                 mockedSLAViolationLogger);
         BladeServer mockedBladeServer = mock(BladeServer.class);
         when(mockedBladeServer.isRunningNormal()).thenReturn(true);
+        DataCenterEntityID mockedID = mock(DataCenterEntityID.class);
+        when(mockedBladeServer.getID()).thenReturn(mockedID);
+
         computeSystem.appendBladeServerIntoComputeNodeList(mockedBladeServer);
 
         assertFalse(computeSystem.runAcycle());
@@ -179,8 +183,7 @@ public class ComputeSystemTest {
         verify(mockedBladeServer, times(3)).isIdle();
         verify(mockedBladeServer).isRunningBusy();
         verify(mockedBladeServer, times(27)).isRunningNormal();
-        verify(mockedBladeServer, times(26)).getChassisID();
-        verify(mockedBladeServer).getServerID();
+        verify(mockedBladeServer, times(27)).getID();
         verify(mockedBladeServer).feedWork(any(BatchJob.class));
         verify(mockedEnvironment, times(3)).getCurrentLocalTime();
         verify(mockedBladeServer).run();
@@ -223,6 +226,9 @@ public class ComputeSystemTest {
         BladeServer mockedBladeServer = mock(BladeServer.class);
         when(mockedBladeServer.isRunningNormal()).thenReturn(true);
         when(mockedBladeServer.isRunning()).thenReturn(true);
+        DataCenterEntityID mockedID = mock(DataCenterEntityID.class);
+        when(mockedBladeServer.getID()).thenReturn(mockedID);
+        
         when(mockedBladeServer.getTotalFinishedJob()).thenReturn(1);
         computeSystem.appendBladeServerIntoComputeNodeList(mockedBladeServer);
 
@@ -241,8 +247,7 @@ public class ComputeSystemTest {
         verify(mockedBladeServer).isIdle();
         verify(mockedBladeServer, times(2)).isRunning();
         verify(mockedBladeServer, times(27)).isRunningNormal();
-        verify(mockedBladeServer, times(26)).getChassisID();
-        verify(mockedBladeServer).getServerID();
+        verify(mockedBladeServer, times(27)).getID();
         verify(mockedBladeServer).feedWork(any(BatchJob.class));
         verify(mockedBladeServer).run();
         verify(mockedBladeServer).getTotalFinishedJob();
@@ -289,6 +294,10 @@ public class ComputeSystemTest {
         BladeServer mockedBladeServer = mock(BladeServer.class);
         when(mockedBladeServer.isRunningNormal()).thenReturn(true);
         when(mockedBladeServer.getTotalFinishedJob()).thenReturn(1);
+        DataCenterEntityID mockedID = mock(DataCenterEntityID.class);
+        when(mockedID.getChassisID()).thenReturn(0);
+        when(mockedBladeServer.getID()).thenReturn(mockedID);
+
         computeSystem.appendBladeServerIntoComputeNodeList(mockedBladeServer);
 
         assertTrue(computeSystem.runAcycle());
@@ -306,8 +315,7 @@ public class ComputeSystemTest {
         verify(mockedBladeServer, times(3)).isIdle();
         verify(mockedBladeServer, times(27)).isRunningNormal();
         verify(mockedBladeServer).isRunningBusy();
-        verify(mockedBladeServer, times(26)).getChassisID();
-        verify(mockedBladeServer).getServerID();
+        verify(mockedBladeServer, times(27)).getID();
         verify(mockedBladeServer).feedWork(any(BatchJob.class));
         verify(mockedBladeServer).run();
         verify(mockedBladeServer).getTotalFinishedJob();
@@ -350,7 +358,9 @@ public class ComputeSystemTest {
                 mockedSLAViolationLogger);
         BladeServer mockedBladeServer = mock(BladeServer.class);
         when(mockedBladeServer.isRunningNormal()).thenReturn(true);
-        when(mockedBladeServer.getChassisID()).thenReturn(15);
+        DataCenterEntityID mockedID = mock(DataCenterEntityID.class);
+        when(mockedID.getChassisID()).thenReturn(15);
+        when(mockedBladeServer.getID()).thenReturn(mockedID);
 
         computeSystem.appendBladeServerIntoComputeNodeList(mockedBladeServer);
 
@@ -382,8 +392,7 @@ public class ComputeSystemTest {
         verify(mockedBladeServer, times(51)).isRunningNormal();
         verify(mockedBladeServer).feedWork(any(BatchJob.class));
 
-        verify(mockedBladeServer, times(50)).getChassisID();
-        verify(mockedBladeServer).getServerID();
+        verify(mockedBladeServer, times(51)).getID();
         verify(mockedBladeServer).feedWork(any(BatchJob.class));
         verify(mockedEnvironment, times(3)).getCurrentLocalTime();
 

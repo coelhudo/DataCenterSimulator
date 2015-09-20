@@ -39,10 +39,7 @@ public class BladeServer extends DataCenterEntity {
     private List<BatchJob> blockedBatchJobs;
     private List<EnterpriseJob> enterpriseJobs;
     private List<InteractiveJob> interactiveJobs;
-    private int chassisID;
     private int totalFinishedJob = 0;
-    private int serverID;
-    private int rackId;
     // Application Bundle
     private int timeTreshold = 0;
     private int slaPercentage;
@@ -56,9 +53,6 @@ public class BladeServer extends DataCenterEntity {
         setRespTime(0);
         // if it is -1 means that it is not put in the proper position yet ID
         // should be set
-        chassisID = bladeServerPOD.getChassisID();
-        rackId = bladeServerPOD.getRackID();
-        serverID = bladeServerPOD.getServerID();
         bladeType = bladeServerPOD.getBladeType();
         powerBusy = bladeServerPOD.getPowerBusy();
         powerIdle = bladeServerPOD.getPowerIdle();
@@ -297,7 +291,7 @@ public class BladeServer extends DataCenterEntity {
             return true;
         }
 
-        final int ki = job.getThisNodeIndex(getServerID());
+        final int ki = job.getThisNodeIndex(getID().getServerID());
 
         if (ki == -1) {
             LOGGER.info("Blade server is wrong in BladeServer!!!");
@@ -499,26 +493,6 @@ public class BladeServer extends DataCenterEntity {
 
     public void setTotalFinishedJob(int totalFinishedJob) {
         this.totalFinishedJob = totalFinishedJob;
-    }
-
-    public int getChassisID() {
-        return chassisID;
-    }
-
-    public void setChassisID(int chassisID) {
-        this.chassisID = chassisID;
-    }
-
-    public int getServerID() {
-        return serverID;
-    }
-
-    public int getRackId() {
-        return rackId;
-    }
-
-    public void setRackId(int rackId) {
-        this.rackId = rackId;
     }
 
     public int getTimeTreshold() {

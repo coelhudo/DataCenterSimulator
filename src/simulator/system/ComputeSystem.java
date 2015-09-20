@@ -136,7 +136,7 @@ public class ComputeSystem extends GeneralSystem {
         int[] retList = new int[requestedServers.size()];
         int i = 0;
         for (BladeServer bladeServer : requestedServers) {
-            retList[i] = bladeServer.getServerID();
+            retList[i] = bladeServer.getID().getServerID();
             i++;
         }
         return retList;

@@ -48,8 +48,8 @@ public class ReadingConfigurationIT {
                 chassisIDSet.add(chassis.getChassisID());
                 assertEquals(1, chassis.getServers().size());
                 for (BladeServer bladeServer : chassis.getServers()) {
-                    assertEquals(chassis.getChassisID(), bladeServer.getChassisID());
-                    assertEquals(chassis.getChassisID(), bladeServer.getServerID());
+                    assertEquals(chassis.getChassisID(), bladeServer.getID().getChassisID());
+                    assertEquals(chassis.getChassisID(), bladeServer.getID().getServerID());
                     assertEquals("HP Proliant DL3", bladeServer.getBladeType());
                     assertEquals(1.0, bladeServer.getFrequencyLevelAt(0), 1.0E-8);
                     assertEquals(1.04, bladeServer.getFrequencyLevelAt(1), 1.0E-8);
@@ -89,9 +89,9 @@ public class ReadingConfigurationIT {
                 23, 22, 25, 24, 27, 26, 29, 28, 35, 38, 39, 36, 37, 42, 43, 40, 41, 46, 47, 44, 45, 49, 48));
         Set<Integer> racksInComputeSystem = new HashSet<Integer>(Arrays.asList(0, 1, 4, 5, 7, 8, 9));
         for (BladeServer bladeServer : computeSystem.getComputeNodeList()) {
-            chassisInComputeSystem.remove(bladeServer.getChassisID());
-            racksInComputeSystem.remove(bladeServer.getRackId());
-            serversInComputeSystem.remove(bladeServer.getServerID());
+            chassisInComputeSystem.remove(bladeServer.getID().getChassisID());
+            racksInComputeSystem.remove(bladeServer.getID().getRackID());
+            serversInComputeSystem.remove(bladeServer.getID().getServerID());
         }
         assertTrue(serversInComputeSystem.isEmpty());
         assertTrue(chassisInComputeSystem.isEmpty());
@@ -130,9 +130,9 @@ public class ReadingConfigurationIT {
         Set<Integer> chassisInEnterpriseSystem = new HashSet<Integer>(Arrays.asList(17, 19, 18, 10, 11, 12, 13, 14));
         Set<Integer> racksInEnterpriseSystem = new HashSet<Integer>(Arrays.asList(2, 3));
         for (BladeServer bladeServer : enterpriseSystem.getComputeNodeList()) {
-            chassisInEnterpriseSystem.remove(bladeServer.getChassisID());
-            racksInEnterpriseSystem.remove(bladeServer.getRackId());
-            serversInEnterpriseSystem.remove(bladeServer.getServerID());
+            chassisInEnterpriseSystem.remove(bladeServer.getID().getChassisID());
+            racksInEnterpriseSystem.remove(bladeServer.getID().getRackID());
+            serversInEnterpriseSystem.remove(bladeServer.getID().getServerID());
         }
         assertTrue(serversInEnterpriseSystem.isEmpty());
         assertTrue(chassisInEnterpriseSystem.isEmpty());

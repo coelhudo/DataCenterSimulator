@@ -25,7 +25,7 @@ public class MHR extends ResourceAllocation {
         int i = 0, j = 0;
         for (i = 0; i < powIndex.length; i++) {
             for (j = 0; j < bs.size(); j++) {
-                if (bs.get(j).isRunningNormal() && powIndex[i] == bs.get(j).getChassisID()) {
+                if (bs.get(j).isRunningNormal() && powIndex[i] == bs.get(j).getID().getChassisID()) {
                     return j;
                 }
             }
@@ -39,7 +39,7 @@ public class MHR extends ResourceAllocation {
         int i = 0, j = 0;
         for (i = 0; i < powIndex.length; i++) {
             for (j = 0; j < bs.size(); j++) {
-                if (bs.get(j).isNotApplicationAssigned() && powIndex[i] == bs.get(j).getChassisID()) {
+                if (bs.get(j).isNotApplicationAssigned() && powIndex[i] == bs.get(j).getID().getChassisID()) {
                     return j;
                 }
             }
@@ -90,7 +90,7 @@ public class MHR extends ResourceAllocation {
         for (int k = powIndex.length - 1; k >= 0 && j < numberOfRequestedServers; k--) {
             for (int i = 0; i < availableBladeServers.size(); i++) {
                 BladeServer current = availableBladeServers.get(i);
-                if (current.isRunningNormal() && powIndex[k] == current.getChassisID()) {
+                if (current.isRunningNormal() && powIndex[k] == current.getID().getChassisID()) {
                     requestedBladeServers.add(current);
                     j++;
                     if (j == numberOfRequestedServers) {

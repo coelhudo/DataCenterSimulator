@@ -28,6 +28,7 @@ import simulator.jobs.EnterpriseJob;
 import simulator.jobs.InteractiveJob;
 import simulator.physical.BladeServer;
 import simulator.physical.BladeServerPOD;
+import simulator.physical.DataCenterEntityID;
 
 public class BladeServerTest {
 
@@ -50,6 +51,7 @@ public class BladeServerTest {
         bladeServerPOD.setPowerBusyAt(0, 100.0);
         bladeServerPOD.setPowerIdle(new double[1]);
         bladeServerPOD.setPowerIdleAt(0, 50.0);
+        bladeServerPOD.setID(DataCenterEntityID.create(1, 1, 1));
         bladeServer = new BladeServer(bladeServerPOD, environment);
     }
 
@@ -59,7 +61,7 @@ public class BladeServerTest {
         assertTrue(activeBatchJobs.isEmpty());
         List<BatchJob> blockedJobs = bladeServer.getBlockedBatchList();
         assertTrue(blockedJobs.isEmpty());
-        assertEquals(0, bladeServer.getChassisID());
+        assertEquals(0, bladeServer.getID().getChassisID());
         assertEquals(0.0, bladeServer.getCurrentCPU(), 1.0E-8);
         assertEquals(0, bladeServer.getCurrentFreqLevel());
         List<EnterpriseJob> enterpriseJobs = bladeServer.getEnterpriseList();
@@ -72,7 +74,7 @@ public class BladeServerTest {
         assertEquals(1, bladeServer.getNumberOfPowerIdle());
         assertEquals(3, bladeServer.getPwrParam().length);
         assertEquals(0.0, bladeServer.getQueueLength(), 1.0E-8);
-        assertEquals(0, bladeServer.getRackId());
+        assertEquals(0, bladeServer.getID().getRackID());
         assertTrue(bladeServer.isNotSystemAssigned());
         List<ResponseTime> responseTime = bladeServer.getResponseList();
         assertTrue(responseTime.isEmpty());
@@ -80,7 +82,7 @@ public class BladeServerTest {
         assertTrue(getResponseListWeb.isEmpty());
         assertEquals(0.0, bladeServer.getResponseTime(), 1.0E-8);
         assertEquals(0.0, bladeServer.getResTimeEpoch(), 1.0E-8);
-        assertEquals(0.0, bladeServer.getServerID(), 1.0E-8);
+        assertEquals("1.1.1", bladeServer.getID().toString());
         assertEquals(0.0, bladeServer.getSLAPercentage(), 1.0E-8);
         assertEquals(0.0, bladeServer.getTimeTreshold(), 1.0E-8);
         assertEquals(0.0, bladeServer.getTotalFinishedJob(), 1.0E-8);

@@ -14,6 +14,8 @@ import java.util.List;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
 
+import com.sun.jndi.cosnaming.CNNameParser;
+
 import simulator.Environment;
 import simulator.SLAViolationLogger;
 import simulator.am.DataCenterAM;
@@ -22,6 +24,7 @@ import simulator.jobs.JobProducer;
 import simulator.physical.BladeServerPOD;
 import simulator.physical.ChassisPOD;
 import simulator.physical.DataCenter;
+import simulator.physical.DataCenterEntityID;
 import simulator.physical.DataCenterPOD;
 import simulator.physical.RackPOD;
 import simulator.system.ComputeSystem;
@@ -46,6 +49,7 @@ public class ComputeSystemIT {
         bladeServerPOD.setPowerBusy(POWER_BUSY);
         bladeServerPOD.setPowerIdle(POWER_IDLE);
         bladeServerPOD.setIdleConsumption(5);
+        bladeServerPOD.setID(DataCenterEntityID.create(1, 1, 1));
 
         ChassisPOD chassisPOD = new ChassisPOD();
         chassisPOD.appendServerPOD(bladeServerPOD);
@@ -53,9 +57,11 @@ public class ComputeSystemIT {
         chassisPOD.setChassisType("DummyChassisType");
         chassisPOD.setChassisID(0);
         chassisPOD.setRackID(0);
+        chassisPOD.setID(DataCenterEntityID.create(1, 1, 0));
         
         RackPOD rackPOD = new RackPOD();
         rackPOD.appendChassis(chassisPOD);
+        rackPOD.setID(DataCenterEntityID.create(1, 0, 0));
 
         DataCenterPOD dataCenterPOD = new DataCenterPOD();
         dataCenterPOD.appendChassis(chassisPOD);
@@ -131,6 +137,7 @@ public class ComputeSystemIT {
         bladeServerPOD.setPowerBusy(POWER_BUSY);
         bladeServerPOD.setPowerIdle(POWER_IDLE);
         bladeServerPOD.setIdleConsumption(5);
+        bladeServerPOD.setID(DataCenterEntityID.create(1, 1, 1));
 
         ChassisPOD firstChassisPOD = new ChassisPOD();
         firstChassisPOD.appendServerPOD(bladeServerPOD);
@@ -138,14 +145,17 @@ public class ComputeSystemIT {
         firstChassisPOD.setChassisType("DummyChassisType");
         firstChassisPOD.setChassisID(0);
         firstChassisPOD.setRackID(0);
+        firstChassisPOD.setID(DataCenterEntityID.create(1, 1, 0));
 
         ChassisPOD secondChassisPOD = new ChassisPOD(firstChassisPOD);
         secondChassisPOD.setChassisID(1);
         secondChassisPOD.getServerPODs().get(0).setServerID(1);
+        secondChassisPOD.setID(DataCenterEntityID.create(1, 2, 0));
         
         RackPOD rackPOD = new RackPOD();
         rackPOD.appendChassis(firstChassisPOD);
         rackPOD.appendChassis(secondChassisPOD);
+        rackPOD.setID(DataCenterEntityID.create(1, 0, 0));
 
         DataCenterPOD dataCenterPOD = new DataCenterPOD();
         dataCenterPOD.appendChassis(firstChassisPOD);
