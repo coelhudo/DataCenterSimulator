@@ -10,4 +10,22 @@ public class DataCenterEntity {
     public DataCenterEntityID getID() {
         return id;
     }
+    
+    @Override
+    public boolean equals(Object other) {
+        if(this == other) {
+            return true;
+        }
+        
+        if(!(other instanceof DataCenterEntity)) {
+            return false;
+        }
+        
+        return id.equals(((DataCenterEntity)other).id);
+    }
+    
+    @Override
+    public int hashCode() {
+        return id.hashCode();
+    }
 }

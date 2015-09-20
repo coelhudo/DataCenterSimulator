@@ -50,7 +50,7 @@ public class EnterpriseSystemIT {
         bladeServerPOD.setPowerBusy(POWER_BUSY);
         bladeServerPOD.setPowerIdle(POWER_IDLE);
         bladeServerPOD.setIdleConsumption(5);
-        bladeServerPOD.setID(DataCenterEntityID.create(1, 1, 1));
+        bladeServerPOD.setID(DataCenterEntityID.createServerID(1, 1, 1));
 
         ChassisPOD chassisPOD = new ChassisPOD();
         chassisPOD.appendServerPOD(bladeServerPOD);
@@ -58,11 +58,11 @@ public class EnterpriseSystemIT {
         chassisPOD.setChassisType("DummyChassisType");
         chassisPOD.setChassisID(0);
         chassisPOD.setRackID(0);
-        chassisPOD.setID(DataCenterEntityID.create(1, 1, 0));
+        chassisPOD.setID(DataCenterEntityID.createChassisID(1, 1));
         
         RackPOD rackPOD = new RackPOD();
         rackPOD.appendChassis(chassisPOD);
-        rackPOD.setID(DataCenterEntityID.create(1, 0, 0));
+        rackPOD.setID(DataCenterEntityID.createRackID(1));
 
         DataCenterPOD dataCenterPOD = new DataCenterPOD();
         dataCenterPOD.appendChassis(chassisPOD);

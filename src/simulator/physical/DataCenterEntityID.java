@@ -6,7 +6,7 @@ package simulator.physical;
  * based on DDD ideas. Rack is identified by X.0.0; a Chassis by X.X.0; and
  * Server X.X.X
  */
-public class DataCenterEntityID implements Comparable<DataCenterEntityID> {
+public final class DataCenterEntityID {
 
     private final int rackID;
     private final int chassisID;
@@ -18,34 +18,10 @@ public class DataCenterEntityID implements Comparable<DataCenterEntityID> {
         this.serverID = serverID;
     }
 
-    @Override
-    public String toString() {
-        return rackID + "." + chassisID + "." + serverID;
-    }
-
-    @Override
-    public int compareTo(DataCenterEntityID other) {
-        if (rackID > other.rackID)
-            return 1;
-        if (rackID < other.rackID)
-            return -1;
-        if (chassisID > other.chassisID)
-            return 1;
-        if (chassisID < other.chassisID)
-            return -1;
-        if (serverID > other.serverID)
-            return 1;
-        if (serverID < other.serverID)
-            return -1;
-        return 0;
-    }
-
-    public static DataCenterEntityID create(int rackID, int chassisID, int serverID) {
-        final boolean validRackIDValue = rackID > 0 && chassisID == 0 && serverID == 0;
-        final boolean validChassisValue = rackID > 0 && chassisID > 0 && serverID == 0;
+    public static DataCenterEntityID createServerID(int rackID, int chassisID, int serverID) {
         final boolean validServerValue = rackID > 0 && chassisID > 0 && serverID > 0;
 
-        if (!(validRackIDValue || validChassisValue || validServerValue)) {
+        if (!validServerValue) {
             throw new RuntimeException(String.format(
                     "Invalid Data Center Entity ID parameters. Received rack %d, chassis %d and server %d", rackID,
                     chassisID, serverID));
@@ -53,16 +29,67 @@ public class DataCenterEntityID implements Comparable<DataCenterEntityID> {
 
         return new DataCenterEntityID(rackID, chassisID, serverID);
     }
-    
+
+    public static DataCenterEntityID createChassisID(int rackID, int chassisID) {
+        final boolean validChassisValue = rackID > 0 && chassisID > 0;
+
+        if (!validChassisValue) {
+            throw new RuntimeException(String.format(
+                    "Invalid Data Center Entity ID parameters. Received rack %d, chassis %d", rackID, chassisID));
+        }
+
+        return new DataCenterEntityID(rackID, chassisID, 0);
+    }
+
+    public static DataCenterEntityID createRackID(int rackID) {
+        final boolean validRackIDValue = rackID > 0;
+
+        if (!validRackIDValue) {
+            throw new RuntimeException(
+                    String.format("Invalid Data Center Entity ID parameters. Received rack %d", rackID));
+        }
+
+        return new DataCenterEntityID(rackID, 0, 0);
+    }
+
+    @Override
+    public String toString() {
+        return rackID + "." + chassisID + "." + serverID;
+    }
+
+    @Override
+    public boolean equals(Object other) {
+        if (this == other) {
+            return true;
+        }
+
+        if (!(other instanceof DataCenterEntityID)) {
+            return false;
+        }
+
+        DataCenterEntityID otherID = (DataCenterEntityID) other;
+        return rackID == otherID.rackID && chassisID == otherID.chassisID && serverID == otherID.serverID;
+    }
+
+    @Override
+    public int hashCode() {
+        int result = 17;
+        result = 31 * result + rackID;
+        result = 31 * result + chassisID;
+        result = 31 * result + serverID;
+        return result;
+    }
+
     public int getRackID() {
-        return rackID-1;
+        return rackID - 1;
     }
-    
+
     public int getChassisID() {
-        return chassisID-1;
+        return chassisID - 1;
     }
-    
+
+    @Deprecated
     public int getServerID() {
-        return serverID-1;
+        return serverID - 1;
     }
 }

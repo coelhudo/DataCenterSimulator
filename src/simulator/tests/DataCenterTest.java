@@ -38,16 +38,16 @@ public class DataCenterTest {
     @Before
     public void setUp() {
         bladeServerPOD = new BladeServerPOD();
-        bladeServerPOD.setID(DataCenterEntityID.create(1, 1, 1));
+        bladeServerPOD.setID(DataCenterEntityID.createServerID(1, 1, 1));
         bladeServerPOD.setFrequencyLevel(FREQUENCY_LEVEL);
         bladeServerPOD.setPowerIdle(POWER_IDLE);
         bladeServerPOD.setPowerBusy(POWER_BUSY);
         bladeServerPOD.setIdleConsumption(5.0);
         chassisPOD = new ChassisPOD();
-        chassisPOD.setID(DataCenterEntityID.create(1, 1, 0));
+        chassisPOD.setID(DataCenterEntityID.createChassisID(1, 1));
         chassisPOD.appendServerPOD(bladeServerPOD);
         rackPOD = new RackPOD();
-        rackPOD.setID(DataCenterEntityID.create(1, 0, 0));
+        rackPOD.setID(DataCenterEntityID.createRackID(1));
         rackPOD.appendChassis(chassisPOD);
     }
 

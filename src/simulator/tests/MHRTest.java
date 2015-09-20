@@ -63,9 +63,7 @@ public class MHRTest {
     @Test
     public void testNextServer_NonEmptyBladeServers_RunningNormal() {
         BladeServer mockedBladeServer = mock(BladeServer.class);
-        DataCenterEntityID mockedID = mock(DataCenterEntityID.class);
-        when(mockedID.getServerID()).thenReturn(0);
-        when(mockedBladeServer.getID()).thenReturn(mockedID);
+        when(mockedBladeServer.getID()).thenReturn(DataCenterEntityID.createServerID(1, 1, 1));
         when(mockedBladeServer.isRunningNormal()).thenReturn(true);
         List<BladeServer> bladeServers = Arrays.asList(mockedBladeServer);
         assertEquals(0, mininumHeatRecirculation.nextServer(bladeServers));
@@ -164,9 +162,7 @@ public class MHRTest {
     public void testAllocateSystemLevelServer_BladeServerRunningNormal_ChassisNotExpected() {
         BladeServer mockedBladeServer = mock(BladeServer.class);
         when(mockedBladeServer.isRunningNormal()).thenReturn(true);
-        DataCenterEntityID mockedID = mock(DataCenterEntityID.class);
-        when(mockedID.getChassisID()).thenReturn(51);
-        when(mockedBladeServer.getID()).thenReturn(mockedID);
+        when(mockedBladeServer.getID()).thenReturn(DataCenterEntityID.createChassisID(1, 51));
         List<BladeServer> bladeServers = Arrays.asList(mockedBladeServer);
 
         List<BladeServer> result = mininumHeatRecirculation.allocateSystemLevelServer(bladeServers, 1);
@@ -183,18 +179,15 @@ public class MHRTest {
     public void testAllocateSystemLevelServer_BladeServerRunningNormal() {
         BladeServer mockedBladeServer = mock(BladeServer.class);
         when(mockedBladeServer.isRunningNormal()).thenReturn(true);
-        DataCenterEntityID mockedID = mock(DataCenterEntityID.class);
-        when(mockedID.getServerID()).thenReturn(10);
-        when(mockedBladeServer.getID()).thenReturn(mockedID);
+        when(mockedBladeServer.getID()).thenReturn(DataCenterEntityID.createServerID(1, 1, 10));
         List<BladeServer> bladeServers = Arrays.asList(mockedBladeServer);
 
         List<BladeServer> result = mininumHeatRecirculation.allocateSystemLevelServer(bladeServers, 1);
 
         assertEquals(1, result.size());
-        assertEquals(10, result.get(0).getID().getServerID());
-
+        
         verify(mockedBladeServer, times(27)).isRunningNormal();
-        verify(mockedBladeServer, times(27)).getID();
+        verify(mockedBladeServer, times(26)).getID();
 
         verifyNoMoreInteractions(mockedBladeServer);
     }
@@ -203,27 +196,21 @@ public class MHRTest {
     public void testAllocateSystemLevelServer_BladeServerRunningNormal_MultipleResults() {
         BladeServer mockedBladeServerOne = mock(BladeServer.class);
         when(mockedBladeServerOne.isRunningNormal()).thenReturn(true);
-        DataCenterEntityID mockedIDOne = mock(DataCenterEntityID.class);
-        when(mockedIDOne.getServerID()).thenReturn(10);
-        when(mockedBladeServerOne.getID()).thenReturn(mockedIDOne);
+        when(mockedBladeServerOne.getID()).thenReturn(DataCenterEntityID.createServerID(1, 1, 10));
         BladeServer mockedBladeServerTwo = mock(BladeServer.class);
         when(mockedBladeServerTwo.isRunningNormal()).thenReturn(false);
-        DataCenterEntityID mockedIDTwo = mock(DataCenterEntityID.class);
-        when(mockedIDTwo.getServerID()).thenReturn(20);
-        when(mockedBladeServerTwo.getID()).thenReturn(mockedIDTwo);
+        when(mockedBladeServerTwo.getID()).thenReturn(DataCenterEntityID.createServerID(1, 1, 20));
         BladeServer mockedBladeServerThree = mock(BladeServer.class);
         when(mockedBladeServerThree.isRunningNormal()).thenReturn(true);
-        DataCenterEntityID mockedIDThree = mock(DataCenterEntityID.class);
-        when(mockedIDThree.getServerID()).thenReturn(30);
-        when(mockedBladeServerThree.getID()).thenReturn(mockedIDThree);
+        when(mockedBladeServerThree.getID()).thenReturn(DataCenterEntityID.createServerID(1, 1, 30));
         List<BladeServer> bladeServers = Arrays.asList(mockedBladeServerOne, mockedBladeServerTwo,
                 mockedBladeServerThree);
 
         List<BladeServer> result = mininumHeatRecirculation.allocateSystemLevelServer(bladeServers, 2);
 
         assertEquals(2, result.size());
-        assertEquals(10, result.get(0).getID().getServerID());
-        assertEquals(30, result.get(1).getID().getServerID());
+        assertEquals("1.1.10", result.get(0).getID().toString());
+        assertEquals("1.1.30", result.get(1).getID().toString());
 
         verify(mockedBladeServerOne, times(27)).isRunningNormal();
         verify(mockedBladeServerOne, times(27)).getID();

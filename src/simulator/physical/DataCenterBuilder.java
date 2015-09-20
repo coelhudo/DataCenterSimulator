@@ -172,13 +172,13 @@ public class DataCenterBuilder {
     }
 
     private void loadIDIntoEntities(RackPOD rackPOD) {
-        rackPOD.setID(DataCenterEntityID.create(rackPOD.getRackID() + 1, 0, 0));
+        rackPOD.setID(DataCenterEntityID.createRackID(rackPOD.getRackID() + 1));
         LOGGER.info(RackPOD.class.getName() + " " + rackPOD.getID().toString());
         for (ChassisPOD chassisPOD : rackPOD.getChassisPODs()) {
-            chassisPOD.setID(DataCenterEntityID.create(rackPOD.getRackID() + 1, chassisPOD.getChassisID() + 1, 0));
+            chassisPOD.setID(DataCenterEntityID.createChassisID(rackPOD.getRackID() + 1, chassisPOD.getChassisID() + 1));
             LOGGER.info(ChassisPOD.class.getName() + " " + chassisPOD.getID().toString());
             for (BladeServerPOD bladeServerPOD : chassisPOD.getServerPODs()) {
-                bladeServerPOD.setID(DataCenterEntityID.create(rackPOD.getRackID() + 1, chassisPOD.getChassisID() + 1,
+                bladeServerPOD.setID(DataCenterEntityID.createServerID(rackPOD.getRackID() + 1, chassisPOD.getChassisID() + 1,
                         bladeServerPOD.getServerID() + 1));
                 LOGGER.info(BladeServerPOD.class.getName() + " " + bladeServerPOD.getID().toString());
             }

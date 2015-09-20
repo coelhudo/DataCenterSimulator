@@ -51,7 +51,7 @@ public class BladeServerTest {
         bladeServerPOD.setPowerBusyAt(0, 100.0);
         bladeServerPOD.setPowerIdle(new double[1]);
         bladeServerPOD.setPowerIdleAt(0, 50.0);
-        bladeServerPOD.setID(DataCenterEntityID.create(1, 1, 1));
+        bladeServerPOD.setID(DataCenterEntityID.createServerID(1, 1, 1));
         bladeServer = new BladeServer(bladeServerPOD, environment);
     }
 

@@ -28,8 +28,8 @@ public class ResourceAllocationTest {
 
     public class TestableResourceAllocation extends ResourceAllocation {
 
-        private int [] nextSysValueResult = new int[2];
-        
+        private int[] nextSysValueResult = new int[2];
+
         public TestableResourceAllocation(Environment environment, DataCenter dataCenter) {
             super(environment, dataCenter);
             nextSysValueResult[0] = 0;
@@ -52,8 +52,8 @@ public class ResourceAllocationTest {
             requestedServers.add(bs.get(0));
             return requestedServers;
         }
-        
-        public void setNextServerSysResult(int [] result) {
+
+        public void setNextServerSysResult(int[] result) {
             nextSysValueResult = result;
         }
 
@@ -91,7 +91,7 @@ public class ResourceAllocationTest {
 
     @Test
     public void testInicialResourceAllocation_ComputeSystem_EmptyRackIDs_WithNode() {
-        int [] result = {-2,-2};
+        int[] result = { -2, -2 };
         resourceAllocation.setNextServerSysResult(result);
         ComputeSystem mockedComputeSystem = mock(ComputeSystem.class);
         List<Integer> rackIDs = Arrays.asList();
@@ -133,7 +133,7 @@ public class ResourceAllocationTest {
 
         verify(mockedChassis).getRackID();
         verify(mockedChassis).getChassisID();
-        
+
         verify(mockedBladeServer).setStatusAsRunningNormal();
 
         verify(mockedDataCenter).getChassisSet();
@@ -208,12 +208,7 @@ public class ResourceAllocationTest {
 
     @Test
     public void testInicialResourceAllocation_EnterpriseSystem_WithRackIDs_WithNode_WithApplication() {
-        
-        DataCenterEntityID mockedID = mock(DataCenterEntityID.class);
-        when(mockedID.getServerID()).thenReturn(0);
-        when(mockedID.getChassisID()).thenReturn(0);
-        when(mockedID.getRackID()).thenReturn(0);
-        
+
         EnterpriseSystem mockedEnterpriseSystem = mock(EnterpriseSystem.class);
         when(mockedEnterpriseSystem.getNumberOfNode()).thenReturn(1);
 
@@ -221,9 +216,9 @@ public class ResourceAllocationTest {
 
         Chassis mockedChassis = mock(Chassis.class);
         BladeServer mockedBladeServer = mock(BladeServer.class);
-        when(mockedBladeServer.getID()).thenReturn(mockedID);
+        when(mockedBladeServer.getID()).thenReturn(DataCenterEntityID.createServerID(1, 1, 1));
         when(mockedBladeServer.isNotSystemAssigned()).thenReturn(true);
-        when(mockedChassis.getID()).thenReturn(mockedID);
+        when(mockedChassis.getID()).thenReturn(DataCenterEntityID.createChassisID(1, 1));
         when(mockedChassis.getServers()).thenReturn(Arrays.asList(mockedBladeServer));
         List<Chassis> chassisSet = Arrays.asList(mockedChassis);
         when(mockedDataCenter.getChassisSet()).thenReturn(chassisSet);
@@ -251,7 +246,7 @@ public class ResourceAllocationTest {
         verify(mockedChassis).getRackID();
         verify(mockedChassis).getChassisID();
         verify(mockedChassis, times(2)).getServers();
-        
+
         verify(mockedBladeServer, times(3)).getID();
         verify(mockedBladeServer, times(3)).getID();
         verify(mockedBladeServer).setStatusAsNotAssignedToAnyApplication();
