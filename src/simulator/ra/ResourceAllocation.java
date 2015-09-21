@@ -22,7 +22,7 @@ public abstract class ResourceAllocation {
     protected DataCenter dataCenter;
     private Environment environment;
 
-    public abstract int[] nextServerSys(List<Integer> chassisList);
+    public abstract BladeServer nextServerSys(List<Integer> chassisList);
 
     public int nextServerInSys(List<BladeServer> bs) {
         return 0;
@@ -179,68 +179,57 @@ public abstract class ResourceAllocation {
         }
     }
 
-    // TODO: this
     public void initialResourceAloc(ComputeSystem computeSystem) {
         // Best fit resource allocation
         List<Integer> myChassisList = createChassisArray(computeSystem.getRackIDs());
         for (int i = 0; i < computeSystem.getNumberOfNode(); i++) {
-            int[] serverIndex = nextServerSys(myChassisList);
-            if (serverIndex.length == 2 && serverIndex[0] == -2 && serverIndex[1] == -2) {
+            final BladeServer server = nextServerSys(myChassisList);
+            if (server == null) {
                 LOGGER.info("-2 index in which server  initialResourceAloc(ComputeSystem CS)  iiiii" + i);
                 return;
             }
-            int indexChassis = serverIndex[0];
-            int indexServer = serverIndex[1];
-            final BladeServer server = dataCenter.getServer(indexChassis, indexServer);
             computeSystem.addComputeNodeToSys(server);
             // this node is in this CS nodelist but it is not assigned to any
             // job yet!
             // in Allocation module ready flag will be changed to 1
             server.setStatusAsRunningNormal();
-            LOGGER.info("HPC System: ChassisID=" + indexChassis + "  & Server id = " + indexServer);
+            LOGGER.info("HPC System: " + server.getID().toString());
         }
     }
 
     void allocateAserver(ComputeSystem computeSystem) {
-        int[] serverIndex = new int[2];
         List<Integer> myChassisList = new ArrayList<Integer>();
-        serverIndex = nextServerSys(myChassisList);
-        if (serverIndex == null) {
+        final BladeServer server = nextServerSys(myChassisList);
+        if (server == null) {
             LOGGER.info("-2 index in which server  initialResourceAloc(ComputeSystem CS)  iiiii");
             return;
         }
-        // LOGGER.info(serverIndex);
-        int indexChassis = serverIndex[0];
-        int indexServer = serverIndex[1];
-        final BladeServer server = dataCenter.getServer(indexChassis, indexServer);
+        
         computeSystem.addComputeNodeToSys(server);
         // this node is in this CS nodelist but it is not assigned to any job
         // yet!
         // in Allocation module ready flag will be changed to 1
         server.setStatusAsRunningNormal();
-        LOGGER.info("HPC System: ChassisID=" + indexChassis + "  & Server id = " + indexServer);
+        LOGGER.info("HPC System: " + server.getID().toString());
     }
 
     // TODO: this
     // First time resource Allocation for system and bundle together
     public void initialResourceAlocator(EnterpriseSystem enterpriseSystem) {
-        int[] serverIndex = new int[2];
         List<Integer> myChassisList = createChassisArray(enterpriseSystem.getRackIDs());
         for (int i = 0; i < enterpriseSystem.getNumberOfNode(); i++) {
-            serverIndex = nextServerSys(myChassisList);
-            if (serverIndex[0] == -2) {
+            BladeServer server = nextServerSys(myChassisList);
+            if (server == null) {
                 LOGGER.info("-2 index in which server initialResourceAloc(EnterpriseSystem ES)");
                 return;
             }
-            int indexChassis = serverIndex[0];
-            int indexServer = serverIndex[1];
-            final BladeServer server = dataCenter.getServer(indexChassis, indexServer);
+            
             enterpriseSystem.addComputeNodeToSys(server);
             // this node is in this ES nodelist but it is not assigned to any
             // application yet!
             // in Allocation module ready flag will be changed to 1
             server.setStatusAsNotAssignedToAnyApplication();
-            LOGGER.info("Enterprise System: ChassisID=" + indexChassis + "  & Server id = " + indexServer);
+            LOGGER.info("Enterprise System: " + server.getID().toString());
         }
         // Minimum allocation give every bundle minimum of its requierments
         // Assume we have enough for min of all bundles!
@@ -285,19 +274,14 @@ public abstract class ResourceAllocation {
     }
 
     public void initialResourceAlocator(InteractiveSystem interactiveSystem) {
-        /// Initial alocation of compute node
-        int[] serverIndex = new int[2];
         List<Integer> myChassisList = createChassisArray(interactiveSystem.getRackIDs());
         for (int i = 0; i < interactiveSystem.getNumberOfNode(); i++) {
-            serverIndex = nextServerSys(myChassisList);
-            if (serverIndex[0] == -2) {
+            BladeServer server = nextServerSys(myChassisList);
+            if (server == null) {
                 LOGGER.info("-2 index in which server in initialResourceAloc_sys(WebBasedSystem");
                 return;
             }
-            LOGGER.info("Interactive system: ChassisID= " + serverIndex[0] + " & Server= " + serverIndex[1]);
-            int indexChassis = serverIndex[0];
-            int indexServer = serverIndex[1];
-            final BladeServer server = dataCenter.getServer(indexChassis, indexServer);
+            LOGGER.info("Interactive system: " + server.getID().toString());
             interactiveSystem.addComputeNodeToSys(server);
             // this node is in this WS nodelist but it is not assigned to any
             // workload yet!

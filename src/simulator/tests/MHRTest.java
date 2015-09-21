@@ -77,17 +77,13 @@ public class MHRTest {
     @Test
     public void testNextServerSys_EmptyChassis() {
         List<Integer> chassis = new ArrayList<Integer>();
-        int[] result = mininumHeatRecirculation.nextServerSys(chassis);
-        assertEquals(-2, result[0]);
-        assertEquals(-2, result[1]);
+        assertNull(mininumHeatRecirculation.nextServerSys(chassis));
     }
 
     @Test
     public void testNextServerSys_ChassisNotExpected() {
         List<Integer> chassis = Arrays.asList(51);
-        int[] result = mininumHeatRecirculation.nextServerSys(chassis);
-        assertEquals(-2, result[0]);
-        assertEquals(-2, result[1]);
+        assertNull(mininumHeatRecirculation.nextServerSys(chassis));
     }
 
     @Test
@@ -101,9 +97,7 @@ public class MHRTest {
         when(mockedChassis.getServers()).thenReturn(bladeServers);
         when(mockedBladeServer.isNotSystemAssigned()).thenReturn(false);
 
-        int[] result = mininumHeatRecirculation.nextServerSys(chassisIndex);
-        assertEquals(-2, result[0]);
-        assertEquals(-2, result[1]);
+        assertNull(mininumHeatRecirculation.nextServerSys(chassisIndex));
 
         verify(mockedDataCenter, times(3)).getChassisSet();
         verify(mockedChassis, times(3)).getServers();
@@ -121,15 +115,15 @@ public class MHRTest {
         BladeServer mockedBladeServer = mock(BladeServer.class);
         List<BladeServer> bladeServers = Arrays.asList(mockedBladeServer);
         when(mockedChassis.getServers()).thenReturn(bladeServers);
+        when(mockedBladeServer.getID()).thenReturn(DataCenterEntityID.createServerID(1, 1, 1));
         when(mockedBladeServer.isNotSystemAssigned()).thenReturn(true);
 
-        int[] result = mininumHeatRecirculation.nextServerSys(chassisIndex);
-        assertEquals(0, result[0]);
-        assertEquals(0, result[1]);
-
-        verify(mockedDataCenter, times(2)).getChassisSet();
-        verify(mockedChassis, times(2)).getServers();
+        assertEquals("1.1.1", mininumHeatRecirculation.nextServerSys(chassisIndex).getID().toString());
+        
+        verify(mockedDataCenter, times(3)).getChassisSet();
+        verify(mockedChassis, times(3)).getServers();
         verify(mockedBladeServer).isNotSystemAssigned();
+        verify(mockedBladeServer).getID();
 
         verifyNoMoreInteractions(mockedChassis, mockedBladeServer);
     }

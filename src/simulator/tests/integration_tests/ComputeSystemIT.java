@@ -40,9 +40,6 @@ public class ComputeSystemIT {
     public void testBladeWithOneServerAndOneBatchJob() {
         BladeServerPOD bladeServerPOD = new BladeServerPOD();
         bladeServerPOD.setBladeType("DummyType");
-        bladeServerPOD.setChassisID(0);
-        bladeServerPOD.setRackID(0);
-        bladeServerPOD.setServerID(0);
         bladeServerPOD.setFrequencyLevel(FREQUENCY_LEVEL);
         bladeServerPOD.setPowerBusy(POWER_BUSY);
         bladeServerPOD.setPowerIdle(POWER_IDLE);
@@ -53,8 +50,6 @@ public class ComputeSystemIT {
         chassisPOD.appendServerPOD(bladeServerPOD);
         chassisPOD.setBladeType("DummyType");
         chassisPOD.setChassisType("DummyChassisType");
-        chassisPOD.setChassisID(0);
-        chassisPOD.setRackID(0);
         chassisPOD.setID(DataCenterEntityID.createChassisID(1, 1));
         
         RackPOD rackPOD = new RackPOD();
@@ -128,9 +123,6 @@ public class ComputeSystemIT {
     public void testBladeWithTwoServersAndOneBatchJob_OneServerPerChassis() {
         BladeServerPOD bladeServerPOD = new BladeServerPOD();
         bladeServerPOD.setBladeType("DummyType");
-        bladeServerPOD.setChassisID(0);
-        bladeServerPOD.setRackID(0);
-        bladeServerPOD.setServerID(0);
         bladeServerPOD.setFrequencyLevel(FREQUENCY_LEVEL);
         bladeServerPOD.setPowerBusy(POWER_BUSY);
         bladeServerPOD.setPowerIdle(POWER_IDLE);
@@ -141,13 +133,9 @@ public class ComputeSystemIT {
         firstChassisPOD.appendServerPOD(bladeServerPOD);
         firstChassisPOD.setBladeType("DummyType");
         firstChassisPOD.setChassisType("DummyChassisType");
-        firstChassisPOD.setChassisID(0);
-        firstChassisPOD.setRackID(0);
         firstChassisPOD.setID(DataCenterEntityID.createChassisID(1, 1));
 
         ChassisPOD secondChassisPOD = new ChassisPOD(firstChassisPOD);
-        secondChassisPOD.setChassisID(1);
-        secondChassisPOD.getServerPODs().get(0).setServerID(1);
         secondChassisPOD.setID(DataCenterEntityID.createChassisID(1, 2));
         
         RackPOD rackPOD = new RackPOD();
@@ -218,7 +206,7 @@ public class ComputeSystemIT {
         verify(mockedEnvironment, times(5)).getCurrentLocalTime();
         verify(mockedEnvironment).localTimeByEpoch();
         verify(mockedEnvironment).updateNumberOfMessagesFromDataCenterToSystem();
-        verify(mockedEnvironment, times(2)).updateNumberOfMessagesFromSystemToNodes();
+        verify(mockedEnvironment).updateNumberOfMessagesFromSystemToNodes();
 
         verifyNoMoreInteractions(mockedDataCenterAM, mockedActivitiesLogger, mockedJobProducer, mockedEnvironment);
     }
@@ -227,24 +215,21 @@ public class ComputeSystemIT {
     public void testBladeWithOneServersAndOneBatchJobs_InsuficientServerToProcess() {
         BladeServerPOD bladeServerPOD = new BladeServerPOD();
         bladeServerPOD.setBladeType("DummyType");
-        bladeServerPOD.setChassisID(0);
-        bladeServerPOD.setRackID(0);
-        bladeServerPOD.setServerID(0);
         bladeServerPOD.setFrequencyLevel(FREQUENCY_LEVEL);
         bladeServerPOD.setPowerBusy(POWER_BUSY);
         bladeServerPOD.setPowerIdle(POWER_IDLE);
         bladeServerPOD.setIdleConsumption(5);
+        bladeServerPOD.setID(DataCenterEntityID.createServerID(1, 1, 1));
 
         ChassisPOD chassisPOD = new ChassisPOD();
         chassisPOD.appendServerPOD(bladeServerPOD);
         chassisPOD.setBladeType("DummyType");
         chassisPOD.setChassisType("DummyChassisType");
-        chassisPOD.setChassisID(0);
-        chassisPOD.setRackID(0);
+        chassisPOD.setID(DataCenterEntityID.createChassisID(1, 1));
         
         RackPOD rackPOD = new RackPOD();
+        rackPOD.setID(DataCenterEntityID.createRackID(1));
         rackPOD.appendChassis(chassisPOD);
-
 
         DataCenterPOD dataCenterPOD = new DataCenterPOD();
         dataCenterPOD.appendChassis(chassisPOD);

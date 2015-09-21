@@ -48,11 +48,7 @@ public class MHR extends ResourceAllocation {
         return -2;
     }
 
-    public int[] nextServerSys(List<Integer> chassisList) {
-        int[] retValue = new int[2];
-        retValue[0] = -2;
-        retValue[1] = -2;
-
+    public BladeServer nextServerSys(List<Integer> chassisList) {
         for (int j = powIndex.length - 1; j >= 0; j--) {
             int l = 0;
             for (l = 0; l < chassisList.size(); l++) {
@@ -66,13 +62,11 @@ public class MHR extends ResourceAllocation {
             
             for (int k = 0; k < dataCenter.getChassisSet().get(chassisList.get(l)).getServers().size(); k++) {
                 if (dataCenter.getChassisSet().get(chassisList.get(l)).getServers().get(k).isNotSystemAssigned()) {
-                    retValue[0] = chassisList.get(l); // chassis id
-                    retValue[1] = k; // Server ID
-                    return retValue;
+                    return dataCenter.getChassisSet().get(chassisList.get(l)).getServers().get(k);
                 }
             }
         }
-        return retValue;
+        return null;
     }
     // this funtion is used in ComputeSystem for allocating resources
     // List is array of compute nodes

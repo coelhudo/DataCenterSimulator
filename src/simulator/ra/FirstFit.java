@@ -29,21 +29,16 @@ public class FirstFit extends ResourceAllocation {
         return -2;
     }
 
-    public int[] nextServerSys(List<Integer> chassisList) {
-        int[] retValue = new int[2];
-        retValue[0] = -2;
-        retValue[1] = -2;
-
+    public BladeServer nextServerSys(List<Integer> chassisList) {
+        
         for (int l = 0; l < chassisList.size(); l++) {
             for (int k = 0; k < dataCenter.getChassisSet().get(chassisList.get(l)).getServers().size(); k++) {
                 if (dataCenter.getChassisSet().get(chassisList.get(l)).getServers().get(k).isNotSystemAssigned()) {
-                    retValue[0] = chassisList.get(l); // chassis id
-                    retValue[1] = k; // Server ID
-                    return retValue;
+                    return dataCenter.getChassisSet().get(chassisList.get(l)).getServers().get(k);
                 }
             }
         }
-        return retValue;
+        return null;
     }
 
     public List<BladeServer> allocateSystemLevelServer(List<BladeServer> availableBladeServers, int numberOfRequestedServers) {
