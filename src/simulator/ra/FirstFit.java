@@ -7,7 +7,6 @@ import simulator.Environment;
 import simulator.physical.BladeServer;
 import simulator.physical.BladeServerCollectionOperations;
 import simulator.physical.DataCenter;
-import simulator.physical.DataCenterEntityID;
 
 /**
  *

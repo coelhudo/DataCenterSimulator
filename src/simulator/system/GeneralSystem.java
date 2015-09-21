@@ -2,11 +2,8 @@ package simulator.system;
 
 import java.io.BufferedReader;
 import java.util.List;
-import java.util.Set;
-
 import simulator.am.SystemAM;
 import simulator.physical.BladeServer;
-import simulator.physical.DataCenterEntityID;
 import simulator.ra.ResourceAllocation;
 import simulator.schedulers.Scheduler;
 
@@ -22,7 +19,6 @@ public abstract class GeneralSystem {
     private int numberofIdleNode = 0; // idle is change in allocation function
     private int numberOfNode;
     private List<Integer> rackIDs;
-    private Set<DataCenterEntityID> rackUIDs;
     private List<BladeServer> computeNodeList;
     private BufferedReader bis = null;
     private int slaViolation;
@@ -34,7 +30,6 @@ public abstract class GeneralSystem {
 
     public GeneralSystem(SystemPOD systemPOD, Scheduler scheduler, ResourceAllocation resourceAllocation) {
         rackIDs = systemPOD.getRackIDs();
-        rackUIDs = systemPOD.getRackUIDs();
         name = systemPOD.getName();
         this.scheduler = scheduler;
         this.resourceAllocation = resourceAllocation;

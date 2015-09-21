@@ -213,7 +213,6 @@ public abstract class ResourceAllocation {
         LOGGER.info("HPC System: " + server.getID().toString());
     }
 
-    // TODO: this
     // First time resource Allocation for system and bundle together
     public void initialResourceAlocator(EnterpriseSystem enterpriseSystem) {
         List<Integer> myChassisList = createChassisArray(enterpriseSystem.getRackIDs());
@@ -327,7 +326,6 @@ public abstract class ResourceAllocation {
         return 0;
     }
 
-    // TODO: this
     List<Integer> createChassisArray(List<Integer> myRackID) {
         List<Integer> myChassisId = new ArrayList<Integer>();
         for (Integer rackID : myRackID) {

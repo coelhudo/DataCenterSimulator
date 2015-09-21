@@ -103,7 +103,6 @@ public class DataCenter {
         return chassisSet.get(getChasisIndex(i)).getServers().get(getServerIndex(i));
     }
 
-    @Deprecated
     public BladeServer getServer(int indexChassis, int indexServer) {
         return chassisSet.get(indexChassis).getServers().get(indexServer);
     }
