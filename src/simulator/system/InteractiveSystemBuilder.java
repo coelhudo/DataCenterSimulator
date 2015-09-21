@@ -10,6 +10,8 @@ import java.util.logging.Logger;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
+import simulator.physical.DataCenterEntityID;
+
 public class InteractiveSystemBuilder extends SystemBuilder {
 
     private static final Logger LOGGER = Logger.getLogger(InteractiveSystemBuilder.class.getName());
@@ -33,6 +35,7 @@ public class InteractiveSystemBuilder extends SystemBuilder {
                     String[] split = str.split(",");
                     for (int j = 0; j < split.length; j++) {
                         systemPOD.appendRackID(Integer.parseInt(split[j]));
+                        systemPOD.appendRackID(DataCenterEntityID.createRackID(Integer.parseInt(split[j]) + 1));
                     }
                 }
                 if ("ResourceAllocationAlg".equalsIgnoreCase(childNodes.item(i).getNodeName()))

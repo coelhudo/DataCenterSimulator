@@ -19,10 +19,8 @@ public class EnterpriseSystem extends GeneralSystem {
             ResourceAllocation resourceAllocation) {
         super(systemPOD, scheduler, resourceAllocation);
         setComputeNodeList(new ArrayList<BladeServer>());
-        setComputeNodeIndex(new ArrayList<Integer>());
         resetNumberOfSLAViolation();
         setNumberOfNode(systemPOD.getNumberOfNode());
-        setRackIDs(systemPOD.getRackIDs());
         this.applications = applications;
     }
 

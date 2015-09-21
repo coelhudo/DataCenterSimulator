@@ -49,7 +49,6 @@ public class ComputeSystemTest {
         assertEquals(0, computeSystem.getAccumolatedViolation());
         assertNotNull(computeSystem.getAM());
         assertNull(computeSystem.getBis());
-        assertTrue(computeSystem.getComputeNodeIndex().isEmpty());
         assertTrue(computeSystem.getComputeNodeList().isEmpty());
         assertEquals(0, computeSystem.getNumberOfActiveServ());
         assertEquals(0, computeSystem.getNumberOfIdleNode());
@@ -81,7 +80,6 @@ public class ComputeSystemTest {
                 mockedSLAViolationLogger);
         assertTrue(computeSystem.runAcycle());
         assertTrue(computeSystem.isDone());
-        assertTrue(computeSystem.getComputeNodeIndex().isEmpty());
         assertTrue(computeSystem.getComputeNodeList().isEmpty());
         assertEquals(0, computeSystem.getSLAviolation());
         assertEquals(0, computeSystem.getNumberOfActiveServ());
@@ -120,7 +118,6 @@ public class ComputeSystemTest {
                 mockedSLAViolationLogger);
         assertFalse(computeSystem.runAcycle());
         assertFalse(computeSystem.isDone());
-        assertTrue(computeSystem.getComputeNodeIndex().isEmpty());
         assertTrue(computeSystem.getComputeNodeList().isEmpty());
         assertEquals(1, computeSystem.getSLAviolation());
         assertEquals(0, computeSystem.getNumberOfActiveServ());
@@ -170,7 +167,6 @@ public class ComputeSystemTest {
         assertFalse(computeSystem.runAcycle());
         assertFalse(computeSystem.isDone());
 
-        assertTrue(computeSystem.getComputeNodeIndex().isEmpty());
         assertFalse(computeSystem.getComputeNodeList().isEmpty());
         assertEquals(1, computeSystem.getSLAviolation());
         assertEquals(0, computeSystem.getNumberOfActiveServ());
@@ -233,7 +229,6 @@ public class ComputeSystemTest {
         assertTrue(computeSystem.runAcycle());
         assertTrue(computeSystem.isDone());
 
-        assertTrue(computeSystem.getComputeNodeIndex().isEmpty());
         assertFalse(computeSystem.getComputeNodeList().isEmpty());
         assertEquals(0, computeSystem.getSLAviolation());
         assertEquals(0, computeSystem.getNumberOfActiveServ());
@@ -299,7 +294,6 @@ public class ComputeSystemTest {
         assertTrue(computeSystem.runAcycle());
         assertTrue(computeSystem.isDone());
 
-        assertTrue(computeSystem.getComputeNodeIndex().isEmpty());
         assertFalse(computeSystem.getComputeNodeList().isEmpty());
         assertEquals(1, computeSystem.getSLAviolation());
         assertEquals(0, computeSystem.getNumberOfActiveServ());

@@ -100,8 +100,6 @@ public class ReadingConfigurationIT {
         assertFalse(computeSystem.isDone());
         assertEquals(0, computeSystem.getAccumolatedViolation());
         assertEquals("HPC_First", computeSystem.getName());
-        assertFalse(computeSystem.getComputeNodeIndex().isEmpty());
-        assertEquals(35, computeSystem.getComputeNodeIndex().size());
         assertFalse(computeSystem.getComputeNodeList().isEmpty());
         assertEquals(35, computeSystem.getComputeNodeList().size()); // TODO:
                                                                      // check
@@ -141,8 +139,6 @@ public class ReadingConfigurationIT {
         assertFalse(enterpriseSystem.isDone());
         assertEquals(0, enterpriseSystem.getAccumolatedViolation());
         assertEquals("Enterprise_01", enterpriseSystem.getName());
-        assertFalse(enterpriseSystem.getComputeNodeIndex().isEmpty());
-        assertEquals(8, enterpriseSystem.getComputeNodeIndex().size());
         assertFalse(enterpriseSystem.getComputeNodeList().isEmpty());
         assertEquals(8, enterpriseSystem.getComputeNodeList().size());
         assertEquals(0, enterpriseSystem.getAccumolatedViolation());

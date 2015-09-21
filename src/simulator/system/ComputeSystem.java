@@ -38,10 +38,8 @@ public class ComputeSystem extends GeneralSystem {
         this.slaViolationLogger = slaViolationLogger;
         setComputeNodeList(new ArrayList<BladeServer>());
         waitingList = new ArrayList<BatchJob>();
-        setComputeNodeIndex(new ArrayList<Integer>());
         setBis(systemPOD.getBis());
         setNumberOfNode(systemPOD.getNumberOfNode());
-        setRackIDs(systemPOD.getRackIDs());
         totalJob = 0;
     }
 
@@ -156,10 +154,6 @@ public class ComputeSystem extends GeneralSystem {
             slaViolationLogger.logHPCViolation(getName(), SLAViolationType);
             setAccumolatedViolation(getAccumolatedViolation() + 1);
         }
-    }
-
-    List<Integer> getIndexSet() {
-        return getComputeNodeIndex();
     }
 
     public int numberOfRunningNode() {

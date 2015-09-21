@@ -1,13 +1,16 @@
 package simulator.physical;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import simulator.Environment;
 
 public class Chassis extends DataCenterEntity {
 
     private List<BladeServer> servers = new ArrayList<BladeServer>();
+    private Map<DataCenterEntityID, BladeServer> availableServers = new HashMap<DataCenterEntityID, BladeServer>();
     private int chassisID, rackID;
     private String chassisType;
     
@@ -19,7 +22,12 @@ public class Chassis extends DataCenterEntity {
         for (BladeServerPOD bladeServerPOD : chassisPOD.getServerPODs()) {
             BladeServer bladeServer = new BladeServer(bladeServerPOD, environment);
             servers.add(bladeServer);
+            availableServers.put(bladeServer.getID(), bladeServer);
         }
+    }
+    
+    public BladeServer getServer(DataCenterEntityID id) {
+        return availableServers.get(id);
     }
 
     public List<BladeServer> getServers() {

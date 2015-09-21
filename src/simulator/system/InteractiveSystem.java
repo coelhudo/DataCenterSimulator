@@ -30,14 +30,12 @@ public class InteractiveSystem extends GeneralSystem {
         this.environment = environment;
         this.slaViolationLogger = slaViolationLogger;
         setComputeNodeList(new ArrayList<BladeServer>());
-        setComputeNodeIndex(new ArrayList<Integer>());
         setUserList(new ArrayList<InteractiveUser>());
         setWaitingQueueWL(new ArrayList<InteractiveUser>());
         resetNumberOfSLAViolation();
         setNumberOfNode(systemPOD.getNumberOfNode());
         setNumberOfIdleNode(systemPOD.getNumberOfNode());
         setBis(systemPOD.getBis());
-        setRackIDs(systemPOD.getRackIDs());
     }
 
     public int numberofAvailableNodetoAlocate() {
@@ -62,8 +60,7 @@ public class InteractiveSystem extends GeneralSystem {
 
     @Override
     public boolean runAcycle() {
-        if (!getUserList().isEmpty() & checkForViolation())
-        {
+        if (!getUserList().isEmpty() & checkForViolation()) {
             // AM.monitor();
             // AM.analysis(SLAviolation);
             // AM.planning();
@@ -85,7 +82,7 @@ public class InteractiveSystem extends GeneralSystem {
             markAsDone();
             return true;
         }
-        
+
         return false;
     }
     // First time resource Allocation

@@ -11,6 +11,7 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
 import simulator.jobs.EnterpriseJobProducer;
+import simulator.physical.DataCenterEntityID;
 
 public class EnterpriseSystemBuilder extends SystemBuilder {
 
@@ -34,6 +35,7 @@ public class EnterpriseSystemBuilder extends SystemBuilder {
                     String[] split = str.split(",");
                     for (int j = 0; j < split.length; j++) {
                         systemPOD.appendRackID(Integer.parseInt(split[j]));
+                        systemPOD.appendRackID(DataCenterEntityID.createRackID(Integer.parseInt(split[j]) + 1));
                     }
                 }
                 if ("ResourceAllocationAlg".equalsIgnoreCase(childNodes.item(i).getNodeName()))

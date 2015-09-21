@@ -98,7 +98,6 @@ public final class DataCenterEntityID {
         return chassisID - 1;
     }
 
-    @Deprecated
     public int getServerID() {
         return serverID - 1;
     }

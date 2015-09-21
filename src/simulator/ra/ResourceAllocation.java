@@ -50,8 +50,8 @@ public abstract class ResourceAllocation {
         int difference = currentInvolved - predicdetNumber;
         // LOGGER.info("in releaseing resource "+difference);
         for (int j = 0; j < difference; j++) {
-            int indexServer = enterpriseSystem.getApplications().get(0).getComputeNodeList().get(difference - j)
-                    .getID().getServerID();
+            int indexServer = enterpriseSystem.getApplications().get(0).getComputeNodeList().get(difference - j).getID()
+                    .getServerID();
             int indexChassis = enterpriseSystem.getApplications().get(0).getComputeNodeList().get(difference - j)
                     .getID().getChassisID();
             enterpriseSystem.getApplications().get(0).removeCompNodeFromBundle(
@@ -109,8 +109,10 @@ public abstract class ResourceAllocation {
                     enterpriseSystem.getAM().setRecForCoopAt(i, 1);
                 } else {
                     EnterpriseApp enterpriseApp = enterpriseSystem.getApplications().get(i);
-                    int indexServer = enterpriseSystem.getComputeNodeList().get(indexInComputeList).getID().getServerID();
-                    int indexChassis = enterpriseSystem.getComputeNodeList().get(indexInComputeList).getID().getChassisID();
+                    int indexServer = enterpriseSystem.getComputeNodeList().get(indexInComputeList).getID()
+                            .getServerID();
+                    int indexChassis = enterpriseSystem.getComputeNodeList().get(indexInComputeList).getID()
+                            .getChassisID();
                     final BladeServer server = dataCenter.getServer(indexChassis,
                             findServerInChasis(indexChassis, indexServer));
                     enterpriseSystem.getApplications().get(i).addCompNodetoBundle(server);
@@ -177,6 +179,7 @@ public abstract class ResourceAllocation {
         }
     }
 
+    // TODO: this
     public void initialResourceAloc(ComputeSystem computeSystem) {
         // Best fit resource allocation
         List<Integer> myChassisList = createChassisArray(computeSystem.getRackIDs());
@@ -194,7 +197,6 @@ public abstract class ResourceAllocation {
             // job yet!
             // in Allocation module ready flag will be changed to 1
             server.setStatusAsRunningNormal();
-            computeSystem.appendBladeServerIndexIntoComputeNodeIndex(serverIndex[1]);
             LOGGER.info("HPC System: ChassisID=" + indexChassis + "  & Server id = " + indexServer);
         }
     }
@@ -216,10 +218,10 @@ public abstract class ResourceAllocation {
         // yet!
         // in Allocation module ready flag will be changed to 1
         server.setStatusAsRunningNormal();
-        computeSystem.appendBladeServerIndexIntoComputeNodeIndex(serverIndex[1]);
         LOGGER.info("HPC System: ChassisID=" + indexChassis + "  & Server id = " + indexServer);
     }
 
+    // TODO: this
     // First time resource Allocation for system and bundle together
     public void initialResourceAlocator(EnterpriseSystem enterpriseSystem) {
         int[] serverIndex = new int[2];
@@ -238,7 +240,6 @@ public abstract class ResourceAllocation {
             // application yet!
             // in Allocation module ready flag will be changed to 1
             server.setStatusAsNotAssignedToAnyApplication();
-            enterpriseSystem.appendBladeServerIndexIntoComputeNodeIndex(serverIndex[1]);
             LOGGER.info("Enterprise System: ChassisID=" + indexChassis + "  & Server id = " + indexServer);
         }
         // Minimum allocation give every bundle minimum of its requierments
@@ -249,7 +250,8 @@ public abstract class ResourceAllocation {
             neededProc = enterpriseApplication.getMinProc();
             for (int index = 0; index < neededProc; index++) {
                 int indexServer = enterpriseSystem.getComputeNodeList().get(indexInComputeList).getID().getServerID();
-                int indexChassis = enterpriseSystem.getComputeNodeList().get(indexInComputeList++).getID().getChassisID();
+                int indexChassis = enterpriseSystem.getComputeNodeList().get(indexInComputeList++).getID()
+                        .getChassisID();
                 final BladeServer server = dataCenter.getServer(indexChassis,
                         findServerInChasis(indexChassis, indexServer));
                 enterpriseApplication.addCompNodetoBundle(server);
@@ -301,7 +303,6 @@ public abstract class ResourceAllocation {
             // workload yet!
             // in Allocation module ready flag will be changed to 1
             server.setStatusAsNotAssignedToAnyApplication();
-            interactiveSystem.appendBladeServerIndexIntoComputeNodeIndex(serverIndex[1]);
         }
     }
 
@@ -342,6 +343,7 @@ public abstract class ResourceAllocation {
         return 0;
     }
 
+    // TODO: this
     List<Integer> createChassisArray(List<Integer> myRackID) {
         List<Integer> myChassisId = new ArrayList<Integer>();
         for (Integer rackID : myRackID) {
@@ -353,6 +355,7 @@ public abstract class ResourceAllocation {
         }
         return myChassisId;
     }
+
     //////////////////////////////// INTERACTIVE//////////////////////////////
 
     public void resourceProvision(InteractiveSystem interactiveSystem, int[] alocVectr) {
@@ -365,10 +368,10 @@ public abstract class ResourceAllocation {
                         LOGGER.info("kkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkk");
                         return;
                     }
-                    int indexServer = interactiveSystem.getUserList().get(i).getComputeNodeList().get(indexi)
-                            .getID().getServerID();
-                    int indexChassis = interactiveSystem.getUserList().get(i).getComputeNodeList().get(indexi)
-                            .getID().getChassisID();
+                    int indexServer = interactiveSystem.getUserList().get(i).getComputeNodeList().get(indexi).getID()
+                            .getServerID();
+                    int indexChassis = interactiveSystem.getUserList().get(i).getComputeNodeList().get(indexi).getID()
+                            .getChassisID();
                     interactiveSystem.getUserList().get(i).getComputeNodeList().remove(indexi);
                     final BladeServer server = dataCenter.getServer(indexChassis,
                             findServerInChasis(indexChassis, indexServer));

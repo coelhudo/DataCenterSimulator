@@ -12,6 +12,7 @@ import org.w3c.dom.NodeList;
 
 import simulator.jobs.BatchJobProducer;
 import simulator.jobs.JobProducer;
+import simulator.physical.DataCenterEntityID;
 
 public class ComputeSystemBuilder extends SystemBuilder {
     
@@ -49,6 +50,7 @@ public class ComputeSystemBuilder extends SystemBuilder {
                     String[] split = str.split(",");
                     for (int j = 0; j < split.length; j++) {
                         systemPOD.appendRackID(Integer.parseInt(split[j]));
+                        systemPOD.appendRackID(DataCenterEntityID.createRackID(Integer.parseInt(split[j]) + 1));
                     }
                 }
             }

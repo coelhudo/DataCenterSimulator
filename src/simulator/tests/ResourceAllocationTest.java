@@ -120,7 +120,7 @@ public class ResourceAllocationTest {
 
         when(mockedDataCenter.getChassisSet()).thenReturn(Arrays.asList(mockedChassis));
         when(mockedDataCenter.getServer(0, 0)).thenReturn(mockedBladeServer);
-
+        
         when(mockedComputeSystem.getNumberOfNode()).thenReturn(1);
         when(mockedComputeSystem.getRackIDs()).thenReturn(Arrays.asList(0));
 
@@ -129,8 +129,7 @@ public class ResourceAllocationTest {
         verify(mockedComputeSystem).getRackIDs();
         verify(mockedComputeSystem, times(2)).getNumberOfNode();
         verify(mockedComputeSystem).addComputeNodeToSys(mockedBladeServer);
-        verify(mockedComputeSystem).appendBladeServerIndexIntoComputeNodeIndex(0);
-
+        
         verify(mockedChassis).getRackID();
         verify(mockedChassis).getChassisID();
 
@@ -193,8 +192,7 @@ public class ResourceAllocationTest {
         verify(mockedEnterpriseSystem).getComputeNodeList();
         verify(mockedEnterpriseSystem, times(2)).getNumberOfIdleNode();
         verify(mockedEnterpriseSystem).addComputeNodeToSys(mockedBladeServer);
-        verify(mockedEnterpriseSystem).appendBladeServerIndexIntoComputeNodeIndex(0);
-
+        
         verify(mockedDataCenter, times(1)).getChassisSet();
         verify(mockedDataCenter).getServer(0, 0);
 
@@ -238,8 +236,7 @@ public class ResourceAllocationTest {
         verify(mockedEnterpriseSystem, times(3)).getComputeNodeList();
         verify(mockedEnterpriseSystem, times(2)).getNumberOfIdleNode();
         verify(mockedEnterpriseSystem).addComputeNodeToSys(mockedBladeServer);
-        verify(mockedEnterpriseSystem).appendBladeServerIndexIntoComputeNodeIndex(0);
-
+        
         verify(mockedDataCenter, times(3)).getChassisSet();
         verify(mockedDataCenter, times(2)).getServer(0, 0);
 

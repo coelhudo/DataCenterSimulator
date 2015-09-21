@@ -59,7 +59,6 @@ public class EnterpriseSystemTest {
         assertNotNull(enterpriseSystem.getAM());
         assertTrue(enterpriseSystem.getApplications().isEmpty());
         assertNull(enterpriseSystem.getBis());
-        assertTrue(enterpriseSystem.getComputeNodeIndex().isEmpty());
         assertTrue(enterpriseSystem.getComputeNodeList().isEmpty());
         assertNull(enterpriseSystem.getName());
         assertEquals(0, enterpriseSystem.getNumberOfActiveServ());

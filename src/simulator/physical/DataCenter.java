@@ -99,7 +99,6 @@ public class DataCenter {
         return overRed;
     }
 
-    @Deprecated
     public BladeServer getServer(int i) {
         return chassisSet.get(getChasisIndex(i)).getServers().get(getServerIndex(i));
     }
