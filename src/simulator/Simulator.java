@@ -39,8 +39,9 @@ public class Simulator {
             // LOGGER.info("--"+Main.localTime);
             allSystemRunACycle();
             allSystemCalculatePower();
-            datacenter.calculatePower();
+            dataCenter.calculatePower();
             environment.updateCurrentLocalTime();
+            LOGGER.info(dataCenter.GetStats());
             // ////Data Center Level AM MAPE Loop
             // if(Main.localTime%1==0)
             // {
@@ -58,24 +59,24 @@ public class Simulator {
         slaViolationLogger = new SLAViolationLogger(environment);
         systems = new Systems(environment);
         dataCenterAM = new DataCenterAM(environment, systems);
-        datacenter = new DataCenter(simulatorPOD.getDataCenterPOD(), dataCenterAM, activitiesLogger, environment);
+        dataCenter = new DataCenter(simulatorPOD.getDataCenterPOD(), dataCenterAM, activitiesLogger, environment);
         SystemsPOD systemsPOD = simulatorPOD.getSystemsPOD();
         loadEnterpriseSystemIntoSystems(systems, systemsPOD.getEnterpriseSystemsPOD());
         for (ComputeSystemPOD computeSystemPOD : systemsPOD.getComputeSystemsPOD()) {
             systems.addComputeSystem(
-                    ComputeSystem.create(computeSystemPOD, environment, datacenter, slaViolationLogger));
+                    ComputeSystem.create(computeSystemPOD, environment, dataCenter, slaViolationLogger));
         }
         for (InteractiveSystemPOD interactivePOD : systemsPOD.getInteractiveSystemsPOD()) {
             systems.addInteractiveSystem(
-                    InteractiveSystem.create(interactivePOD, environment, datacenter, slaViolationLogger));
+                    InteractiveSystem.create(interactivePOD, environment, dataCenter, slaViolationLogger));
         }
 
-        datacenter.getAM().setStrategy(StrategyEnum.Green);
+        dataCenter.getAM().setStrategy(StrategyEnum.Green);
 
         class DataCenterAMXunxo implements Observer {
             public void update(Observable o, Object arg) {
                 LOGGER.info("Update Called: executing xunxo that I made (and I'm not proud about it)");
-                datacenter.getAM().resetBlockTimer();
+                dataCenter.getAM().resetBlockTimer();
             }
         }
 
@@ -86,7 +87,7 @@ public class Simulator {
         for (EnterpriseSystemPOD enterpriseSystemPOD : enterpriseSystemPODs) {
             EnterpriseSystemAM enterpriseSystemAM = new EnterpriseSystemAM(environment, slaViolationLogger);
             Scheduler scheduler = new FIFOScheduler();
-            ResourceAllocation resourceAllocation = new MHR(environment, datacenter);
+            ResourceAllocation resourceAllocation = new MHR(environment, dataCenter);
             List<EnterpriseApp> applications = loadEnterpriseSystemApplications(
                     enterpriseSystemPOD.getApplicationPODs(), enterpriseSystemAM, resourceAllocation, scheduler);
             systems.addEnterpriseSystem(EnterpriseSystem.create(enterpriseSystemPOD, scheduler, resourceAllocation,
@@ -111,22 +112,22 @@ public class Simulator {
     // private int epochSys = 120, epochSideApp = 120;
     // private List<ResponseTime> responseArray;
     // public int communicationAM = 0;
-    private DataCenter datacenter;
+    private DataCenter dataCenter;
     private Environment environment;
     private Systems systems;
     private SLAViolationLogger slaViolationLogger;
     private DataCenterAM dataCenterAM;
 
     protected double getTotalPowerConsumption() {
-        return datacenter.getTotalPowerConsumption();
+        return dataCenter.getTotalPowerConsumption();
     }
 
     protected int getOverRedTempNumber() {
-        return datacenter.getOverRed();
+        return dataCenter.getOverRed();
     }
 
     public DataCenter getDatacenter() {
-        return datacenter;
+        return dataCenter;
     }
 
     public enum StrategyEnum {
@@ -175,7 +176,7 @@ public class Simulator {
     void csFinalize() {
         slaViolationLogger.finish();
         systems.logTotalResponseTimeComputeSystem();
-        datacenter.shutDownDC();
+        dataCenter.shutDownDC();
     }
 
     public boolean areSystemsDone() {

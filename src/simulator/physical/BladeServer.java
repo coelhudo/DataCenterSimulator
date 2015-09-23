@@ -33,7 +33,7 @@ public class BladeServer extends DataCenterEntity {
     private int queueLength;
     private int totalJob = 0;
     private double totalJobEpoch = 0;
-    private BladeServerStatus ready;
+    private BladeServerStatus status;
     private BladeServerStatus savedReady;
     private List<BatchJob> activeBatchJobs;
     private List<BatchJob> blockedBatchJobs;
@@ -398,55 +398,55 @@ public class BladeServer extends DataCenterEntity {
     }
 
     public boolean isNotSystemAssigned() {
-        return ready == BladeServerStatus.NOT_ASSIGNED_TO_ANY_SYSTEM;
+        return status == BladeServerStatus.NOT_ASSIGNED_TO_ANY_SYSTEM;
     }
 
     public boolean isNotApplicationAssigned() {
-        return ready == BladeServerStatus.NOT_ASSIGNED_TO_ANY_APPLICATION;
+        return status == BladeServerStatus.NOT_ASSIGNED_TO_ANY_APPLICATION;
     }
 
     public boolean isIdle() {
-        return ready == BladeServerStatus.IDLE;
+        return status == BladeServerStatus.IDLE;
     }
 
     public boolean isRunningNormal() {
-        return ready == BladeServerStatus.RUNNING_NORMAL;
+        return status == BladeServerStatus.RUNNING_NORMAL;
     }
 
     public boolean isRunningBusy() {
-        return ready == BladeServerStatus.RUNNING_BUSY;
+        return status == BladeServerStatus.RUNNING_BUSY;
     }
 
     public boolean isRunning() {
-        return ready == BladeServerStatus.RUNNING_BUSY || ready == BladeServerStatus.RUNNING_NORMAL;
+        return status == BladeServerStatus.RUNNING_BUSY || status == BladeServerStatus.RUNNING_NORMAL;
     }
 
     private void setStatusAsNotAssignedToAnySystem() {
-        this.ready = BladeServerStatus.NOT_ASSIGNED_TO_ANY_SYSTEM;
+        this.status = BladeServerStatus.NOT_ASSIGNED_TO_ANY_SYSTEM;
     }
 
     public void setStatusAsNotAssignedToAnyApplication() {
-        this.ready = BladeServerStatus.NOT_ASSIGNED_TO_ANY_APPLICATION;
+        this.status = BladeServerStatus.NOT_ASSIGNED_TO_ANY_APPLICATION;
     }
 
     public void setStatusAsIdle() {
-        this.ready = BladeServerStatus.IDLE;
+        this.status = BladeServerStatus.IDLE;
     }
 
     public void setStatusAsRunningNormal() {
-        this.ready = BladeServerStatus.RUNNING_NORMAL;
+        this.status = BladeServerStatus.RUNNING_NORMAL;
     }
 
     public void setStatusAsRunningBusy() {
-        this.ready = BladeServerStatus.RUNNING_BUSY;
+        this.status = BladeServerStatus.RUNNING_BUSY;
     }
 
     public void restoreStatus() {
-        this.ready = savedReady;
+        this.status = savedReady;
     }
 
     public void saveStatus() {
-        this.savedReady = this.ready;
+        this.savedReady = this.status;
     }
 
     public List<BatchJob> getActiveBatchList() {
@@ -545,18 +545,8 @@ public class BladeServer extends DataCenterEntity {
         return idleConsumption;
     }
 
-    /*
-     * double getMeanResTimeLastEpoch() {
-     * 
-     * if (resTimeEpoch == 0) // the first time in { resTimeEpoch = respTime;
-     * totalJobEpoch = totalJob - queueLength; LOGGER.info(
-     * "First   Last Epoch   " + respTime + totalJobEpoch + "\t" + chassisID);
-     * if (totalJobEpoch > 0) return respTime / totalJobEpoch; else return 0; }
-     * else { double tempTime = respTime - resTimeEpoch; double tempJob =
-     * totalJob - queueLength - totalJobEpoch; resTimeEpoch = respTime;
-     * totalJobEpoch = totalJob - queueLength; LOGGER.info(
-     * "in get MeanResponse Last Epoch   " + tempTime / tempJob + "\t" +
-     * chassisID); if (tempJob != 0) return tempTime / tempJob; else return 0; }
-     * }
-     */
+    @Override
+    public String getStats() {
+        return "bladeServer: " + getID().toString() + " " + status.toString();
+    }
 }

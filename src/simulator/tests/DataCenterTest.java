@@ -128,5 +128,4 @@ public class DataCenterTest {
 
         verifyNoMoreInteractions(mockedActivitiesLogger, mockeddataCenterAM, mockedEnvironment);
     }
-
 }

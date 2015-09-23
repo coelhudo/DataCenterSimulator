@@ -1,6 +1,6 @@
 package simulator.physical;
 
-public class DataCenterEntity {
+public abstract class DataCenterEntity {
     private final DataCenterEntityID id;
     
     public DataCenterEntity(DataCenterEntityID id) {
@@ -28,4 +28,6 @@ public class DataCenterEntity {
     public int hashCode() {
         return id.hashCode();
     }
+    
+    public abstract String getStats();
 }

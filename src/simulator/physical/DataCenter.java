@@ -130,4 +130,14 @@ public class DataCenter {
     public Rack getRack(DataCenterEntityID id) {
         return racks.get(id);
     }
+
+    public String GetStats() {
+        String stats = new String();
+        
+        for(Rack rack : racks.values()) {
+            stats += rack.getStats() + "\n";
+        }
+        
+        return stats;
+    }
 }

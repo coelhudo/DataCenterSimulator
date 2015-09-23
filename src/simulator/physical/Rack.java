@@ -26,4 +26,16 @@ public class Rack extends DataCenterEntity {
     public Chassis getChassis(DataCenterEntityID id) {
         return chassis.get(id);
     }
+
+    @Override
+    public String getStats() {
+        String stats = "rack " + getID().toString() + "\n";
+        for(Chassis currentChassis : chassis.values()) {
+            stats += currentChassis.getStats();
+        }
+        
+        stats += "\n";
+        
+        return stats;
+    }
 }

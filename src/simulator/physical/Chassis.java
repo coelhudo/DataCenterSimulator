@@ -9,7 +9,7 @@ import simulator.Environment;
 
 public class Chassis extends DataCenterEntity {
 
-    private final Map<DataCenterEntityID, BladeServer> availableServers = new HashMap<DataCenterEntityID, BladeServer>();
+    private final Map<DataCenterEntityID, BladeServer> servers = new HashMap<DataCenterEntityID, BladeServer>();
     private String chassisType;
     
     public Chassis(ChassisPOD chassisPOD, Environment environment) {
@@ -17,16 +17,16 @@ public class Chassis extends DataCenterEntity {
         chassisType = chassisPOD.getChassisType();
         for (BladeServerPOD bladeServerPOD : chassisPOD.getServerPODs()) {
             BladeServer bladeServer = new BladeServer(bladeServerPOD, environment);
-            availableServers.put(bladeServer.getID(), bladeServer);
+            servers.put(bladeServer.getID(), bladeServer);
         }
     }
     
     public BladeServer getServer(DataCenterEntityID id) {
-        return availableServers.get(id);
+        return servers.get(id);
     }
 
     public Collection<BladeServer> getServers() {
-        return Collections.unmodifiableCollection(availableServers.values());
+        return Collections.unmodifiableCollection(servers.values());
     }
 
     /**
@@ -36,14 +36,14 @@ public class Chassis extends DataCenterEntity {
      */
     public double power() {
         double pw = 0;
-        for (BladeServer bladeServer : availableServers.values()) {
+        for (BladeServer bladeServer : servers.values()) {
             pw = pw + bladeServer.getPower();
         }
         return pw;
     }
     
     public BladeServer getNextNotAssignedBladeServer() {
-        for (BladeServer bladeServer : availableServers.values()) {
+        for (BladeServer bladeServer : servers.values()) {
             if (bladeServer.isNotSystemAssigned()) {
                 return bladeServer;
             }
@@ -58,5 +58,17 @@ public class Chassis extends DataCenterEntity {
     @Override
     public String toString() {
         return getID().toString();
+    }
+
+    @Override
+    public String getStats() {
+        String stats = "chassis: " + getID().toString() + "-> ";
+        for(BladeServer bladeServer : servers.values()) {
+            stats += bladeServer.getStats() + "; ";
+        }
+        
+        stats += "\n";
+        
+        return stats;
     }
 }
