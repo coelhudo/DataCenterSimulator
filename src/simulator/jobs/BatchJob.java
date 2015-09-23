@@ -1,9 +1,12 @@
 package simulator.jobs;
 
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.logging.Logger;
 
+import simulator.physical.DataCenterEntityID;
 import simulator.physical.BladeServer;
-import simulator.physical.DataCenter;
 
 public class BatchJob extends Job {
 
@@ -13,12 +16,20 @@ public class BatchJob extends Job {
     private double exitTime;
     private double deadline;
     private boolean modified = false;
-    private double reqTime;
+    private double remainingTime;
     private double utilization;
-    private double[] remain;
     private int numOfNode;
-    private int[] listOfServer;
-    private DataCenter dataCenter;
+    private Map<DataCenterEntityID, BladeServerShare> listOfServer = new HashMap<DataCenterEntityID, BladeServerShare>();
+
+    private class BladeServerShare {
+        public BladeServerShare(BladeServer bladeServer, double remainingTime) {
+            this.bladeSever = bladeServer;
+            this.remainingTime = remainingTime;
+        }
+
+        private double remainingTime;
+        private BladeServer bladeSever;
+    }
 
     public void setRemainParam(double remainingTime, double utilization, int numberOfNodes, double deadline) {
         if (utilization < 1) {
@@ -27,10 +38,6 @@ public class BatchJob extends Job {
             setUtilization(utilization / 100);
         }
         setNumOfNode(numberOfNodes);
-        setRemain(new double[getNumOfNode()]);
-        for (int i = 0; i < getNumOfNode(); i++) {
-            setRemainAt(i, remainingTime);
-        }
         setReqTime(remainingTime);
         setDeadline(deadline);
     }
@@ -44,13 +51,9 @@ public class BatchJob extends Job {
         setDeadline(0);
     }
 
-    public void setDataCenter(DataCenter dataCenter) {
-        this.dataCenter = dataCenter;
-    }
-
     public boolean allDone() {
-        for (int i = 0; i < getNumOfNode(); i++) {
-            if (getRemainAt(i) > 0) {
+        for (BladeServerShare bladeServerShare : listOfServer.values()) {
+            if (bladeServerShare.remainingTime > 0) {
                 return false;
             }
         }
@@ -64,21 +67,11 @@ public class BatchJob extends Job {
             LOGGER.info("Alert: Error in BatchJob\t" + waitTime);
         }
 
-        for (int i = 0; i < getNumOfNode(); i++) {
-            BladeServer server = dataCenter.getServer(getServerIndexAt(i));
-            server.getBlockedBatchList().remove(this);
+        for (BladeServerShare bladeServerShare : this.listOfServer.values()) {
+            bladeServerShare.bladeSever.getBlockedBatchList().remove(this);
         }
 
         return waitTime;
-    }
-
-    public int getThisNodeIndex(int serverIndex) {
-        for (int ki = 0; ki < getNumOfNode(); ki++) {
-            if (getServerIndexAt(ki) == serverIndex) {
-                return ki;
-            }
-        }
-        return -1;
     }
 
     public double getStartTime() {
@@ -112,17 +105,17 @@ public class BatchJob extends Job {
     public void setAsModified() {
         this.modified = true;
     }
-    
+
     public void setAsNotModified() {
         this.modified = false;
     }
 
     public double getReqTime() {
-        return reqTime;
+        return remainingTime;
     }
 
     public void setReqTime(double reqTime) {
-        this.reqTime = reqTime;
+        this.remainingTime = reqTime;
     }
 
     public double getUtilization() {
@@ -133,16 +126,12 @@ public class BatchJob extends Job {
         this.utilization = utilization;
     }
 
-    public double getRemainAt(int index) {
-        return remain[index];
+    public double getRemainAt(DataCenterEntityID id) {
+        return listOfServer.get(id).remainingTime;
     }
 
-    public void setRemainAt(int index, double remainValue) {
-        remain[index] = remainValue;
-    }
-
-    private void setRemain(double[] remain) {
-        this.remain = remain;
+    public void setRemainAt(DataCenterEntityID id, double remainValue) {
+        listOfServer.get(id).remainingTime = remainValue;
     }
 
     public int getNumOfNode() {
@@ -153,12 +142,18 @@ public class BatchJob extends Job {
         this.numOfNode = numOfNode;
     }
 
-    public int getServerIndexAt(int index) {
-        assert(listOfServer != null && listOfServer.length > index);
-        return listOfServer[index];
+    public BladeServer getServerIndexAt(DataCenterEntityID index) {
+        return listOfServer.get(index).bladeSever;
     }
 
-    public void setListOfServer(int[] listOfServer) {
-        this.listOfServer = listOfServer;
+    public void setListOfServer(List<BladeServer> listOfServer) {
+        if (listOfServer.size() != numOfNode) {
+            throw new RuntimeException(
+                    "Not expecting amount of servers different from number of nodes requested for this job.");
+        }
+
+        for (BladeServer bladeServer : listOfServer) {
+            this.listOfServer.put(bladeServer.getID(), new BladeServerShare(bladeServer, remainingTime));
+        }
     }
 }

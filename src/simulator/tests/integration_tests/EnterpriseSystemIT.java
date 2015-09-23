@@ -43,9 +43,6 @@ public class EnterpriseSystemIT {
     public void testWithOneServerOneEnterpriseApplication() {
         BladeServerPOD bladeServerPOD = new BladeServerPOD();
         bladeServerPOD.setBladeType("DummyType");
-        bladeServerPOD.setChassisID(0);
-        bladeServerPOD.setRackID(0);
-        bladeServerPOD.setServerID(0);
         bladeServerPOD.setFrequencyLevel(FREQUENCY_LEVEL);
         bladeServerPOD.setPowerBusy(POWER_BUSY);
         bladeServerPOD.setPowerIdle(POWER_IDLE);
@@ -56,8 +53,6 @@ public class EnterpriseSystemIT {
         chassisPOD.appendServerPOD(bladeServerPOD);
         chassisPOD.setBladeType("DummyType");
         chassisPOD.setChassisType("DummyChassisType");
-        chassisPOD.setChassisID(0);
-        chassisPOD.setRackID(0);
         chassisPOD.setID(DataCenterEntityID.createChassisID(1, 1));
         
         RackPOD rackPOD = new RackPOD();
@@ -101,7 +96,7 @@ public class EnterpriseSystemIT {
         SystemPOD systemPOD = new EnterpriseSystemPOD();
         systemPOD.setName("DummyHPCSystem");
         systemPOD.setNumberofNode(1);
-        systemPOD.appendRackID(0);
+        systemPOD.appendRackID(rackPOD.getID());
 
         List<EnterpriseApp> applications = Arrays
                 .asList(new EnterpriseApp(enterpriseApplicationPOD, fcfsScheduler, resourceAllocation, environment));

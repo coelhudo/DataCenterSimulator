@@ -1,7 +1,13 @@
 package simulator.physical;
 
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import simulator.Environment;
 import simulator.am.DataCenterAM;
@@ -11,8 +17,7 @@ public class DataCenter {
 
     private int overRed = 0;
     private double totalPowerConsumption = 0;
-    private List<Chassis> chassisSet = new ArrayList<Chassis>();
-    private List<Rack> racks = new ArrayList<Rack>();
+    private Map<DataCenterEntityID, Rack> racks = new HashMap<DataCenterEntityID, Rack>();
     private int redTemperature;
     private double[][] D;
     private DataCenterAM am;
@@ -26,40 +31,47 @@ public class DataCenter {
         am = dataCenterAM;
         this.environment = environment;
         for (RackPOD rackPOD : dataCenterPOD.getRackPODs()) {
-            racks.add(new Rack(rackPOD, environment));
-            for (ChassisPOD chassisPOD : rackPOD.getChassisPODs()) {
-                Chassis chassis = new Chassis(chassisPOD, environment);
-                chassisSet.add(chassis);
-            }
+            racks.put(rackPOD.getID(), new Rack(rackPOD, environment));
         }
         redTemperature = dataCenterPOD.getRedTemperature();
         D = dataCenterPOD.getD();
-    }
-
-    private int getServerIndex(int i) {
-        return i % chassisSet.get(0).getServers().size();
-    }
-
-    private int getChasisIndex(int i) {
-        return i / chassisSet.get(0).getServers().size();
     }
 
     /**
      * Calculate Power using Equation 6 from doi:10.1016/j.comnet.2009.06.008
      */
     public void calculatePower() {
-        int m = chassisSet.size();
+        List<Chassis> chassis = new ArrayList<Chassis>();
+        for (Rack rack : racks.values()) {
+            chassis.addAll(rack.getChassis());
+        }
+        
+        /**
+         * The heat matrix is order dependent. Still need to fix this.
+         */
+        class ChassisComparator implements Comparator<Chassis> {
+
+            @Override
+            public int compare(Chassis o1, Chassis o2) {
+                return o1.getID().compareTo(o2.getID());
+            }
+            
+        }
+        
+        Collections.sort(chassis, new ChassisComparator());
+        
+        int m = chassis.size();
         double computingPower = 0;
         double[] temperature = new double[m];
-        for (Chassis chassis : chassisSet) {
-            final double chassisComputingPower = chassis.power();
-            activitiesLogger.write((int) chassis.power() + "\t");
+        for (Chassis curretChassis : chassis) {
+            final double chassisComputingPower = curretChassis.power();
+            activitiesLogger.write(curretChassis.getID() + " "+ chassisComputingPower + "\n");
             computingPower = computingPower + chassisComputingPower;
         }
 
         for (int i = 0; i < m; i++) {
             for (int j = 0; j < m; j++) {
-                temperature[i] = temperature[i] + D[i][j] * chassisSet.get(j).power();
+                temperature[i] = temperature[i] + D[i][j] * chassis.get(j).power();
             }
         }
 
@@ -82,7 +94,7 @@ public class DataCenter {
         final double cop = Cooler.getCOP(maxTemp);
         final double currentTotalEnergyConsumption = computingPower * (1 + 1.0 / cop);
 
-        activitiesLogger.write(((int) currentTotalEnergyConsumption) + "\t" + (int) computingPower + "\t"
+        activitiesLogger.write("\n" + (int) currentTotalEnergyConsumption + "\t" + (int) computingPower + "\t"
                 + environment.getCurrentLocalTime() + "\n");
         totalPowerConsumption = totalPowerConsumption + currentTotalEnergyConsumption;
     }
@@ -99,27 +111,23 @@ public class DataCenter {
         return overRed;
     }
 
-    public BladeServer getServer(int i) {
-        return chassisSet.get(getChasisIndex(i)).getServers().get(getServerIndex(i));
-    }
-
-    public BladeServer getServer(int indexChassis, int indexServer) {
-        return chassisSet.get(indexChassis).getServers().get(indexServer);
-    }
-    
-    public BladeServer getServer(DataCenterEntityID id) {
-        return chassisSet.get(getChasisIndex(id.getServerID())).getServers().get(getServerIndex(id.getServerID()));
-    }
-
-    public List<Chassis> getChassisSet() {
-        return chassisSet;
+    public List<Chassis> getChassisFromRacks(Set<DataCenterEntityID> rackIDs) {
+        List<Chassis> allChassisFromRacks = new ArrayList<Chassis>();
+        for (DataCenterEntityID rackID : rackIDs) {
+            allChassisFromRacks.addAll(racks.get(rackID).getChassis());
+        }
+        return allChassisFromRacks;
     }
 
     public double getTotalPowerConsumption() {
         return totalPowerConsumption;
     }
 
-    public List<Rack> getRacks() {
-        return racks;
+    public Collection<Rack> getRacks() {
+        return racks.values();
+    }
+
+    public Rack getRack(DataCenterEntityID id) {
+        return racks.get(id);
     }
 }

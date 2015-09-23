@@ -1,8 +1,6 @@
 package simulator.tests;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 
@@ -13,6 +11,7 @@ import simulator.Environment;
 import simulator.physical.BladeServerPOD;
 import simulator.physical.Chassis;
 import simulator.physical.ChassisPOD;
+import simulator.physical.DataCenterEntityID;
 
 public class ChassisTest {
 
@@ -28,19 +27,18 @@ public class ChassisTest {
         bladeServerPOD.setPowerIdle(POWER_IDLE);
         bladeServerPOD.setPowerBusy(POWER_BUSY);
         bladeServerPOD.setIdleConsumption(5.0);
+        bladeServerPOD.setID(DataCenterEntityID.createServerID(1, 1, 1));
     }
 
     @Test
     public void testChassisCreation() {
         Environment mockedEnvironment = mock(Environment.class);
-        final int chassisID = 1;
+        final String chassisID = "1.1.0";
         ChassisPOD chassisPOD = new ChassisPOD();
-        chassisPOD.setChassisID(1);
+        chassisPOD.setID(DataCenterEntityID.createChassisID(1, 1));
         Chassis chassis = new Chassis(chassisPOD, mockedEnvironment);
-        assertEquals(chassisID, chassis.getChassisID());
-        assertEquals(0, chassis.getRackID());
-        assertTrue(chassis.getServers().isEmpty());
-
+        assertEquals(chassisID, chassis.getID().toString());
+        
         verifyNoMoreInteractions(mockedEnvironment);
     }
 
@@ -50,7 +48,6 @@ public class ChassisTest {
         chassisPOD.appendServerPOD(bladeServerPOD);
         Environment mockedEnvironment = mock(Environment.class);
         Chassis chassis = new Chassis(chassisPOD, mockedEnvironment);
-        assertFalse(chassis.getServers().isEmpty());
         assertEquals(5.0, chassis.power(), 1.0E-8);
 
         verifyNoMoreInteractions(mockedEnvironment);
@@ -62,8 +59,7 @@ public class ChassisTest {
         chassisPOD.appendServerPOD(bladeServerPOD);
         Environment mockedEnvironment = mock(Environment.class);
         Chassis chassis = new Chassis(chassisPOD, mockedEnvironment);
-        assertFalse(chassis.getServers().isEmpty());
-        chassis.getServers().get(0).setStatusAsRunningBusy();
+        chassis.getServer(bladeServerPOD.getID()).setStatusAsRunningBusy();
         assertEquals(100.0, chassis.power(), 1.0E-8);
 
         verifyNoMoreInteractions(mockedEnvironment);

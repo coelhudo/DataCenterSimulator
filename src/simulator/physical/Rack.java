@@ -1,28 +1,28 @@
 package simulator.physical;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
 
 import simulator.Environment;
 
 public class Rack extends DataCenterEntity {
 
-    private List<Chassis> chassis = new ArrayList<Chassis>();
-    private int rackID;
+    private Map<DataCenterEntityID, Chassis> chassiss = new HashMap<DataCenterEntityID, Chassis>();
     
     public Rack(RackPOD rackPOD, Environment environment) {
         super(rackPOD.getID());
-        rackID = rackPOD.getRackID();
         for (ChassisPOD chassisPOD : rackPOD.getChassisPODs()) {
-            chassis.add(new Chassis(chassisPOD, environment));
+            Chassis currentChassis = new Chassis(chassisPOD, environment);
+            chassiss.put(chassisPOD.getID(), currentChassis);
         }
     }
     
-    public int getRackID() {
-        return rackID;
+    public Collection<Chassis> getChassis() {
+        return chassiss.values();
     }
     
-    public List<Chassis> getChassis() {
-        return chassis;
+    public Chassis getChassis(DataCenterEntityID id) {
+        return chassiss.get(id);
     }
 }

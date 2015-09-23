@@ -76,55 +76,46 @@ public class MHRTest {
 
     @Test
     public void testNextServerSys_EmptyChassis() {
-        List<Integer> chassis = new ArrayList<Integer>();
+        List<Chassis> chassis = new ArrayList<Chassis>();
         assertNull(mininumHeatRecirculation.nextServerSys(chassis));
     }
 
     @Test
     public void testNextServerSys_ChassisNotExpected() {
-        List<Integer> chassis = Arrays.asList(51);
+        Chassis mockedChassis = mock(Chassis.class);
+        when(mockedChassis.getID()).thenReturn(DataCenterEntityID.createChassisID(1, 1));
+        List<Chassis> chassis = Arrays.asList(mockedChassis);
         assertNull(mininumHeatRecirculation.nextServerSys(chassis));
     }
 
     @Test
     public void testNextServerSys_ChassisExpected_BladeServerSystemAssigned() {
-        List<Integer> chassisIndex = Arrays.asList(0);
         Chassis mockedChassis = mock(Chassis.class);
+        when(mockedChassis.getID()).thenReturn(DataCenterEntityID.createChassisID(1, 1));
+        when(mockedChassis.getNextNotAssignedBladeServer()).thenReturn(null);
+        
         List<Chassis> chassis = Arrays.asList(mockedChassis);
-        when(mockedDataCenter.getChassisSet()).thenReturn(chassis);
-        BladeServer mockedBladeServer = mock(BladeServer.class);
-        List<BladeServer> bladeServers = Arrays.asList(mockedBladeServer);
-        when(mockedChassis.getServers()).thenReturn(bladeServers);
-        when(mockedBladeServer.isNotSystemAssigned()).thenReturn(false);
+        
+        assertNull(mininumHeatRecirculation.nextServerSys(chassis));
 
-        assertNull(mininumHeatRecirculation.nextServerSys(chassisIndex));
-
-        verify(mockedDataCenter, times(3)).getChassisSet();
-        verify(mockedChassis, times(3)).getServers();
-        verify(mockedBladeServer).isNotSystemAssigned();
-
-        verifyNoMoreInteractions(mockedChassis, mockedBladeServer);
+        verify(mockedChassis, times(50)).getID();
+        verify(mockedChassis).getNextNotAssignedBladeServer();
+        
+        verifyNoMoreInteractions(mockedChassis);
     }
 
     @Test
     public void testNextServerSys_ChassisExpected_BladeServerNotSystemAssigned() {
-        List<Integer> chassisIndex = Arrays.asList(0);
         Chassis mockedChassis = mock(Chassis.class);
+        when(mockedChassis.getID()).thenReturn(DataCenterEntityID.createChassisID(1, 1));
         List<Chassis> chassis = Arrays.asList(mockedChassis);
-        when(mockedDataCenter.getChassisSet()).thenReturn(chassis);
         BladeServer mockedBladeServer = mock(BladeServer.class);
-        List<BladeServer> bladeServers = Arrays.asList(mockedBladeServer);
-        when(mockedChassis.getServers()).thenReturn(bladeServers);
-        when(mockedBladeServer.getID()).thenReturn(DataCenterEntityID.createServerID(1, 1, 1));
-        when(mockedBladeServer.isNotSystemAssigned()).thenReturn(true);
-
-        assertEquals("1.1.1", mininumHeatRecirculation.nextServerSys(chassisIndex).getID().toString());
+        when(mockedChassis.getNextNotAssignedBladeServer()).thenReturn(mockedBladeServer);
+        assertEquals(mockedBladeServer, mininumHeatRecirculation.nextServerSys(chassis));
         
-        verify(mockedDataCenter, times(3)).getChassisSet();
-        verify(mockedChassis, times(3)).getServers();
-        verify(mockedBladeServer).isNotSystemAssigned();
-        verify(mockedBladeServer).getID();
-
+        verify(mockedChassis, times(26)).getID();
+        verify(mockedChassis).getNextNotAssignedBladeServer();
+        
         verifyNoMoreInteractions(mockedChassis, mockedBladeServer);
     }
 

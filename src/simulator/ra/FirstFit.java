@@ -6,6 +6,7 @@ import java.util.List;
 import simulator.Environment;
 import simulator.physical.BladeServer;
 import simulator.physical.BladeServerCollectionOperations;
+import simulator.physical.Chassis;
 import simulator.physical.DataCenter;
 
 /**
@@ -28,14 +29,10 @@ public class FirstFit extends ResourceAllocation {
         return -2;
     }
 
-    public BladeServer nextServerSys(List<Integer> chassisList) {
+    public BladeServer nextServerSys(List<Chassis> chassis) {
         
-        for (int l = 0; l < chassisList.size(); l++) {
-            for (int k = 0; k < dataCenter.getChassisSet().get(chassisList.get(l)).getServers().size(); k++) {
-                if (dataCenter.getChassisSet().get(chassisList.get(l)).getServers().get(k).isNotSystemAssigned()) {
-                    return dataCenter.getChassisSet().get(chassisList.get(l)).getServers().get(k);
-                }
-            }
+        for (Chassis currentChassis : chassis) {
+            return currentChassis.getNextNotAssignedBladeServer();
         }
         return null;
     }

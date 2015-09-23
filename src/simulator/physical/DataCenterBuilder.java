@@ -149,7 +149,7 @@ public class DataCenterBuilder {
                 }
                 if ("Rack_ID".equalsIgnoreCase(childNodes.item(i).getNodeName())) {
                     rackID = Integer.parseInt(childNodes.item(i).getChildNodes().item(0).getNodeValue().trim());
-                    rackPOD.setRackID(rackID);
+                    rackPOD.setID(DataCenterEntityID.createRackID(rackID + 1));
                 }
             }
         }
@@ -166,31 +166,15 @@ public class DataCenterBuilder {
             numbOfSofarChassis += kk;
         }
 
-        loadIDIntoEntities(rackPOD);
-
         dataCenterPOD.appendRack(rackPOD);
-    }
-
-    private void loadIDIntoEntities(RackPOD rackPOD) {
-        rackPOD.setID(DataCenterEntityID.createRackID(rackPOD.getRackID() + 1));
-        LOGGER.info(RackPOD.class.getName() + " " + rackPOD.getID().toString());
-        for (ChassisPOD chassisPOD : rackPOD.getChassisPODs()) {
-            chassisPOD.setID(DataCenterEntityID.createChassisID(rackPOD.getRackID() + 1, chassisPOD.getChassisID() + 1));
-            LOGGER.info(ChassisPOD.class.getName() + " " + chassisPOD.getID().toString());
-            for (BladeServerPOD bladeServerPOD : chassisPOD.getServerPODs()) {
-                bladeServerPOD.setID(DataCenterEntityID.createServerID(rackPOD.getRackID() + 1, chassisPOD.getChassisID() + 1,
-                        bladeServerPOD.getServerID() + 1));
-                LOGGER.info(BladeServerPOD.class.getName() + " " + bladeServerPOD.getID().toString());
-            }
-        }
     }
 
     void loadChassisIntoDataCenter(ChassisPOD currentChassisPOD, RackPOD rackPOD, int kk) {
         ChassisPOD chassisPOD = new ChassisPOD(currentChassisPOD);
-        chassisPOD.setChassisID(numbOfSofarChassis + kk);
-        chassisPOD.setRackID(rackPOD.getRackID());
+        chassisPOD.setID(DataCenterEntityID.createChassisID(rackPOD.getID().getRackID()+1, numbOfSofarChassis + kk+1));
         for (BladeServerPOD bladeServerPOD : chassisPOD.getServerPODs()) {
-            bladeServerPOD.setServerID(numberOfServersSoFar);
+            bladeServerPOD.setID(DataCenterEntityID.createServerID(rackPOD.getID().getRackID()+1,
+                    chassisPOD.getID().getChassisID()+1, numberOfServersSoFar+1));
             numberOfServersSoFar++;
         }
         rackPOD.appendChassis(chassisPOD);

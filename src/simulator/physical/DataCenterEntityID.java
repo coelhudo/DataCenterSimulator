@@ -6,13 +6,13 @@ package simulator.physical;
  * based on DDD ideas. Rack is identified by X.0.0; a Chassis by X.X.0; and
  * Server X.X.X
  */
-public final class DataCenterEntityID {
+public final class DataCenterEntityID implements Comparable<DataCenterEntityID> {
 
     private final int rackID;
     private final int chassisID;
     private final int serverID;
 
-    public final static DataCenterEntityID INVALID_ID = new DataCenterEntityID(-1, -1, -1);
+    public static final DataCenterEntityID INVALID_ID = new DataCenterEntityID(-1, -1, -1);
 
     private DataCenterEntityID(int rackID, int chassisID, int serverID) {
         this.rackID = rackID;
@@ -100,5 +100,34 @@ public final class DataCenterEntityID {
 
     public int getServerID() {
         return serverID - 1;
+    }
+
+    @Override
+    public int compareTo(DataCenterEntityID o) {
+        if (rackID > o.rackID) {
+            return 1;
+        }
+
+        if (rackID < o.rackID) {
+            return -1;
+        }
+        
+        if (chassisID > o.chassisID) {
+            return 1;
+        }
+
+        if (chassisID < o.chassisID) {
+            return -1;
+        }
+        
+        if (serverID > o.serverID) {
+            return 1;
+        }
+
+        if (serverID < o.serverID) {
+            return -1;
+        }
+
+        return 0;
     }
 }

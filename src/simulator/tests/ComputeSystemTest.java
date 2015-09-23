@@ -18,6 +18,8 @@ import static org.mockito.Mockito.when;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
+import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
 
 import simulator.Environment;
@@ -30,19 +32,31 @@ import simulator.physical.DataCenter;
 import simulator.physical.DataCenterEntityID;
 import simulator.system.ComputeSystem;
 import simulator.system.ComputeSystemPOD;
-import simulator.system.SystemPOD;
 
 public class ComputeSystemTest {
 
     public static final String FAIL_ERROR_MESSAGE = "This was not supposed to happen";
 
+    public Environment mockedEnvironment;
+    public DataCenter mockedDataCenter;
+    public ComputeSystemPOD systemPOD;
+    public SLAViolationLogger mockedSLAViolationLogger;
+
+    @Before
+    public void setUp() {
+        systemPOD = new ComputeSystemPOD();
+        mockedEnvironment = mock(Environment.class);
+        mockedDataCenter = mock(DataCenter.class);
+        mockedSLAViolationLogger = mock(SLAViolationLogger.class);
+    }
+
+    @After
+    public void tearDown() {
+        verifyNoMoreInteractions(mockedEnvironment, mockedDataCenter, mockedSLAViolationLogger);
+    }
+
     @Test
     public void testComputeSytemCreation() {
-        SystemPOD systemPOD = new ComputeSystemPOD();
-
-        Environment mockedEnvironment = mock(Environment.class);
-        DataCenter mockedDataCenter = mock(DataCenter.class);
-        SLAViolationLogger mockedSLAViolationLogger = mock(SLAViolationLogger.class);
         ComputeSystem computeSystem = ComputeSystem.create(systemPOD, mockedEnvironment, mockedDataCenter,
                 mockedSLAViolationLogger);
 
@@ -60,22 +74,18 @@ public class ComputeSystemTest {
         assertEquals(0, computeSystem.getSLAviolation());
         assertFalse(computeSystem.isBlocked());
         assertFalse(computeSystem.isDone());
-
-        verifyNoMoreInteractions(mockedEnvironment, mockedDataCenter, mockedSLAViolationLogger);
+        
+        verify(mockedDataCenter).getChassisFromRacks(computeSystem.getRackIDs());
     }
 
     @Test
     public void testRunACycleWithoutAnyJob() {
-        ComputeSystemPOD systemPOD = new ComputeSystemPOD();
         JobProducer mockedJobProducer = mock(JobProducer.class);
 
         when(mockedJobProducer.hasNext()).thenReturn(false);
 
         systemPOD.setJobProducer(mockedJobProducer);
 
-        Environment mockedEnvironment = mock(Environment.class);
-        DataCenter mockedDataCenter = mock(DataCenter.class);
-        SLAViolationLogger mockedSLAViolationLogger = mock(SLAViolationLogger.class);
         ComputeSystem computeSystem = ComputeSystem.create(systemPOD, mockedEnvironment, mockedDataCenter,
                 mockedSLAViolationLogger);
         assertTrue(computeSystem.runAcycle());
@@ -92,13 +102,14 @@ public class ComputeSystemTest {
         verify(mockedEnvironment).updateNumberOfMessagesFromDataCenterToSystem();
 
         verify(mockedJobProducer).hasNext();
+        verify(mockedDataCenter).getChassisFromRacks(computeSystem.getRackIDs());
 
-        verifyNoMoreInteractions(mockedEnvironment, mockedDataCenter, mockedSLAViolationLogger, mockedJobProducer);
+
+        verifyNoMoreInteractions(mockedJobProducer);
     }
 
     @Test
     public void testRunACycleWithOneJob_SystemNotDone_ViolationComputeShortage() {
-        ComputeSystemPOD systemPOD = new ComputeSystemPOD();
         JobProducer mockedJobProducer = mock(JobProducer.class);
 
         BatchJob batchJob = new BatchJob();
@@ -110,10 +121,7 @@ public class ComputeSystemTest {
 
         systemPOD.setJobProducer(mockedJobProducer);
 
-        Environment mockedEnvironment = mock(Environment.class);
         when(mockedEnvironment.getCurrentLocalTime()).thenReturn(3);
-        DataCenter mockedDataCenter = mock(DataCenter.class);
-        SLAViolationLogger mockedSLAViolationLogger = mock(SLAViolationLogger.class);
         ComputeSystem computeSystem = ComputeSystem.create(systemPOD, mockedEnvironment, mockedDataCenter,
                 mockedSLAViolationLogger);
         assertFalse(computeSystem.runAcycle());
@@ -134,13 +142,14 @@ public class ComputeSystemTest {
         verify(mockedJobProducer).next();
 
         verify(mockedSLAViolationLogger).logHPCViolation(anyString(), eq(Violation.COMPUTE_NODE_SHORTAGE));
+        
+        verify(mockedDataCenter).getChassisFromRacks(computeSystem.getRackIDs());
 
-        verifyNoMoreInteractions(mockedEnvironment, mockedDataCenter, mockedSLAViolationLogger, mockedJobProducer);
+        verifyNoMoreInteractions(mockedJobProducer);
     }
 
     @Test
     public void testRunACycleWithOneJob_SystemNotDone_ViolationDeadlinePassed() {
-        ComputeSystemPOD systemPOD = new ComputeSystemPOD();
         JobProducer mockedJobProducer = mock(JobProducer.class);
 
         BatchJob batchJob = new BatchJob();
@@ -152,10 +161,7 @@ public class ComputeSystemTest {
 
         systemPOD.setJobProducer(mockedJobProducer);
 
-        Environment mockedEnvironment = mock(Environment.class);
         when(mockedEnvironment.getCurrentLocalTime()).thenReturn(3, 4);
-        DataCenter mockedDataCenter = mock(DataCenter.class);
-        SLAViolationLogger mockedSLAViolationLogger = mock(SLAViolationLogger.class);
         ComputeSystem computeSystem = ComputeSystem.create(systemPOD, mockedEnvironment, mockedDataCenter,
                 mockedSLAViolationLogger);
         BladeServer mockedBladeServer = mock(BladeServer.class);
@@ -193,13 +199,13 @@ public class ComputeSystemTest {
 
         verify(mockedSLAViolationLogger).logHPCViolation(anyString(), eq(Violation.DEADLINE_PASSED));
 
-        verifyNoMoreInteractions(mockedEnvironment, mockedDataCenter, mockedSLAViolationLogger, mockedJobProducer,
-                mockedBladeServer);
+        verify(mockedDataCenter).getChassisFromRacks(computeSystem.getRackIDs());
+        
+        verifyNoMoreInteractions(mockedJobProducer, mockedBladeServer);
     }
 
     @Test
     public void testRunACycleWithOneJob() {
-        ComputeSystemPOD systemPOD = new ComputeSystemPOD();
         JobProducer mockedJobProducer = mock(JobProducer.class);
 
         BatchJob batchJob = new BatchJob();
@@ -211,18 +217,15 @@ public class ComputeSystemTest {
 
         systemPOD.setJobProducer(mockedJobProducer);
 
-        Environment mockedEnvironment = mock(Environment.class);
         when(mockedEnvironment.getCurrentLocalTime()).thenReturn(3);
 
-        DataCenter mockedDataCenter = mock(DataCenter.class);
-        SLAViolationLogger mockedSLAViolationLogger = mock(SLAViolationLogger.class);
         ComputeSystem computeSystem = ComputeSystem.create(systemPOD, mockedEnvironment, mockedDataCenter,
                 mockedSLAViolationLogger);
         BladeServer mockedBladeServer = mock(BladeServer.class);
         when(mockedBladeServer.isRunningNormal()).thenReturn(true);
         when(mockedBladeServer.isRunning()).thenReturn(true);
         when(mockedBladeServer.getID()).thenReturn(DataCenterEntityID.createServerID(1, 1, 1));
-        
+
         when(mockedBladeServer.getTotalFinishedJob()).thenReturn(1);
         computeSystem.appendBladeServerIntoComputeNodeList(mockedBladeServer);
 
@@ -258,14 +261,14 @@ public class ComputeSystemTest {
 
         verify(mockedJobProducer, times(2)).hasNext();
         verify(mockedJobProducer).next();
+        
+        verify(mockedDataCenter).getChassisFromRacks(computeSystem.getRackIDs());
 
-        verifyNoMoreInteractions(mockedEnvironment, mockedDataCenter, mockedSLAViolationLogger, mockedJobProducer,
-                mockedBladeServer);
+        verifyNoMoreInteractions(mockedJobProducer, mockedBladeServer);
     }
 
     @Test
     public void testRunACycleWithOneJob_MissingDeadline() {
-        ComputeSystemPOD systemPOD = new ComputeSystemPOD();
         JobProducer mockedJobProducer = mock(JobProducer.class);
 
         BatchJob batchJob = new BatchJob();
@@ -277,11 +280,8 @@ public class ComputeSystemTest {
 
         systemPOD.setJobProducer(mockedJobProducer);
 
-        Environment mockedEnvironment = mock(Environment.class);
         when(mockedEnvironment.getCurrentLocalTime()).thenReturn(3, 4);
 
-        DataCenter mockedDataCenter = mock(DataCenter.class);
-        SLAViolationLogger mockedSLAViolationLogger = mock(SLAViolationLogger.class);
         ComputeSystem computeSystem = ComputeSystem.create(systemPOD, mockedEnvironment, mockedDataCenter,
                 mockedSLAViolationLogger);
         BladeServer mockedBladeServer = mock(BladeServer.class);
@@ -319,17 +319,16 @@ public class ComputeSystemTest {
         verify(mockedJobProducer).next();
 
         verify(mockedSLAViolationLogger).logHPCViolation(anyString(), eq(Violation.DEADLINE_PASSED));
+        verify(mockedDataCenter).getChassisFromRacks(computeSystem.getRackIDs());
 
-        verifyNoMoreInteractions(mockedEnvironment, mockedDataCenter, mockedSLAViolationLogger, mockedJobProducer,
-                mockedBladeServer);
+        verifyNoMoreInteractions(mockedJobProducer, mockedBladeServer);
     }
 
     @Test
     public void testMoveWaitingJobsToBladeServer() {
-        ComputeSystemPOD systemPOD = new ComputeSystemPOD();
+        DataCenterEntityID rackID = DataCenterEntityID.createRackID(1);
+        systemPOD.appendRackID(rackID);
         JobProducer mockedJobProducer = mock(JobProducer.class);
-
-        DataCenter mockedDataCenter = mock(DataCenter.class);
 
         BatchJob batchJob = new BatchJob();
         batchJob.setStartTime(1);
@@ -340,10 +339,8 @@ public class ComputeSystemTest {
 
         systemPOD.setJobProducer(mockedJobProducer);
 
-        Environment mockedEnvironment = mock(Environment.class);
         when(mockedEnvironment.getCurrentLocalTime()).thenReturn(1);
 
-        SLAViolationLogger mockedSLAViolationLogger = mock(SLAViolationLogger.class);
         ComputeSystem computeSystem = ComputeSystem.create(systemPOD, mockedEnvironment, mockedDataCenter,
                 mockedSLAViolationLogger);
         BladeServer mockedBladeServer = mock(BladeServer.class);
@@ -383,19 +380,15 @@ public class ComputeSystemTest {
         verify(mockedBladeServer, times(6)).getID();
         verify(mockedBladeServer).feedWork(any(BatchJob.class));
         verify(mockedEnvironment, times(3)).getCurrentLocalTime();
+        verify(mockedDataCenter).getChassisFromRacks(computeSystem.getRackIDs());
 
-        verifyNoMoreInteractions(mockedEnvironment, mockedDataCenter, mockedSLAViolationLogger, mockedJobProducer,
-                mockedBladeServer);
+        verifyNoMoreInteractions(mockedJobProducer, mockedBladeServer);
     }
 
     @Test
     public void testNumberOfIdleNodeIsOne() {
-        SystemPOD systemPOD = new ComputeSystemPOD();
 
-        Environment mockedEnvironment = mock(Environment.class);
         when(mockedEnvironment.getCurrentLocalTime()).thenReturn(1);
-        DataCenter mockedDataCenter = mock(DataCenter.class);
-        SLAViolationLogger mockedSLAViolationLogger = mock(SLAViolationLogger.class);
         ComputeSystem computeSystem = ComputeSystem.create(systemPOD, mockedEnvironment, mockedDataCenter,
                 mockedSLAViolationLogger);
         BladeServer mockedBladeServer = mock(BladeServer.class);
@@ -405,17 +398,15 @@ public class ComputeSystemTest {
 
         verify(mockedBladeServer).isIdle();
 
-        verifyNoMoreInteractions(mockedEnvironment, mockedDataCenter, mockedSLAViolationLogger, mockedBladeServer);
+        verify(mockedDataCenter).getChassisFromRacks(computeSystem.getRackIDs());
+        
+        verifyNoMoreInteractions(mockedBladeServer);
     }
 
     @Test
     public void testNumberOfIdleNodeIsNone() {
-        SystemPOD systemPOD = new ComputeSystemPOD();
 
-        Environment mockedEnvironment = mock(Environment.class);
         when(mockedEnvironment.getCurrentLocalTime()).thenReturn(1);
-        DataCenter mockedDataCenter = mock(DataCenter.class);
-        SLAViolationLogger mockedSLAViolationLogger = mock(SLAViolationLogger.class);
         ComputeSystem computeSystem = ComputeSystem.create(systemPOD, mockedEnvironment, mockedDataCenter,
                 mockedSLAViolationLogger);
         BladeServer mockedBladeServer = mock(BladeServer.class);
@@ -424,17 +415,15 @@ public class ComputeSystemTest {
         assertEquals(0, computeSystem.numberOfIdleNode());
 
         verify(mockedBladeServer).isIdle();
+        
+        verify(mockedDataCenter).getChassisFromRacks(computeSystem.getRackIDs());
 
-        verifyNoMoreInteractions(mockedEnvironment, mockedDataCenter, mockedSLAViolationLogger, mockedBladeServer);
+        verifyNoMoreInteractions(mockedBladeServer);
     }
 
     @Test
     public void testFinalized() {
-        SystemPOD systemPOD = new ComputeSystemPOD();
-        Environment mockedEnvironment = mock(Environment.class);
         when(mockedEnvironment.getCurrentLocalTime()).thenReturn(1);
-        DataCenter mockedDataCenter = mock(DataCenter.class);
-        SLAViolationLogger mockedSLAViolationLogger = mock(SLAViolationLogger.class);
         ComputeSystem computeSystem = ComputeSystem.create(systemPOD, mockedEnvironment, mockedDataCenter,
                 mockedSLAViolationLogger);
         BladeServer mockedBladeServer = mock(BladeServer.class);
@@ -460,8 +449,10 @@ public class ComputeSystemTest {
         }
 
         verify(mockedBladeServer).getResponseTime();
+        
+        verify(mockedDataCenter).getChassisFromRacks(computeSystem.getRackIDs());
 
-        verifyNoMoreInteractions(mockedEnvironment, mockedDataCenter, mockedSLAViolationLogger, mockedBladeServer);
+        verifyNoMoreInteractions(mockedBladeServer);
     }
 
 }

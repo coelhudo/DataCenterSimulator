@@ -30,10 +30,8 @@ public class InteractiveUser {
     private String logFileName;
     private File logFile = null;
     private List<BladeServer> computeNodeList;
-    private List<Integer> computeNodeIndex;
     private List<InteractiveJob> queueWL;
     private List<ResponseTime> responseList;
-    // jobPlacement placement;
     private BufferedReader bis = null;
     // SLA
     private int slaViolation = 0;
@@ -49,7 +47,6 @@ public class InteractiveUser {
     public InteractiveUser(GeneralSystem parent, Environment environment) {
         this.environment = environment;
         setComputeNodeList(new ArrayList<BladeServer>());
-        setComputeNodeIndex(new ArrayList<Integer>());
         setQueueWL(new ArrayList<InteractiveJob>());
         setResponseList(new ArrayList<ResponseTime>());
         setLogFileName(new String());
@@ -281,10 +278,6 @@ public class InteractiveUser {
         }
     }
 
-    List<Integer> getindexSet() {
-        return getComputeNodeIndex();
-    }
-
     void destroyWLBundle() {
         for (BladeServer bladeServer : getComputeNodeList()) {
             bladeServer.restart();
@@ -414,14 +407,6 @@ public class InteractiveUser {
 
     private void setComputeNodeList(List<BladeServer> computeNodeList) {
         this.computeNodeList = computeNodeList;
-    }
-
-    public List<Integer> getComputeNodeIndex() {
-        return computeNodeIndex;
-    }
-
-    private void setComputeNodeIndex(List<Integer> computeNodeIndex) {
-        this.computeNodeIndex = computeNodeIndex;
     }
 
     public List<InteractiveJob> getQueueWL() {

@@ -1,27 +1,21 @@
 package simulator.physical;
 
-import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import simulator.Environment;
 
 public class Chassis extends DataCenterEntity {
 
-    private List<BladeServer> servers = new ArrayList<BladeServer>();
-    private Map<DataCenterEntityID, BladeServer> availableServers = new HashMap<DataCenterEntityID, BladeServer>();
-    private int chassisID, rackID;
+    private final Map<DataCenterEntityID, BladeServer> availableServers = new HashMap<DataCenterEntityID, BladeServer>();
     private String chassisType;
     
     public Chassis(ChassisPOD chassisPOD, Environment environment) {
         super(chassisPOD.getID());
         chassisType = chassisPOD.getChassisType();
-        chassisID = chassisPOD.getChassisID();
-        rackID = chassisPOD.getRackID();
         for (BladeServerPOD bladeServerPOD : chassisPOD.getServerPODs()) {
             BladeServer bladeServer = new BladeServer(bladeServerPOD, environment);
-            servers.add(bladeServer);
             availableServers.put(bladeServer.getID(), bladeServer);
         }
     }
@@ -30,16 +24,8 @@ public class Chassis extends DataCenterEntity {
         return availableServers.get(id);
     }
 
-    public List<BladeServer> getServers() {
-        return servers;
-    }
-
-    public int getRackID() {
-        return rackID;
-    }
-
-    public int getChassisID() {
-        return chassisID;
+    public Collection<BladeServer> getServers() {
+        return availableServers.values();
     }
 
     /**
@@ -49,13 +35,27 @@ public class Chassis extends DataCenterEntity {
      */
     public double power() {
         double pw = 0;
-        for (BladeServer bladeServer : servers) {
+        for (BladeServer bladeServer : availableServers.values()) {
             pw = pw + bladeServer.getPower();
         }
         return pw;
     }
+    
+    public BladeServer getNextNotAssignedBladeServer() {
+        for (BladeServer bladeServer : availableServers.values()) {
+            if (bladeServer.isNotSystemAssigned()) {
+                return bladeServer;
+            }
+        }
+        return null;
+    }
 
     public String getChassisType() {
         return chassisType;
+    }
+    
+    @Override
+    public String toString() {
+        return getID().toString();
     }
 }

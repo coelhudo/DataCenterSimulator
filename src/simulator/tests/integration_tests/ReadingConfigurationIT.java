@@ -6,6 +6,7 @@ import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertTrue;
 
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -20,6 +21,7 @@ import simulator.am.DataCenterAM;
 import simulator.physical.BladeServer;
 import simulator.physical.Chassis;
 import simulator.physical.DataCenter;
+import simulator.physical.DataCenterEntityID;
 import simulator.physical.Rack;
 import simulator.system.ComputeSystem;
 import simulator.system.EnterpriseSystem;
@@ -37,19 +39,18 @@ public class ReadingConfigurationIT {
         Simulator simulator = new Simulator(simulatorPOD, environment);
 
         DataCenter dataCenter = simulator.getDatacenter();
-        List<Rack> racks = dataCenter.getRacks();
+        Collection<Rack> racks = dataCenter.getRacks();
         assertEquals(10, racks.size());
-        int chassisID = 0;
-        Set<Integer> chassisIDSet = new HashSet<Integer>();
+        Set<DataCenterEntityID> chassisIDs = new HashSet<DataCenterEntityID>();
+        Set<DataCenterEntityID> serverIDs = new HashSet<DataCenterEntityID>();
+        
         for (Rack rack : racks) {
             for (Chassis chassis : rack.getChassis()) {
-                assertEquals(chassisID, chassis.getChassisID());
-                chassisID++;
-                chassisIDSet.add(chassis.getChassisID());
+                assertEquals(DataCenterEntityID.createChassisID(rack.getID().getRackID()+1, chassis.getID().getChassisID()+1), chassis.getID());
+                chassisIDs.add(chassis.getID());
                 assertEquals(1, chassis.getServers().size());
                 for (BladeServer bladeServer : chassis.getServers()) {
-                    assertEquals(chassis.getChassisID(), bladeServer.getID().getChassisID());
-                    assertEquals(chassis.getChassisID(), bladeServer.getID().getServerID());
+                    serverIDs.add(bladeServer.getID());
                     assertEquals("HP Proliant DL3", bladeServer.getBladeType());
                     assertEquals(1.0, bladeServer.getFrequencyLevelAt(0), 1.0E-8);
                     assertEquals(1.04, bladeServer.getFrequencyLevelAt(1), 1.0E-8);
@@ -64,7 +65,8 @@ public class ReadingConfigurationIT {
                 }
             }
         }
-        assertEquals(50, chassisIDSet.size());
+        assertEquals(50, chassisIDs.size());
+        assertEquals(50, serverIDs.size());
 
         Systems systems = simulator.getSystems();
         List<ComputeSystem> computeSystems = systems.getComputeSystems();

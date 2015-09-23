@@ -2,6 +2,10 @@ package simulator.tests;
 
 import static org.junit.Assert.*;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
@@ -93,5 +97,22 @@ public class DataCenterEntityIDTest {
         assertFalse(serverIDX.equals(serverIDY));
         assertFalse(serverIDY.equals(serverIDZ));
         assertFalse(serverIDX.equals(serverIDZ));        
+    }
+    
+    @Test
+    public void sort() {
+        List<DataCenterEntityID> list = new ArrayList<DataCenterEntityID>();
+        list.add(DataCenterEntityID.createServerID(1, 1, 3));
+        list.add(DataCenterEntityID.createChassisID(1, 1));
+        list.add(DataCenterEntityID.createServerID(1, 1, 1));
+        list.add(DataCenterEntityID.createRackID(1));
+        list.add(DataCenterEntityID.createServerID(1, 1, 2));
+        
+        
+        assertEquals("[1.1.3, 1.1.0, 1.1.1, 1.0.0, 1.1.2]", list.toString());
+        
+        Collections.sort(list);
+        
+        assertEquals("[1.0.0, 1.1.0, 1.1.1, 1.1.2, 1.1.3]", list.toString());
     }
 }

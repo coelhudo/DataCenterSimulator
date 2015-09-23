@@ -11,6 +11,8 @@ import static org.mockito.Mockito.when;
 
 import java.util.List;
 
+import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
 
@@ -36,9 +38,21 @@ public class ComputeSystemIT {
     public static final double[] POWER_IDLE = { 100, 100, 128 };
     public static final double[] POWER_BUSY = { 300, 336, 448 };
 
-    @Test
-    public void testBladeWithOneServerAndOneBatchJob() {
-        BladeServerPOD bladeServerPOD = new BladeServerPOD();
+    public BladeServerPOD bladeServerPOD;
+    public ChassisPOD chassisPOD;
+    public RackPOD rackPOD;
+    public Environment mockedEnvironment;
+    public ActivitiesLogger mockedActivitiesLogger;
+
+    public ComputeSystemPOD computerSystemPOD;
+    public JobProducer mockedJobProducer;
+
+    public DataCenterAM mockedDataCenterAM;
+    public SLAViolationLogger slaViolationLogger;
+
+    @Before
+    public void setUp() {
+        bladeServerPOD = new BladeServerPOD();
         bladeServerPOD.setBladeType("DummyType");
         bladeServerPOD.setFrequencyLevel(FREQUENCY_LEVEL);
         bladeServerPOD.setPowerBusy(POWER_BUSY);
@@ -46,26 +60,43 @@ public class ComputeSystemIT {
         bladeServerPOD.setIdleConsumption(5);
         bladeServerPOD.setID(DataCenterEntityID.createServerID(1, 1, 1));
 
-        ChassisPOD chassisPOD = new ChassisPOD();
+        chassisPOD = new ChassisPOD();
         chassisPOD.appendServerPOD(bladeServerPOD);
         chassisPOD.setBladeType("DummyType");
         chassisPOD.setChassisType("DummyChassisType");
         chassisPOD.setID(DataCenterEntityID.createChassisID(1, 1));
-        
-        RackPOD rackPOD = new RackPOD();
+
+        rackPOD = new RackPOD();
         rackPOD.appendChassis(chassisPOD);
         rackPOD.setID(DataCenterEntityID.createRackID(1));
 
+        mockedEnvironment = mock(Environment.class);
+        mockedActivitiesLogger = mock(ActivitiesLogger.class);
+
+        mockedJobProducer = mock(JobProducer.class);
+
+        computerSystemPOD = new ComputeSystemPOD();
+        computerSystemPOD.setName("DummyHPCSystem");
+        computerSystemPOD.appendRackID(rackPOD.getID());
+        computerSystemPOD.setJobProducer(mockedJobProducer);
+
+        mockedDataCenterAM = mock(DataCenterAM.class);
+
+        slaViolationLogger = mock(SLAViolationLogger.class);
+    }
+
+    @After
+    public void tearDown() {
+        verifyNoMoreInteractions(mockedActivitiesLogger, mockedEnvironment);
+    }
+
+    @Test
+    public void testBladeWithOneServerAndOneBatchJob() {
         DataCenterPOD dataCenterPOD = new DataCenterPOD();
         dataCenterPOD.appendChassis(chassisPOD);
         dataCenterPOD.appendRack(rackPOD);
         dataCenterPOD.setD(0, 0, 100);
 
-        Environment mockedEnvironment = mock(Environment.class);
-        ActivitiesLogger mockedActivitiesLogger = mock(ActivitiesLogger.class);
-
-        ComputeSystemPOD computerSystemPOD = new ComputeSystemPOD();
-        JobProducer mockedJobProducer = mock(JobProducer.class);
         when(mockedJobProducer.hasNext()).thenReturn(true, false);
 
         BatchJob batchJob = new BatchJob();
@@ -74,17 +105,11 @@ public class ComputeSystemIT {
 
         when(mockedJobProducer.next()).thenReturn(batchJob);
 
-        computerSystemPOD.setJobProducer(mockedJobProducer);
-
-        computerSystemPOD.setName("DummyHPCSystem");
         computerSystemPOD.setNumberofNode(1);
-        computerSystemPOD.appendRackID(0);
 
-        DataCenterAM mockedDataCenterAM = mock(DataCenterAM.class);
         DataCenter dataCenter = new DataCenter(dataCenterPOD, mockedDataCenterAM, mockedActivitiesLogger,
                 mockedEnvironment);
 
-        SLAViolationLogger slaViolationLogger = mock(SLAViolationLogger.class);
         Systems systems = new Systems(mockedEnvironment);
         systems.addComputeSystem(
                 ComputeSystem.create(computerSystemPOD, mockedEnvironment, dataCenter, slaViolationLogger));
@@ -102,8 +127,8 @@ public class ComputeSystemIT {
         verify(mockedActivitiesLogger, times(2)).write(argument.capture());
 
         List<String> values = argument.getAllValues();
-        assertEquals("5\t", values.get(0));
-        assertEquals("5\t5\t1\n", values.get(1));
+        assertEquals("1.1.0 5.0\n", values.get(0));
+        assertEquals("\n5\t5\t1\n", values.get(1));
 
         assertEquals(5.002941076127991, dataCenter.getTotalPowerConsumption(), 1.0E-8);
         assertEquals(1, dataCenter.getOverRed());
@@ -116,47 +141,29 @@ public class ComputeSystemIT {
         verify(mockedEnvironment).updateNumberOfMessagesFromDataCenterToSystem();
         verify(mockedEnvironment).updateNumberOfMessagesFromSystemToNodes();
 
-        verifyNoMoreInteractions(mockedDataCenterAM, mockedActivitiesLogger, mockedJobProducer, mockedEnvironment);
+        verifyNoMoreInteractions(mockedDataCenterAM, mockedJobProducer);
     }
 
     @Test
     public void testBladeWithTwoServersAndOneBatchJob_OneServerPerChassis() {
-        BladeServerPOD bladeServerPOD = new BladeServerPOD();
-        bladeServerPOD.setBladeType("DummyType");
-        bladeServerPOD.setFrequencyLevel(FREQUENCY_LEVEL);
-        bladeServerPOD.setPowerBusy(POWER_BUSY);
-        bladeServerPOD.setPowerIdle(POWER_IDLE);
-        bladeServerPOD.setIdleConsumption(5);
-        bladeServerPOD.setID(DataCenterEntityID.createServerID(1, 1, 1));
+        BladeServerPOD otherBladeServePOD = new BladeServerPOD(bladeServerPOD);
+        otherBladeServePOD.setID(DataCenterEntityID.createServerID(1, 2, 1));
+        ChassisPOD otherChassisPOD = new ChassisPOD();
+        otherChassisPOD.setBladeType(chassisPOD.getBladeType());
+        otherChassisPOD.appendServerPOD(otherBladeServePOD);
+        otherChassisPOD.setID(DataCenterEntityID.createChassisID(1, 2));
 
-        ChassisPOD firstChassisPOD = new ChassisPOD();
-        firstChassisPOD.appendServerPOD(bladeServerPOD);
-        firstChassisPOD.setBladeType("DummyType");
-        firstChassisPOD.setChassisType("DummyChassisType");
-        firstChassisPOD.setID(DataCenterEntityID.createChassisID(1, 1));
-
-        ChassisPOD secondChassisPOD = new ChassisPOD(firstChassisPOD);
-        secondChassisPOD.setID(DataCenterEntityID.createChassisID(1, 2));
-        
-        RackPOD rackPOD = new RackPOD();
-        rackPOD.appendChassis(firstChassisPOD);
-        rackPOD.appendChassis(secondChassisPOD);
-        rackPOD.setID(DataCenterEntityID.createRackID(1));
+        rackPOD.appendChassis(otherChassisPOD);
 
         DataCenterPOD dataCenterPOD = new DataCenterPOD();
-        dataCenterPOD.appendChassis(firstChassisPOD);
-        dataCenterPOD.appendChassis(secondChassisPOD);
+        dataCenterPOD.appendChassis(chassisPOD);
+        dataCenterPOD.appendChassis(otherChassisPOD);
         dataCenterPOD.appendRack(rackPOD);
         dataCenterPOD.setD(0, 0, 100);
         dataCenterPOD.setD(0, 1, 100);
         dataCenterPOD.setD(1, 0, 100);
         dataCenterPOD.setD(1, 1, 100);
 
-        Environment mockedEnvironment = mock(Environment.class);
-        ActivitiesLogger mockedActivitiesLogger = mock(ActivitiesLogger.class);
-
-        ComputeSystemPOD computerSystemPOD = new ComputeSystemPOD();
-        JobProducer mockedJobProducer = mock(JobProducer.class);
         when(mockedJobProducer.hasNext()).thenReturn(true, false);
 
         BatchJob batchJob = new BatchJob();
@@ -165,16 +172,11 @@ public class ComputeSystemIT {
 
         when(mockedJobProducer.next()).thenReturn(batchJob);
 
-        computerSystemPOD.setJobProducer(mockedJobProducer);
-        computerSystemPOD.setName("DummyHPCSystem");
         computerSystemPOD.setNumberofNode(2);
-        computerSystemPOD.appendRackID(0);
 
-        DataCenterAM mockedDataCenterAM = mock(DataCenterAM.class);
         DataCenter dataCenter = new DataCenter(dataCenterPOD, mockedDataCenterAM, mockedActivitiesLogger,
                 mockedEnvironment);
 
-        SLAViolationLogger slaViolationLogger = mock(SLAViolationLogger.class);
         Systems systems = new Systems(mockedEnvironment);
         systems.addComputeSystem(
                 ComputeSystem.create(computerSystemPOD, mockedEnvironment, dataCenter, slaViolationLogger));
@@ -193,9 +195,9 @@ public class ComputeSystemIT {
 
         List<String> values = argument.getAllValues();
         assertEquals(3, values.size());
-        assertEquals("5\t", values.get(0));
-        assertEquals("5\t", values.get(1));
-        assertEquals("10\t10\t1\n", values.get(2));
+        assertEquals("1.1.0 5.0\n", values.get(0));
+        assertEquals("1.2.0 5.0\n", values.get(1));
+        assertEquals("\n10\t10\t1\n", values.get(2));
 
         assertEquals(10.00147066220095, dataCenter.getTotalPowerConsumption(), 1.0E-8);
         assertEquals(1, dataCenter.getOverRed());
@@ -206,41 +208,18 @@ public class ComputeSystemIT {
         verify(mockedEnvironment, times(5)).getCurrentLocalTime();
         verify(mockedEnvironment).localTimeByEpoch();
         verify(mockedEnvironment).updateNumberOfMessagesFromDataCenterToSystem();
-        verify(mockedEnvironment).updateNumberOfMessagesFromSystemToNodes();
+        verify(mockedEnvironment, times(2)).updateNumberOfMessagesFromSystemToNodes();
 
-        verifyNoMoreInteractions(mockedDataCenterAM, mockedActivitiesLogger, mockedJobProducer, mockedEnvironment);
+        verifyNoMoreInteractions(mockedDataCenterAM, mockedJobProducer);
     }
 
     @Test
     public void testBladeWithOneServersAndOneBatchJobs_InsuficientServerToProcess() {
-        BladeServerPOD bladeServerPOD = new BladeServerPOD();
-        bladeServerPOD.setBladeType("DummyType");
-        bladeServerPOD.setFrequencyLevel(FREQUENCY_LEVEL);
-        bladeServerPOD.setPowerBusy(POWER_BUSY);
-        bladeServerPOD.setPowerIdle(POWER_IDLE);
-        bladeServerPOD.setIdleConsumption(5);
-        bladeServerPOD.setID(DataCenterEntityID.createServerID(1, 1, 1));
-
-        ChassisPOD chassisPOD = new ChassisPOD();
-        chassisPOD.appendServerPOD(bladeServerPOD);
-        chassisPOD.setBladeType("DummyType");
-        chassisPOD.setChassisType("DummyChassisType");
-        chassisPOD.setID(DataCenterEntityID.createChassisID(1, 1));
-        
-        RackPOD rackPOD = new RackPOD();
-        rackPOD.setID(DataCenterEntityID.createRackID(1));
-        rackPOD.appendChassis(chassisPOD);
-
         DataCenterPOD dataCenterPOD = new DataCenterPOD();
         dataCenterPOD.appendChassis(chassisPOD);
         dataCenterPOD.appendRack(rackPOD);
         dataCenterPOD.setD(0, 0, 100);
 
-        Environment mockedEnvironment = mock(Environment.class);
-        ActivitiesLogger mockedActivitiesLogger = mock(ActivitiesLogger.class);
-
-        ComputeSystemPOD computerSystemPOD = new ComputeSystemPOD();
-        JobProducer mockedJobProducer = mock(JobProducer.class);
         when(mockedJobProducer.hasNext()).thenReturn(true, false);
 
         BatchJob batchJob = new BatchJob();
@@ -248,17 +227,12 @@ public class ComputeSystemIT {
         batchJob.setRemainParam(1, 41.07, 2, 1);
 
         when(mockedJobProducer.next()).thenReturn(batchJob);
-        computerSystemPOD.setJobProducer(mockedJobProducer);
 
-        computerSystemPOD.setName("DummyHPCSystem");
         computerSystemPOD.setNumberofNode(1);
-        computerSystemPOD.appendRackID(0);
 
-        DataCenterAM mockedDataCenterAM = mock(DataCenterAM.class);
         DataCenter dataCenter = new DataCenter(dataCenterPOD, mockedDataCenterAM, mockedActivitiesLogger,
                 mockedEnvironment);
 
-        SLAViolationLogger slaViolationLogger = mock(SLAViolationLogger.class);
         Systems systems = new Systems(mockedEnvironment);
         systems.addComputeSystem(
                 ComputeSystem.create(computerSystemPOD, mockedEnvironment, dataCenter, slaViolationLogger));
@@ -277,8 +251,8 @@ public class ComputeSystemIT {
 
         List<String> values = argument.getAllValues();
         assertEquals(2, values.size());
-        assertEquals("100\t", values.get(0));
-        assertEquals("100\t100\t1\n", values.get(1));
+        assertEquals("1.1.0 100.0\n", values.get(0));
+        assertEquals("\n100\t100\t1\n", values.get(1));
 
         assertEquals(100.000147066220095, dataCenter.getTotalPowerConsumption(), 1.0E-8);
         assertEquals(1, dataCenter.getOverRed());
@@ -290,6 +264,6 @@ public class ComputeSystemIT {
         verify(mockedEnvironment).localTimeByEpoch();
         verify(mockedEnvironment).updateNumberOfMessagesFromDataCenterToSystem();
 
-        verifyNoMoreInteractions(mockedDataCenterAM, mockedActivitiesLogger, mockedJobProducer, mockedEnvironment);
+        verifyNoMoreInteractions(mockedDataCenterAM, mockedJobProducer);
     }
 }

@@ -7,9 +7,6 @@ public class BladeServerPOD {
     private double[] powerBusy;
     private double[] powerIdle;
     private double idleConsumption;
-    private int bladeServerID;
-    private int rackID;
-    private int chassisID;
     private DataCenterEntityID id;
 
     public BladeServerPOD() {
@@ -25,20 +22,9 @@ public class BladeServerPOD {
         powerIdle = new double[bladeServerPOD.powerIdle.length];
         System.arraycopy(bladeServerPOD.powerIdle, 0, powerIdle, 0, bladeServerPOD.powerIdle.length);
         idleConsumption = bladeServerPOD.idleConsumption;
-        rackID = bladeServerPOD.rackID;
-        chassisID = bladeServerPOD.chassisID;
-        bladeServerID = bladeServerPOD.bladeServerID;
         id = bladeServerPOD.id;
     }
-
-    public void setServerID(int bladeServerID) {
-        this.bladeServerID = bladeServerID;
-    }
-
-    public int getServerID() {
-        return this.bladeServerID;
-    }
-
+    
     public String getBladeType() {
         return bladeType;
     }
@@ -92,22 +78,6 @@ public class BladeServerPOD {
 
     public void setIdleConsumption(double idleConsumption) {
         this.idleConsumption = idleConsumption;
-    }
-
-    public void setRackID(int rackID) {
-        this.rackID = rackID;
-    }
-
-    public int getRackID() {
-        return rackID;
-    }
-
-    public void setChassisID(int chassisID) {
-        this.chassisID = chassisID;
-    }
-
-    public int getChassisID() {
-        return chassisID;
     }
     
     public void setID(DataCenterEntityID id) {

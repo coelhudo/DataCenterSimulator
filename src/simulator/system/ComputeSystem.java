@@ -26,7 +26,6 @@ public class ComputeSystem extends GeneralSystem {
     private boolean blocked = false;
     private Environment environment;
     private SLAViolationLogger slaViolationLogger;
-    private DataCenter dataCenter;
     private JobProducer jobProducer;
 
     private ComputeSystem(SystemPOD systemPOD, Environment environment, DataCenter dataCenter,
@@ -34,7 +33,6 @@ public class ComputeSystem extends GeneralSystem {
         super(systemPOD, new LeastRemainFirstScheduler(), new MHR(environment, dataCenter));
         this.jobProducer = ((ComputeSystemPOD)systemPOD).getJobProducer();
         this.environment = environment;
-        this.dataCenter = dataCenter;
         this.slaViolationLogger = slaViolationLogger;
         setComputeNodeList(new ArrayList<BladeServer>());
         waitingList = new ArrayList<BatchJob>();
@@ -78,7 +76,6 @@ public class ComputeSystem extends GeneralSystem {
 
         do {
             BatchJob batchJob = (BatchJob) jobProducer.next();
-            batchJob.setDataCenter(dataCenter);
             waitingList.add(batchJob);
             totalJob++;
             if (batchJob.getStartTime() > environment.getCurrentLocalTime()) {
@@ -112,8 +109,7 @@ public class ComputeSystem extends GeneralSystem {
                 setSLAviolation(Violation.COMPUTE_NODE_SHORTAGE);
                 return;
             }
-            int[] listServer = makeListofServer(allocatedServers);
-            job.setListOfServer(listServer);
+            job.setListOfServer(allocatedServers);
             for (BladeServer bladeServer : allocatedServers) {
                 bladeServer.feedWork(job);
             }
@@ -128,16 +124,6 @@ public class ComputeSystem extends GeneralSystem {
             }
             job = (BatchJob) (getScheduler().nextJob(waitingList));
         }
-    }
-
-    int[] makeListofServer(List<BladeServer> requestedServers) {
-        int[] retList = new int[requestedServers.size()];
-        int i = 0;
-        for (BladeServer bladeServer : requestedServers) {
-            retList[i] = bladeServer.getID().getServerID();
-            i++;
-        }
-        return retList;
     }
 
     void setSLAviolation(Violation flag) {

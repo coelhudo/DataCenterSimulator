@@ -34,7 +34,6 @@ public class EnterpriseSystemBuilder extends SystemBuilder {
                     String str = childNodes.item(i).getChildNodes().item(0).getNodeValue().trim();
                     String[] split = str.split(",");
                     for (int j = 0; j < split.length; j++) {
-                        systemPOD.appendRackID(Integer.parseInt(split[j]));
                         systemPOD.appendRackID(DataCenterEntityID.createRackID(Integer.parseInt(split[j]) + 1));
                     }
                 }

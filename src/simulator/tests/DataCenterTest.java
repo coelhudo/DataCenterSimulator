@@ -2,13 +2,14 @@ package simulator.tests;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 import org.junit.Before;
@@ -23,6 +24,7 @@ import simulator.physical.DataCenter;
 import simulator.physical.DataCenterBuilder;
 import simulator.physical.DataCenterEntityID;
 import simulator.physical.DataCenterPOD;
+import simulator.physical.Rack;
 import simulator.physical.RackPOD;
 import simulator.utils.ActivitiesLogger;
 
@@ -60,12 +62,16 @@ public class DataCenterTest {
         ActivitiesLogger mockedActivitiesLogger = mock(ActivitiesLogger.class);
         DataCenter dataCenter = new DataCenter(dataCenterPOD, mockeddataCenterAM, mockedActivitiesLogger,
                 mockedEnvironment);
-        List<Chassis> chassis = dataCenter.getChassisSet();
-        assertFalse(chassis.isEmpty());
+        Collection<Rack> racks = dataCenter.getRacks();
+        assertFalse(racks.isEmpty());
+        assertEquals(10, racks.size());
+        List<Chassis> chassis = new ArrayList<Chassis>();
+        for(Rack rack : racks) {
+            chassis.addAll(rack.getChassis());
+        }
         assertEquals(50, chassis.size());
+        
         assertEquals(0, dataCenter.getOverRed());
-        assertNotNull(dataCenter.getServer(0));
-        assertNotNull(dataCenter.getServer(0, 0));
         assertEquals(0.0, dataCenter.getTotalPowerConsumption(), 1.0E-8);
 
         verifyNoMoreInteractions(mockedActivitiesLogger, mockeddataCenterAM, mockedEnvironment);
@@ -84,11 +90,12 @@ public class DataCenterTest {
         ActivitiesLogger mockedActivitiesLogger = mock(ActivitiesLogger.class);
         DataCenter dataCenter = new DataCenter(dataCenterPOD, mockeddataCenterAM, mockedActivitiesLogger,
                 mockedEnvironment);
-        dataCenter.getChassisSet().get(0).getServers().get(0).setStatusAsRunningBusy();
+        dataCenter.getRack(rackPOD.getID()).getChassis(chassisPOD.getID()).getServer(bladeServerPOD.getID())
+                .setStatusAsRunningBusy();
         dataCenter.calculatePower();
 
         assertEquals(100.00003676, dataCenter.getTotalPowerConsumption(), 1.0E-8);
-        
+
         verify(mockeddataCenterAM).setSlowDownFromCooler(true);
         verify(mockedActivitiesLogger, times(2)).write(anyString());
         verify(mockedEnvironment).getCurrentLocalTime();
@@ -109,8 +116,8 @@ public class DataCenterTest {
         ActivitiesLogger mockedActivitiesLogger = mock(ActivitiesLogger.class);
         DataCenter dataCenter = new DataCenter(dataCenterPOD, mockeddataCenterAM, mockedActivitiesLogger,
                 mockedEnvironment);
-        dataCenter.getChassisSet().get(0).getServers().get(0).setStatusAsIdle();
-
+        dataCenter.getRack(rackPOD.getID()).getChassis(chassisPOD.getID()).getServer(bladeServerPOD.getID())
+                .setStatusAsIdle();
         dataCenter.calculatePower();
 
         assertEquals(12.91139, dataCenter.getTotalPowerConsumption(), 1.0E-4);

@@ -1,16 +1,13 @@
 package simulator.system;
 
 import java.io.BufferedReader;
-import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 import simulator.physical.DataCenterEntityID;
 
 public abstract class SystemPOD {
 
-    private List<Integer> rackIDs = new ArrayList<Integer>();
     private Set<DataCenterEntityID> rackUIDs = new HashSet<DataCenterEntityID>();
     private BufferedReader bis = null;
     private int numberOfNode;
@@ -32,10 +29,6 @@ public abstract class SystemPOD {
         return numberOfNode;
     }
 
-    public void appendRackID(Integer rackID) {
-        rackIDs.add(rackID);
-    }
-    
     public void appendRackID(DataCenterEntityID rackID) {
         rackUIDs.add(rackID);
     }
@@ -50,9 +43,5 @@ public abstract class SystemPOD {
 
     public void setBis(BufferedReader bis) {
         this.bis = bis;
-    }
-
-    public List<Integer> getRackIDs() {
-        return rackIDs;
     }
 }

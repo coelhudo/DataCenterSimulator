@@ -365,7 +365,7 @@ public class BladeServerTest {
         assertEquals(1.0, bladeServer.getCurrentCPU(), 1.0E-8);
         assertEquals(1.4, bladeServer.getMips(), 1.0E-8);
 
-        when(mockedBatchJob.getRemainAt(0)).thenReturn(5.0, 3.6);
+        when(mockedBatchJob.getRemainAt(bladeServer.getID())).thenReturn(5.0, 3.6);
         when(mockedBatchJob.getUtilization()).thenReturn(1.0);
         when(mockedBatchJob.isModified()).thenReturn(false, true);
 
@@ -378,9 +378,8 @@ public class BladeServerTest {
         verify(mockedBatchJob, times(3)).isModified();
         verify(mockedBatchJob).setAsModified();
         verify(mockedBatchJob).setAsNotModified();
-        verify(mockedBatchJob).getThisNodeIndex(0);
-        verify(mockedBatchJob).setRemainAt(0, 3.6);
-        verify(mockedBatchJob, times(2)).getRemainAt(0);
+        verify(mockedBatchJob).setRemainAt(bladeServer.getID(), 3.6);
+        verify(mockedBatchJob, times(2)).getRemainAt(bladeServer.getID());
 
         verifyNoMoreInteractions(mockedBatchJob);
     }
@@ -395,7 +394,7 @@ public class BladeServerTest {
         assertEquals(1.0, bladeServer.getCurrentCPU(), 1.0E-8);
         assertEquals(1.4, bladeServer.getMips(), 1.0E-8);
 
-        when(mockedBatchJob.getRemainAt(0)).thenReturn(5.0, 3.6);
+        when(mockedBatchJob.getRemainAt(bladeServer.getID())).thenReturn(5.0, 3.6);
         when(mockedBatchJob.getUtilization()).thenReturn(0.0);
         when(mockedBatchJob.isModified()).thenReturn(true, true, false);
 
@@ -406,9 +405,8 @@ public class BladeServerTest {
         verify(mockedBatchJob, times(3)).isModified();
         verify(mockedBatchJob).setAsModified();
         verify(mockedBatchJob).setAsNotModified();
-        verify(mockedBatchJob).getThisNodeIndex(0);
-        verify(mockedBatchJob).setRemainAt(0, 3.6);
-        verify(mockedBatchJob, times(2)).getRemainAt(0);
+        verify(mockedBatchJob).setRemainAt(bladeServer.getID(), 3.6);
+        verify(mockedBatchJob, times(2)).getRemainAt(bladeServer.getID());
 
         verifyNoMoreInteractions(mockedBatchJob);
     }
@@ -423,7 +421,7 @@ public class BladeServerTest {
         assertEquals(1.0, bladeServer.getCurrentCPU(), 1.0E-8);
         assertEquals(1.4, bladeServer.getMips(), 1.0E-8);
 
-        when(mockedBatchJob.getRemainAt(0)).thenReturn(5.0);
+        when(mockedBatchJob.getRemainAt(bladeServer.getID())).thenReturn(5.0);
         when(mockedBatchJob.getUtilization()).thenReturn(0.1);
         when(mockedBatchJob.isModified()).thenReturn(true, true, false);
 
@@ -436,12 +434,11 @@ public class BladeServerTest {
         verify(mockedBatchJob, times(3)).isModified();
         verify(mockedBatchJob).setAsModified();
         verify(mockedBatchJob).setAsNotModified();
-        verify(mockedBatchJob).getThisNodeIndex(0);
         final ArgumentCaptor<Double> captor = ArgumentCaptor.forClass(Double.class);
-        verify(mockedBatchJob).setRemainAt(Matchers.eq(0), captor.capture());
+        verify(mockedBatchJob).setRemainAt(Matchers.eq(bladeServer.getID()), captor.capture());
         assertEquals(-8.99, captor.getValue(), 0.01);
 
-        verify(mockedBatchJob, times(2)).getRemainAt(0);
+        verify(mockedBatchJob, times(2)).getRemainAt(bladeServer.getID());
 
         verifyNoMoreInteractions(mockedBatchJob);
     }
@@ -477,16 +474,14 @@ public class BladeServerTest {
         assertTrue(bladeServer.getBlockedBatchList().isEmpty());
 
         when(mockedBatchJob.getNumOfNode()).thenReturn(1);
-        when(mockedBatchJob.getThisNodeIndex(0)).thenReturn(0);
-        when(mockedBatchJob.getRemainAt(0)).thenReturn(2.0, 1.0);
+        when(mockedBatchJob.getRemainAt(bladeServer.getID())).thenReturn(2.0, 1.0);
 
         final double share = 1.0;
         assertFalse(bladeServer.done(mockedBatchJob, share));
 
         verify(mockedBatchJob).getUtilization();
-        verify(mockedBatchJob).getThisNodeIndex(0);
-        verify(mockedBatchJob).setRemainAt(0, 1.0);
-        verify(mockedBatchJob, times(2)).getRemainAt(0);
+        verify(mockedBatchJob).setRemainAt(bladeServer.getID(), 1.0);
+        verify(mockedBatchJob, times(2)).getRemainAt(bladeServer.getID());
 
         verifyNoMoreInteractions(mockedBatchJob);
     }
@@ -500,18 +495,16 @@ public class BladeServerTest {
         assertTrue(bladeServer.getBlockedBatchList().isEmpty());
 
         when(mockedBatchJob.getNumOfNode()).thenReturn(1);
-        when(mockedBatchJob.getThisNodeIndex(0)).thenReturn(0);
-        when(mockedBatchJob.getRemainAt(0)).thenReturn(1.0, 0.0);
+        when(mockedBatchJob.getRemainAt(bladeServer.getID())).thenReturn(1.0, 0.0);
         when(mockedBatchJob.allDone()).thenReturn(false);
 
         final double share = 1.0;
         assertFalse(bladeServer.done(mockedBatchJob, share));
 
         verify(mockedBatchJob).getUtilization();
-        verify(mockedBatchJob).getThisNodeIndex(0);
-        verify(mockedBatchJob).setRemainAt(0, 0.0);
+        verify(mockedBatchJob).setRemainAt(bladeServer.getID(), 0.0);
         verify(mockedBatchJob).setAsNotModified();
-        verify(mockedBatchJob, times(2)).getRemainAt(0);
+        verify(mockedBatchJob, times(2)).getRemainAt(bladeServer.getID());
         verify(mockedBatchJob).allDone();
 
         verifyNoMoreInteractions(mockedBatchJob);
@@ -528,18 +521,16 @@ public class BladeServerTest {
         assertEquals(0, bladeServer.getTotalFinishedJob());
 
         when(mockedBatchJob.getNumOfNode()).thenReturn(1);
-        when(mockedBatchJob.getThisNodeIndex(0)).thenReturn(0);
-        when(mockedBatchJob.getRemainAt(0)).thenReturn(1.0, 0.0);
+        when(mockedBatchJob.getRemainAt(bladeServer.getID())).thenReturn(1.0, 0.0);
         when(mockedBatchJob.allDone()).thenReturn(true);
 
         final double share = 1.0;
         assertTrue(bladeServer.done(mockedBatchJob, share));
 
         verify(mockedBatchJob).getUtilization();
-        verify(mockedBatchJob).getThisNodeIndex(0);
-        verify(mockedBatchJob).setRemainAt(0, 0.0);
+        verify(mockedBatchJob).setRemainAt(bladeServer.getID(), 0.0);
         verify(mockedBatchJob).setAsNotModified();
-        verify(mockedBatchJob, times(2)).getRemainAt(0);
+        verify(mockedBatchJob, times(2)).getRemainAt(bladeServer.getID());
         verify(mockedBatchJob).allDone();
         verify(mockedBatchJob).Finish(anyInt());
 

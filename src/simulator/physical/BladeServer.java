@@ -291,14 +291,8 @@ public class BladeServer extends DataCenterEntity {
             return true;
         }
 
-        final int ki = job.getThisNodeIndex(getID().getServerID());
-
-        if (ki == -1) {
-            LOGGER.info("Blade server is wrong in BladeServer!!!");
-        }
-
-        job.setRemainAt(ki, job.getRemainAt(ki) - share);
-        if (job.getRemainAt(ki) > 0) {
+        job.setRemainAt(getID(), job.getRemainAt(getID()) - share);
+        if (job.getRemainAt(getID()) > 0) {
             return false;
         }
 

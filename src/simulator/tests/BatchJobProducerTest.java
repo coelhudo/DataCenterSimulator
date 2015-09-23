@@ -13,6 +13,7 @@ import static org.mockito.Mockito.when;
 
 import java.io.BufferedReader;
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.NoSuchElementException;
 
 import org.junit.Before;
@@ -22,6 +23,8 @@ import org.junit.rules.ExpectedException;
 
 import simulator.jobs.BatchJob;
 import simulator.jobs.BatchJobProducer;
+import simulator.physical.BladeServer;
+import simulator.physical.DataCenterEntityID;
 
 public class BatchJobProducerTest {
 
@@ -70,7 +73,7 @@ public class BatchJobProducerTest {
         final int jobStartTime = 4;
         final double remainingTime = 8;
         final double utilization = 15;
-        final int numberOfNodes = 16;
+        final int numberOfNodes = 1;
         final double deadline = 23;
         final String jobAttributes = jobStartTime + "\t" + remainingTime + "\t" + utilization + "\t" + numberOfNodes
                 + "\t" + deadline;
@@ -85,10 +88,14 @@ public class BatchJobProducerTest {
         batchJobProducer.loadJobs();
 
         assertTrue(batchJobProducer.hasNext());
+        
+        BladeServer mockedBladeServer = mock(BladeServer.class);
+        when(mockedBladeServer.getID()).thenReturn(DataCenterEntityID.createServerID(1, 1, 1));
 
         BatchJob batchJob = (BatchJob) batchJobProducer.next();
+        batchJob.setListOfServer(Arrays.asList(mockedBladeServer));
         assertEquals(jobStartTime, batchJob.getStartTime(), 1.0E-8);
-        assertEquals(remainingTime, batchJob.getRemainAt(0), 1.0E-8);
+        assertEquals(remainingTime, batchJob.getRemainAt(mockedBladeServer.getID()), 1.0E-8);
         assertEquals(utilization / 100.0, batchJob.getUtilization(), 1.0E-8);
         assertEquals(numberOfNodes, batchJob.getNumOfNode());
         assertEquals(deadline, batchJob.getDeadline(), 1.0E-8);
@@ -101,8 +108,10 @@ public class BatchJobProducerTest {
         } catch (IOException e) {
             fail(FAIL_ERROR_MESSAGE + e.getMessage());
         }
+        
+        verify(mockedBladeServer, times(2)).getID();
 
-        verifyNoMoreInteractions(mockedBufferedReader);
+        verifyNoMoreInteractions(mockedBufferedReader, mockedBladeServer);
     }
 
     @Test

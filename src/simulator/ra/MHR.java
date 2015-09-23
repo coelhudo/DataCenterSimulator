@@ -6,6 +6,7 @@ import java.util.List;
 import simulator.Environment;
 import simulator.physical.BladeServer;
 import simulator.physical.BladeServerCollectionOperations;
+import simulator.physical.Chassis;
 import simulator.physical.DataCenter;
 
 /**
@@ -48,38 +49,42 @@ public class MHR extends ResourceAllocation {
         return -2;
     }
 
-    public BladeServer nextServerSys(List<Integer> chassisList) {
+    public BladeServer nextServerSys(List<Chassis> chassis) {
         for (int j = powIndex.length - 1; j >= 0; j--) {
-            int l = 0;
-            for (l = 0; l < chassisList.size(); l++) {
-                if (powIndex[j] == chassisList.get(l)) {
+            Chassis foundChassis = null;
+            for (Chassis currentChassis : chassis) {
+                if (powIndex[j] == currentChassis.getID().getChassisID()) {
+                    foundChassis = currentChassis;
                     break;
                 }
             }
-            if (l == chassisList.size()) {
+
+            if (foundChassis == null) {
                 continue;
             }
             
-            for (int k = 0; k < dataCenter.getChassisSet().get(chassisList.get(l)).getServers().size(); k++) {
-                if (dataCenter.getChassisSet().get(chassisList.get(l)).getServers().get(k).isNotSystemAssigned()) {
-                    return dataCenter.getChassisSet().get(chassisList.get(l)).getServers().get(k);
-                }
+            BladeServer result = foundChassis.getNextNotAssignedBladeServer();
+            if(result == null) {
+                continue;
             }
+
+            return result;
         }
         return null;
     }
     // this funtion is used in ComputeSystem for allocating resources
     // List is array of compute nodes
 
-    public List<BladeServer> allocateSystemLevelServer(List<BladeServer> availableBladeServers, int numberOfRequestedServers) {
+    public List<BladeServer> allocateSystemLevelServer(List<BladeServer> availableBladeServers,
+            int numberOfRequestedServers) {
         List<BladeServer> requestedBladeServers = null;
-        
+
         if (BladeServerCollectionOperations.countRunningNormal(availableBladeServers) < numberOfRequestedServers) {
             return null;
         }
-        
+
         requestedBladeServers = new ArrayList<BladeServer>();
-        
+
         int j = 0;
         for (int k = powIndex.length - 1; k >= 0 && j < numberOfRequestedServers; k--) {
             for (int i = 0; i < availableBladeServers.size(); i++) {

@@ -5,17 +5,8 @@ import java.util.List;
 
 public class RackPOD {
     
-    private int rackID;
     private DataCenterEntityID id;
     private List<ChassisPOD> chassisPODs = new ArrayList<ChassisPOD>();
-
-    public void setRackID(int rackID) {
-        this.rackID = rackID;
-    }
-    
-    public int getRackID() {
-        return rackID;
-    }
 
     public void appendChassis(ChassisPOD chassisPOD) {
         this.chassisPODs.add(chassisPOD);
