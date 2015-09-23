@@ -17,13 +17,15 @@ configuration and interactions
 # Architecture
 
 Currently three kinds of systems are available for evaluation:
-* Interactive Systems
-* Enterprise Systems
-* HPC (High-performance Computing) Systems
+* Interactive Systems (low latency jobs).
+* Enterprise Systems (low latency jobs mixed with high latency jobs).
+* HPC (High-performance Computing) Systems (high latency jobs).
 
 Each system has a workload based on its characteristics. HPC for
 example use batch jobs that will mimic intensive workload. Also, for
 this initial version, there are two schedulers that can be configured.
+    * First Come First Served (the classical one)
+    * Mininum Heat Recirculation
 
 The goals of the Autonomic Managers are described using high-level
 policies. Currently two action policies are available:
@@ -50,7 +52,9 @@ Current dependencies are listed in the pom.xml file.
 
 ## Using web frontend
 
-* "Dependencies:" jython (2.7.0), autobahn (0.10.7 and its dependencies). Obs.: Some codefrom autobahn need to be commented (the method that contains "yield from") because 2.7, that's why (¯\(°_o)/¯).
+* "Dependencies:" jython (2.7.0), autobahn (0.10.7 and its
+dependencies).
+    * Obs.: Some codefrom autobahn need to be commented (the method that contains "yield from") because 2.7, that's why (¯\(°_o)/¯).
 
 * *mvn package* : to generate the jar that contains the simulator
 * *jython backend.py* (a lot of information will appear in the console)
