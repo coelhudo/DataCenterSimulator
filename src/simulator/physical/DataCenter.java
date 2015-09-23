@@ -124,7 +124,7 @@ public class DataCenter {
     }
 
     public Collection<Rack> getRacks() {
-        return racks.values();
+        return Collections.unmodifiableCollection(racks.values());
     }
 
     public Rack getRack(DataCenterEntityID id) {
