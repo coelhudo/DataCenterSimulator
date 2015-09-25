@@ -41,7 +41,7 @@ public class Simulator {
             allSystemCalculatePower();
             dataCenter.calculatePower();
             environment.updateCurrentLocalTime();
-            LOGGER.info(dataCenter.GetStats());
+            dataCenter.GetStats();
             // ////Data Center Level AM MAPE Loop
             // if(Main.localTime%1==0)
             // {
@@ -131,7 +131,6 @@ public class Simulator {
     }
 
     public enum StrategyEnum {
-
         Green, SLA
     };
 
@@ -183,58 +182,7 @@ public class Simulator {
         return systems.removeJobsThatAreDone();
 
     }
-    // void getPeakEstimate()
-    // {
-    // File f;
-    // peakEstimate=new double[71];
-    // BufferedReader bis = null;
-    // try {
-    // f = new File("Z:\\PWMNG\\peakEstimation3times.txt");
-    // bis = new BufferedReader(new InputStreamReader(new FileInputStream(f)));
-    // } catch (IOException e) {
-    // LOGGER.info("Uh oh, got an IOException error!" + e.getMessage());
-    // } finally {
-    // }
-    // try {
-    // String line = bis.readLine();
-    // int i=0;
-    // while(line!=null)
-    // {
-    // String[] numbers= new String[1];
-    // numbers = line.trim().split(" ");
-    // peakEstimate[i++] = Double.parseDouble(numbers[0]);
-    // //LOGGER.info("Readed inputTime= " + inputTime + " Job Reqested
-    // Time=" + j.startTime+" Total job so far="+ total);
-    // line = bis.readLine();
-    // }
-    // } catch (IOException ex) {
-    // LOGGER.info("readJOB EXC readJOB false ");
-    // Logger.getLogger(Scheduler.class.getName()).log(Level.SEVERE, null, ex);
-    // }
-    // }
-    /*
-     * void coordinator(int times) { //return every server in ready state then
-     * try to make some of them idle for(int
-     * j=0;j<webSet1.ComputeNodeList.size();j++) {
-     * webSet1.ComputeNodeList.get(j).ready=1;
-     * webSet1.ComputeNodeList.get(j).currentCPU=0;
-     * webSet1.ComputeNodeList.get(j).Mips=1; }
-     * ///////////////////////////////////////////////////////////////////////
-     * int suc=0; if(times>=70) return; double peak=peakEstimate[times]; int
-     * numberOfidleServer=webSet1.ComputeNodeList.size()-(int)Math.ceil(peak/
-     * 1000); //LOGGER.info(numberOfidleServer); if(numberOfidleServer<0)
-     * return; for(int j=0;j<numberOfidleServer;j++)
-     * if(webSet1.ComputeNodeList.get(j).queueLength==0) { suc++;
-     * webSet1.ComputeNodeList.get(j).ready=-1;
-     * webSet1.ComputeNodeList.get(j).currentCPU=0;
-     * webSet1.ComputeNodeList.get(j).Mips=1; } else {LOGGER.info(
-     * "In Coordinator and else   ");numberOfidleServer++;} //border ra jabeja
-     * mikonim //if(suc==numberOfidleServer) LOGGER.info(numberOfidleServer+
-     * "\t suc= "+suc); } public void addToresponseArray(double num,int time) {
-     * responseTime t= new responseTime(); t.numberOfJob=num;
-     * t.responseTime=time; responseArray.add(t); return; }
-     */
-
+    
     public Environment getEnvironment() {
         return environment;
     }
