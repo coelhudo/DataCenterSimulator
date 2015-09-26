@@ -1,39 +1,37 @@
 package simulator;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Observable;
 import java.util.Observer;
-import java.util.logging.FileHandler;
 import java.util.logging.Logger;
 
+import simulator.am.ApplicationAM;
+import simulator.am.DataCenterAM;
+import simulator.am.EnterpriseSystemAM;
+import simulator.am.GeneralAM;
 import simulator.physical.DataCenter;
 import simulator.ra.MHR;
 import simulator.ra.ResourceAllocation;
+import simulator.schedulers.FIFOScheduler;
+import simulator.schedulers.Scheduler;
 import simulator.system.ComputeSystem;
 import simulator.system.ComputeSystemPOD;
 import simulator.system.EnterpriseApp;
 import simulator.system.EnterpriseApplicationPOD;
 import simulator.system.EnterpriseSystem;
 import simulator.system.EnterpriseSystemPOD;
-import simulator.schedulers.Scheduler;
-import simulator.schedulers.FIFOScheduler;
 import simulator.system.InteractiveSystem;
 import simulator.system.InteractiveSystemPOD;
 import simulator.system.Systems;
 import simulator.system.SystemsPOD;
-import simulator.am.ApplicationAM;
-import simulator.am.DataCenterAM;
-import simulator.am.EnterpriseSystemAM;
-import simulator.am.GeneralAM;
 import simulator.utils.ActivitiesLogger;
 
-public class Simulator {
+public class Simulator implements Runnable {
 
     private static final Logger LOGGER = Logger.getLogger(Simulator.class.getName());
 
-    private void run() throws IOException {
+    public void run() {
         ///////////////////////
         while (!areSystemsDone()) {
             // LOGGER.info("--"+Main.localTime);
@@ -51,6 +49,7 @@ public class Simulator {
             // }
             // ///////////////
         }
+        csFinalize();
     }
 
     public Simulator(SimulatorPOD simulatorPOD, Environment environment) {
@@ -144,32 +143,6 @@ public class Simulator {
 
     public void allSystemCalculatePower() {
         systems.calculatePower();
-    }
-
-    public static void main(String[] args) throws IOException {
-        FileHandler logFile = new FileHandler("log.txt");
-        LOGGER.addHandler(logFile);
-
-        SimulatorBuilder dataCenterBuilder = new SimulatorBuilder("configs/DC_Logic.xml");
-        SimulatorPOD simulatorPOD = dataCenterBuilder.build();
-
-        Environment environment = new Environment();
-        Simulator simulator = new Simulator(simulatorPOD, environment);
-        SimulationResults results = simulator.execute();
-        LOGGER.info("Total energy Consumption= " + results.getTotalPowerConsumption());
-        LOGGER.info("LocalTime= " + results.getLocalTime());
-        LOGGER.info("Mean Power Consumption= " + results.getMeanPowerConsumption());
-        LOGGER.info("Over RED\t " + results.getOverRedTemperatureNumber() + "\t# of Messages DC to sys= "
-                + results.getNumberOfMessagesFromDataCenterToSystem() + "\t# of Messages sys to nodes= "
-                + results.getNumberOfMessagesFromSystemToNodes());
-    }
-
-    public SimulationResults execute() throws IOException {
-        LOGGER.info("Systems start running");
-        run();
-        csFinalize();
-        LOGGER.info("Simulation finished");
-        return new SimulationResults(this);
     }
 
     void csFinalize() {

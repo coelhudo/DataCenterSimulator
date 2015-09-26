@@ -28,7 +28,8 @@ class MyServerProtocol(WebSocketServerProtocol):
                 dataCenter = simulator.getDatacenter()
                 dataCenterSpecificationPayload = json.dumps(dataCenterToJSON(dataCenter), ensure_ascii = False).encode('utf8')
                 self.sendMessage(dataCenterSpecificationPayload)
-                results = simulator.execute()
+                simulator.run()
+                results = SimulationResults(simulator)
 
                 self.sendMessage(json.dumps(resultAsJSON(results), ensure_ascii = False).encode('utf8'))
 
