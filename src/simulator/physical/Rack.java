@@ -29,13 +29,14 @@ public class Rack extends DataCenterEntity {
 
     @Override
     public String getStats() {
-        String stats = "rack " + getID().toString() + "\n";
+        StringBuffer stats = new StringBuffer();
+        stats.append("rack " + getID().toString() + "\n");
         for(Chassis currentChassis : chassis.values()) {
-            stats += currentChassis.getStats();
+            stats.append(currentChassis.getStats());
         }
         
-        stats += "\n";
+        stats.append('\n');
         
-        return stats;
+        return stats.toString();
     }
 }

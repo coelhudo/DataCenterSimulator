@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Observable;
 import java.util.Observer;
+import java.util.concurrent.BlockingQueue;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import simulator.am.ApplicationAM;
@@ -31,15 +33,26 @@ public class Simulator implements Runnable {
 
     private static final Logger LOGGER = Logger.getLogger(Simulator.class.getName());
 
+    // private int epochSys = 120, epochSideApp = 120;
+    private DataCenter dataCenter;
+    private Environment environment;
+    private Systems systems;
+    private SLAViolationLogger slaViolationLogger;
+    private DataCenterAM dataCenterAM;
+    private BlockingQueue<String> partialResults;
+    
     public void run() {
-        ///////////////////////
         while (!areSystemsDone()) {
             // LOGGER.info("--"+Main.localTime);
             allSystemRunACycle();
             allSystemCalculatePower();
             dataCenter.calculatePower();
             environment.updateCurrentLocalTime();
-            dataCenter.GetStats();
+            try {
+                partialResults.put(dataCenter.GetStats());
+            } catch (InterruptedException e) {
+                LOGGER.log(Level.SEVERE, e.getMessage(), e);
+            }
             // ////Data Center Level AM MAPE Loop
             // if(Main.localTime%1==0)
             // {
@@ -49,11 +62,15 @@ public class Simulator implements Runnable {
             // }
             // ///////////////
         }
+        
+        LOGGER.info("Simulation done");
+        
         csFinalize();
     }
 
-    public Simulator(SimulatorPOD simulatorPOD, Environment environment) {
+    public Simulator(SimulatorPOD simulatorPOD, Environment environment, BlockingQueue<String> partialResults) {
         this.environment = environment;
+        this.partialResults = partialResults;
         ActivitiesLogger activitiesLogger = new ActivitiesLogger("out_W.txt");
         slaViolationLogger = new SLAViolationLogger(environment);
         systems = new Systems(environment);
@@ -107,16 +124,7 @@ public class Simulator implements Runnable {
 
         return applications;
     }
-
-    // private int epochSys = 120, epochSideApp = 120;
-    // private List<ResponseTime> responseArray;
-    // public int communicationAM = 0;
-    private DataCenter dataCenter;
-    private Environment environment;
-    private Systems systems;
-    private SLAViolationLogger slaViolationLogger;
-    private DataCenterAM dataCenterAM;
-
+    
     protected double getTotalPowerConsumption() {
         return dataCenter.getTotalPowerConsumption();
     }

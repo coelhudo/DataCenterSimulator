@@ -10,6 +10,8 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.BlockingQueue;
 
 import org.junit.Test;
 
@@ -36,7 +38,8 @@ public class ReadingConfigurationIT {
         SimulatorPOD simulatorPOD = dataCenterBuilder.build();
 
         Environment environment = new Environment();
-        Simulator simulator = new Simulator(simulatorPOD, environment);
+        BlockingQueue<String> partialResults = new ArrayBlockingQueue<String>(5);
+        Simulator simulator = new Simulator(simulatorPOD, environment, partialResults);
 
         DataCenter dataCenter = simulator.getDatacenter();
         Collection<Rack> racks = dataCenter.getRacks();

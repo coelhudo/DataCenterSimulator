@@ -1,6 +1,8 @@
 package simulator;
 
 import java.io.IOException;
+import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.BlockingQueue;
 import java.util.logging.FileHandler;
 import java.util.logging.Logger;
 
@@ -16,10 +18,18 @@ public class Main {
         SimulatorPOD simulatorPOD = dataCenterBuilder.build();
 
         Environment environment = new Environment();
-        Simulator simulator = new Simulator(simulatorPOD, environment);
+        BlockingQueue<String> partialResults = new ArrayBlockingQueue<String>(1000);
+        Simulator simulator = new Simulator(simulatorPOD, environment, partialResults);
+
+        PartialResultConsumer partialResultConsumer = new PartialResultConsumer(partialResults);
+        
         Thread simulatorThread = new Thread(simulator);
+        Thread partialResultConsumerThread = new Thread(partialResultConsumer);
         simulatorThread.start();
+        partialResultConsumerThread.start();
         simulatorThread.join();
+        partialResultConsumerThread.join();
+
         SimulationResults results = new SimulationResults(simulator);
         LOGGER.info("Total energy Consumption= " + results.getTotalPowerConsumption());
         LOGGER.info("LocalTime= " + results.getLocalTime());

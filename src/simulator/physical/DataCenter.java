@@ -22,6 +22,7 @@ public class DataCenter {
     private double[][] D;
     private DataCenterAM am;
     private ActivitiesLogger activitiesLogger;
+    private List<Chassis> allChassis = new ArrayList<Chassis>();
 
     private Environment environment;
 
@@ -41,9 +42,9 @@ public class DataCenter {
      * Calculate Power using Equation 6 from doi:10.1016/j.comnet.2009.06.008
      */
     public void calculatePower() {
-        List<Chassis> chassis = new ArrayList<Chassis>();
+        allChassis.clear();
         for (Rack rack : racks.values()) {
-            chassis.addAll(rack.getChassis());
+            allChassis.addAll(rack.getChassis());
         }
         
         /**
@@ -58,12 +59,12 @@ public class DataCenter {
             
         }
         
-        Collections.sort(chassis, new ChassisComparator());
+        Collections.sort(allChassis, new ChassisComparator());
         
-        int m = chassis.size();
+        int m = allChassis.size();
         double computingPower = 0;
         double[] temperature = new double[m];
-        for (Chassis curretChassis : chassis) {
+        for (Chassis curretChassis : allChassis) {
             final double chassisComputingPower = curretChassis.power();
             activitiesLogger.write(curretChassis.getID() + " "+ chassisComputingPower + "\n");
             computingPower = computingPower + chassisComputingPower;
@@ -71,7 +72,7 @@ public class DataCenter {
 
         for (int i = 0; i < m; i++) {
             for (int j = 0; j < m; j++) {
-                temperature[i] = temperature[i] + D[i][j] * chassis.get(j).power();
+                temperature[i] = temperature[i] + D[i][j] * allChassis.get(j).power();
             }
         }
 
@@ -132,12 +133,13 @@ public class DataCenter {
     }
 
     public String GetStats() {
-        String stats = new String();
+        StringBuilder stats = new StringBuilder();
         
         for(Rack rack : racks.values()) {
-            stats += rack.getStats() + "\n";
+            stats.append(rack.getStats());
+            stats.append('\n');
         }
         
-        return stats;
+        return stats.toString();
     }
 }
