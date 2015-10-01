@@ -1,9 +1,11 @@
 from autobahn.twisted.websocket import WebSocketServerProtocol, \
     WebSocketServerFactory
 import sys
-sys.path.append('./target/ADCMSimulator-adcmsim-0.1.jar')
+sys.path.append('./target/ADCMSimulator-adcmsim-0.0.1.jar')
 from simulator import *
 import json
+from java.util.concurrent import ArrayBlockingQueue, TimeUnit;
+from threading import Thread
 
 class MyServerProtocol(WebSocketServerProtocol):
 
@@ -23,12 +25,27 @@ class MyServerProtocol(WebSocketServerProtocol):
                 dataCenterBuilder = SimulatorBuilder("configs/DC_Logic.xml")
                 simulatorPOD = dataCenterBuilder.build()
                 environment = Environment()
-                simulator = Simulator(simulatorPOD, environment)
+                partialResults = ArrayBlockingQueue(5)
+                simulator = Simulator(simulatorPOD, environment, partialResults)
 
                 dataCenter = simulator.getDatacenter()
                 dataCenterSpecificationPayload = json.dumps(dataCenterToJSON(dataCenter), ensure_ascii = False).encode('utf8')
                 self.sendMessage(dataCenterSpecificationPayload)
-                simulator.run()
+                simulatorThread = Thread(target=simulator.run)
+                simulatorThread.start()
+                counter = 0;
+
+                while(True):
+                    singleResult = partialResults.poll(50, TimeUnit.MILLISECONDS)
+                    if singleResult != None:
+                        counter = 0
+                    else:
+                        counter += 1
+
+                    if counter > 50:
+                        break;
+
+                simulatorThread.join()
                 results = SimulationResults(simulator)
 
                 self.sendMessage(json.dumps(resultAsJSON(results), ensure_ascii = False).encode('utf8'))
