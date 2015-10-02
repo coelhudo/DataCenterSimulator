@@ -60,3 +60,6 @@ slaViolLogH.txt
 slaViolLogI.txt
 /bin/
 /target/
+
+#Unix temp files
+*~
