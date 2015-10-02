@@ -1,11 +1,14 @@
 package simulator.physical;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import simulator.Environment;
+import simulator.physical.BladeServer.BladeServerStats;
 
 public class Chassis extends DataCenterEntity {
 
@@ -60,15 +63,23 @@ public class Chassis extends DataCenterEntity {
         return getID().toString();
     }
 
+    
+    public class ChassisStats extends DataCenterEntityStats {
+         private List<BladeServerStats> bladeServerStats = new ArrayList<BladeServerStats>();
+         
+         public ChassisStats() {
+             for(BladeServer bladeServer : servers.values()) {
+                 bladeServerStats.add((BladeServerStats)bladeServer.getStats());
+             }
+         }
+         
+         public List<BladeServerStats> getBladeServersStats() {
+             return bladeServerStats;
+         }
+    }
+    
     @Override
-    public String getStats() {
-        String stats = "chassis: " + getID().toString() + "-> ";
-        for(BladeServer bladeServer : servers.values()) {
-            stats += bladeServer.getStats() + "; ";
-        }
-        
-        stats += "\n";
-        
-        return stats;
+    public DataCenterEntityStats getStats() {
+        return new ChassisStats();
     }
 }

@@ -545,8 +545,14 @@ public class BladeServer extends DataCenterEntity {
         return idleConsumption;
     }
 
+    public class BladeServerStats extends DataCenterEntityStats {
+        public BladeServerStatus getStatus() {
+            return status;
+        }
+    }
+    
     @Override
-    public String getStats() {
-        return "bladeServer: " + getID().toString() + " " + status.toString();
+    public DataCenterEntityStats getStats() {
+        return new BladeServerStats();
     }
 }

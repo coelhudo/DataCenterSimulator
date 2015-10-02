@@ -13,6 +13,7 @@ import simulator.SimulationResults;
 import simulator.Simulator;
 import simulator.SimulatorBuilder;
 import simulator.SimulatorPOD;
+import simulator.physical.DataCenter.DataCenterStats;
 
 public class SimulatorIT {
 
@@ -152,7 +153,7 @@ public class SimulatorIT {
 
         }
 
-        BlockingQueue<String> partialResults = new SkeletonBlockingQueue<String>();
+        BlockingQueue<DataCenterStats> partialResults = new SkeletonBlockingQueue<DataCenterStats>();
         Simulator simulator = new Simulator(simulatorPOD, environment, partialResults);
 
         simulator.run();

@@ -1,11 +1,14 @@
 package simulator.physical;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import simulator.Environment;
+import simulator.physical.Chassis.ChassisStats;
 
 public class Rack extends DataCenterEntity {
 
@@ -27,16 +30,22 @@ public class Rack extends DataCenterEntity {
         return chassis.get(id);
     }
 
-    @Override
-    public String getStats() {
-        StringBuffer stats = new StringBuffer();
-        stats.append("rack " + getID().toString() + "\n");
-        for(Chassis currentChassis : chassis.values()) {
-            stats.append(currentChassis.getStats());
+    public class RackStats extends DataCenterEntityStats {
+        private List<ChassisStats> chassisStats = new ArrayList<ChassisStats>();
+        
+        public RackStats() {
+            for(Chassis currentChassis : chassis.values()) {
+                chassisStats.add((ChassisStats)currentChassis.getStats());
+            }
         }
         
-        stats.append('\n');
-        
-        return stats.toString();
+        public List<ChassisStats> getChassisStats() {
+            return chassisStats;
+        }
+   }
+    
+    @Override
+    public DataCenterEntityStats getStats() {  
+        return new RackStats();
     }
 }

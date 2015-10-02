@@ -23,6 +23,7 @@ import simulator.am.DataCenterAM;
 import simulator.physical.BladeServer;
 import simulator.physical.Chassis;
 import simulator.physical.DataCenter;
+import simulator.physical.DataCenter.DataCenterStats;
 import simulator.physical.DataCenterEntityID;
 import simulator.physical.Rack;
 import simulator.system.ComputeSystem;
@@ -38,7 +39,7 @@ public class ReadingConfigurationIT {
         SimulatorPOD simulatorPOD = dataCenterBuilder.build();
 
         Environment environment = new Environment();
-        BlockingQueue<String> partialResults = new ArrayBlockingQueue<String>(5);
+        BlockingQueue<DataCenterStats> partialResults = new ArrayBlockingQueue<DataCenterStats>(5);
         Simulator simulator = new Simulator(simulatorPOD, environment, partialResults);
 
         DataCenter dataCenter = simulator.getDatacenter();

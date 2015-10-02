@@ -6,6 +6,8 @@ import java.util.concurrent.BlockingQueue;
 import java.util.logging.FileHandler;
 import java.util.logging.Logger;
 
+import simulator.physical.DataCenter.DataCenterStats;
+
 public class Main {
 
     private static final Logger LOGGER = Logger.getLogger(Simulator.class.getName());
@@ -18,13 +20,13 @@ public class Main {
         SimulatorPOD simulatorPOD = dataCenterBuilder.build();
 
         Environment environment = new Environment();
-        BlockingQueue<String> partialResults = new ArrayBlockingQueue<String>(1000);
+        BlockingQueue<DataCenterStats> partialResults = new ArrayBlockingQueue<DataCenterStats>(1000);
         Simulator simulator = new Simulator(simulatorPOD, environment, partialResults);
 
-        PartialResultConsumer partialResultConsumer = new PartialResultConsumer(partialResults);
+        PartialDataCenterStatsConsumer partialDataCenterStatsConsumer = new PartialDataCenterStatsConsumer(partialResults);
         
         Thread simulatorThread = new Thread(simulator);
-        Thread partialResultConsumerThread = new Thread(partialResultConsumer);
+        Thread partialResultConsumerThread = new Thread(partialDataCenterStatsConsumer);
         simulatorThread.start();
         partialResultConsumerThread.start();
         simulatorThread.join();

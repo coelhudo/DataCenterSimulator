@@ -7,9 +7,17 @@
     <script src="js/frontend_wamp.js"></script>
    </head>
    <body>
-      <p>Open your browser's JavaScript console to see what's happening (hit F12).</p>
+      <p>Still order dependent: Configure -> Execute -> Results </p>
+      <button onclick='configure();'>Configure!</button>
       <button onclick='execute();'>Execute!</button>
-      <div id="main">
+      <button onclick='results();'>Show Results!</button>
+      <br>
+      <hr>
+      <div id="simulation">
+      </div>
+      <hr>
+      <br>
+      <div id="simulationResults">
       </div>
    </body>
 </html>

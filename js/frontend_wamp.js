@@ -29,7 +29,7 @@ connection.onopen = function (session) {
     currentSession = session
 };
 
-function execute() {
+function configure() {
     if(!currentSession) {
 	return
     }
@@ -49,7 +49,7 @@ function execute() {
 	    })
 	    for(i = 0; i < racks.length; i++) {
 		var HTMLDataCenterRackFormatted = createDataCenterElement(racks[i].id, 'rack')
-		$("#main").append(HTMLDataCenterRackFormatted)
+		$("#simulation").append(HTMLDataCenterRackFormatted)
 		var rackSelector = "#" + racks[i].id.replace(/\./g, "\\.")
 		$(rackSelector).html(racks[i].id)
 		$(rackSelector).css({"padding-left":"50px"});
@@ -62,6 +62,37 @@ function execute() {
 		    $(chassisSelector).css({"padding-left":"75px"});
 		}
 	    }
+	}
+    );
+}
+
+function execute() {
+    if(!currentSession) {
+	return
+    }
+
+    currentSession.call('digs.sim.execute')
+}
+
+function results() {
+    if(!currentSession) {
+	return
+    }
+
+    currentSession.call('digs.sim.results').then(
+	function(results) {
+	    var totalEnergy = results['Total energy Consumption']
+	    var HTMLTotalEnergy = document.createElement("div")
+	    HTMLTotalEnergy.setAttribute('id', 'totalEnergy')
+	    HTMLTotalEnergy.setAttribute('class', 'result')
+	    $("#simulationResults").append(HTMLTotalEnergy)
+	    $("#totalEnergy").html(totalEnergy)
+	    var meanPowerConsumption = results['Mean Power Consumption']
+	    var HTMLMeanPower = document.createElement("div")
+	    HTMLMeanPower.setAttribute('id', 'meanPower')
+	    HTMLMeanPower.setAttribute('class', 'result')
+	    $("#simulationResults").append(HTMLMeanPower)
+	    $("#meanPower").html(meanPowerConsumption)
 	}
     );
 }

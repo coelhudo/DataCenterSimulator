@@ -11,6 +11,7 @@ import java.util.Set;
 
 import simulator.Environment;
 import simulator.am.DataCenterAM;
+import simulator.physical.Rack.RackStats;
 import simulator.utils.ActivitiesLogger;
 
 public class DataCenter {
@@ -131,15 +132,19 @@ public class DataCenter {
     public Rack getRack(DataCenterEntityID id) {
         return racks.get(id);
     }
-
-    public String GetStats() {
-        StringBuilder stats = new StringBuilder();
-        
-        for(Rack rack : racks.values()) {
-            stats.append(rack.getStats());
-            stats.append('\n');
+    
+    public class DataCenterStats {
+        public List<RackStats> GetRackStats() {
+            List<RackStats> racksStats = new ArrayList<RackStats>();
+            for(Rack rack : racks.values()) {
+                racksStats.add((RackStats)rack.getStats());
+            }
+            
+            return racksStats;
         }
-        
-        return stats.toString();
+    }
+
+    public DataCenterStats GetStats() { 
+        return new DataCenterStats();
     }
 }

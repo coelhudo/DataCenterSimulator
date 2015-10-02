@@ -8,6 +8,8 @@ from simulator import *
 from java.util.concurrent import ArrayBlockingQueue, TimeUnit;
 import json
 
+from threading import Thread
+
 from twisted.internet.defer import inlineCallbacks
 from twisted.python.failure import Failure
 
@@ -29,6 +31,39 @@ class Sim():
         dataCenter = self.simulator.getDatacenter()
         dataCenterSpecificationPayload = json.dumps(dataCenterToJSON(dataCenter), ensure_ascii = False).encode('utf8')
         return dataCenterSpecificationPayload
+
+    @wamp.register(u'digs.sim.execute')
+    def execute(self):
+        print('Execute called')
+        self.simulatorThread = Thread(target=self.simulator.run)
+        self.simulatorThread.start()
+
+        while(True):
+            singleResult = self.partialResults.poll(50, TimeUnit.MILLISECONDS)
+            #publish here
+            if singleResult != None:
+                counter = 0
+            else:
+                counter += 1
+
+            if counter > 50:
+                break;
+
+    @wamp.register(u'digs.sim.results')
+    def results(self):
+        print('Results called')
+        self.simulatorThread.join()
+        self.results = SimulationResults(self.simulator)
+        return {'Total energy Consumption' : self.results.getTotalPowerConsumption(),
+                'LocalTime' : self.results.getLocalTime(),
+                'Mean Power Consumption' : self.results.getMeanPowerConsumption(),
+                'Over RED' : self.results.getOverRedTemperatureNumber(),
+                'Messages' : {
+                    '# of Messages DC to sys' : self.results.getNumberOfMessagesFromDataCenterToSystem(),
+                    '# of Messages sys to nodes' : self.results.getNumberOfMessagesFromSystemToNodes()
+                }
+        }
+
 
 def dataCenterToJSON(dataCenter):
     dataCenterSpecification = {}
@@ -82,13 +117,6 @@ class Component(ApplicationSession):
                 print("Failed to register procedure: {}".format(res.value))
             else:
                 print("registration ID {}: {}".format(res.id, res.procedure))
-
-        #counter = 0
-        #while True:
-        #    print('backend publishing com.myapp.topic1', counter)
-        #    self.publish(u'com.myapp.topic1', counter)
-        #    counter += 1
-        #    yield sleep(1)
 
 if __name__ == '__main__':
     runner = ApplicationRunner(

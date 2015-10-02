@@ -29,5 +29,11 @@ public abstract class DataCenterEntity {
         return id.hashCode();
     }
     
-    public abstract String getStats();
+    public abstract class DataCenterEntityStats {
+        public DataCenterEntityID getID() {
+            return id;
+        }
+    }
+    
+    public abstract DataCenterEntityStats getStats();
 }

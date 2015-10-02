@@ -13,6 +13,7 @@ import simulator.am.DataCenterAM;
 import simulator.am.EnterpriseSystemAM;
 import simulator.am.GeneralAM;
 import simulator.physical.DataCenter;
+import simulator.physical.DataCenter.DataCenterStats;
 import simulator.ra.MHR;
 import simulator.ra.ResourceAllocation;
 import simulator.schedulers.FIFOScheduler;
@@ -39,7 +40,7 @@ public class Simulator implements Runnable {
     private Systems systems;
     private SLAViolationLogger slaViolationLogger;
     private DataCenterAM dataCenterAM;
-    private BlockingQueue<String> partialResults;
+    private BlockingQueue<DataCenterStats> partialResults;
     
     public void run() {
         while (!areSystemsDone()) {
@@ -68,7 +69,7 @@ public class Simulator implements Runnable {
         csFinalize();
     }
 
-    public Simulator(SimulatorPOD simulatorPOD, Environment environment, BlockingQueue<String> partialResults) {
+    public Simulator(SimulatorPOD simulatorPOD, Environment environment, BlockingQueue<DataCenterStats> partialResults) {
         this.environment = environment;
         this.partialResults = partialResults;
         ActivitiesLogger activitiesLogger = new ActivitiesLogger("out_W.txt");
