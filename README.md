@@ -52,13 +52,19 @@ Current dependencies are listed in the pom.xml file.
 
 ## Using web frontend
 
-* "Dependencies:" jython (2.7.0), autobahn (0.10.7 and its
-dependencies).
+* The main idea is use websocket to communicate with the simulation
+  and collect intermediate results as well as final results. This is
+  done using [WAMP](http://wamp.ws/).
+
+* "Dependencies:" [jython (2.7.0)](www.jython.org/),
+[crossbar.io](crossbar.io), [autobahn Python /JS (0.10.7 and its
+dependencies)](http://autobahn.ws/).
     * Obs.: Some codefrom autobahn need to be commented (the method that contains "yield from") because 2.7, that's why (¯\(°_o)/¯).
 
 * *mvn package* : to generate the jar that contains the simulator
-* *jython backend.py* (a lot of information will appear in the console)
-* *open index.html on your favorite browser* (tested on Firefox 40) and push the button execute
+* *jython backend_wamp.py* (a lot of information will appear in the console)
+* *open index.html on your favorite browser* (tested on Firefox 40 and
+41)
 
 # Publications
 
