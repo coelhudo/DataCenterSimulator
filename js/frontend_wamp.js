@@ -13,19 +13,6 @@ var connection = new autobahn.Connection({
 var currentSession = null
 
 connection.onopen = function (session) {
-
-    var received = 0;
-
-//     function onevent1(args) {
-//	console.log("Got event:", args[0]);
-//	received += 1;
-//	if (received > 5) {
-//             console.log("Closing ..");
-//             connection.close();
-//	}
-//     }console.log(racks[i])
-
-    //session.subscribe('com.myapp.topic1', onevent1);
     currentSession = session
 };
 
@@ -70,6 +57,22 @@ function execute() {
     if(!currentSession) {
 	return
     }
+
+    function receivePartialResults(partialResult) {
+	console.log('receiving partialResult')
+	console.log(partialResult[0])
+    }
+
+    deferred = currentSession.subscribe('digs.sim.partialResult', receivePartialResults);
+    deferred.then(
+	function (subscription) {
+	    console.log('subscription')
+	    console.log(subscription)
+	},
+	function (error) {
+	    console.log('error')
+	    console.log(error)
+	})
 
     currentSession.call('digs.sim.execute')
 }

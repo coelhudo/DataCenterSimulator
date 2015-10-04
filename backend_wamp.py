@@ -7,41 +7,69 @@ from simulator import *
 
 from java.util.concurrent import ArrayBlockingQueue, TimeUnit;
 import json
+from dataCenterTopologyToJSON import *
+from partialResultsToJSON import *
 
 from threading import Thread
 
+from twisted.internet import reactor
 from twisted.internet.defer import inlineCallbacks
 from twisted.python.failure import Failure
 
 from autobahn.twisted.util import sleep
 from autobahn import wamp
 from autobahn.twisted.wamp import ApplicationSession, ApplicationRunner
+from autobahn.wamp.types import PublishOptions
 
-class Sim():
-    def __init__(self):
+class Sim(ApplicationSession):
+
+    @inlineCallbacks
+    def onJoin(self, details):
+        print("session attached")
+        results = []
+        res = yield self.register(self)
+        results.extend(res)
+
+        for res in results:
+            if isinstance(res, Failure):
+                print("Failed to register procedure: {}".format(res.value))
+            else:
+                print("registration ID {}: {}".format(res.id, res.procedure))
+
+    @wamp.register(u'digs.sim.topology')
+    def topology(self):
+        self.configure()
+        print('topology called\n')
+        dataCenter = self.simulator.getDatacenter()
+        dataCenterSpecificationPayload = json.dumps(dataCenterToJSON(dataCenter), ensure_ascii = False).encode('utf8')
+        return dataCenterSpecificationPayload
+
+    def configure(self):
         self.dataCenterBuilder = SimulatorBuilder("configs/DC_Logic.xml")
         self.simulatorPOD = self.dataCenterBuilder.build()
         self.environment = Environment()
         self.partialResults = ArrayBlockingQueue(5)
         self.simulator = Simulator(self.simulatorPOD, self.environment, self.partialResults)
 
-    @wamp.register(u'digs.sim.topology')
-    def topology(self):
-        print('topology called\n')
-        dataCenter = self.simulator.getDatacenter()
-        dataCenterSpecificationPayload = json.dumps(dataCenterToJSON(dataCenter), ensure_ascii = False).encode('utf8')
-        return dataCenterSpecificationPayload
+    def f(self, x):
+        print(x)
 
     @wamp.register(u'digs.sim.execute')
     def execute(self):
         print('Execute called')
         self.simulatorThread = Thread(target=self.simulator.run)
         self.simulatorThread.start()
+        self.partialResultsThread = Thread(target=self.partialResultsPublisher)
+        self.partialResultsThread.start()
 
+    def partialResultsPublisher(self):
+        counter = 0
         while(True):
-            singleResult = self.partialResults.poll(50, TimeUnit.MILLISECONDS)
-            #publish here
-            if singleResult != None:
+            partialResult = self.partialResults.poll(50, TimeUnit.MILLISECONDS)
+            if partialResult != None:
+                racksStats = {'racksStats' : racksStatsToJSON(partialResult.getRacksStats()) }
+                self.payload = json.dumps(racksStats, ensure_ascii = False).encode('utf8')
+                reactor.callFromThread(self.publish, u'digs.sim.partialResult', self.payload)
                 counter = 0
             else:
                 counter += 1
@@ -52,6 +80,7 @@ class Sim():
     @wamp.register(u'digs.sim.results')
     def results(self):
         print('Results called')
+        self.partialResultsThread.join()
         self.simulatorThread.join()
         self.results = SimulationResults(self.simulator)
         return {'Total energy Consumption' : self.results.getTotalPowerConsumption(),
@@ -64,65 +93,11 @@ class Sim():
                 }
         }
 
-
-def dataCenterToJSON(dataCenter):
-    dataCenterSpecification = {}
-    dataCenterSpecification['dataCenter'] = racksToJSON(dataCenter.getRacks())
-    return dataCenterSpecification
-
-def racksToJSON(racks):
-    racksSpecification = list()
-    for currentRack in racks:
-        singleRackSpecification = dict()
-        singleRackSpecification['id'] = currentRack.getID().toString()
-        singleRackSpecification['chassis'] = chassisToJSON(currentRack.getChassis())
-        racksSpecification.append(singleRackSpecification)
-    return racksSpecification
-
-def chassisToJSON(chassis):
-    chassisSpecification = list()
-    for currentChassis in chassis:
-        singleChassisSpecification = dict()
-        singleChassisSpecification['id'] = currentChassis.getID().toString()
-        singleChassisSpecification['type'] = currentChassis.getChassisType()
-        singleChassisSpecification['servers'] = serversToJSON(currentChassis.getServers())
-        chassisSpecification.append(singleChassisSpecification)
-    return chassisSpecification
-
-def serversToJSON(servers):
-    serversSpecification = list()
-    for server in servers:
-        serverSpecification = dict()
-        serverSpecification['id'] = server.getID().toString()
-        serversSpecification.append(serverSpecification)
-    return serversSpecification
-
-class Component(ApplicationSession):
-    """
-    An to execute AMDCSimulator.
-    """
-
-    @inlineCallbacks
-    def onJoin(self, details):
-        print("session attached")
-        results = []
-
-        sim = Sim()
-
-        res = yield self.register(sim)
-        results.extend(res)
-
-        for res in results:
-            if isinstance(res, Failure):
-                print("Failed to register procedure: {}".format(res.value))
-            else:
-                print("registration ID {}: {}".format(res.id, res.procedure))
-
 if __name__ == '__main__':
     runner = ApplicationRunner(
         environ.get("AUTOBAHN_DEMO_ROUTER", u"ws://127.0.0.1:8888/ws"),
         u"crossbardemo",
-        debug_wamp=False,  # optional; log many WAMP details
+        debug_wamp=True,  # optional; log many WAMP details
         debug=False,  # optional; log even more details
     )
-    runner.run(Component)
+    runner.run(Sim)

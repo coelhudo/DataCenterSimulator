@@ -50,7 +50,7 @@ public class Simulator implements Runnable {
             dataCenter.calculatePower();
             environment.updateCurrentLocalTime();
             try {
-                partialResults.put(dataCenter.GetStats());
+                partialResults.put(dataCenter.getStats());
             } catch (InterruptedException e) {
                 LOGGER.log(Level.SEVERE, e.getMessage(), e);
             }

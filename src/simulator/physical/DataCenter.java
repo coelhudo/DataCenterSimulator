@@ -134,7 +134,7 @@ public class DataCenter {
     }
     
     public class DataCenterStats {
-        public List<RackStats> GetRackStats() {
+        public List<RackStats> getRacksStats() {
             List<RackStats> racksStats = new ArrayList<RackStats>();
             for(Rack rack : racks.values()) {
                 racksStats.add((RackStats)rack.getStats());
@@ -144,7 +144,7 @@ public class DataCenter {
         }
     }
 
-    public DataCenterStats GetStats() { 
+    public DataCenterStats getStats() { 
         return new DataCenterStats();
     }
 }
