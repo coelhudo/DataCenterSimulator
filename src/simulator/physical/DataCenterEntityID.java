@@ -11,6 +11,7 @@ public final class DataCenterEntityID implements Comparable<DataCenterEntityID> 
     private final int rackID;
     private final int chassisID;
     private final int serverID;
+    private final String entityIDAsString;
 
     public static final DataCenterEntityID INVALID_ID = new DataCenterEntityID(-1, -1, -1);
 
@@ -18,6 +19,7 @@ public final class DataCenterEntityID implements Comparable<DataCenterEntityID> 
         this.rackID = rackID;
         this.chassisID = chassisID;
         this.serverID = serverID;
+        entityIDAsString = rackID + "." + chassisID + "." + serverID;
     }
 
     public static DataCenterEntityID createServerID(int rackID, int chassisID, int serverID) {
@@ -64,7 +66,7 @@ public final class DataCenterEntityID implements Comparable<DataCenterEntityID> 
 
     @Override
     public String toString() {
-        return rackID + "." + chassisID + "." + serverID;
+        return entityIDAsString;
     }
 
     @Override
