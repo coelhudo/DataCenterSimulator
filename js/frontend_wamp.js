@@ -21,8 +21,8 @@ function configure() {
 	return
     }
 
-    createDataCenterElement = function(elementUID, dataCenterClass) {
-	var HTMLDataCenterElementFormatted = document.createElement("div")
+    createDataCenterElement = function(type, elementUID, dataCenterClass) {
+	var HTMLDataCenterElementFormatted = document.createElement(type)
 	HTMLDataCenterElementFormatted.setAttribute('id', elementUID)
 	HTMLDataCenterElementFormatted.setAttribute('class', dataCenterClass)
 	return HTMLDataCenterElementFormatted
@@ -35,18 +35,31 @@ function configure() {
 		return parseInt(a.id.replace(/\./g, "")) > parseInt(b.id.replace(/\./g, ""))
 	    })
 	    for(i = 0; i < racks.length; i++) {
-		var HTMLDataCenterRackFormatted = createDataCenterElement(racks[i].id, 'rack')
+		var HTMLDataCenterRackFormatted = createDataCenterElement('div', racks[i].id, 'rack')
 		$("#simulation").append(HTMLDataCenterRackFormatted)
 		var rackSelector = "#" + racks[i].id.replace(/\./g, "\\.")
 		$(rackSelector).html(racks[i].id)
 		$(rackSelector).css({"padding-left":"50px"});
 		var chassis = racks[i].chassis
 		for(j = 0; j < chassis.length; j++) {
-		    var HTMLDataCenterChassisFormatted = createDataCenterElement(chassis[j].id, 'chassis')
+		    var HTMLDataCenterChassisFormatted = createDataCenterElement('div', chassis[j].id, 'chassis')
 		    $(rackSelector).append(HTMLDataCenterChassisFormatted)
 		    var chassisSelector = "#" + chassis[j].id.replace(/\./g, "\\.")
 		    $(chassisSelector).html(chassis[j].id)
 		    $(chassisSelector).css({"padding-left":"75px"});
+
+		    servers = chassis[j].servers;
+		    for(k = 0; k < servers.length; k++) {
+			var HTMLDataCenterBladeServerFormatted = createDataCenterElement('div', servers[k].id, 'server')
+			$(chassisSelector).append(HTMLDataCenterBladeServerFormatted)
+			var serverSelector = "#" + servers[k].id.replace(/\./g, "\\.")
+			$(serverSelector).html(servers[k].id + ': ')
+			$(serverSelector).css({"padding-left":"100px"});
+
+			var HTMLServerStatusFormatted = createDataCenterElement('span', servers[k].id + '\.status', 'server')
+			$(serverSelector).append(HTMLServerStatusFormatted)
+			$(servers[k].id + '\\.status').html("NOT INITIALIZED")
+		    }
 		}
 	    }
 	}
@@ -56,23 +69,24 @@ function configure() {
 function execute() {
     if(!currentSession) {
 	return
-    }
+    }Anarcomiguxos IV
 
     function receivePartialResults(partialResult) {
-	console.log('receiving partialResult')
-	console.log(partialResult[0])
+	racksStats = JSON.parse(partialResult).racksStats
+	for(i = 0; i < racksStats.length; i++) {
+	    rackStats = racksStats[i]
+	    chassisStats = rackStats.chassisStats
+	    for(j = 0; j < chassisStats.length; j++) {
+		bladeServersStats = chassisStats[j].bladeServersStats
+		for(k = 0; k < bladeServersStats.length; k++) {
+		    var bladeServerStatsSelector = "#" + bladeServersStats[k].id.replace(/\./g, "\\.")
+		    $(bladeServerStatsSelector + '\\.status').html(bladeServersStats[k].status)
+		}
+	    }
+	}
     }
 
-    deferred = currentSession.subscribe('digs.sim.partialResult', receivePartialResults);
-    deferred.then(
-	function (subscription) {
-	    console.log('subscription')
-	    console.log(subscription)
-	},
-	function (error) {
-	    console.log('error')
-	    console.log(error)
-	})
+    currentSession.subscribe('digs.sim.partialResult', receivePartialResults);
 
     currentSession.call('digs.sim.execute')
 }

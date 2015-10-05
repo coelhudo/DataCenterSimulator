@@ -46,7 +46,8 @@ public class BladeServer extends DataCenterEntity {
     // WorkLoad Bundle
     private int maxExpectedRes = 0;
     private Environment environment;
-
+    private final BladeServerStats stats = new BladeServerStats();
+    
     public BladeServer(BladeServerPOD bladeServerPOD, Environment environment) {
         super(bladeServerPOD.getID());
         this.environment = environment;
@@ -550,9 +551,9 @@ public class BladeServer extends DataCenterEntity {
             return status;
         }
     }
-    
+
     @Override
     public DataCenterEntityStats getStats() {
-        return new BladeServerStats();
+        return stats;
     }
 }

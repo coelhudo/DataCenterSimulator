@@ -14,6 +14,7 @@ public class Chassis extends DataCenterEntity {
 
     private final Map<DataCenterEntityID, BladeServer> servers = new HashMap<DataCenterEntityID, BladeServer>();
     private String chassisType;
+    private final ChassisStats stats;
     
     public Chassis(ChassisPOD chassisPOD, Environment environment) {
         super(chassisPOD.getID());
@@ -22,6 +23,9 @@ public class Chassis extends DataCenterEntity {
             BladeServer bladeServer = new BladeServer(bladeServerPOD, environment);
             servers.put(bladeServer.getID(), bladeServer);
         }
+        
+        
+        this.stats = new ChassisStats();
     }
     
     public BladeServer getServer(DataCenterEntityID id) {
@@ -80,6 +84,6 @@ public class Chassis extends DataCenterEntity {
     
     @Override
     public DataCenterEntityStats getStats() {
-        return new ChassisStats();
+        return stats;
     }
 }

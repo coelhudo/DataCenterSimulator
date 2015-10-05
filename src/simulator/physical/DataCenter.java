@@ -24,6 +24,7 @@ public class DataCenter {
     private DataCenterAM am;
     private ActivitiesLogger activitiesLogger;
     private List<Chassis> allChassis = new ArrayList<Chassis>();
+    private final DataCenterStats stats;
 
     private Environment environment;
 
@@ -37,6 +38,7 @@ public class DataCenter {
         }
         redTemperature = dataCenterPOD.getRedTemperature();
         D = dataCenterPOD.getD();
+        this.stats = new DataCenterStats();
     }
 
     /**
@@ -145,6 +147,6 @@ public class DataCenter {
     }
 
     public DataCenterStats getStats() { 
-        return new DataCenterStats();
+        return stats;
     }
 }

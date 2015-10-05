@@ -13,6 +13,7 @@ import simulator.physical.Chassis.ChassisStats;
 public class Rack extends DataCenterEntity {
 
     private Map<DataCenterEntityID, Chassis> chassis = new HashMap<DataCenterEntityID, Chassis>();
+    private final RackStats stats;
     
     public Rack(RackPOD rackPOD, Environment environment) {
         super(rackPOD.getID());
@@ -20,6 +21,7 @@ public class Rack extends DataCenterEntity {
             Chassis currentChassis = new Chassis(chassisPOD, environment);
             chassis.put(chassisPOD.getID(), currentChassis);
         }
+        this.stats = new RackStats();
     }
     
     public Collection<Chassis> getChassis() {
@@ -46,6 +48,6 @@ public class Rack extends DataCenterEntity {
     
     @Override
     public DataCenterEntityStats getStats() {  
-        return new RackStats();
+        return stats;
     }
 }
