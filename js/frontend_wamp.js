@@ -69,7 +69,7 @@ function configure() {
 function execute() {
     if(!currentSession) {
 	return
-    }Anarcomiguxos IV
+    }
 
     function receivePartialResults(partialResult) {
 	racksStats = JSON.parse(partialResult).racksStats

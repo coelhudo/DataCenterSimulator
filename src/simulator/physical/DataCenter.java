@@ -33,8 +33,11 @@ public class DataCenter {
         this.activitiesLogger = activitiesLogger;
         am = dataCenterAM;
         this.environment = environment;
+        allChassis = new ArrayList<Chassis>();
         for (RackPOD rackPOD : dataCenterPOD.getRackPODs()) {
-            racks.put(rackPOD.getID(), new Rack(rackPOD, environment));
+            Rack rack = new Rack(rackPOD, environment);
+            racks.put(rackPOD.getID(), rack);
+            allChassis.addAll(rack.getChassis());
         }
         redTemperature = dataCenterPOD.getRedTemperature();
         D = dataCenterPOD.getD();
@@ -45,11 +48,6 @@ public class DataCenter {
      * Calculate Power using Equation 6 from doi:10.1016/j.comnet.2009.06.008
      */
     public void calculatePower() {
-        allChassis.clear();
-        for (Rack rack : racks.values()) {
-            allChassis.addAll(rack.getChassis());
-        }
-        
         /**
          * The heat matrix is order dependent. Still need to fix this.
          */
@@ -59,17 +57,17 @@ public class DataCenter {
             public int compare(Chassis o1, Chassis o2) {
                 return o1.getID().compareTo(o2.getID());
             }
-            
+
         }
-        
+
         Collections.sort(allChassis, new ChassisComparator());
-        
+
         int m = allChassis.size();
         double computingPower = 0;
         double[] temperature = new double[m];
         for (Chassis curretChassis : allChassis) {
             final double chassisComputingPower = curretChassis.power();
-            activitiesLogger.write(curretChassis.getID() + " "+ chassisComputingPower + "\n");
+            activitiesLogger.write(curretChassis.getID() + " " + chassisComputingPower + "\n");
             computingPower = computingPower + chassisComputingPower;
         }
 
@@ -134,19 +132,19 @@ public class DataCenter {
     public Rack getRack(DataCenterEntityID id) {
         return racks.get(id);
     }
-    
+
     public class DataCenterStats {
         public List<RackStats> getRacksStats() {
             List<RackStats> racksStats = new ArrayList<RackStats>();
-            for(Rack rack : racks.values()) {
-                racksStats.add((RackStats)rack.getStats());
+            for (Rack rack : racks.values()) {
+                racksStats.add((RackStats) rack.getStats());
             }
-            
+
             return racksStats;
         }
     }
 
-    public DataCenterStats getStats() { 
+    public DataCenterStats getStats() {
         return stats;
     }
 }
