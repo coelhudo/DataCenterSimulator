@@ -13,7 +13,7 @@ import simulator.physical.BladeServer.BladeServerStats;
 public class Chassis extends DataCenterEntity {
 
     private final Map<DataCenterEntityID, BladeServer> servers = new HashMap<DataCenterEntityID, BladeServer>();
-    private String chassisType;
+    private final String chassisType;
     private final ChassisStats stats;
     
     public Chassis(ChassisPOD chassisPOD, Environment environment) {
@@ -69,7 +69,7 @@ public class Chassis extends DataCenterEntity {
 
     
     public class ChassisStats extends DataCenterEntityStats {
-         private List<BladeServerStats> bladeServerStats = new ArrayList<BladeServerStats>();
+         private final List<BladeServerStats> bladeServerStats = new ArrayList<BladeServerStats>();
          
          public ChassisStats() {
              for(BladeServer bladeServer : servers.values()) {

@@ -18,12 +18,12 @@ public class DataCenter {
 
     private int overRed = 0;
     private double totalPowerConsumption = 0;
-    private Map<DataCenterEntityID, Rack> racks = new HashMap<DataCenterEntityID, Rack>();
-    private int redTemperature;
-    private double[][] D;
-    private DataCenterAM am;
-    private ActivitiesLogger activitiesLogger;
-    private List<Chassis> allChassis = new ArrayList<Chassis>();
+    private final Map<DataCenterEntityID, Rack> racks = new HashMap<DataCenterEntityID, Rack>();
+    private final int redTemperature;
+    private final double[][] D;
+    private final DataCenterAM am;
+    private final ActivitiesLogger activitiesLogger;
+    private final List<Chassis> allChassis;
     private final DataCenterStats stats;
 
     private Environment environment;
@@ -42,12 +42,11 @@ public class DataCenter {
         redTemperature = dataCenterPOD.getRedTemperature();
         D = dataCenterPOD.getD();
         this.stats = new DataCenterStats();
+
+        sortAllChassis();
     }
 
-    /**
-     * Calculate Power using Equation 6 from doi:10.1016/j.comnet.2009.06.008
-     */
-    public void calculatePower() {
+    private void sortAllChassis() {
         /**
          * The heat matrix is order dependent. Still need to fix this.
          */
@@ -62,6 +61,12 @@ public class DataCenter {
 
         Collections.sort(allChassis, new ChassisComparator());
 
+    }
+
+    /**
+     * Calculate Power using Equation 6 from doi:10.1016/j.comnet.2009.06.008
+     */
+    public void calculatePower() {
         int m = allChassis.size();
         double computingPower = 0;
         double[] temperature = new double[m];

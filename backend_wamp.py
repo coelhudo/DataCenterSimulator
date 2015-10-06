@@ -68,8 +68,8 @@ class Sim(ApplicationSession):
             partialResult = self.partialResults.poll(50, TimeUnit.MILLISECONDS)
             if partialResult != None:
                 racksStats = {'racksStats' : racksStatsToJSON(partialResult.getRacksStats()) }
-                self.payload = json.dumps(racksStats, ensure_ascii = False).encode('utf8')
-                reactor.callFromThread(self.publish, u'digs.sim.partialResult', self.payload)
+                payload = json.dumps(racksStats, ensure_ascii = False).encode('utf8')
+                reactor.callFromThread(self.publish, u'digs.sim.partialResult', payload)
                 counter = 0
             else:
                 counter += 1
