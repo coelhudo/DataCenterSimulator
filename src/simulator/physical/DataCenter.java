@@ -1,6 +1,7 @@
 package simulator.physical;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
@@ -25,6 +26,8 @@ public class DataCenter {
     private final ActivitiesLogger activitiesLogger;
     private final List<Chassis> allChassis;
     private final DataCenterStats stats;
+    private final double[] temperatures;
+    private final double[] powers;
 
     private Environment environment;
 
@@ -44,6 +47,8 @@ public class DataCenter {
         this.stats = new DataCenterStats();
 
         sortAllChassis();
+        temperatures = new double[allChassis.size()];
+        powers = new double[allChassis.size()];
     }
 
     private void sortAllChassis() {
@@ -67,25 +72,28 @@ public class DataCenter {
      * Calculate Power using Equation 6 from doi:10.1016/j.comnet.2009.06.008
      */
     public void calculatePower() {
-        int m = allChassis.size();
+        final int m = allChassis.size();
         double computingPower = 0;
-        double[] temperature = new double[m];
+        Arrays.fill(temperatures, 0);
+        int allChassisIndex = 0;
         for (Chassis curretChassis : allChassis) {
             final double chassisComputingPower = curretChassis.power();
+            powers[allChassisIndex] = chassisComputingPower;
+            allChassisIndex++;
             activitiesLogger.write(curretChassis.getID() + " " + chassisComputingPower + "\n");
             computingPower = computingPower + chassisComputingPower;
         }
 
         for (int i = 0; i < m; i++) {
             for (int j = 0; j < m; j++) {
-                temperature[i] = temperature[i] + D[i][j] * allChassis.get(j).power();
+                temperatures[i] = temperatures[i] + D[i][j] * powers[j];
             }
         }
 
-        double maxTemp = temperature[0];
+        double maxTemp = temperatures[0];
         for (int i = 0; i < m; i++) {
-            if (maxTemp < temperature[i]) {
-                maxTemp = temperature[i];
+            if (maxTemp < temperatures[i]) {
+                maxTemp = temperatures[i];
             }
         }
 
