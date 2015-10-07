@@ -160,4 +160,13 @@ public class DataCenter {
     public DataCenterStats getStats() {
         return stats;
     }
+
+    public boolean newStatsAvailable() {
+        for (Rack rack : racks.values()) {
+            if(rack.newStatsAvailable()) {
+                return true;
+            }
+        }
+        return false;
+    }
 }

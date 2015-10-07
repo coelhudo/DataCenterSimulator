@@ -47,6 +47,7 @@ public class BladeServer extends DataCenterEntity {
     private int maxExpectedRes = 0;
     private Environment environment;
     private final BladeServerStats stats = new BladeServerStats();
+    private boolean updateStats = false;
     
     public BladeServer(BladeServerPOD bladeServerPOD, Environment environment) {
         super(bladeServerPOD.getID());
@@ -423,22 +424,27 @@ public class BladeServer extends DataCenterEntity {
     }
 
     private void setStatusAsNotAssignedToAnySystem() {
+        updateStats = !isNotSystemAssigned();
         this.status = BladeServerStatus.NOT_ASSIGNED_TO_ANY_SYSTEM;
     }
 
     public void setStatusAsNotAssignedToAnyApplication() {
+        updateStats = !isNotApplicationAssigned();
         this.status = BladeServerStatus.NOT_ASSIGNED_TO_ANY_APPLICATION;
     }
 
     public void setStatusAsIdle() {
+        updateStats = !isIdle();
         this.status = BladeServerStatus.IDLE;
     }
 
     public void setStatusAsRunningNormal() {
+        updateStats = !isRunningNormal();
         this.status = BladeServerStatus.RUNNING_NORMAL;
     }
 
     public void setStatusAsRunningBusy() {
+        updateStats = !isRunningBusy();
         this.status = BladeServerStatus.RUNNING_BUSY;
     }
 
@@ -555,5 +561,14 @@ public class BladeServer extends DataCenterEntity {
     @Override
     public DataCenterEntityStats getStats() {
         return stats;
+    }
+
+    public boolean newStatsAvailable() {
+        if(updateStats) {
+            updateStats = false;
+            return true;
+        }
+            
+        return false;
     }
 }

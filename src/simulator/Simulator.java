@@ -41,8 +41,9 @@ public class Simulator implements Runnable {
     private SLAViolationLogger slaViolationLogger;
     private DataCenterAM dataCenterAM;
     private BlockingQueue<DataCenterStats> partialResults;
-    
+
     public void run() {
+        int count = 0;
         while (!areSystemsDone()) {
             // LOGGER.info("--"+Main.localTime);
             allSystemRunACycle();
@@ -50,7 +51,10 @@ public class Simulator implements Runnable {
             dataCenter.calculatePower();
             environment.updateCurrentLocalTime();
             try {
-                partialResults.put(dataCenter.getStats());
+                if (dataCenter.newStatsAvailable()) {
+                    count++;
+                    partialResults.put(dataCenter.getStats());
+                }
             } catch (InterruptedException e) {
                 LOGGER.log(Level.SEVERE, e.getMessage(), e);
             }
@@ -63,13 +67,14 @@ public class Simulator implements Runnable {
             // }
             // ///////////////
         }
-        
-        LOGGER.info("Simulation done");
-        
+
+        LOGGER.info("Simulation done, messages created " + count);
+
         csFinalize();
     }
 
-    public Simulator(SimulatorPOD simulatorPOD, Environment environment, BlockingQueue<DataCenterStats> partialResults) {
+    public Simulator(SimulatorPOD simulatorPOD, Environment environment,
+            BlockingQueue<DataCenterStats> partialResults) {
         this.environment = environment;
         this.partialResults = partialResults;
         ActivitiesLogger activitiesLogger = new ActivitiesLogger("out_W.txt");
@@ -125,7 +130,7 @@ public class Simulator implements Runnable {
 
         return applications;
     }
-    
+
     protected double getTotalPowerConsumption() {
         return dataCenter.getTotalPowerConsumption();
     }
@@ -164,7 +169,7 @@ public class Simulator implements Runnable {
         return systems.removeJobsThatAreDone();
 
     }
-    
+
     public Environment getEnvironment() {
         return environment;
     }

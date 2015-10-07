@@ -86,4 +86,13 @@ public class Chassis extends DataCenterEntity {
     public DataCenterEntityStats getStats() {
         return stats;
     }
+
+    public boolean newStatsAvailable() {
+        for(BladeServer bladeServer : servers.values()) {
+            if(bladeServer.newStatsAvailable()) {
+                return true;
+            }
+        }
+        return false;
+    }
 }
