@@ -127,7 +127,7 @@ public class ComputeSystemIT {
         verify(mockedActivitiesLogger, times(2)).write(argument.capture());
 
         List<String> values = argument.getAllValues();
-        assertEquals("1.1.0 5.0\n", values.get(0));
+        assertEquals("1_1_0 5.0\n", values.get(0));
         assertEquals("\n5\t5\t1\n", values.get(1));
 
         assertEquals(5.002941076127991, dataCenter.getTotalPowerConsumption(), 1.0E-8);
@@ -195,8 +195,8 @@ public class ComputeSystemIT {
 
         List<String> values = argument.getAllValues();
         assertEquals(3, values.size());
-        assertEquals("1.1.0 5.0\n", values.get(0));
-        assertEquals("1.2.0 5.0\n", values.get(1));
+        assertEquals("1_1_0 5.0\n", values.get(0));
+        assertEquals("1_2_0 5.0\n", values.get(1));
         assertEquals("\n10\t10\t1\n", values.get(2));
 
         assertEquals(10.00147066220095, dataCenter.getTotalPowerConsumption(), 1.0E-8);
@@ -251,7 +251,7 @@ public class ComputeSystemIT {
 
         List<String> values = argument.getAllValues();
         assertEquals(2, values.size());
-        assertEquals("1.1.0 100.0\n", values.get(0));
+        assertEquals("1_1_0 100.0\n", values.get(0));
         assertEquals("\n100\t100\t1\n", values.get(1));
 
         assertEquals(100.000147066220095, dataCenter.getTotalPowerConsumption(), 1.0E-8);

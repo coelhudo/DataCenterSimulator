@@ -82,7 +82,7 @@ public class BladeServerTest {
         assertTrue(getResponseListWeb.isEmpty());
         assertEquals(0.0, bladeServer.getResponseTime(), 1.0E-8);
         assertEquals(0.0, bladeServer.getResTimeEpoch(), 1.0E-8);
-        assertEquals("1.1.1", bladeServer.getID().toString());
+        assertEquals("1_1_1", bladeServer.getID().toString());
         assertEquals(0.0, bladeServer.getSLAPercentage(), 1.0E-8);
         assertEquals(0.0, bladeServer.getTimeTreshold(), 1.0E-8);
         assertEquals(0.0, bladeServer.getTotalFinishedJob(), 1.0E-8);

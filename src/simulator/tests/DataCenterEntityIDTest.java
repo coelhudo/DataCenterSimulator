@@ -47,34 +47,34 @@ public class DataCenterEntityIDTest {
     @Test
     public void testRackIDCreation() {
         DataCenterEntityID rackID = DataCenterEntityID.createRackID(1);
-        assertEquals("1.0.0", rackID.toString());
+        assertEquals("1_0_0", rackID.toString());
     }
     
     @Test
     public void testRackIDComparison() {
         DataCenterEntityID rackIDX = DataCenterEntityID.createRackID(1);
-        assertEquals("1.0.0", rackIDX.toString());
+        assertEquals("1_0_0", rackIDX.toString());
         DataCenterEntityID rackIDY = DataCenterEntityID.createRackID(2);
-        assertEquals("2.0.0", rackIDY.toString());
+        assertEquals("2_0_0", rackIDY.toString());
         DataCenterEntityID rackIDZ = DataCenterEntityID.createRackID(3);
-        assertEquals("3.0.0", rackIDZ.toString());
+        assertEquals("3_0_0", rackIDZ.toString());
         assertFalse(rackIDX.equals(rackIDZ));        
     }
     
     @Test
     public void testChassisIDCreation() {
         DataCenterEntityID chassisID = DataCenterEntityID.createChassisID(1, 2);
-        assertEquals("1.2.0", chassisID.toString());
+        assertEquals("1_2_0", chassisID.toString());
     }
     
     @Test
     public void testChassisIDComparison() {
         DataCenterEntityID chassisIDX = DataCenterEntityID.createChassisID(1, 1);
-        assertEquals("1.1.0", chassisIDX.toString());
+        assertEquals("1_1_0", chassisIDX.toString());
         DataCenterEntityID chassisIDY = DataCenterEntityID.createChassisID(1, 2);
-        assertEquals("1.2.0", chassisIDY.toString());
+        assertEquals("1_2_0", chassisIDY.toString());
         DataCenterEntityID chassisIDZ = DataCenterEntityID.createChassisID(1, 3);
-        assertEquals("1.3.0", chassisIDZ.toString());
+        assertEquals("1_3_0", chassisIDZ.toString());
         assertFalse(chassisIDX.equals(chassisIDY));
         assertFalse(chassisIDY.equals(chassisIDZ));
         assertFalse(chassisIDX.equals(chassisIDZ));        
@@ -83,17 +83,17 @@ public class DataCenterEntityIDTest {
     @Test
     public void testServerIDCreation() {
         DataCenterEntityID rackID = DataCenterEntityID.createServerID(1, 2, 3);
-        assertEquals("1.2.3", rackID.toString());
+        assertEquals("1_2_3", rackID.toString());
     }
     
     @Test
     public void testServerIDComparison() {
         DataCenterEntityID serverIDX = DataCenterEntityID.createServerID(1, 1, 1);
-        assertEquals("1.1.1", serverIDX.toString());
+        assertEquals("1_1_1", serverIDX.toString());
         DataCenterEntityID serverIDY = DataCenterEntityID.createServerID(1, 1, 2);
-        assertEquals("1.1.2", serverIDY.toString());
+        assertEquals("1_1_2", serverIDY.toString());
         DataCenterEntityID serverIDZ = DataCenterEntityID.createServerID(1, 1, 3);
-        assertEquals("1.1.3", serverIDZ.toString());
+        assertEquals("1_1_3", serverIDZ.toString());
         assertFalse(serverIDX.equals(serverIDY));
         assertFalse(serverIDY.equals(serverIDZ));
         assertFalse(serverIDX.equals(serverIDZ));        
@@ -109,10 +109,10 @@ public class DataCenterEntityIDTest {
         list.add(DataCenterEntityID.createServerID(1, 1, 2));
         
         
-        assertEquals("[1.1.3, 1.1.0, 1.1.1, 1.0.0, 1.1.2]", list.toString());
+        assertEquals("[1_1_3, 1_1_0, 1_1_1, 1_0_0, 1_1_2]", list.toString());
         
         Collections.sort(list);
         
-        assertEquals("[1.0.0, 1.1.0, 1.1.1, 1.1.2, 1.1.3]", list.toString());
+        assertEquals("[1_0_0, 1_1_0, 1_1_1, 1_1_2, 1_1_3]", list.toString());
     }
 }

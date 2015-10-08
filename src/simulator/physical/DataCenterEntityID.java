@@ -19,7 +19,7 @@ public final class DataCenterEntityID implements Comparable<DataCenterEntityID> 
         this.rackID = rackID;
         this.chassisID = chassisID;
         this.serverID = serverID;
-        entityIDAsString = rackID + "." + chassisID + "." + serverID;
+        entityIDAsString = rackID + "_" + chassisID + "_" + serverID;
     }
 
     public static DataCenterEntityID createServerID(int rackID, int chassisID, int serverID) {

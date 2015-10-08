@@ -194,8 +194,8 @@ public class MHRTest {
         List<BladeServer> result = mininumHeatRecirculation.allocateSystemLevelServer(bladeServers, 2);
 
         assertEquals(2, result.size());
-        assertEquals("1.1.10", result.get(0).getID().toString());
-        assertEquals("1.1.30", result.get(1).getID().toString());
+        assertEquals("1_1_10", result.get(0).getID().toString());
+        assertEquals("1_1_30", result.get(1).getID().toString());
 
         verify(mockedBladeServerOne, times(27)).isRunningNormal();
         verify(mockedBladeServerOne, times(27)).getID();

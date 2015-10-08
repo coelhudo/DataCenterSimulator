@@ -33,7 +33,7 @@ public class ChassisTest {
     @Test
     public void testChassisCreation() {
         Environment mockedEnvironment = mock(Environment.class);
-        final String chassisID = "1.1.0";
+        final String chassisID = "1_1_0";
         ChassisPOD chassisPOD = new ChassisPOD();
         chassisPOD.setID(DataCenterEntityID.createChassisID(1, 1));
         Chassis chassis = new Chassis(chassisPOD, mockedEnvironment);
