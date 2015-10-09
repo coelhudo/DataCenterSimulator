@@ -71,24 +71,24 @@ class Sim(ApplicationSession):
         partial = PartialResults(len(racks), len(chassis), len(servers))
         while(True):
             partialResult = self.partialResults.poll(50, TimeUnit.MILLISECONDS)
-            if partialResult == None:
+            if partialResult != None:
+
+                counter = 0
+                amountOfDataToBeSent += 1
+                if amountOfDataToBeSent == 5:
+                    amountOfDataToBeSent = 0
+                    racksStats = {'racksStats' : partial.toJSON(partialResult.getRacksStats()) }
+                    bundle.append(racksStats)
+
+                if len(bundle) == 100:
+                    payload = json.dumps({'results' : bundle }, ensure_ascii = False).encode('utf8')
+                    reactor.callFromThread(self.publish, u'digs.sim.partialResult', payload)
+                    del bundle[:]
+            else:
                 counter += 1
-                continue
-
-            counter = 0
-            amountOfDataToBeSent += 1
-            if amountOfDataToBeSent == 5:
-                amountOfDataToBeSent = 0
-                racksStats = {'racksStats' : partial.toJSON(partialResult.getRacksStats()) }
-                bundle.append(racksStats)
-
-            if len(bundle) == 100:
-                payload = json.dumps({'results' : bundle }, ensure_ascii = False).encode('utf8')
-                reactor.callFromThread(self.publish, u'digs.sim.partialResult', payload)
-                del bundle[:]
-
             if counter > 50:
                 break;
+        print('Simulation ended')
 
     @wamp.register(u'digs.sim.results')
     def results(self):
@@ -96,6 +96,7 @@ class Sim(ApplicationSession):
         self.partialResultsThread.join()
         self.simulatorThread.join()
         results = SimulationResults(self.simulator)
+        print('Results collected')
         return {'Total energy Consumption' : results.getTotalPowerConsumption(),
                 'LocalTime' : results.getLocalTime(),
                 'Mean Power Consumption' : results.getMeanPowerConsumption(),
