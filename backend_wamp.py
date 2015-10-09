@@ -63,7 +63,12 @@ class Sim(ApplicationSession):
         counter = 0
         amountOfDataToBeSent = 0
         bundle = list()
-        partial = PartialResults(10, 5, 1) #FIXME
+        #all racks contain the same number of chassis and all chassis have the same amount of servers.
+        #it is a limitation, unless this becomes a requirement it will remain as it is.
+        racks = self.simulator.getDatacenter().getRacks()
+        chassis = racks.toArray()[0].getChassis()
+        servers = chassis.toArray()[0].getServers()
+        partial = PartialResults(len(racks), len(chassis), len(servers))
         while(True):
             partialResult = self.partialResults.poll(50, TimeUnit.MILLISECONDS)
             if partialResult == None:

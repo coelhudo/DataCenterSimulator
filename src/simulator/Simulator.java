@@ -147,7 +147,7 @@ public class Simulator implements Runnable {
         Green, SLA
     };
 
-    public boolean anySysetm() {
+    public boolean anySystem() {
         return systems.allJobsDone();
     }
 
