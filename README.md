@@ -56,10 +56,11 @@ Current dependencies are listed in the pom.xml file.
   and collect intermediate results as well as final results. This is
   done using [WAMP](http://wamp.ws/).
 
-* "Dependencies:" [jython (2.7.0)](http://www.jython.org/),
+* **Dependencies:** [jython (2.7.0)](http://www.jython.org/),
 [crossbar.io](http://crossbar.io), [autobahn Python /JS (0.10.7 and its
 dependencies)](http://autobahn.ws/).
-    * Obs.: Some codefrom autobahn need to be commented (the method that contains "yield from") because 2.7, that's why (¯\(°_o)/¯).
+    * Obs.: Some code from autobahn need to be commented (the method
+      that contains "yield from") because jython 2.7, that's why (¯\(°_o)/¯).
 
 * *mvn package* : to generate the jar that contains the simulator
 * *jython backend_wamp.py* (a lot of information will appear in the console)

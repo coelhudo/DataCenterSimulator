@@ -51,9 +51,6 @@ class Sim(ApplicationSession):
         self.partialResults = ArrayBlockingQueue(5)
         self.simulator = Simulator(self.simulatorPOD, self.environment, self.partialResults)
 
-    def f(self, x):
-        print(x)
-
     @wamp.register(u'digs.sim.execute')
     def execute(self):
         print('Execute called')
@@ -64,15 +61,26 @@ class Sim(ApplicationSession):
 
     def partialResultsPublisher(self):
         counter = 0
+        amountOfDataToBeSent = 0
+        bundle = list()
+        partial = PartialResults(10, 5, 1) #FIXME
         while(True):
             partialResult = self.partialResults.poll(50, TimeUnit.MILLISECONDS)
-            if partialResult != None:
-                racksStats = {'racksStats' : racksStatsToJSON(partialResult.getRacksStats()) }
-                payload = json.dumps(racksStats, ensure_ascii = False).encode('utf8')
-                reactor.callFromThread(self.publish, u'digs.sim.partialResult', payload)
-                counter = 0
-            else:
+            if partialResult == None:
                 counter += 1
+                continue
+
+            counter = 0
+            amountOfDataToBeSent += 1
+            if amountOfDataToBeSent == 5:
+                amountOfDataToBeSent = 0
+                racksStats = {'racksStats' : partial.toJSON(partialResult.getRacksStats()) }
+                bundle.append(racksStats)
+
+            if len(bundle) == 100:
+                payload = json.dumps({'results' : bundle }, ensure_ascii = False).encode('utf8')
+                reactor.callFromThread(self.publish, u'digs.sim.partialResult', payload)
+                del bundle[:]
 
             if counter > 50:
                 break;
@@ -82,14 +90,14 @@ class Sim(ApplicationSession):
         print('Results called')
         self.partialResultsThread.join()
         self.simulatorThread.join()
-        self.results = SimulationResults(self.simulator)
-        return {'Total energy Consumption' : self.results.getTotalPowerConsumption(),
-                'LocalTime' : self.results.getLocalTime(),
-                'Mean Power Consumption' : self.results.getMeanPowerConsumption(),
-                'Over RED' : self.results.getOverRedTemperatureNumber(),
+        results = SimulationResults(self.simulator)
+        return {'Total energy Consumption' : results.getTotalPowerConsumption(),
+                'LocalTime' : results.getLocalTime(),
+                'Mean Power Consumption' : results.getMeanPowerConsumption(),
+                'Over RED' : results.getOverRedTemperatureNumber(),
                 'Messages' : {
-                    '# of Messages DC to sys' : self.results.getNumberOfMessagesFromDataCenterToSystem(),
-                    '# of Messages sys to nodes' : self.results.getNumberOfMessagesFromSystemToNodes()
+                    '# of Messages DC to sys' : results.getNumberOfMessagesFromDataCenterToSystem(),
+                    '# of Messages sys to nodes' : results.getNumberOfMessagesFromSystemToNodes()
                 }
         }
 
