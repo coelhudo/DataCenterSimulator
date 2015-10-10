@@ -7,10 +7,9 @@
     <script src="js/frontend_wamp.js"></script>
    </head>
    <body>
-      <p>Still order dependent: Configure -> Execute -> Results </p>
-      <button onclick='simulation.configure();'>Configure!</button>
-      <button onclick='simulation.execute();'>Execute!</button>
-      <button onclick='simulation.results();'>Show Results!</button>
+      <button id="configure" onclick='simulation.configure();'>Configure!</button>
+      <button id="execute" onclick='simulation.execute();'>Execute!</button>
+      <button id="results" onclick='simulation.results();'>Show Results!</button>
       <br>
       <hr>
       <div id="simulation">

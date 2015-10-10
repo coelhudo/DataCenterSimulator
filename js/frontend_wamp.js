@@ -12,6 +12,12 @@ var connection = new autobahn.Connection({
 
 var currentSession = null
 
+$(document).ready(function(){
+    $('#execute').hide();
+    $('#results').hide();
+});
+
+
 connection.onopen = function (session) {
     currentSession = session
 };
@@ -36,6 +42,9 @@ function makeSimulation() {
 		    })
 
 		    updateRacksView(racks)
+
+		    $('#configure').hide()
+		    $('#execute').show()
 		}
 	    );
 
@@ -118,12 +127,16 @@ function makeSimulation() {
 	    currentSession.subscribe('digs.sim.partialResult', receivePartialResults);
 
 	    currentSession.call('digs.sim.execute')
+	    $('#execute').hide()
+	    $('#results').show()
 	},
 
 	results : function() {
 	    if(!currentSession) {
 		return
 	    }
+
+	    $('#results').prop('disabled', true);
 
 	    currentSession.call('digs.sim.results').then(
 		function(results) {
