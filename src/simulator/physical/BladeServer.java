@@ -48,7 +48,7 @@ public class BladeServer extends DataCenterEntity {
     private Environment environment;
     private final BladeServerStats stats = new BladeServerStats();
     private boolean updateStats = false;
-    
+
     public BladeServer(BladeServerPOD bladeServerPOD, Environment environment) {
         super(bladeServerPOD.getID());
         this.environment = environment;
@@ -348,6 +348,7 @@ public class BladeServer extends DataCenterEntity {
     }
 
     public void setMips(double mips) {
+        updateStats = Math.abs(this.mips - mips) < 0.00001;
         this.mips = mips;
     }
 
@@ -372,6 +373,7 @@ public class BladeServer extends DataCenterEntity {
     }
 
     public void setCurrentCPU(double currentCPU) {
+        updateStats = Math.abs(this.currentCPU - currentCPU) < 0.00001; 
         this.currentCPU = currentCPU;
     }
 
@@ -556,6 +558,26 @@ public class BladeServer extends DataCenterEntity {
         public BladeServerStatus getStatus() {
             return status;
         }
+
+        public double getCurrentCPU() {
+            return currentCPU;
+        }
+
+        public int getBatchJobsLength() {
+            return activeBatchJobs.size();
+        }
+
+        public int getEnterpriseJobsLength() {
+            return enterpriseJobs.size();
+        }
+
+        public int getInteractiveJobsLength() {
+            return interactiveJobs.size();
+        }
+        
+        public double getMIPS() {
+            return mips;
+        }
     }
 
     @Override
@@ -564,11 +586,11 @@ public class BladeServer extends DataCenterEntity {
     }
 
     public boolean newStatsAvailable() {
-        if(updateStats) {
+        if (updateStats) {
             updateStats = false;
             return true;
         }
-            
+
         return false;
     }
 }

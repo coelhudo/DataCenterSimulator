@@ -44,6 +44,7 @@ public class Simulator implements Runnable {
 
     public void run() {
         int count = 0;
+        int skipStats = 0;
         while (!areSystemsDone()) {
             // LOGGER.info("--"+Main.localTime);
             allSystemRunACycle();
@@ -51,7 +52,7 @@ public class Simulator implements Runnable {
             dataCenter.calculatePower();
             environment.updateCurrentLocalTime();
             try {
-                if (dataCenter.newStatsAvailable()) {
+                if (dataCenter.newStatsAvailable() && (skipStats++ % 5 == 0)) {
                     count++;
                     partialResults.put(dataCenter.getStats());
                 }

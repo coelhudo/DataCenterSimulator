@@ -112,7 +112,6 @@ function makeSimulation() {
 	    $('#simulation_status').html("Running ...");
 
 	    function receivePartialResults(partialResults) {
-		console.log('received')
 		results = JSON.parse(partialResults)['results']
 		for(var i = 0; i < results.length; ++i) {
 		    updateRacksStats(results[i].racksStats)
@@ -121,19 +120,36 @@ function makeSimulation() {
 
 	    var updateRacksStats = function(racksStats) {
 		for(var i = 0; i < this.numberOfRacks; ++i) {
-		    updateChassisStats(racksStats[i].chassisStats)
+		    updateChassisStats(racksStats[i].chassis)
 		}
 	    }
 
 	    var updateChassisStats = function(chassisStats) {
 		for(var i = 0; i < this.numberOfChassis; ++i) {
-		    updateServersStats(chassisStats[i].bladeServersStats)
+		    updateServersStats(chassisStats[i].bladeServers)
 		}
 	    }
 
 	    var updateServersStats = function(bladeServersStats) {
 		for(var i = 0; i < this.numberOfServers; ++i) {
-		    $('#' + bladeServersStats[i].id + '_status').html(bladeServersStats[i].status)
+		    $('#' + bladeServersStats[i].id + '_status').html(mapStatus(bladeServersStats[i].status[0]))
+		}
+	    }
+
+	    var mapStatus = function(value) {
+		switch(value) {
+		case 0:
+		    return 'NOT ASSIGNED TO ANY SYSTEM'
+		case 1:
+		    return 'NOT ASSIGNED TO ANY APPLICATION'
+		case 2:
+		    return 'IDLE'
+		case 3:
+		    return 'RUNNING NORMAL'
+		case 4:
+		    return 'RUNNING BUSY'
+		default:
+		    return 'Unknown value: ' + value
 		}
 	    }
 

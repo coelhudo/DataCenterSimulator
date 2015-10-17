@@ -76,13 +76,14 @@ class Sim(ApplicationSession):
 
                 counter = 0
                 amountOfDataToBeSent += 1
-                if amountOfDataToBeSent == 5:
+                if amountOfDataToBeSent == 10:
                     amountOfDataToBeSent = 0
                     racksStats = {'racksStats' : partial.toJSON(partialResult.getRacksStats()) }
                     bundle.append(racksStats)
 
-                if len(bundle) == 5:
+                if len(bundle) == 7:
                     payload = json.dumps({'results' : bundle }, ensure_ascii = False, separators=(',',':')).encode('utf8')
+                    #print('Payload size {0}'.format(len(payload)))
                     reactor.callFromThread(self.publish, u'digs.sim.partialResult', payload)
                     del bundle[:]
             else:
