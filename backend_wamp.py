@@ -1,5 +1,6 @@
 from __future__ import print_function
 from os import environ
+import time
 
 import sys
 sys.path.append('./target/ADCMSimulator-adcmsim-0.0.1.jar')
@@ -80,8 +81,8 @@ class Sim(ApplicationSession):
                     racksStats = {'racksStats' : partial.toJSON(partialResult.getRacksStats()) }
                     bundle.append(racksStats)
 
-                if len(bundle) == 100:
-                    payload = json.dumps({'results' : bundle }, ensure_ascii = False).encode('utf8')
+                if len(bundle) == 5:
+                    payload = json.dumps({'results' : bundle }, ensure_ascii = False, separators=(',',':')).encode('utf8')
                     reactor.callFromThread(self.publish, u'digs.sim.partialResult', payload)
                     del bundle[:]
             else:
@@ -114,4 +115,8 @@ if __name__ == '__main__':
         debug_wamp=False,  # optional; log many WAMP details
         debug=False,  # optional; log even more details
     )
-    runner.run(Sim)
+    start = time.clock()
+    try:
+        runner.run(Sim)
+    except:
+        print('time {0}'.format(time.clock()))

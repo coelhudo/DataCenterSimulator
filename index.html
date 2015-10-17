@@ -5,18 +5,23 @@
     <script src="https://code.jquery.com/jquery-2.1.4.min.js"></script>
     <script src="https://autobahn.s3.amazonaws.com/autobahnjs/latest/autobahn.min.jgz"></script>
     <script src="js/frontend_wamp.js"></script>
-   </head>
-   <body>
-      <button id="configure" onclick='simulation.configure();'>Configure!</button>
-      <button id="execute" onclick='simulation.execute();'>Execute!</button>
-      <button id="results" onclick='simulation.results();'>Show Results!</button>
-      <br>
-      <hr>
-      <div id="simulation">
-      </div>
-      <hr>
-      <br>
-      <div id="simulationResults">
-      </div>
-   </body>
+  </head>
+  <body>
+    <h2>Data Center Simulator</h2>
+    <p>
+    <button id="configure" onclick='simulation.configure();'>Configure!</button>
+    <button id="execute" onclick='simulation.execute();'>Execute!</button>
+    <button id="results" onclick='simulation.results();'>Show
+      Results!</button>
+    <br>
+    <p><span>Simulation Status: </span><span id="simulation_status"></span><p>
+    <br>
+    <hr>
+    <div id="simulation">
+    </div>
+    <hr>
+    <br>
+    <div id="simulationResults">
+    </div>
+  </body>
 </html>

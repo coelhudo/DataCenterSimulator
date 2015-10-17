@@ -15,11 +15,20 @@ var currentSession = null
 $(document).ready(function(){
     $('#execute').hide();
     $('#results').hide();
+    $('#simulation_status').html("Not running ...");
 });
 
 
 connection.onopen = function (session) {
     currentSession = session
+};
+
+connection.onclose = function (reason, details) {
+    if(reason === "closed") {
+	$('#simulation_status').html("Done");
+    } else {
+	$('#simulation_status').html("Error: Connection " + reason);
+    }
 };
 
 function makeSimulation() {
@@ -45,6 +54,7 @@ function makeSimulation() {
 
 		    $('#configure').hide()
 		    $('#execute').show()
+		    $('#simulation_status').html("Configured");
 		}
 	    );
 
@@ -99,7 +109,10 @@ function makeSimulation() {
 		return
 	    }
 
+	    $('#simulation_status').html("Running ...");
+
 	    function receivePartialResults(partialResults) {
+		console.log('received')
 		results = JSON.parse(partialResults)['results']
 		for(var i = 0; i < results.length; ++i) {
 		    updateRacksStats(results[i].racksStats)
@@ -144,14 +157,18 @@ function makeSimulation() {
 		    var HTMLTotalEnergy = document.createElement("div")
 		    HTMLTotalEnergy.setAttribute('id', 'totalEnergy')
 		    HTMLTotalEnergy.setAttribute('class', 'result')
+		    console.log(HTMLTotalEnergy)
 		    $("#simulationResults").append(HTMLTotalEnergy)
 		    $("#totalEnergy").html(totalEnergy)
 		    var meanPowerConsumption = results['Mean Power Consumption']
 		    var HTMLMeanPower = document.createElement("div")
 		    HTMLMeanPower.setAttribute('id', 'meanPower')
 		    HTMLMeanPower.setAttribute('class', 'result')
+		    console.log(HTMLMeanPower)
 		    $("#simulationResults").append(HTMLMeanPower)
 		    $("#meanPower").html(meanPowerConsumption)
+
+		    connection.close()
 		}
 	    );
 	}
