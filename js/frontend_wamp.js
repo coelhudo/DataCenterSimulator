@@ -8,7 +8,8 @@ try {
 
 var connection = new autobahn.Connection({
     url: 'ws://127.0.0.1:8888/ws',
-    realm: 'crossbardemo'});
+    realm: 'crossbardemo'
+});
 
 var currentSession = null;
 
@@ -90,6 +91,7 @@ function makeSimulation() {
                     createServerAttribute(serverSelector, currentServer.id, 'mips');
                     createServerAttribute(serverSelector, currentServer.id, 'batchJobs');
                     createServerAttribute(serverSelector, currentServer.id, 'enterpriseJobs');
+
                 });
             };
 
@@ -163,21 +165,13 @@ function makeSimulation() {
                 function(results) {
 
                     appendResult('Local time: ', 'localTime', results.LocalTime);
+                    appendResult('Total Energy Consumption: ', 'totalEnergy', results['Total energy Consumption']);
+		    appendResult('Mean Power Consumption: ', 'meanPower', results['Mean Power Consumption']);
+		    appendResult('# of Messages Data Center Manager to System Managers: ', 'messages_dc_to_sys', results.Messages['# of Messages DC to sys']);
+		    appendResult('# of Messages System Managers to Nodes: ', 'messages_sys_to_nodes', results.Messages['# of Messages sys to nodes']);
 
-                    createHTMLResult('Total Energy Consumption: ', 'totalEnergy');
-                    $("#totalEnergy").html(results['Total energy Consumption']);
-
-                    createHTMLResult('Mean Power Consumption: ', 'meanPower');
-                    $("#meanPower").html(results['Mean Power Consumption']);
-
-                    createHTMLResult('Over Red: ', 'overRed');
-                    $("#oveRed").html(results['Over RED']);
-
-                    createHTMLResult('# of Messages Data Center Manager to System Managers: ', 'messages_dc_to_sys');
-                    $("#messages_dc_to_sys").html(results.Messages['# of Messages DC to sys']);
-
-                    createHTMLResult('# of Messages System Managers to Nodes: ', 'messages_sys_to_nodes');
-                    $("#messages_sys_to_nodes").html(results.Messages['# of Messages sys to nodes']);
+		    $('.result_label').css({"font-weight":"bold"})
+		    $('.result_value').css({"font-weight":"normal", "font-style":"italic"});
 
                     connection.close();
                 });
@@ -185,21 +179,18 @@ function makeSimulation() {
             var appendResult = function(elementLabel, elementValue, value) {
                 createHTMLResult(elementLabel, elementValue);
                 $('#' + elementValue).html(value);
-                $('#' + elementValue).css({"font-style":"italic"});
-		$('#' + elementValue).css({"font-weight":"normal"});
             };
 
             var createHTMLResult = function(label, valueID) {
                 var HTMLElementLabel = document.createElement('span');
                 HTMLElementLabel.setAttribute('id', valueID + '_label');
-                HTMLElementLabel.setAttribute('class', 'result');
+                HTMLElementLabel.setAttribute('class', 'result_label');
                 $('#simulationResults').append(HTMLElementLabel);
                 $('#' + valueID + '_label').html(label);
-                $('#' + valueID + '_label').css({"font-weight":"bold"});
 
                 var HTMLElementValue = document.createElement('span');
                 HTMLElementValue.setAttribute('id', valueID);
-                HTMLElementValue.setAttribute('class', 'result');
+                HTMLElementValue.setAttribute('class', 'result_value');
                 $('#' + valueID + '_label').append(HTMLElementValue);
                 $('#' + valueID + '_label').append(document.createElement('br'));
             };
