@@ -20,7 +20,7 @@ class PartialResults:
                 chassisResult['id'] = chassisStats.getID().toString()
                 for serverResult, serverStats in izip(chassisResult['bladeServers'], chassisStats.getBladeServersStats()):
                     serverResult['id'] = serverStats.getID().toString()
-                    serverResult['status'] = [serverStats.getStatus().ordinal(),
+                    serverResult['status'] = [serverStats.getStatus(),
                                               round(serverStats.getCurrentCPU(), 2),
                                               serverStats.getMIPS(),
                                               serverStats.getBatchJobsLength(),

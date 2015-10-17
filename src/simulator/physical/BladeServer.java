@@ -16,7 +16,19 @@ public class BladeServer extends DataCenterEntity {
     private static final Logger LOGGER = Logger.getLogger(BladeServer.class.getName());
 
     private enum BladeServerStatus {
-        NOT_ASSIGNED_TO_ANY_SYSTEM, NOT_ASSIGNED_TO_ANY_APPLICATION, IDLE, RUNNING_NORMAL, RUNNING_BUSY
+        NOT_ASSIGNED_TO_ANY_SYSTEM(0), 
+        NOT_ASSIGNED_TO_ANY_APPLICATION(1),
+        IDLE(2), 
+        RUNNING_NORMAL(3), 
+        RUNNING_BUSY(4);
+        
+        private int id;
+        
+        BladeServerStatus(int id) {
+            this.id = id;
+        }
+        
+        public int getID() { return id; }
     }
 
     private List<ResponseTime> responseList;
@@ -555,8 +567,8 @@ public class BladeServer extends DataCenterEntity {
     }
 
     public class BladeServerStats extends DataCenterEntityStats {
-        public BladeServerStatus getStatus() {
-            return status;
+        public int getStatus() {
+            return status.getID();
         }
 
         public double getCurrentCPU() {

@@ -51,6 +51,11 @@ class Sim(ApplicationSession):
         self.environment = Environment()
         self.partialResults = ArrayBlockingQueue(5)
         self.simulator = Simulator(self.simulatorPOD, self.environment, self.partialResults)
+        #all racks contain the same number of chassis and all chassis have the same amount of servers.
+        #it is a limitation, unless this becomes a requirement it will remain as it is.
+        self.racks = self.simulator.getDatacenter().getRacks()
+        self.chassis = self.racks.toArray()[0].getChassis()
+        self.servers = self.chassis.toArray()[0].getServers()
 
     @wamp.register(u'digs.sim.execute')
     def execute(self):
@@ -64,12 +69,7 @@ class Sim(ApplicationSession):
         counter = 0
         amountOfDataToBeSent = 0
         bundle = list()
-        #all racks contain the same number of chassis and all chassis have the same amount of servers.
-        #it is a limitation, unless this becomes a requirement it will remain as it is.
-        racks = self.simulator.getDatacenter().getRacks()
-        chassis = racks.toArray()[0].getChassis()
-        servers = chassis.toArray()[0].getServers()
-        partial = PartialResults(len(racks), len(chassis), len(servers))
+        partial = PartialResults(len(self.racks), len(self.chassis), len(self.servers))
         while(True):
             partialResult = self.partialResults.poll(50, TimeUnit.MILLISECONDS)
             if partialResult != None:

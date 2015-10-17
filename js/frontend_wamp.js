@@ -3,16 +3,17 @@ try {
 } catch (e) {
     // when running in browser, AutobahnJS will
     // be included without a module system
+    console.log(e);
 }
 
 var connection = new autobahn.Connection({
     url: 'ws://127.0.0.1:8888/ws',
-    realm: 'crossbardemo'}
-					);
+    realm: 'crossbardemo'});
 
-var currentSession = null
+var currentSession = null;
 
 $(document).ready(function(){
+    'use strict';
     $('#execute').hide();
     $('#results').hide();
     $('#simulation_status').html("Not running ...");
@@ -20,202 +21,193 @@ $(document).ready(function(){
 
 
 connection.onopen = function (session) {
-    currentSession = session
+    'use strict';
+    currentSession = session;
 };
 
 connection.onclose = function (reason, details) {
+    'use strict';
     if(reason === "closed") {
-	$('#simulation_status').html("Done");
+        $('#simulation_status').html("Done");
     } else {
-	$('#simulation_status').html("Error: Connection " + reason);
+        $('#simulation_status').html("Error: Connection " + reason);
     }
 };
 
 function makeSimulation() {
+    'use strict';
     return {
-	numberOfRacks : 0,
-	numberOfChassis : 0,
-	numberOfServers : 0,
+        configure : function() {
 
-	configure : function() {
+            if(!currentSession) {
+                return;
+            }
 
-	    if(!currentSession) {
-		return
-	    }
+            currentSession.call('digs.sim.topology').then(
+                function(res) {
+                    var topology = JSON.parse(res);
+                    var racks = topology.dataCenter.sort(function(a,b) {
+                        return parseInt(a.id.replace(/_/g, "")) > parseInt(b.id.replace(/_/g, ""));
+                    });
 
-	    currentSession.call('digs.sim.topology').then(
-		function(res) {
-		    var topology = JSON.parse(res)
-		    var racks = topology.dataCenter.sort(function(a,b) {
-			return parseInt(a.id.replace(/\_/g, "")) > parseInt(b.id.replace(/\_/g, ""))
-		    })
+                    updateRacksView(racks);
 
-		    updateRacksView(racks)
+                    $('#configure').hide();
+                    $('#execute').show();
+                    $('#simulation_status').html("Configured");
+                }
+            );
 
-		    $('#configure').hide()
-		    $('#execute').show()
-		    $('#simulation_status').html("Configured");
-		}
-	    );
+            var updateRacksView = function (racks) {
+                racks.forEach(function(currentRack) {
+                    $("#simulation").append(createDataCenterElement('div', currentRack.id, 'rack'));
+                    var rackSelector = "#" + currentRack.id;
+                    $(rackSelector).html(currentRack.id);
+                    $(rackSelector).css({"padding-left":"50px"});
+                    updateChassisView(currentRack.chassis, rackSelector);
+                });
+            };
 
-	    var updateRacksView = function(racks) {
-		this.numberOfRacks = racks.length
-		for(var i = 0; i < this.numberOfRacks; ++i) {
-		    var currentRack = racks[i]
-		    $("#simulation").append(createDataCenterElement('div', currentRack.id, 'rack'))
-		    var rackSelector = "#" + currentRack.id
-		    $(rackSelector).html(currentRack.id)
-		    $(rackSelector).css({"padding-left":"50px"});
-		    updateChassisView(currentRack.chassis, rackSelector)
-		}
-	    }
+            var updateChassisView = function (chassis, rackSelector) {
+                chassis.forEach(function(currentChassis) {
+                    $(rackSelector).append(createDataCenterElement('div', currentChassis.id, 'chassis'));
+                    var chassisSelector = "#" + currentChassis.id;
+                    $(chassisSelector).html(currentChassis.id);
+                    $(chassisSelector).css({"padding-left":"75px"});
+                    updateServersView(currentChassis.servers, chassisSelector);
+                });
+            };
 
-	    var updateChassisView = function(chassis, rackSelector) {
-		this.numberOfChassis = chassis.length
-		for(var i = 0; i < this.numberOfChassis; ++i) {
-		    var currentChassis = chassis[i]
-		    $(rackSelector).append(createDataCenterElement('div', currentChassis.id, 'chassis'))
-		    var chassisSelector = "#" + currentChassis.id
-		    $(chassisSelector).html(currentChassis.id)
-		    $(chassisSelector).css({"padding-left":"75px"});
-		    updateServersView(currentChassis.servers, chassisSelector);
-		}
-	    }
+            var updateServersView = function(servers, chassisSelector) {
+                servers.forEach(function(currentServer) {
+                    $(chassisSelector).append(createDataCenterElement('div', currentServer.id, 'server'));
+                    var serverSelector = "#" + currentServer.id;
+                    $(serverSelector).html(currentServer.id + ': ');
+                    $(serverSelector).css({"padding-left":"100px"});
 
-	    var updateServersView = function(servers, chassisSelector) {
-		this.numberOfServers = servers.length
-		for(var i = 0; i < this.numberOfServers; ++i) {
-		    var currentServer = servers[i]
-		    $(chassisSelector).append(createDataCenterElement('div', currentServer.id, 'server'))
-		    var serverSelector = "#" + currentServer.id
-		    $(serverSelector).html(currentServer.id + ': ')
-		    $(serverSelector).css({"padding-left":"100px"});
+                    createServerAttribute(serverSelector, currentServer.id, 'status');
+                    createServerAttribute(serverSelector, currentServer.id, 'cpu');
+                    createServerAttribute(serverSelector, currentServer.id, 'mips');
+                    createServerAttribute(serverSelector, currentServer.id, 'batchJobs');
+                    createServerAttribute(serverSelector, currentServer.id, 'enterpriseJobs');
+                });
+            };
 
-		    $(serverSelector).append(createDataCenterElement('span', currentServer.id + '_status', 'server'))
-		    $(serverSelector + '_status').html("NOT INITIALIZED")
-		}
-	    }
+            var createServerAttribute = function(serverSelector, id, label) {
+                $(serverSelector).append(createDataCenterElement('span', id + '_' + label, 'server'));
+                $(serverSelector + '_' + label).html("NOT INITIALIZED");
+                $(serverSelector).append(document.createElement('br'));
+            };
 
-	    var createDataCenterElement = function(type, elementUID, dataCenterClass) {
-		var HTMLDataCenterElementFormatted = document.createElement(type)
-		HTMLDataCenterElementFormatted.setAttribute('id', elementUID)
-		HTMLDataCenterElementFormatted.setAttribute('class', dataCenterClass)
-		return HTMLDataCenterElementFormatted
-	    };
-	},
+            var createDataCenterElement = function(type, elementUID, dataCenterClass) {
+                var HTMLDataCenterElementFormatted = document.createElement(type);
+                HTMLDataCenterElementFormatted.setAttribute('id', elementUID);
+                HTMLDataCenterElementFormatted.setAttribute('class', dataCenterClass);
+                return HTMLDataCenterElementFormatted;
+            };
+        },
 
-	execute : function() {
-	    if(!currentSession) {
-		return
-	    }
+        execute : function() {
+            if(!currentSession) {
+                return;
+            }
 
-	    $('#simulation_status').html("Running ...");
+            $('#simulation_status').html("Running ...");
 
-	    function receivePartialResults(partialResults) {
-		results = JSON.parse(partialResults)['results']
-		for(var i = 0; i < results.length; ++i) {
-		    updateRacksStats(results[i].racksStats)
-		}
-	    }
+            function receivePartialResults(partialResults) {
+                results = JSON.parse(partialResults).results;
+                console.log('still receiving');
+                results.forEach(function(currentResult) {
+                    updateRacksStats(currentResult.racksStats);
+                });
+            }
 
-	    var updateRacksStats = function(racksStats) {
-		for(var i = 0; i < this.numberOfRacks; ++i) {
-		    updateChassisStats(racksStats[i].chassis)
-		}
-	    }
+            var updateRacksStats = function(racksStats) {
+                racksStats.forEach(function(currentRack) {
+                    updateChassisStats(currentRack.chassis);
+                });
+            };
 
-	    var updateChassisStats = function(chassisStats) {
-		for(var i = 0; i < this.numberOfChassis; ++i) {
-		    updateServersStats(chassisStats[i].bladeServers)
-		}
-	    }
+            var updateChassisStats = function(chassisStats) {
+                chassisStats.forEach(function(currentChassis) {
+                    updateServersStats(currentChassis.bladeServers);
+                });
+            };
 
-	    var updateServersStats = function(bladeServersStats) {
-		for(var i = 0; i < this.numberOfServers; ++i) {
-		    $('#' + bladeServersStats[i].id + '_status').html(mapStatus(bladeServersStats[i].status[0]))
-		}
-	    }
+            var updateServersStats = function(bladeServersStats) {
+                bladeServersStats.forEach(function(currentServer) {
+                    $('#' + currentServer.id + '_status').html(status[currentServer.status[0]]);
+                    $('#' + currentServer.id + '_cpu').html(currentServer.status[1]);
+                    //$('#' + currentServer.id + '_mips').html(currentServer.status[2]);
+                    //$('#' + currentServer.id + '_batchJobs').html(currentServer.status[3]);
+                    //$('#' + currentServer.id + '_enterpriseJobs').html(currentServer.status[4]);
+                });
+            };
 
-	    var mapStatus = function(value) {
-		switch(value) {
-		case 0:
-		    return 'NOT ASSIGNED TO ANY SYSTEM'
-		case 1:
-		    return 'NOT ASSIGNED TO ANY APPLICATION'
-		case 2:
-		    return 'IDLE'
-		case 3:
-		    return 'RUNNING NORMAL'
-		case 4:
-		    return 'RUNNING BUSY'
-		default:
-		    return 'Unknown value: ' + value
-		}
-	    }
+            var status = ['NOT ASSIGNED TO ANY SYSTEM', 'NOT ASSIGNED TO ANY APPLICATION', 'IDLE', 'RUNNING NORMAL', 'RUNNING BUSY'];
 
-	    currentSession.subscribe('digs.sim.partialResult', receivePartialResults);
+            currentSession.subscribe('digs.sim.partialResult', receivePartialResults);
 
-	    currentSession.call('digs.sim.execute')
-	    $('#execute').hide()
-	    $('#results').show()
-	},
+            currentSession.call('digs.sim.execute');
+            $('#execute').hide();
+            $('#results').show();
+        },
 
-	results : function() {
-	    if(!currentSession) {
-		return
-	    }
+        results : function() {
+            if(!currentSession) {
+                return;
+            }
 
-	    $('#results').prop('disabled', true);
+            $('#results').prop('disabled', true);
 
-	    currentSession.call('digs.sim.results').then(
-		function(results) {
+            currentSession.call('digs.sim.results').then(
+                function(results) {
 
-		    appendResult('Local time: ', 'localTime', results['LocalTime'])
+                    appendResult('Local time: ', 'localTime', results['LocalTime']);
 
-		    createHTMLResult('Total Energy Consumption: ', 'totalEnergy')
-		    $("#totalEnergy").html(results['Total energy Consumption'])
+                    createHTMLResult('Total Energy Consumption: ', 'totalEnergy');
+                    $("#totalEnergy").html(results['Total energy Consumption']);
 
-		    createHTMLResult('Mean Power Consumption: ', 'meanPower')
-		    $("#meanPower").html(results['Mean Power Consumption'])
+                    createHTMLResult('Mean Power Consumption: ', 'meanPower');
+                    $("#meanPower").html(results['Mean Power Consumption']);
 
-		    createHTMLResult('Over Red: ', 'overRed')
-		    $("#oveRed").html(results['Over RED'])
+                    createHTMLResult('Over Red: ', 'overRed');
+                    $("#oveRed").html(results['Over RED']);
 
-		    createHTMLResult('# of Messages Data Center Manager to System Managers: ', 'messages_dc_to_sys')
-		    $("#messages_dc_to_sys").html(results['Messages']['# of Messages DC to sys'])
+                    createHTMLResult('# of Messages Data Center Manager to System Managers: ', 'messages_dc_to_sys');
+                    $("#messages_dc_to_sys").html(results['Messages']['# of Messages DC to sys']);
 
-		    createHTMLResult('# of Messages System Managers to Nodes: ', 'messages_sys_to_nodes')
-		    $("#messages_sys_to_nodes").html(results['Messages']['# of Messages sys to nodes'])
+                    createHTMLResult('# of Messages System Managers to Nodes: ', 'messages_sys_to_nodes');
+                    $("#messages_sys_to_nodes").html(results['Messages']['# of Messages sys to nodes']);
 
-		    connection.close()
-		}
-	    );
+                    connection.close();
+                });
 
-	    var appendResult = function(elementLabel, elementValue, value) {
-		createHTMLResult(elementLabel, elementValue)
-		$('#' + elementValue).html(value)
-		$('#' + elementValue).css({"font-weight":"italic"})
-	    }
+            var appendResult = function(elementLabel, elementValue, value) {
+                createHTMLResult(elementLabel, elementValue);
+                $('#' + elementValue).html(value);
+                $('#' + elementValue).css({"font-style":"italic"});
+		$('#' + elementValue).css({"font-weight":"normal"});
+            };
 
-	    var createHTMLResult = function(label, valueID) {
-		var HTMLElementLabel = document.createElement('span')
-		HTMLElementLabel.setAttribute('id', valueID + '_label')
-		HTMLElementLabel.setAttribute('class', 'result')
-		$('#simulationResults').append(HTMLElementLabel)
-		$('#' + valueID + '_label').html(label)
-		$('#' + valueID + '_label').css({"font-weight":"bold"})
+            var createHTMLResult = function(label, valueID) {
+                var HTMLElementLabel = document.createElement('span');
+                HTMLElementLabel.setAttribute('id', valueID + '_label');
+                HTMLElementLabel.setAttribute('class', 'result');
+                $('#simulationResults').append(HTMLElementLabel);
+                $('#' + valueID + '_label').html(label);
+                $('#' + valueID + '_label').css({"font-weight":"bold"});
 
-		var HTMLElementValue = document.createElement('span')
-		HTMLElementValue.setAttribute('id', valueID)
-		HTMLElementValue.setAttribute('class', 'result')
-		$('#' + valueID + '_label').append(HTMLElementValue)
-		$('#' + valueID + '_label').append(document.createElement('br'))
-	    };
-
-	}
+                var HTMLElementValue = document.createElement('span');
+                HTMLElementValue.setAttribute('id', valueID);
+                HTMLElementValue.setAttribute('class', 'result');
+                $('#' + valueID + '_label').append(HTMLElementValue);
+                $('#' + valueID + '_label').append(document.createElement('br'));
+            };
+        }
     };
 }
 
-var simulation = makeSimulation()
+var simulation = makeSimulation();
 
 connection.open();
