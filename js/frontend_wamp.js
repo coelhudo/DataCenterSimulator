@@ -115,7 +115,7 @@ function makeSimulation() {
             $('#simulation_status').html("Running ...");
 
             function receivePartialResults(partialResults) {
-                results = JSON.parse(partialResults).results;
+                var results = JSON.parse(partialResults).results;
                 console.log('still receiving');
                 results.forEach(function(currentResult) {
                     updateRacksStats(currentResult.racksStats);
@@ -135,6 +135,7 @@ function makeSimulation() {
             };
 
             var updateServersStats = function(bladeServersStats) {
+		var status = ['NOT ASSIGNED TO ANY SYSTEM', 'NOT ASSIGNED TO ANY APPLICATION', 'IDLE', 'RUNNING NORMAL', 'RUNNING BUSY'];
                 bladeServersStats.forEach(function(currentServer) {
                     $('#' + currentServer.id + '_status').html(status[currentServer.status[0]]);
                     $('#' + currentServer.id + '_cpu').html(currentServer.status[1]);
@@ -143,8 +144,6 @@ function makeSimulation() {
                     //$('#' + currentServer.id + '_enterpriseJobs').html(currentServer.status[4]);
                 });
             };
-
-            var status = ['NOT ASSIGNED TO ANY SYSTEM', 'NOT ASSIGNED TO ANY APPLICATION', 'IDLE', 'RUNNING NORMAL', 'RUNNING BUSY'];
 
             currentSession.subscribe('digs.sim.partialResult', receivePartialResults);
 
@@ -163,7 +162,7 @@ function makeSimulation() {
             currentSession.call('digs.sim.results').then(
                 function(results) {
 
-                    appendResult('Local time: ', 'localTime', results['LocalTime']);
+                    appendResult('Local time: ', 'localTime', results.LocalTime);
 
                     createHTMLResult('Total Energy Consumption: ', 'totalEnergy');
                     $("#totalEnergy").html(results['Total energy Consumption']);
@@ -175,10 +174,10 @@ function makeSimulation() {
                     $("#oveRed").html(results['Over RED']);
 
                     createHTMLResult('# of Messages Data Center Manager to System Managers: ', 'messages_dc_to_sys');
-                    $("#messages_dc_to_sys").html(results['Messages']['# of Messages DC to sys']);
+                    $("#messages_dc_to_sys").html(results.Messages['# of Messages DC to sys']);
 
                     createHTMLResult('# of Messages System Managers to Nodes: ', 'messages_sys_to_nodes');
-                    $("#messages_sys_to_nodes").html(results['Messages']['# of Messages sys to nodes']);
+                    $("#messages_sys_to_nodes").html(results.Messages['# of Messages sys to nodes']);
 
                     connection.close();
                 });
