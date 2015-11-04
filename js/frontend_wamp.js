@@ -35,6 +35,8 @@ connection.onclose = function (reason, details) {
     }
 };
 
+updateSelectors = {};
+
 function makeSimulation() {
     'use strict';
     return {
@@ -64,7 +66,6 @@ function makeSimulation() {
                     $("#simulation").append(createDataCenterElement('div', currentRack.id, 'rack'));
                     var rackSelector = "#" + currentRack.id;
                     $(rackSelector).html(currentRack.id);
-                    $(rackSelector).css({"padding-left":"50px"});
                     updateChassisView(currentRack.chassis, rackSelector);
                 });
             };
@@ -74,7 +75,7 @@ function makeSimulation() {
                     $(rackSelector).append(createDataCenterElement('div', currentChassis.id, 'chassis'));
                     var chassisSelector = "#" + currentChassis.id;
                     $(chassisSelector).html(currentChassis.id);
-                    $(chassisSelector).css({"padding-left":"75px"});
+                    $(chassisSelector).css({"padding-left":"25px"});
                     updateServersView(currentChassis.servers, chassisSelector);
                 });
             };
@@ -83,22 +84,28 @@ function makeSimulation() {
                 servers.forEach(function(currentServer) {
                     $(chassisSelector).append(createDataCenterElement('div', currentServer.id, 'server'));
                     var serverSelector = "#" + currentServer.id;
-                    $(serverSelector).html(currentServer.id + ': ');
-                    $(serverSelector).css({"padding-left":"100px"});
+		    $(serverSelector).css({"padding-left":"50px"});
 
-                    createServerAttribute(serverSelector, currentServer.id, 'status');
+		    updateSelectors[currentServer.id] = {};
+		    createServerAttribute(serverSelector, currentServer.id, 'id');
+		    updateSelectors[currentServer.id]['id'].html(currentServer.id + '');
+		    createServerAttribute(serverSelector, currentServer.id, 'status');
                     createServerAttribute(serverSelector, currentServer.id, 'cpu');
                     createServerAttribute(serverSelector, currentServer.id, 'mips');
                     createServerAttribute(serverSelector, currentServer.id, 'batchJobs');
                     createServerAttribute(serverSelector, currentServer.id, 'enterpriseJobs');
-
+                    console.log(updateSelectors)
                 });
             };
 
             var createServerAttribute = function(serverSelector, id, label) {
-                $(serverSelector).append(createDataCenterElement('span', id + '_' + label, 'server'));
+		$(serverSelector).append(createDataCenterElement('span', id + '_' + label + '_value', 'server_item'));
+		$('#' + id + '_' + label + '_value').html(label + ': ');
+		$('#' + id + '_' + label + '_value').css({"font-weight":"bold"})
+                $(serverSelector).append(createDataCenterElement('span', id + '_' + label, 'server_item'));
                 $(serverSelector + '_' + label).html("NOT INITIALIZED");
                 $(serverSelector).append(document.createElement('br'));
+                updateSelectors[id][label] = $('#' + id + '_' + label)
             };
 
             var createDataCenterElement = function(type, elementUID, dataCenterClass) {
@@ -137,13 +144,13 @@ function makeSimulation() {
             };
 
             var updateServersStats = function(bladeServersStats) {
-		var status = ['NOT ASSIGNED TO ANY SYSTEM', 'NOT ASSIGNED TO ANY APPLICATION', 'IDLE', 'RUNNING NORMAL', 'RUNNING BUSY'];
+                var status = ['NOT ASSIGNED TO ANY SYSTEM', 'NOT ASSIGNED TO ANY APPLICATION', 'IDLE', 'RUNNING NORMAL', 'RUNNING BUSY'];
                 bladeServersStats.forEach(function(currentServer) {
-                    $('#' + currentServer.id + '_status').html(status[currentServer.status[0]]);
-                    $('#' + currentServer.id + '_cpu').html(currentServer.status[1]);
-                    //$('#' + currentServer.id + '_mips').html(currentServer.status[2]);
-                    //$('#' + currentServer.id + '_batchJobs').html(currentServer.status[3]);
-                    //$('#' + currentServer.id + '_enterpriseJobs').html(currentServer.status[4]);
+                    updateSelectors[currentServer.id]['status'].html(status[currentServer.status[0]]);
+                    updateSelectors[currentServer.id]['cpu'].html(currentServer.status[1]);
+                    updateSelectors[currentServer.id]['mips'].html(currentServer.status[2]);
+                    updateSelectors[currentServer.id]['batchJobs'].html(currentServer.status[3]);
+                    updateSelectors[currentServer.id]['enterpriseJobs'].html(currentServer.status[4]);
                 });
             };
 
@@ -166,12 +173,12 @@ function makeSimulation() {
 
                     appendResult('Local time: ', 'localTime', results.LocalTime);
                     appendResult('Total Energy Consumption: ', 'totalEnergy', results['Total energy Consumption']);
-		    appendResult('Mean Power Consumption: ', 'meanPower', results['Mean Power Consumption']);
-		    appendResult('# of Messages Data Center Manager to System Managers: ', 'messages_dc_to_sys', results.Messages['# of Messages DC to sys']);
-		    appendResult('# of Messages System Managers to Nodes: ', 'messages_sys_to_nodes', results.Messages['# of Messages sys to nodes']);
+                    appendResult('Mean Power Consumption: ', 'meanPower', results['Mean Power Consumption']);
+                    appendResult('# of Messages Data Center Manager to System Managers: ', 'messages_dc_to_sys', results.Messages['# of Messages DC to sys']);
+                    appendResult('# of Messages System Managers to Nodes: ', 'messages_sys_to_nodes', results.Messages['# of Messages sys to nodes']);
 
-		    $('.result_label').css({"font-weight":"bold"})
-		    $('.result_value').css({"font-weight":"normal", "font-style":"italic"});
+                    $('.result_label').css({"font-weight":"bold"})
+                    $('.result_value').css({"font-weight":"normal", "font-style":"italic"});
 
                     connection.close();
                 });

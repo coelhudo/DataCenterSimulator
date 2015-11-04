@@ -5,25 +5,51 @@
     <script src="https://code.jquery.com/jquery-2.1.4.min.js"></script>
     <script src="https://autobahn.s3.amazonaws.com/autobahnjs/latest/autobahn.min.jgz"></script>
     <script src="js/frontend_wamp.js"></script>
+    <style>
+      .rack {
+      border-radius: 5px;
+      background: #E0EBEB;
+      padding-top: 5px;
+      padding-bottom: 10px;
+      border: 2px solid #000000;
+      width: 500px;
+      }
+      .chassis {
+      border-radius: 5px;
+      background: #FFFFFF;
+      padding-top: 5px;
+      padding-bottom: 10px;
+      border: 2px solid #000000;
+      width: 450px;
+      }
+      .server {
+      border-radius: 5px;
+      background: #FFFFFF;
+      padding-bottom: 10px;
+      padding-left: 60px;
+      border: 2px solid #000000;
+      width: 350px;
+      }
+    </style>
   </head>
   <body>
     <h2>Data Center Simulator</h2>
     <p>
-    <button id="configure" onclick='simulation.configure();'>Configure!</button>
-    <button id="execute" onclick='simulation.execute();'>Execute!</button>
-    <button id="results" onclick='simulation.results();'>Show
-      Results!</button>
-    <br>
+      <button id="configure" onclick='simulation.configure();'>Configure!</button>
+      <button id="execute" onclick='simulation.execute();'>Execute!</button>
+      <button id="results" onclick='simulation.results();'>Show
+	Results!</button>
+      <br>
     <p><span>Simulation Status: </span><span id="simulation_status"></span><p>
-    <hr>
-    <h2>Simulation</h2>
-    <br>
-    <div id="simulation">
-    </div>
-    <hr>
-    <h2>Results</h2>
-    <br>
-    <div id="simulationResults">
-    </div>
+      <hr>
+      <h2>Simulation</h2>
+      <br>
+      <div id="simulation">
+      </div>
+      <hr>
+      <h2>Results</h2>
+      <br>
+      <div id="simulationResults">
+      </div>
   </body>
 </html>

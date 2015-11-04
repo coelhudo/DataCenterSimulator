@@ -70,6 +70,7 @@ class Sim(ApplicationSession):
         amountOfDataToBeSent = 0
         bundle = list()
         partial = PartialResults(len(self.racks), len(self.chassis), len(self.servers))
+        messageCounter = 0
         while(True):
             partialResult = self.partialResults.poll(50, TimeUnit.MILLISECONDS)
             if partialResult != None:
@@ -85,12 +86,13 @@ class Sim(ApplicationSession):
                     payload = json.dumps({'results' : bundle }, ensure_ascii = False, separators=(',',':')).encode('utf8')
                     #print('Payload size {0}'.format(len(payload)))
                     reactor.callFromThread(self.publish, u'digs.sim.partialResult', payload)
+                    messageCounter += 1
                     del bundle[:]
             else:
                 counter += 1
             if counter > 50:
                 break;
-        print('Simulation ended')
+        print('Simulation ended, publish called {0} times'.format(messageCounter))
 
     @wamp.register(u'digs.sim.results')
     def results(self):
