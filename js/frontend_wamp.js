@@ -22,13 +22,14 @@ connection.onopen = function (session) {
 connection.onclose = function (reason, details) {
     'use strict';
     if(reason === "closed") {
-	document.getElementById('simulation_status').innerHTML = "Done";
+        document.getElementById('simulation_status').innerHTML = "Done";
     } else {
-	document.getElementById('simulation_status').innerHTML = "Error: Connection " + reason;
+        document.getElementById('simulation_status').innerHTML = "Error: Connection " + reason;
     }
 };
 
 updateSelectors = {};
+var counter = 0;
 
 function makeSimulation() {
     'use strict';
@@ -48,58 +49,60 @@ function makeSimulation() {
 
                     updateRacksView(racks);
 
-		    document.getElementById('configure').style.display = 'none';
-		    document.getElementById('execute').style.display = '';
-		    document.getElementById('simulation_status').innerHTML = "Configured";
+                    document.getElementById('configure').style.display = 'none';
+                    document.getElementById('execute').style.display = '';
+                    document.getElementById('simulation_status').innerHTML = "Configured";
                 }
             );
 
             var updateRacksView = function (racks) {
-		var simulation = document.getElementById('simulation');
+                var simulation = document.getElementById('simulation');
                 racks.forEach(function(currentRack) {
-		    simulation.appendChild(createDataCenterElement('div', currentRack.id, 'rack'));
-		    var rackElement = document.getElementById(currentRack.id);
-		    rackElement.innerHTML = currentRack.id;
+                    simulation.appendChild(createDataCenterElement('div', currentRack.id, 'rack'));
+                    var rackElement = document.getElementById(currentRack.id);
+                    rackElement.innerHTML = currentRack.id;
                     updateChassisView(currentRack.chassis, rackElement);
                 });
             };
 
             var updateChassisView = function (chassis, rackSelector) {
                 chassis.forEach(function(currentChassis) {
-		    rackSelector.appendChild(createDataCenterElement('div', currentChassis.id, 'chassis'));
-		    var chassisElement = document.getElementById(currentChassis.id);
-		    chassisElement.innerHTML = currentChassis.id;
-		    chassisElement.style[ 'padding-left'] = '25px';
+                    rackSelector.appendChild(createDataCenterElement('div', currentChassis.id, 'chassis'));
+                    var chassisElement = document.getElementById(currentChassis.id);
+                    chassisElement.innerHTML = currentChassis.id;
+                    chassisElement.style[ 'padding-left'] = '25px';
                     updateServersView(currentChassis.servers, chassisElement);
                 });
             };
 
             var updateServersView = function(servers, chassisSelector) {
                 servers.forEach(function(currentServer) {
-		    chassisSelector.appendChild(createDataCenterElement('div', currentServer.id, 'server'));
-                    var serverSelector = "#" + currentServer.id;
-		    $(serverSelector).css({"padding-left":"50px"});
+                    chassisSelector.appendChild(createDataCenterElement('div', currentServer.id, 'server'));
+                    var serverElement = document.getElementById(currentServer.id);
+                    serverElement.style['padding-left'] = '50px';
 
-		    updateSelectors[currentServer.id] = {};
-		    createServerAttribute(serverSelector, currentServer.id, 'id');
-		    updateSelectors[currentServer.id]['id'].html(currentServer.id + '');
-		    createServerAttribute(serverSelector, currentServer.id, 'status');
-                    createServerAttribute(serverSelector, currentServer.id, 'cpu');
-                    createServerAttribute(serverSelector, currentServer.id, 'mips');
-                    createServerAttribute(serverSelector, currentServer.id, 'batchJobs');
-                    createServerAttribute(serverSelector, currentServer.id, 'enterpriseJobs');
-                    console.log(updateSelectors)
+                    updateSelectors[currentServer.id] = {};
+                    createServerAttribute(serverElement, currentServer.id, 'id');
+                    updateSelectors[currentServer.id]['id'].innerHTML = currentServer.id;
+                    createServerAttribute(serverElement, currentServer.id, 'status');
+                    createServerAttribute(serverElement, currentServer.id, 'cpu');
+                    createServerAttribute(serverElement, currentServer.id, 'mips');
+                    createServerAttribute(serverElement, currentServer.id, 'batchJobs');
+                    createServerAttribute(serverElement, currentServer.id, 'enterpriseJobs');
                 });
             };
 
-            var createServerAttribute = function(serverSelector, id, label) {
-		$(serverSelector).append(createDataCenterElement('span', id + '_' + label + '_value', 'server_item'));
-		$('#' + id + '_' + label + '_value').html(label + ': ');
-		$('#' + id + '_' + label + '_value').css({"font-weight":"bold"})
-                $(serverSelector).append(createDataCenterElement('span', id + '_' + label, 'server_item'));
-                $(serverSelector + '_' + label).html("NOT INITIALIZED");
-                $(serverSelector).append(document.createElement('br'));
-                updateSelectors[id][label] = $('#' + id + '_' + label)
+            var createServerAttribute = function(serverElement, id, label) {
+                serverElement.appendChild(createDataCenterElement('span', id + '_' + label + '_value', 'server_item'));
+                var serverIDElement = document.getElementById(id + '_' + label + '_value');
+                serverIDElement.innerHTML = label + ': '
+                serverIDElement.style['font-weight'] = 'bold';
+
+                serverElement.appendChild(createDataCenterElement('span', id + '_' + label, 'server_item'));
+                var serverAttributeElement = document.getElementById(id + '_' + label)
+                serverAttributeElement.innerHTML = 'NOT INITIALIZED';
+                serverElement.appendChild(document.createElement('br'));
+                updateSelectors[id][label] = serverAttributeElement;
             };
 
             var createDataCenterElement = function(type, elementUID, dataCenterClass) {
@@ -115,11 +118,13 @@ function makeSimulation() {
                 return;
             }
 
+            document.getElementById('execute').style.display = 'none';
+            document.getElementById('results').style.display = '';
             document.getElementById('simulation_status').innerHTML  = "Running ...";
 
             function receivePartialResults(partialResults) {
                 var results = JSON.parse(partialResults).results;
-                console.log('still receiving');
+                counter = counter + 1;
                 results.forEach(function(currentResult) {
                     updateRacksStats(currentResult.racksStats);
                 });
@@ -140,19 +145,17 @@ function makeSimulation() {
             var updateServersStats = function(bladeServersStats) {
                 var status = ['NOT ASSIGNED TO ANY SYSTEM', 'NOT ASSIGNED TO ANY APPLICATION', 'IDLE', 'RUNNING NORMAL', 'RUNNING BUSY'];
                 bladeServersStats.forEach(function(currentServer) {
-                    updateSelectors[currentServer.id]['status'].html(status[currentServer.status[0]]);
-                    //updateSelectors[currentServer.id]['cpu'].html(currentServer.status[1]);
-                    //updateSelectors[currentServer.id]['mips'].html(currentServer.status[2]);
-                    //updateSelectors[currentServer.id]['batchJobs'].html(currentServer.status[3]);
-                    //updateSelectors[currentServer.id]['enterpriseJobs'].html(currentServer.status[4]);
+                    updateSelectors[currentServer.id]['status'].innerHTML = status[currentServer.status[0]];
+                    //updateSelectors[currentServer.id]['cpu'].innerHTML = currentServer.status[1];
+                    //updateSelectors[currentServer.id]['mips'].innerHTML = currentServer.status[2];
+                    //updateSelectors[currentServer.id]['batchJobs'].innerHTML = currentServer.status[3];
+                    //updateSelectors[currentServer.id]['enterpriseJobs'].innerHTML = currentServer.status[4];
                 });
             };
 
             currentSession.subscribe('digs.sim.partialResult', receivePartialResults);
 
             currentSession.call('digs.sim.execute');
-            document.getElementById('execute').status.display = 'none';
-	    document.getElementById('results').status.display = '';
         },
 
         results : function() {
@@ -160,7 +163,7 @@ function makeSimulation() {
                 return;
             }
 
-            $('#results').prop('disabled', true);
+            document.getElementById('results').disabled = true;
 
             currentSession.call('digs.sim.results').then(
                 function(results) {
@@ -171,29 +174,29 @@ function makeSimulation() {
                     appendResult('# of Messages Data Center Manager to System Managers: ', 'messages_dc_to_sys', results.Messages['# of Messages DC to sys']);
                     appendResult('# of Messages System Managers to Nodes: ', 'messages_sys_to_nodes', results.Messages['# of Messages sys to nodes']);
 
-                    $('.result_label').css({"font-weight":"bold"})
-                    $('.result_value').css({"font-weight":"normal", "font-style":"italic"});
-
+		    var resultLabels = document.getElementsByClassName('result_label')
+		    for(var i = 0; i < resultLabels.length; ++i) {
+			resultLabels[i].style['font-weight'] = 'bold';
+			resultLabels[i].style['font-style'] = 'italic';
+		    }
+                    console.log('received ' + counter + ' messages');
                     connection.close();
                 });
 
             var appendResult = function(elementLabel, elementValue, value) {
-                createHTMLResult(elementLabel, elementValue);
-                $('#' + elementValue).html(value);
-            };
-
-            var createHTMLResult = function(label, valueID) {
                 var HTMLElementLabel = document.createElement('span');
-                HTMLElementLabel.setAttribute('id', valueID + '_label');
+                HTMLElementLabel.setAttribute('id', elementValue + '_label');
                 HTMLElementLabel.setAttribute('class', 'result_label');
-                $('#simulationResults').append(HTMLElementLabel);
-                $('#' + valueID + '_label').html(label);
+                HTMLElementLabel.innerHTML = elementLabel;
 
                 var HTMLElementValue = document.createElement('span');
-                HTMLElementValue.setAttribute('id', valueID);
+                HTMLElementValue.setAttribute('id', elementValue);
                 HTMLElementValue.setAttribute('class', 'result_value');
-                $('#' + valueID + '_label').append(HTMLElementValue);
-                $('#' + valueID + '_label').append(document.createElement('br'));
+                HTMLElementValue.innerHTML = value;
+
+		document.getElementById('simulationResults').appendChild(HTMLElementLabel);
+                document.getElementById('simulationResults').appendChild(HTMLElementValue);
+		document.getElementById('simulationResults').appendChild(document.createElement('br'));
             };
         }
     };
