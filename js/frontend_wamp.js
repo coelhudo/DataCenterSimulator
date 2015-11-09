@@ -13,13 +13,6 @@ var connection = new autobahn.Connection({
 
 var currentSession = null;
 
-$(document).ready(function(){
-    'use strict';
-    $('#execute').hide();
-    $('#results').hide();
-    $('#simulation_status').html("Not running ...");
-});
-
 
 connection.onopen = function (session) {
     'use strict';
@@ -29,9 +22,9 @@ connection.onopen = function (session) {
 connection.onclose = function (reason, details) {
     'use strict';
     if(reason === "closed") {
-        $('#simulation_status').html("Done");
+	document.getElementById('simulation_status').innerHTML = "Done";
     } else {
-        $('#simulation_status').html("Error: Connection " + reason);
+	document.getElementById('simulation_status').innerHTML = "Error: Connection " + reason;
     }
 };
 
@@ -55,34 +48,35 @@ function makeSimulation() {
 
                     updateRacksView(racks);
 
-                    $('#configure').hide();
-                    $('#execute').show();
-                    $('#simulation_status').html("Configured");
+		    document.getElementById('configure').style.display = 'none';
+		    document.getElementById('execute').style.display = '';
+		    document.getElementById('simulation_status').innerHTML = "Configured";
                 }
             );
 
             var updateRacksView = function (racks) {
+		var simulation = document.getElementById('simulation');
                 racks.forEach(function(currentRack) {
-                    $("#simulation").append(createDataCenterElement('div', currentRack.id, 'rack'));
-                    var rackSelector = "#" + currentRack.id;
-                    $(rackSelector).html(currentRack.id);
-                    updateChassisView(currentRack.chassis, rackSelector);
+		    simulation.appendChild(createDataCenterElement('div', currentRack.id, 'rack'));
+		    var rackElement = document.getElementById(currentRack.id);
+		    rackElement.innerHTML = currentRack.id;
+                    updateChassisView(currentRack.chassis, rackElement);
                 });
             };
 
             var updateChassisView = function (chassis, rackSelector) {
                 chassis.forEach(function(currentChassis) {
-                    $(rackSelector).append(createDataCenterElement('div', currentChassis.id, 'chassis'));
-                    var chassisSelector = "#" + currentChassis.id;
-                    $(chassisSelector).html(currentChassis.id);
-                    $(chassisSelector).css({"padding-left":"25px"});
-                    updateServersView(currentChassis.servers, chassisSelector);
+		    rackSelector.appendChild(createDataCenterElement('div', currentChassis.id, 'chassis'));
+		    var chassisElement = document.getElementById(currentChassis.id);
+		    chassisElement.innerHTML = currentChassis.id;
+		    chassisElement.style[ 'padding-left'] = '25px';
+                    updateServersView(currentChassis.servers, chassisElement);
                 });
             };
 
             var updateServersView = function(servers, chassisSelector) {
                 servers.forEach(function(currentServer) {
-                    $(chassisSelector).append(createDataCenterElement('div', currentServer.id, 'server'));
+		    chassisSelector.appendChild(createDataCenterElement('div', currentServer.id, 'server'));
                     var serverSelector = "#" + currentServer.id;
 		    $(serverSelector).css({"padding-left":"50px"});
 
@@ -121,7 +115,7 @@ function makeSimulation() {
                 return;
             }
 
-            $('#simulation_status').html("Running ...");
+            document.getElementById('simulation_status').innerHTML  = "Running ...";
 
             function receivePartialResults(partialResults) {
                 var results = JSON.parse(partialResults).results;
@@ -147,18 +141,18 @@ function makeSimulation() {
                 var status = ['NOT ASSIGNED TO ANY SYSTEM', 'NOT ASSIGNED TO ANY APPLICATION', 'IDLE', 'RUNNING NORMAL', 'RUNNING BUSY'];
                 bladeServersStats.forEach(function(currentServer) {
                     updateSelectors[currentServer.id]['status'].html(status[currentServer.status[0]]);
-                    updateSelectors[currentServer.id]['cpu'].html(currentServer.status[1]);
-                    updateSelectors[currentServer.id]['mips'].html(currentServer.status[2]);
-                    updateSelectors[currentServer.id]['batchJobs'].html(currentServer.status[3]);
-                    updateSelectors[currentServer.id]['enterpriseJobs'].html(currentServer.status[4]);
+                    //updateSelectors[currentServer.id]['cpu'].html(currentServer.status[1]);
+                    //updateSelectors[currentServer.id]['mips'].html(currentServer.status[2]);
+                    //updateSelectors[currentServer.id]['batchJobs'].html(currentServer.status[3]);
+                    //updateSelectors[currentServer.id]['enterpriseJobs'].html(currentServer.status[4]);
                 });
             };
 
             currentSession.subscribe('digs.sim.partialResult', receivePartialResults);
 
             currentSession.call('digs.sim.execute');
-            $('#execute').hide();
-            $('#results').show();
+            document.getElementById('execute').status.display = 'none';
+	    document.getElementById('results').status.display = '';
         },
 
         results : function() {
