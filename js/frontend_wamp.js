@@ -28,7 +28,7 @@ connection.onclose = function (reason, details) {
     }
 };
 
-updateSelectors = {};
+serverElements = {};
 var counter = 0;
 
 function makeSimulation() {
@@ -81,9 +81,9 @@ function makeSimulation() {
                     var serverElement = document.getElementById(currentServer.id);
                     serverElement.style['padding-left'] = '50px';
 
-                    updateSelectors[currentServer.id] = {};
+                    serverElements[currentServer.id] = {};
                     createServerAttribute(serverElement, currentServer.id, 'id');
-                    updateSelectors[currentServer.id]['id'].innerHTML = currentServer.id;
+                    serverElements[currentServer.id]['id'].innerHTML = currentServer.id;
                     createServerAttribute(serverElement, currentServer.id, 'status');
                     createServerAttribute(serverElement, currentServer.id, 'cpu');
                     createServerAttribute(serverElement, currentServer.id, 'mips');
@@ -102,7 +102,7 @@ function makeSimulation() {
                 var serverAttributeElement = document.getElementById(id + '_' + label)
                 serverAttributeElement.innerHTML = 'NOT INITIALIZED';
                 serverElement.appendChild(document.createElement('br'));
-                updateSelectors[id][label] = serverAttributeElement;
+                serverElements[id][label] = serverAttributeElement;
             };
 
             var createDataCenterElement = function(type, elementUID, dataCenterClass) {
@@ -145,11 +145,11 @@ function makeSimulation() {
             var updateServersStats = function(bladeServersStats) {
                 var status = ['NOT ASSIGNED TO ANY SYSTEM', 'NOT ASSIGNED TO ANY APPLICATION', 'IDLE', 'RUNNING NORMAL', 'RUNNING BUSY'];
                 bladeServersStats.forEach(function(currentServer) {
-                    updateSelectors[currentServer.id]['status'].innerHTML = status[currentServer.status[0]];
-                    //updateSelectors[currentServer.id]['cpu'].innerHTML = currentServer.status[1];
-                    //updateSelectors[currentServer.id]['mips'].innerHTML = currentServer.status[2];
-                    //updateSelectors[currentServer.id]['batchJobs'].innerHTML = currentServer.status[3];
-                    //updateSelectors[currentServer.id]['enterpriseJobs'].innerHTML = currentServer.status[4];
+                    serverElements[currentServer.id]['status'].textContent = status[currentServer.status[0]];
+                    serverElements[currentServer.id]['cpu'].textContent = currentServer.status[1];
+                    serverElements[currentServer.id]['mips'].textContent = currentServer.status[2];
+                    serverElements[currentServer.id]['batchJobs'].textContent = currentServer.status[3];
+                    serverElements[currentServer.id]['enterpriseJobs'].textContent = currentServer.status[4];
                 });
             };
 
