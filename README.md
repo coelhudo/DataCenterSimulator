@@ -64,8 +64,9 @@ dependencies)](http://autobahn.ws/).
 
 * *mvn package* : to generate the jar that contains the simulator
 * *jython backend_wamp.py* (a lot of information will appear in the console)
-* *open index.html on your favorite browser* (tested on Firefox 40 and
-41)
+* *open index.html on your favorite browser* (tested on Firefox 40, 41
+and 42; tested on Google Chrome 43;)
+	* Obs.: Somehow I'm having some performance issues with Firefox.
 
 # Publications
 
