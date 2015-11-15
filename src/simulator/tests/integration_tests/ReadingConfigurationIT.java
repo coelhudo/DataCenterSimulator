@@ -19,7 +19,6 @@ import simulator.Environment;
 import simulator.Simulator;
 import simulator.SimulatorBuilder;
 import simulator.SimulatorPOD;
-import simulator.am.DataCenterAM;
 import simulator.physical.BladeServer;
 import simulator.physical.Chassis;
 import simulator.physical.DataCenter;
@@ -76,10 +75,6 @@ public class ReadingConfigurationIT {
         List<ComputeSystem> computeSystems = systems.getComputeSystems();
         List<EnterpriseSystem> enterpriseSystems = systems.getEnterpriseSystems();
         List<InteractiveSystem> interactiveSystems = systems.getInteractiveSystems();
-
-        DataCenterAM dataCenterAM = dataCenter.getAM();
-        assertFalse(dataCenterAM.isSlowDownFromCooler());
-        assertEquals(0, dataCenterAM.getBlockTimer());
 
         assertEquals(0.0, dataCenter.getTotalPowerConsumption(), 1.0E-8);
         assertFalse(computeSystems.isEmpty());

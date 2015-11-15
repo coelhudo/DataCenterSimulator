@@ -19,6 +19,7 @@ public class InteractiveSystemAM extends SystemAM {
         super(environment);
     }
 
+    @Override
     public void setManagedSystem(GeneralSystem generalSystem) {
         this.interatctiveSystem = (InteractiveSystem) generalSystem;
         setRecForCoop(new int[interatctiveSystem.getUserList().size()]);
@@ -54,7 +55,7 @@ public class InteractiveSystemAM extends SystemAM {
         interatctiveSystem.getResourceAllocation().resourceProvision(interatctiveSystem, getAllocationVector());
     }
 
-    void workloadIntensity() {
+    private void workloadIntensity() {
         double avg = 0.0;
         for (int i = 0; i < interatctiveSystem.getUserList().size(); i++) {
             avg = avg + (double) interatctiveSystem.getUserList().get(i).getNumberofBasicNode()
@@ -88,7 +89,7 @@ public class InteractiveSystemAM extends SystemAM {
         setSLAViolationGen(interatctiveSystem.getSLAviolation());
     }
 
-    public void calcSysUtility() {
+    private void calcSysUtility() {
         int localUtil = 0;
         // int globalUtil;
         for (int i = 0; i < interatctiveSystem.getUserList().size(); i++) {
@@ -107,7 +108,7 @@ public class InteractiveSystemAM extends SystemAM {
         // super.utility=sigmoid(globalUtil-100);
     }
 
-    void iterativeAlg() {
+    private void iterativeAlg() {
         for (int i = 0; i < interatctiveSystem.getUserList().size(); i++) {
             interatctiveSystem.getUserList().get(i).getAM().currentStrategy = Simulator.StrategyEnum.Green; // Green
             // Strategy
@@ -171,7 +172,8 @@ public class InteractiveSystemAM extends SystemAM {
     }
     // determining aloc/release vector and active strategy
 
-    void averageWeight() {
+    @SuppressWarnings("unused")
+    private void averageWeight() {
         double[] cofficient = new double[interatctiveSystem.getUserList().size()];
         int[] sugestForAlo = new int[interatctiveSystem.getUserList().size()];
         double sumCoff = 0;
@@ -222,11 +224,11 @@ public class InteractiveSystemAM extends SystemAM {
     // }
     // }
 
-    public int[] getAllocationVector() {
+    private int[] getAllocationVector() {
         return allocationVector;
     }
 
-    public void setAllocationVector(int[] allocationVector) {
+    private void setAllocationVector(int[] allocationVector) {
         this.allocationVector = allocationVector;
     }
 }

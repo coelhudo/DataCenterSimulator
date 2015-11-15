@@ -44,7 +44,7 @@ public class ComputeSystemAM extends SystemAM {
     public void planning() {
     }
 
-    void analysisGreen() {
+    private void analysisGreen() {
 
         if (getSLAViolationGen() > 0) {
             /*
@@ -101,7 +101,8 @@ public class ComputeSystemAM extends SystemAM {
         }
     }
 
-    void analysisSLA() {
+    @SuppressWarnings("unused")
+    private void analysisSLA() {
         /*
          * Increase freq. of all busy nodes Activate all sleep nodes if(all
          * nodes are busy and this system is not blocked) send(SOS, theParent)

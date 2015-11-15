@@ -42,7 +42,6 @@ public class EnterpriseSystemAM extends SystemAM {
         // averageWeight();
         // iterativeAlg();
         utilityBasedPlanning();
-
     }
 
     @Override
@@ -68,7 +67,7 @@ public class EnterpriseSystemAM extends SystemAM {
         enterpriseSystem.getResourceAllocation().resourceProvision(enterpriseSystem, allocationVector);
     }
 
-    void workloadIntensity() {
+    private void workloadIntensity() {
         double avg = 0.0;
         for (EnterpriseApp enterpriseApp : applications) {
             avg = avg + (double) enterpriseApp.getNumberofBasicNode() / enterpriseApp.getMaxNumberOfRequest();
@@ -108,7 +107,7 @@ public class EnterpriseSystemAM extends SystemAM {
         lastTime = environment().getCurrentLocalTime();
     }
 
-    public void calcSysUtility() {
+    private void calcSysUtility() {
         int localUtil = 0;
         // int globalUtil;
         for (int i = 0; i < applications.size(); i++) {
@@ -127,7 +126,8 @@ public class EnterpriseSystemAM extends SystemAM {
         // super.utility=sigmoidsig(globalUtil-100);
     }
 
-    void iterativeAlg() {
+    @SuppressWarnings("unused")
+    private void iterativeAlg() {
         for (int i = 0; i < applications.size(); i++) {
             applications.get(i).getAM().setStrategySwitch(Simulator.StrategyEnum.Green);
             double wkIntensApp;
@@ -186,7 +186,8 @@ public class EnterpriseSystemAM extends SystemAM {
     }
     // determining aloc/release vector and active strategy
 
-    void averageWeight() {
+    @SuppressWarnings("unused")
+    private void averageWeight() {
         double[] cofficient = new double[applications.size()];
         int[] sugestForAlo = new int[applications.size()];
         double sumCoff = 0;
@@ -217,7 +218,8 @@ public class EnterpriseSystemAM extends SystemAM {
         }
     }
 
-    void serverProvisioning() {
+    @SuppressWarnings("unused")
+    private void serverProvisioning() {
         int[] numberOfPredictedReq = { 251, 246, 229, 229, 223, 225, 231, 241, 265, 265, 271, 276, 273, 273, 268, 258,
                 255, 257, 242, 241, 233, 228, 231, 261, 274, 302, 343, 375, 404, 405, 469, 562, 1188, 1806, 2150, 2499,
                 2624, 2793, 2236, 1905, 1706, 1558, 1495, 1448, 1414, 1391, 1430, 1731, 2027, 2170, 2187, 2224, 2363,
@@ -233,11 +235,11 @@ public class EnterpriseSystemAM extends SystemAM {
         }
     }
 
-    double sigmoid(double i) {
+    private double sigmoid(double i) {
         return (1 / (1 + Math.exp(-i)));
     }
 
-    void utilityBasedPlanning() {
+    private void utilityBasedPlanning() {
         for (int i = 0; i < applications.size(); i++) {
             applications.get(i).getAM().setStrategySwitch(Simulator.StrategyEnum.Green);
             allocationVector[i] = 0;

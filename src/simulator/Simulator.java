@@ -39,7 +39,6 @@ public class Simulator implements Runnable {
     private Environment environment;
     private Systems systems;
     private SLAViolationLogger slaViolationLogger;
-    private DataCenterAM dataCenterAM;
     private BlockingQueue<DataCenterStats> partialResults;
 
     public void run() {
@@ -81,7 +80,7 @@ public class Simulator implements Runnable {
         ActivitiesLogger activitiesLogger = new ActivitiesLogger("out_W.txt");
         slaViolationLogger = new SLAViolationLogger(environment);
         systems = new Systems(environment);
-        dataCenterAM = new DataCenterAM(environment, systems);
+        DataCenterAM dataCenterAM = new DataCenterAM(environment, systems);
         dataCenterAM.setStrategy(StrategyEnum.Green);
         dataCenter = new DataCenter(simulatorPOD.getDataCenterPOD(), dataCenterAM, activitiesLogger, environment);
         SystemsPOD systemsPOD = simulatorPOD.getSystemsPOD();

@@ -41,7 +41,8 @@ public class InteractiveUserAM extends GeneralAM {
         }
     }
 
-    public void localUtilCal() {
+    @SuppressWarnings("unused")
+    private void localUtilCal() {
         double averageCPUUtilization = user.getAverageCPUUtilization();
         double[] power = user.getAveragePwrParam();
         double x = averageCPUUtilization * (power[0] - power[1]) / 100 + user.numberofIdleNode() * power[2]
@@ -52,7 +53,7 @@ public class InteractiveUserAM extends GeneralAM {
         // LOGGER.info(util);
     }
 
-    public double getPercentageOfComputingPwr() {
+    private double getPercentageOfComputingPwr() {
         int[] levels = { 0, 0, 0 };
         int index = 0;
         for (int j = 0; j < user.getComputeNodeList().size(); j++) {
@@ -76,7 +77,7 @@ public class InteractiveUserAM extends GeneralAM {
     }
     // SLA Policy
 
-    public void analysis_SLA(Object violation) {
+    private void analysis_SLA(Object violation) {
         if (environment().localTimeByEpoch()) {
             violationInEpoch = (Integer) violation + violationInEpoch;
             return;
@@ -105,7 +106,8 @@ public class InteractiveUserAM extends GeneralAM {
     }
 
     // Green policy is applied here:
-    public void analysis_GR(Object violation) {
+    @SuppressWarnings("unused")
+    private void analysis_GR(Object violation) {
         if (environment().localTimeByEpoch()) {
             violationInEpoch = (Integer) violation + violationInEpoch;
             return;
@@ -192,7 +194,8 @@ public class InteractiveUserAM extends GeneralAM {
     public void execution() {
     }
 
-    boolean allocateAnodetoThisUser(int targetUsr) {
+    @SuppressWarnings("unused")
+    private boolean allocateAnodetoThisUser(int targetUsr) {
         int index = user.myFirstIdleNode();
         if (index == -2) {
             return false;

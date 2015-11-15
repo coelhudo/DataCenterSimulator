@@ -62,7 +62,7 @@ public class ApplicationAM extends GeneralAM {
         }
     }
 
-    public void localUtilCal() {
+    private void localUtilCal() {
         double CPU = app.getAverageCPUutil(); // average CPU utilization of
         // nodes
         double[] pwr = app.getAveragePwrParam();
@@ -73,7 +73,7 @@ public class ApplicationAM extends GeneralAM {
         // LOGGER.info(util);
     }
 
-    public double getPercentageOfComputingPwr() {
+    private double getPercentageOfComputingPwr() {
         int[] levels = { 0, 0, 0 };
         int index = 0;
         for (int j = 0; j < app.getComputeNodeList().size(); j++) {
@@ -88,7 +88,7 @@ public class ApplicationAM extends GeneralAM {
         return getPercnt();
     }
 
-    public void SLAcal() {
+    private void SLAcal() {
         app.setSLAviolation(0);
         int percentage = app.getComputeNodeList().get(0).getSLAPercentage();
         int treshold = app.getComputeNodeList().get(0).getTimeTreshold();
@@ -126,7 +126,7 @@ public class ApplicationAM extends GeneralAM {
     }
     // SLA Policy
 
-    public void analysis_SLA(Object violation) {
+    private void analysis_SLA(Object violation) {
         if (environment().localTimeByEpoch()) {
             violationInEpoch = (Integer) violation + violationInEpoch;
             return;
@@ -156,7 +156,7 @@ public class ApplicationAM extends GeneralAM {
     }
 
     // Green policy is applied here:
-    public void analysis_GR(Object violation) {
+    private void analysis_GR(Object violation) {
         if (environment().localTimeByEpoch()) {
             violationInEpoch = (Integer) violation + violationInEpoch;
             return;
@@ -192,8 +192,9 @@ public class ApplicationAM extends GeneralAM {
             int tedad = app.numberofIdleNode() / 2;
             for (int j = 0; j < app.getComputeNodeList().size() && tedad > 0; j++) {
                 if (app.getComputeNodeList().get(j).isIdle()) {
-                    LOGGER.info("App GR: " + app.getID() + "\tactive a Server!\t\t @"
-                            + environment().getCurrentLocalTime() + "\tNumber of runinng:  " + app.numberofRunningNode());
+                    LOGGER.info(
+                            "App GR: " + app.getID() + "\tactive a Server!\t\t @" + environment().getCurrentLocalTime()
+                                    + "\tNumber of runinng:  " + app.numberofRunningNode());
                     app.getComputeNodeList().get(j).setStatusAsRunningNormal();
                     app.getComputeNodeList().get(j).setMips(1.4);
                     tedad--;
@@ -242,7 +243,8 @@ public class ApplicationAM extends GeneralAM {
     public void execution() {
     }
 
-    boolean allocateAnodetoThisApp(int targetApp) {
+    @SuppressWarnings("unused")
+    private boolean allocateAnodetoThisApp(int targetApp) {
         int index = app.myFirstIdleNode();
         if (index == -2) {
             return false;
@@ -274,19 +276,19 @@ public class ApplicationAM extends GeneralAM {
         return true;
     }
 
-    public double getUtil() {
+    double getUtil() {
         return util;
     }
 
-    public void setUtil(double util) {
+    private void setUtil(double util) {
         this.util = util;
     }
 
-    public double getPercnt() {
+    double getPercnt() {
         return percnt;
     }
 
-    public void setPercnt(double percnt) {
+    void setPercnt(double percnt) {
         this.percnt = percnt;
     }
 
@@ -298,11 +300,11 @@ public class ApplicationAM extends GeneralAM {
         this.accumulativeSLA = accumulativeSLA;
     }
 
-    public Simulator.StrategyEnum getStrategySwitch() {
+    private Simulator.StrategyEnum getStrategySwitch() {
         return strategySwitch;
     }
 
-    public void setStrategySwitch(Simulator.StrategyEnum strategySwitch) {
+    void setStrategySwitch(Simulator.StrategyEnum strategySwitch) {
         this.strategySwitch = strategySwitch;
     }
 }

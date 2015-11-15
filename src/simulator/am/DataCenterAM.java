@@ -69,18 +69,21 @@ public class DataCenterAM extends GeneralAM {
             computeSystems.get(0).makeSystemaUnBlocked();
             LOGGER.info("unblocked a system@ time : \t" + environment().getCurrentLocalTime());
         }
-        if (isSlowDownFromCooler()) {
-            if (!computeSystems.get(0).isBlocked()) {
-                computeSystems.get(0).setBlocked(true);
-                setBlockTimer(120);
-                LOGGER.info("A system is blocked and we have this # of systems:  " + computeSystems.size()
-                        + "@ time= \t" + environment().getCurrentLocalTime());
-                // Every system should work in Greeeen
-                computeSystems.get(1).getAM().setStrategy(Simulator.StrategyEnum.Green);
-            } else {
-                LOGGER.info("AM in data center level : HPC system is already blocked nothing can do here @: "
-                        + environment().getCurrentLocalTime());
-            }
+        
+        if (!isSlowDownFromCooler()) {
+            return;
+        }
+
+        if (!computeSystems.get(0).isBlocked()) {
+            computeSystems.get(0).setBlocked(true);
+            setBlockTimer(120);
+            LOGGER.info("A system is blocked and we have this # of systems:  " + computeSystems.size() + "@ time= \t"
+                    + environment().getCurrentLocalTime());
+            // Every system should work in Greeeen
+            computeSystems.get(1).getAM().setStrategy(Simulator.StrategyEnum.Green);
+        } else {
+            LOGGER.info("AM in data center level : HPC system is already blocked nothing can do here @: "
+                    + environment().getCurrentLocalTime());
         }
     }
 
@@ -99,15 +102,15 @@ public class DataCenterAM extends GeneralAM {
         setBlockTimer(0);
     }
 
-    public int getBlockTimer() {
+    private int getBlockTimer() {
         return blockTimer;
     }
 
-    public void setBlockTimer(int blockTimer) {
+    private void setBlockTimer(int blockTimer) {
         this.blockTimer = blockTimer;
     }
 
-    public boolean isSlowDownFromCooler() {
+    private boolean isSlowDownFromCooler() {
         return slowDownFromCooler;
     }
 
