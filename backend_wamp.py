@@ -88,6 +88,7 @@ class Sim(ApplicationSession):
                     reactor.callFromThread(self.publish, u'digs.sim.partialResult', payload)
                     messageCounter += 1
                     del bundle[:]
+                    time.sleep(0.025)
             else:
                 counter += 1
             if counter > 50:

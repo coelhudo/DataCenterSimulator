@@ -82,6 +82,7 @@ public class Simulator implements Runnable {
         slaViolationLogger = new SLAViolationLogger(environment);
         systems = new Systems(environment);
         dataCenterAM = new DataCenterAM(environment, systems);
+        dataCenterAM.setStrategy(StrategyEnum.Green);
         dataCenter = new DataCenter(simulatorPOD.getDataCenterPOD(), dataCenterAM, activitiesLogger, environment);
         SystemsPOD systemsPOD = simulatorPOD.getSystemsPOD();
         loadEnterpriseSystemIntoSystems(systems, systemsPOD.getEnterpriseSystemsPOD());
@@ -93,8 +94,6 @@ public class Simulator implements Runnable {
             systems.addInteractiveSystem(
                     InteractiveSystem.create(interactivePOD, environment, dataCenter, slaViolationLogger));
         }
-
-        dataCenter.getAM().setStrategy(StrategyEnum.Green);
 
         class DataCenterAMXunxo implements Observer {
             public void update(Observable o, Object arg) {
