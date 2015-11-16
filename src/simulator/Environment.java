@@ -1,36 +1,17 @@
 package simulator;
 
-public class Environment {
-    private int localTime = 1;
-    private int numberOfMessagesFromDataCenterToSystem = 0;
-    private int numberOfMessagesFromSystemToNodes = 0;
-    private static final int EPOCH_APP = 60;
-    
-    public int getCurrentLocalTime() {
-        return localTime;
-    }
+public interface Environment {
+    int getCurrentLocalTime();
 
-    protected void updateCurrentLocalTime() {
-        localTime++;
-    }
+    void updateCurrentLocalTime();
 
-    public void updateNumberOfMessagesFromDataCenterToSystem() {
-        numberOfMessagesFromDataCenterToSystem++;
-    }
+    void updateNumberOfMessagesFromDataCenterToSystem();
 
-    public int getNumberOfMessagesFromDataCenterToSystem() {
-        return numberOfMessagesFromDataCenterToSystem;
-    }
+    int getNumberOfMessagesFromDataCenterToSystem();
 
-    public void updateNumberOfMessagesFromSystemToNodes() {
-        numberOfMessagesFromSystemToNodes++;
-    }
+    void updateNumberOfMessagesFromSystemToNodes();
 
-    public int getNumberOfMessagesFromSystemToNodes() {
-        return numberOfMessagesFromSystemToNodes;
-    }
+    int getNumberOfMessagesFromSystemToNodes();
 
-    public boolean localTimeByEpoch() {
-        return localTime % EPOCH_APP != 0;
-    }
+    boolean localTimeByEpoch();
 }

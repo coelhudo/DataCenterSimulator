@@ -11,6 +11,7 @@ import org.junit.Test;
 
 import simulator.Environment;
 import simulator.SLAViolationLogger;
+import simulator.SimulatorEnvironment;
 import simulator.am.DataCenterAM;
 import simulator.am.EnterpriseSystemAM;
 import simulator.jobs.EnterpriseJob;
@@ -65,7 +66,7 @@ public class EnterpriseSystemIT {
         dataCenterPOD.setD(0, 0, 100);
 
         ActivitiesLogger mockedActivitiesLogger = mock(ActivitiesLogger.class);
-        Environment environment = new Environment();
+        Environment environment = new SimulatorEnvironment();
 
         Systems systems = new Systems(environment);
         DataCenterAM mockedDataCenterAM = new DataCenterAM(environment, systems);

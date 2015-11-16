@@ -12,6 +12,7 @@ import simulator.Environment;
 import simulator.SimulationResults;
 import simulator.Simulator;
 import simulator.SimulatorBuilder;
+import simulator.SimulatorEnvironment;
 import simulator.SimulatorPOD;
 import simulator.physical.DataCenter.DataCenterStats;
 
@@ -22,7 +23,7 @@ public class SimulatorIT {
         SimulatorBuilder dataCenterBuilder = new SimulatorBuilder("configs/DC_Logic.xml");
         SimulatorPOD simulatorPOD = dataCenterBuilder.build();
 
-        Environment environment = new Environment();
+        Environment environment = new SimulatorEnvironment();
 
         class SkeletonBlockingQueue<E> implements BlockingQueue<E> {
 

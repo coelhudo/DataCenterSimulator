@@ -19,7 +19,7 @@ public class Main {
         SimulatorBuilder dataCenterBuilder = new SimulatorBuilder("configs/DC_Logic.xml");
         SimulatorPOD simulatorPOD = dataCenterBuilder.build();
 
-        Environment environment = new Environment();
+        Environment environment = new SimulatorEnvironment();
         BlockingQueue<DataCenterStats> partialResults = new ArrayBlockingQueue<DataCenterStats>(1000);
         Simulator simulator = new Simulator(simulatorPOD, environment, partialResults);
 

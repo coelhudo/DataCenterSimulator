@@ -18,6 +18,7 @@ import org.junit.Test;
 import simulator.Environment;
 import simulator.Simulator;
 import simulator.SimulatorBuilder;
+import simulator.SimulatorEnvironment;
 import simulator.SimulatorPOD;
 import simulator.physical.BladeServer;
 import simulator.physical.Chassis;
@@ -37,7 +38,7 @@ public class ReadingConfigurationIT {
         SimulatorBuilder dataCenterBuilder = new SimulatorBuilder("configs/DC_Logic.xml");
         SimulatorPOD simulatorPOD = dataCenterBuilder.build();
 
-        Environment environment = new Environment();
+        Environment environment = new SimulatorEnvironment();
         BlockingQueue<DataCenterStats> partialResults = new ArrayBlockingQueue<DataCenterStats>(5);
         Simulator simulator = new Simulator(simulatorPOD, environment, partialResults);
 

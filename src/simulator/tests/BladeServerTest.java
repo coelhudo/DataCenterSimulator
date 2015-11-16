@@ -14,6 +14,8 @@ import static org.mockito.Matchers.anyInt;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.swing.text.SimpleAttributeSet;
+
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -23,6 +25,7 @@ import org.mockito.Matchers;
 
 import simulator.Environment;
 import simulator.ResponseTime;
+import simulator.SimulatorEnvironment;
 import simulator.jobs.BatchJob;
 import simulator.jobs.EnterpriseJob;
 import simulator.jobs.InteractiveJob;
@@ -42,7 +45,7 @@ public class BladeServerTest {
 
     @Before
     public void setUp() {
-        environment = new Environment();
+        environment = new SimulatorEnvironment();
         bladeServerPOD = new BladeServerPOD();
         bladeServerPOD.setFrequencyLevel(new double[1]);
         final double frequency = 1.4;
