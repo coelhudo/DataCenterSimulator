@@ -12,7 +12,7 @@ public class DataCenterAM extends GeneralAM {
 
     private static final Logger LOGGER = Logger.getLogger(DataCenterAM.class.getName());
 
-    private int[] SLAVioCS;
+    private int[] computeSystemsSLAViolations;
     private int blockTimer = 0;
     private boolean slowDownFromCooler = false;
     private List<ComputeSystem> computeSystems;
@@ -20,6 +20,7 @@ public class DataCenterAM extends GeneralAM {
     public DataCenterAM(Environment environment, Systems systems) {
         super(environment);
         this.computeSystems = systems.getComputeSystems();
+        computeSystemsSLAViolations = new int[computeSystems.size()];
     }
 
     @Override
@@ -27,9 +28,8 @@ public class DataCenterAM extends GeneralAM {
         if (getBlockTimer() > 0) {
             setBlockTimer(getBlockTimer() - 1);
         }
-        SLAVioCS = new int[computeSystems.size()];
         for (int i = 0; i < computeSystems.size(); i++) {
-            SLAVioCS[i] = computeSystems.get(i).getAM().getSLAViolationGen();
+            computeSystemsSLAViolations[i] = computeSystems.get(i).getAM().getSLAViolationGen();
         }
     }
 
@@ -47,12 +47,12 @@ public class DataCenterAM extends GeneralAM {
          * systems inside the DC begin If (SLA is violated) Switch strategy to
          * SLA based If (SLA is not violated) Switch to green strategy end
          */
-        for (int i = 0; i < SLAVioCS.length; i++) {
-            if (SLAVioCS[i] > 0 && computeSystems.get(i).getAM().getStrategy() == Simulator.StrategyEnum.Green) {
+        for (int i = 0; i < computeSystemsSLAViolations.length; i++) {
+            if (computeSystemsSLAViolations[i] > 0 && computeSystems.get(i).getAM().getStrategy() == Simulator.StrategyEnum.Green) {
                 computeSystems.get(i).getAM().setStrategy(Simulator.StrategyEnum.SLA);
                 LOGGER.info("AM in DC Switch HPC system: " + i + " to SLA  @  " + environment().getCurrentLocalTime());
             }
-            if (SLAVioCS[i] == 0 && computeSystems.get(i).getAM().getStrategy() == Simulator.StrategyEnum.SLA) {
+            if (computeSystemsSLAViolations[i] == 0 && computeSystems.get(i).getAM().getStrategy() == Simulator.StrategyEnum.SLA) {
                 LOGGER.info(
                         "AM in DC Switch HPC system: " + i + "  to Green @  " + environment().getCurrentLocalTime());
                 computeSystems.get(i).getAM().setStrategy(Simulator.StrategyEnum.Green);

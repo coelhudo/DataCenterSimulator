@@ -90,23 +90,23 @@ public class DataCenter {
             }
         }
 
-        double maxTemp = temperatures[0];
+        double currentMaxTemperature = temperatures[0];
         for (int i = 0; i < m; i++) {
-            if (maxTemp < temperatures[i]) {
-                maxTemp = temperatures[i];
+            if (currentMaxTemperature < temperatures[i]) {
+                currentMaxTemperature = temperatures[i];
             }
         }
 
-        maxTemp = redTemperature - maxTemp;
+        currentMaxTemperature = redTemperature - currentMaxTemperature;
 
-        if (maxTemp <= 0) {
+        if (currentMaxTemperature <= 0) {
             am.setSlowDownFromCooler(true);
             overRed++;
         } else {
             am.setSlowDownFromCooler(false);
         }
 
-        final double cop = Cooler.getCOP(maxTemp);
+        final double cop = Cooler.getCOP(currentMaxTemperature);
         final double currentTotalEnergyConsumption = computingPower * (1 + 1.0 / cop);
 
         activitiesLogger.write("\n" + (int) currentTotalEnergyConsumption + "\t" + (int) computingPower + "\t"
@@ -116,10 +116,6 @@ public class DataCenter {
 
     public void shutDownDC() {
         activitiesLogger.close();
-    }
-
-    public DataCenterAM getAM() {
-        return am;
     }
 
     public int getOverRed() {

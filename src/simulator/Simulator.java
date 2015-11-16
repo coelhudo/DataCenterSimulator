@@ -80,7 +80,7 @@ public class Simulator implements Runnable {
         ActivitiesLogger activitiesLogger = new ActivitiesLogger("out_W.txt");
         slaViolationLogger = new SLAViolationLogger(environment);
         systems = new Systems(environment);
-        DataCenterAM dataCenterAM = new DataCenterAM(environment, systems);
+        final DataCenterAM dataCenterAM = new DataCenterAM(environment, systems);
         dataCenterAM.setStrategy(StrategyEnum.Green);
         dataCenter = new DataCenter(simulatorPOD.getDataCenterPOD(), dataCenterAM, activitiesLogger, environment);
         SystemsPOD systemsPOD = simulatorPOD.getSystemsPOD();
@@ -97,7 +97,7 @@ public class Simulator implements Runnable {
         class DataCenterAMXunxo implements Observer {
             public void update(Observable o, Object arg) {
                 LOGGER.info("Update Called: executing xunxo that I made (and I'm not proud about it)");
-                dataCenter.getAM().resetBlockTimer();
+                dataCenterAM.resetBlockTimer();
             }
         }
 
