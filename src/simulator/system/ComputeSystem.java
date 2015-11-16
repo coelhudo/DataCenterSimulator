@@ -58,7 +58,7 @@ public class ComputeSystem extends GeneralSystem {
 
         if (!isBlocked()) {
             getAM().monitor();
-            getAM().analysis(0);
+            getAM().analysis();
         }
 
         if (numberOfFinishedJob == totalJob) {
@@ -150,7 +150,8 @@ public class ComputeSystem extends GeneralSystem {
         return BladeServerCollectionOperations.countIdle(getComputeNodeList());
     }
 
-    public void activeOneNode() {
+    @SuppressWarnings("unused")
+    private void activeOneNode() {
         for (BladeServer bladeServer : getComputeNodeList()) {
             if (bladeServer.isIdle()) {
                 bladeServer.restart();
@@ -177,7 +178,11 @@ public class ComputeSystem extends GeneralSystem {
         return blocked;
     }
 
-    public void setBlocked(boolean blocked) {
-        this.blocked = blocked;
+    public void block() {
+        this.blocked = true;
+    }
+    
+    public void unblock() {
+        this.blocked = false;
     }
 }

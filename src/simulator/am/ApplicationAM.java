@@ -117,18 +117,17 @@ public class ApplicationAM extends GeneralAM {
     }
 
     @Override
-    public void analysis(Object violation) {
+    public void analysis() {
         if (getStrategySwitch() == Simulator.StrategyEnum.Green) {
-            analysis_GR(violation);
+            analysis_GR();
         } else {
-            analysis_SLA(violation);
+            analysis_SLA();
         }
     }
     // SLA Policy
 
-    private void analysis_SLA(Object violation) {
+    private void analysis_SLA() {
         if (environment().localTimeByEpoch()) {
-            violationInEpoch = (Integer) violation + violationInEpoch;
             return;
         }
 
@@ -156,9 +155,8 @@ public class ApplicationAM extends GeneralAM {
     }
 
     // Green policy is applied here:
-    private void analysis_GR(Object violation) {
+    private void analysis_GR() {
         if (environment().localTimeByEpoch()) {
-            violationInEpoch = (Integer) violation + violationInEpoch;
             return;
         }
         // Policy 1: if no SLA violation then decrease frequency

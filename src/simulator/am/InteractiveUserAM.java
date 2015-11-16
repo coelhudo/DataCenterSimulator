@@ -69,17 +69,17 @@ public class InteractiveUserAM extends GeneralAM {
     }
 
     @Override
-    public void analysis(Object violation) {
+    public void analysis() {
         // if(StrategyWsitch==0)
         // analysis_GR(violation);
         // else
-        analysis_SLA(violation);
+        analysis_SLA();
     }
     // SLA Policy
 
-    private void analysis_SLA(Object violation) {
+    private void analysis_SLA() {
         if (environment().localTimeByEpoch()) {
-            violationInEpoch = (Integer) violation + violationInEpoch;
+            violationInEpoch = user.getSLAviolation() + violationInEpoch;
             return;
         }
 

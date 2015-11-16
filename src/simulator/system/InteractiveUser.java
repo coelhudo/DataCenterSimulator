@@ -246,7 +246,7 @@ public class InteractiveUser {
             usedNode = usedNode + k;
         }
         getAM().monitor();
-        getAM().analysis(getSLAviolation());
+        getAM().analysis();
         // AM.planning();
         if (getQueueWL().isEmpty() && readingResult == -2) {
             return false;

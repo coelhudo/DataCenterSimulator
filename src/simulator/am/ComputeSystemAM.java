@@ -135,7 +135,7 @@ public class ComputeSystemAM extends SystemAM {
     }
 
     @Override
-    public void analysis(Object vilation) {
+    public void analysis() {
         if (environment().localTimeByEpoch()) {
             return;
         }

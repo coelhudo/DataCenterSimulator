@@ -22,7 +22,7 @@ public abstract class GeneralAM {
 
     public abstract void monitor();
 
-    public abstract void analysis(Object vilation);
+    public abstract void analysis();
 
     public abstract void planning();
 

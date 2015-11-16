@@ -42,7 +42,7 @@ public class ComputeSystemAMTest {
         
         when(mockedEnvironment.localTimeByEpoch()).thenReturn(true);
         
-        computeSystemAM.analysis(null);
+        computeSystemAM.analysis();
         
         verify(mockedEnvironment).localTimeByEpoch();
     }
@@ -59,7 +59,7 @@ public class ComputeSystemAMTest {
         when(mockedBladeServer.isRunningBusy()).thenReturn(true);
         when(mockedComputeSystem.getComputeNodeList()).thenReturn(Arrays.asList(mockedBladeServer));
         
-        computeSystemAM.analysis(null);
+        computeSystemAM.analysis();
         
         verify(mockedEnvironment).localTimeByEpoch();
         verify(mockedEnvironment).updateNumberOfMessagesFromDataCenterToSystem();
@@ -87,7 +87,7 @@ public class ComputeSystemAMTest {
         when(mockedBladeServer.isIdle()).thenReturn(true);
         when(mockedComputeSystem.getComputeNodeList()).thenReturn(Arrays.asList(mockedBladeServer));
         
-        computeSystemAM.analysis(null);
+        computeSystemAM.analysis();
         
         verify(mockedEnvironment).localTimeByEpoch();
         verify(mockedEnvironment).getCurrentLocalTime();
@@ -122,7 +122,7 @@ public class ComputeSystemAMTest {
         when(mockedBladeServer.getBlockedBatchList()).thenReturn(new ArrayList<BatchJob>());
         when(mockedComputeSystem.getComputeNodeList()).thenReturn(Arrays.asList(mockedBladeServer));
         
-        computeSystemAM.analysis(null);
+        computeSystemAM.analysis();
         
         verify(mockedEnvironment).localTimeByEpoch();
         verify(mockedEnvironment).updateNumberOfMessagesFromDataCenterToSystem();

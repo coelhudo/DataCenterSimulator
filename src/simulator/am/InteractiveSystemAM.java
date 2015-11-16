@@ -26,7 +26,7 @@ public class InteractiveSystemAM extends SystemAM {
     }
 
     @Override
-    public void analysis(Object violation) {
+    public void analysis() {
         // averageWeight();
         iterativeAlg();
 

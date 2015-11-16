@@ -34,14 +34,14 @@ public class DataCenterAM extends GeneralAM {
     }
 
     @Override
-    public void analysis(Object vilation) {
+    public void analysis() {
         // if(strtg==Main.strategyEnum.Green)
         analysisGreen();
         // if(strtg==Main.strategyEnum.SLA)
         // analysisSLA();
     }
 
-    public void analysisGreen() {
+    private void analysisGreen() {
         /*
          * update all HPC system heartbeat : is already done in Monitor For all
          * systems inside the DC begin If (SLA is violated) Switch strategy to
@@ -65,7 +65,7 @@ public class DataCenterAM extends GeneralAM {
          */
         if (getBlockTimer() == 0 && computeSystems.get(0).isBlocked()) {
             // time to unblock hpc system
-            computeSystems.get(0).setBlocked(false);
+            computeSystems.get(0).unblock();
             computeSystems.get(0).makeSystemaUnBlocked();
             LOGGER.info("unblocked a system@ time : \t" + environment().getCurrentLocalTime());
         }
@@ -75,7 +75,7 @@ public class DataCenterAM extends GeneralAM {
         }
 
         if (!computeSystems.get(0).isBlocked()) {
-            computeSystems.get(0).setBlocked(true);
+            computeSystems.get(0).block();
             setBlockTimer(120);
             LOGGER.info("A system is blocked and we have this # of systems:  " + computeSystems.size() + "@ time= \t"
                     + environment().getCurrentLocalTime());
@@ -85,9 +85,6 @@ public class DataCenterAM extends GeneralAM {
             LOGGER.info("AM in data center level : HPC system is already blocked nothing can do here @: "
                     + environment().getCurrentLocalTime());
         }
-    }
-
-    public void analysisSLA() {
     }
 
     @Override

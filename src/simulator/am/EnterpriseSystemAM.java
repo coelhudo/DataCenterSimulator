@@ -38,7 +38,7 @@ public class EnterpriseSystemAM extends SystemAM {
     }
 
     @Override
-    public void analysis(Object violation) {
+    public void analysis() {
         // averageWeight();
         // iterativeAlg();
         utilityBasedPlanning();
