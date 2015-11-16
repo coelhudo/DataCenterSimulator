@@ -8,6 +8,8 @@ import java.util.concurrent.BlockingQueue;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import com.google.inject.Inject;
+
 import simulator.am.ApplicationAM;
 import simulator.am.DataCenterAM;
 import simulator.am.EnterpriseSystemAM;
@@ -73,6 +75,7 @@ public class Simulator implements Runnable {
         csFinalize();
     }
 
+    @Inject
     public Simulator(SimulatorPOD simulatorPOD, Environment environment,
             BlockingQueue<DataCenterStats> partialResults) {
         this.environment = environment;

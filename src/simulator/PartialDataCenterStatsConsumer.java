@@ -4,6 +4,8 @@ import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Logger;
 
+import com.google.inject.Inject;
+
 import simulator.physical.DataCenter.DataCenterStats;
 
 public class PartialDataCenterStatsConsumer implements Runnable {
@@ -12,6 +14,7 @@ public class PartialDataCenterStatsConsumer implements Runnable {
     private BlockingQueue<DataCenterStats> partialDataCenterStats;
     private int counter = 0;
 
+    @Inject
     public PartialDataCenterStatsConsumer(BlockingQueue<DataCenterStats> partialResults) {
         this.partialDataCenterStats = partialResults;
     }

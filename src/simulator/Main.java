@@ -1,12 +1,11 @@
 package simulator;
 
 import java.io.IOException;
-import java.util.concurrent.ArrayBlockingQueue;
-import java.util.concurrent.BlockingQueue;
 import java.util.logging.FileHandler;
 import java.util.logging.Logger;
 
-import simulator.physical.DataCenter.DataCenterStats;
+import com.google.inject.Guice;
+import com.google.inject.Injector;
 
 public class Main {
 
@@ -16,14 +15,10 @@ public class Main {
         FileHandler logFile = new FileHandler("log.txt");
         LOGGER.addHandler(logFile);
 
-        SimulatorBuilder dataCenterBuilder = new SimulatorBuilder("configs/DC_Logic.xml");
-        SimulatorPOD simulatorPOD = dataCenterBuilder.build();
+        Injector injector = Guice.createInjector(new MainModule());
+        Simulator simulator = injector.getInstance(Simulator.class);
 
-        Environment environment = new SimulatorEnvironment();
-        BlockingQueue<DataCenterStats> partialResults = new ArrayBlockingQueue<DataCenterStats>(1000);
-        Simulator simulator = new Simulator(simulatorPOD, environment, partialResults);
-
-        PartialDataCenterStatsConsumer partialDataCenterStatsConsumer = new PartialDataCenterStatsConsumer(partialResults);
+        PartialDataCenterStatsConsumer partialDataCenterStatsConsumer = injector.getInstance(PartialDataCenterStatsConsumer.class);
         
         Thread simulatorThread = new Thread(simulator);
         Thread partialResultConsumerThread = new Thread(partialDataCenterStatsConsumer);
