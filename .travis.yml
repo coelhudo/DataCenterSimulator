@@ -1,3 +1,8 @@
 language: java
 
 script: mvn verify
+
+branches:
+  only:
+    - master
+    - 0.0.2
