@@ -13,7 +13,7 @@ import simulator.jobs.JobProducer;
 import simulator.physical.BladeServer;
 import simulator.physical.BladeServerCollectionOperations;
 import simulator.physical.DataCenter;
-import simulator.ra.MHR;
+import simulator.ra.ResourceAllocation;
 import simulator.schedulers.LeastRemainFirstScheduler;
 
 public class ComputeSystem extends GeneralSystem {
@@ -28,9 +28,9 @@ public class ComputeSystem extends GeneralSystem {
     private SLAViolationLogger slaViolationLogger;
     private JobProducer jobProducer;
 
-    private ComputeSystem(SystemPOD systemPOD, Environment environment, DataCenter dataCenter,
+    private ComputeSystem(SystemPOD systemPOD, Environment environment, ResourceAllocation resourceAllocation,
             SLAViolationLogger slaViolationLogger) {
-        super(systemPOD, new LeastRemainFirstScheduler(), new MHR(environment, dataCenter));
+        super(systemPOD, new LeastRemainFirstScheduler(), resourceAllocation);
         this.jobProducer = ((ComputeSystemPOD)systemPOD).getJobProducer();
         this.environment = environment;
         this.slaViolationLogger = slaViolationLogger;
@@ -166,9 +166,9 @@ public class ComputeSystem extends GeneralSystem {
         return BladeServerCollectionOperations.totalResponseTime(getComputeNodeList());
     }
 
-    public static ComputeSystem create(SystemPOD systemPOD, Environment environment, DataCenter dataCenter,
+    public static ComputeSystem create(SystemPOD systemPOD, Environment environment, ResourceAllocation resourceAllocation,
             SLAViolationLogger slaViolationLogger) {
-        ComputeSystem computeSystem = new ComputeSystem(systemPOD, environment, dataCenter, slaViolationLogger);
+        ComputeSystem computeSystem = new ComputeSystem(systemPOD, environment, resourceAllocation, slaViolationLogger);
         computeSystem.getResourceAllocation().initialResourceAloc(computeSystem);
         computeSystem.setAM(new ComputeSystemAM(environment));
         return computeSystem;
@@ -181,7 +181,7 @@ public class ComputeSystem extends GeneralSystem {
     public void block() {
         this.blocked = true;
     }
-    
+
     public void unblock() {
         this.blocked = false;
     }

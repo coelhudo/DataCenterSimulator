@@ -77,7 +77,7 @@ public class Simulator implements Runnable {
 
     @Inject
     public Simulator(SimulatorPOD simulatorPOD, Environment environment,
-            BlockingQueue<DataCenterStats> partialResults) {
+                     BlockingQueue<DataCenterStats> partialResults) {
         this.environment = environment;
         this.partialResults = partialResults;
         ActivitiesLogger activitiesLogger = new ActivitiesLogger("out_W.txt");
@@ -90,7 +90,7 @@ public class Simulator implements Runnable {
         loadEnterpriseSystemIntoSystems(systems, systemsPOD.getEnterpriseSystemsPOD());
         for (ComputeSystemPOD computeSystemPOD : systemsPOD.getComputeSystemsPOD()) {
             systems.addComputeSystem(
-                    ComputeSystem.create(computeSystemPOD, environment, dataCenter, slaViolationLogger));
+                    ComputeSystem.create(computeSystemPOD, environment, new MHR(environment, dataCenter), slaViolationLogger));
         }
         for (InteractiveSystemPOD interactivePOD : systemsPOD.getInteractiveSystemsPOD()) {
             systems.addInteractiveSystem(

@@ -27,6 +27,8 @@ import simulator.physical.DataCenter;
 import simulator.physical.DataCenterEntityID;
 import simulator.physical.DataCenterPOD;
 import simulator.physical.RackPOD;
+import simulator.ra.ResourceAllocation;
+import simulator.ra.MHR;
 import simulator.system.ComputeSystem;
 import simulator.system.ComputeSystemPOD;
 import simulator.system.Systems;
@@ -110,9 +112,11 @@ public class ComputeSystemIT {
         DataCenter dataCenter = new DataCenter(dataCenterPOD, mockedDataCenterAM, mockedActivitiesLogger,
                 mockedEnvironment);
 
+        ResourceAllocation resourceAllocation = new MHR(mockedEnvironment, dataCenter);
+
         Systems systems = new Systems(mockedEnvironment);
         systems.addComputeSystem(
-                ComputeSystem.create(computerSystemPOD, mockedEnvironment, dataCenter, slaViolationLogger));
+                ComputeSystem.create(computerSystemPOD, mockedEnvironment, resourceAllocation, slaViolationLogger));
 
         when(mockedEnvironment.getCurrentLocalTime()).thenReturn(1);
         assertFalse(systems.allJobsDone());
@@ -177,9 +181,11 @@ public class ComputeSystemIT {
         DataCenter dataCenter = new DataCenter(dataCenterPOD, mockedDataCenterAM, mockedActivitiesLogger,
                 mockedEnvironment);
 
+        ResourceAllocation resourceAllocation = new MHR(mockedEnvironment, dataCenter);
+
         Systems systems = new Systems(mockedEnvironment);
         systems.addComputeSystem(
-                ComputeSystem.create(computerSystemPOD, mockedEnvironment, dataCenter, slaViolationLogger));
+                ComputeSystem.create(computerSystemPOD, mockedEnvironment, resourceAllocation, slaViolationLogger));
 
         when(mockedEnvironment.getCurrentLocalTime()).thenReturn(1);
         assertFalse(systems.allJobsDone());
@@ -233,9 +239,11 @@ public class ComputeSystemIT {
         DataCenter dataCenter = new DataCenter(dataCenterPOD, mockedDataCenterAM, mockedActivitiesLogger,
                 mockedEnvironment);
 
+        ResourceAllocation resourceAllocation = new MHR(mockedEnvironment, dataCenter);
+
         Systems systems = new Systems(mockedEnvironment);
         systems.addComputeSystem(
-                ComputeSystem.create(computerSystemPOD, mockedEnvironment, dataCenter, slaViolationLogger));
+                ComputeSystem.create(computerSystemPOD, mockedEnvironment, resourceAllocation, slaViolationLogger));
 
         when(mockedEnvironment.getCurrentLocalTime()).thenReturn(1);
         assertFalse(systems.allJobsDone());
