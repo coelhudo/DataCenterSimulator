@@ -17,7 +17,6 @@ from twisted.internet import reactor
 from twisted.internet.defer import inlineCallbacks
 from twisted.python.failure import Failure
 
-from autobahn.twisted.util import sleep
 from autobahn import wamp
 from autobahn.twisted.wamp import ApplicationSession, ApplicationRunner
 from autobahn.wamp.types import PublishOptions
@@ -48,7 +47,7 @@ class Sim(ApplicationSession):
     def configure(self):
         self.dataCenterBuilder = SimulatorBuilder("configs/DC_Logic.xml")
         self.simulatorPOD = self.dataCenterBuilder.build()
-        self.environment = Environment()
+        self.environment = SimulatorEnvironment()
         self.partialResults = ArrayBlockingQueue(5)
         self.simulator = Simulator(self.simulatorPOD, self.environment, self.partialResults)
         #all racks contain the same number of chassis and all chassis have the same amount of servers.
