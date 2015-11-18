@@ -14,7 +14,7 @@ import simulator.physical.BladeServer;
 import simulator.physical.BladeServerCollectionOperations;
 import simulator.physical.DataCenter;
 import simulator.ra.ResourceAllocation;
-import simulator.schedulers.LeastRemainFirstScheduler;
+import simulator.schedulers.Scheduler;
 
 public class ComputeSystem extends GeneralSystem {
 
@@ -28,9 +28,12 @@ public class ComputeSystem extends GeneralSystem {
     private SLAViolationLogger slaViolationLogger;
     private JobProducer jobProducer;
 
-    private ComputeSystem(SystemPOD systemPOD, Environment environment, ResourceAllocation resourceAllocation,
-            SLAViolationLogger slaViolationLogger) {
-        super(systemPOD, new LeastRemainFirstScheduler(), resourceAllocation);
+    private ComputeSystem(SystemPOD systemPOD,
+                          Environment environment,
+                          Scheduler scheduler,
+                          ResourceAllocation resourceAllocation,
+                          SLAViolationLogger slaViolationLogger) {
+        super(systemPOD, scheduler, resourceAllocation);
         this.jobProducer = ((ComputeSystemPOD)systemPOD).getJobProducer();
         this.environment = environment;
         this.slaViolationLogger = slaViolationLogger;
@@ -166,9 +169,13 @@ public class ComputeSystem extends GeneralSystem {
         return BladeServerCollectionOperations.totalResponseTime(getComputeNodeList());
     }
 
-    public static ComputeSystem create(SystemPOD systemPOD, Environment environment, ResourceAllocation resourceAllocation,
-            SLAViolationLogger slaViolationLogger) {
-        ComputeSystem computeSystem = new ComputeSystem(systemPOD, environment, resourceAllocation, slaViolationLogger);
+    public static ComputeSystem create(SystemPOD systemPOD,
+                                       Environment environment,
+                                       Scheduler scheduler,
+                                       ResourceAllocation resourceAllocation,
+                                       SLAViolationLogger slaViolationLogger) {
+        ComputeSystem computeSystem = new ComputeSystem(systemPOD, environment, scheduler,
+                                                      resourceAllocation, slaViolationLogger);
         computeSystem.getResourceAllocation().initialResourceAloc(computeSystem);
         computeSystem.setAM(new ComputeSystemAM(environment));
         return computeSystem;

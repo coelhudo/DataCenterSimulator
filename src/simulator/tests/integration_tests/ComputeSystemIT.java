@@ -29,6 +29,8 @@ import simulator.physical.DataCenterPOD;
 import simulator.physical.RackPOD;
 import simulator.ra.ResourceAllocation;
 import simulator.ra.MHR;
+import simulator.schedulers.Scheduler;
+import simulator.schedulers.LeastRemainFirstScheduler;
 import simulator.system.ComputeSystem;
 import simulator.system.ComputeSystemPOD;
 import simulator.system.Systems;
@@ -113,10 +115,11 @@ public class ComputeSystemIT {
                 mockedEnvironment);
 
         ResourceAllocation resourceAllocation = new MHR(mockedEnvironment, dataCenter);
+        Scheduler scheduler = new LeastRemainFirstScheduler();
 
         Systems systems = new Systems(mockedEnvironment);
         systems.addComputeSystem(
-                ComputeSystem.create(computerSystemPOD, mockedEnvironment, resourceAllocation, slaViolationLogger));
+                                 ComputeSystem.create(computerSystemPOD, mockedEnvironment, scheduler, resourceAllocation, slaViolationLogger));
 
         when(mockedEnvironment.getCurrentLocalTime()).thenReturn(1);
         assertFalse(systems.allJobsDone());
@@ -182,10 +185,11 @@ public class ComputeSystemIT {
                 mockedEnvironment);
 
         ResourceAllocation resourceAllocation = new MHR(mockedEnvironment, dataCenter);
+        Scheduler scheduler = new LeastRemainFirstScheduler();
 
         Systems systems = new Systems(mockedEnvironment);
         systems.addComputeSystem(
-                ComputeSystem.create(computerSystemPOD, mockedEnvironment, resourceAllocation, slaViolationLogger));
+                                 ComputeSystem.create(computerSystemPOD, mockedEnvironment, scheduler, resourceAllocation, slaViolationLogger));
 
         when(mockedEnvironment.getCurrentLocalTime()).thenReturn(1);
         assertFalse(systems.allJobsDone());
@@ -240,10 +244,11 @@ public class ComputeSystemIT {
                 mockedEnvironment);
 
         ResourceAllocation resourceAllocation = new MHR(mockedEnvironment, dataCenter);
-
+        Scheduler scheduler = new LeastRemainFirstScheduler();
+        
         Systems systems = new Systems(mockedEnvironment);
         systems.addComputeSystem(
-                ComputeSystem.create(computerSystemPOD, mockedEnvironment, resourceAllocation, slaViolationLogger));
+                                 ComputeSystem.create(computerSystemPOD, mockedEnvironment, scheduler, resourceAllocation, slaViolationLogger));
 
         when(mockedEnvironment.getCurrentLocalTime()).thenReturn(1);
         assertFalse(systems.allJobsDone());

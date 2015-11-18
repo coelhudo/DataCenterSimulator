@@ -19,6 +19,7 @@ import simulator.physical.DataCenter.DataCenterStats;
 import simulator.ra.MHR;
 import simulator.ra.ResourceAllocation;
 import simulator.schedulers.FIFOScheduler;
+import simulator.schedulers.LeastRemainFirstScheduler;
 import simulator.schedulers.Scheduler;
 import simulator.system.ComputeSystem;
 import simulator.system.ComputeSystemPOD;
@@ -90,7 +91,10 @@ public class Simulator implements Runnable {
         loadEnterpriseSystemIntoSystems(systems, systemsPOD.getEnterpriseSystemsPOD());
         for (ComputeSystemPOD computeSystemPOD : systemsPOD.getComputeSystemsPOD()) {
             systems.addComputeSystem(
-                    ComputeSystem.create(computeSystemPOD, environment, new MHR(environment, dataCenter), slaViolationLogger));
+                                     ComputeSystem.create(computeSystemPOD, environment,
+                                                          new LeastRemainFirstScheduler(),
+                                                          new MHR(environment, dataCenter),
+                                                          slaViolationLogger));
         }
         for (InteractiveSystemPOD interactivePOD : systemsPOD.getInteractiveSystemsPOD()) {
             systems.addInteractiveSystem(
