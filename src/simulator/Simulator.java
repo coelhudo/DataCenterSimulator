@@ -13,6 +13,7 @@ import com.google.inject.Inject;
 import simulator.am.ApplicationAM;
 import simulator.am.DataCenterAM;
 import simulator.am.EnterpriseSystemAM;
+import simulator.am.ComputeSystemAM;
 import simulator.am.GeneralAM;
 import simulator.physical.DataCenter;
 import simulator.physical.DataCenter.DataCenterStats;
@@ -94,7 +95,8 @@ public class Simulator implements Runnable {
                                      ComputeSystem.create(computeSystemPOD, environment,
                                                           new LeastRemainFirstScheduler(),
                                                           new MHR(environment, dataCenter),
-                                                          slaViolationLogger));
+                                                          slaViolationLogger,
+                                                          new ComputeSystemAM(environment)));
         }
         for (InteractiveSystemPOD interactivePOD : systemsPOD.getInteractiveSystemsPOD()) {
             systems.addInteractiveSystem(

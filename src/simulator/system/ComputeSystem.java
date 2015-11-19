@@ -7,6 +7,7 @@ import java.util.logging.Logger;
 import simulator.Environment;
 import simulator.SLAViolationLogger;
 import simulator.Violation;
+import simulator.am.SystemAM;
 import simulator.am.ComputeSystemAM;
 import simulator.jobs.BatchJob;
 import simulator.jobs.JobProducer;
@@ -173,11 +174,12 @@ public class ComputeSystem extends GeneralSystem {
                                        Environment environment,
                                        Scheduler scheduler,
                                        ResourceAllocation resourceAllocation,
-                                       SLAViolationLogger slaViolationLogger) {
+                                       SLAViolationLogger slaViolationLogger,
+                                       SystemAM computeSystemAM) {
         ComputeSystem computeSystem = new ComputeSystem(systemPOD, environment, scheduler,
                                                       resourceAllocation, slaViolationLogger);
         computeSystem.getResourceAllocation().initialResourceAloc(computeSystem);
-        computeSystem.setAM(new ComputeSystemAM(environment));
+        computeSystem.setAM(computeSystemAM);
         return computeSystem;
     }
 

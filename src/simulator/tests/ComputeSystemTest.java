@@ -28,6 +28,7 @@ import org.junit.Test;
 import simulator.Environment;
 import simulator.SLAViolationLogger;
 import simulator.Violation;
+import simulator.am.SystemAM;
 import simulator.jobs.Job;
 import simulator.jobs.BatchJob;
 import simulator.jobs.JobProducer;
@@ -47,6 +48,7 @@ public class ComputeSystemTest {
     public ResourceAllocation mockedResourceAllocation;
     public ComputeSystemPOD systemPOD;
     public SLAViolationLogger mockedSLAViolationLogger;
+    public SystemAM mockedSystemAM;
 
     @Before
     public void setUp() {
@@ -55,19 +57,21 @@ public class ComputeSystemTest {
         mockedResourceAllocation = mock(ResourceAllocation.class);
         mockedSLAViolationLogger = mock(SLAViolationLogger.class);
         mockedScheduler = mock(Scheduler.class);
+        mockedSystemAM = mock(SystemAM.class);
     }
 
     @After
     public void tearDown() {
         verifyNoMoreInteractions(mockedEnvironment, mockedScheduler,
-                                 mockedResourceAllocation, mockedSLAViolationLogger);
+                                 mockedResourceAllocation, mockedSLAViolationLogger,
+                                 mockedSystemAM);
     }
 
     @Test
     public void testComputeSytemCreation() {
         ComputeSystem computeSystem = ComputeSystem.create(systemPOD, mockedEnvironment,
                                                            mockedScheduler, mockedResourceAllocation,
-                                                           mockedSLAViolationLogger);
+                                                           mockedSLAViolationLogger, mockedSystemAM);
 
         assertEquals(0, computeSystem.getAccumolatedViolation());
         assertNotNull(computeSystem.getAM());
@@ -84,6 +88,8 @@ public class ComputeSystemTest {
         assertFalse(computeSystem.isBlocked());
         assertFalse(computeSystem.isDone());
 
+        verify(mockedSystemAM).setManagedSystem(computeSystem);
+
         verify(mockedResourceAllocation).initialResourceAloc(computeSystem);
     }
 
@@ -97,7 +103,7 @@ public class ComputeSystemTest {
 
         ComputeSystem computeSystem = ComputeSystem.create(systemPOD, mockedEnvironment,
                                                            mockedScheduler, mockedResourceAllocation,
-                                                           mockedSLAViolationLogger);
+                                                           mockedSLAViolationLogger, mockedSystemAM);
         assertTrue(computeSystem.runAcycle());
         assertTrue(computeSystem.isDone());
         assertTrue(computeSystem.getComputeNodeList().isEmpty());
@@ -108,12 +114,13 @@ public class ComputeSystemTest {
         assertEquals(0.0, computeSystem.getPower(), 1.0E-8);
         assertEquals(0, computeSystem.getAccumolatedViolation());
 
-        verify(mockedEnvironment).localTimeByEpoch();
-        verify(mockedEnvironment).updateNumberOfMessagesFromDataCenterToSystem();
-
         verify(mockedJobProducer).hasNext();
 
         verify(mockedResourceAllocation).initialResourceAloc(computeSystem);
+
+        verify(mockedSystemAM).setManagedSystem(computeSystem);
+        verify(mockedSystemAM).monitor();
+        verify(mockedSystemAM).analysis();
 
         verifyNoMoreInteractions(mockedJobProducer);
     }
@@ -136,7 +143,7 @@ public class ComputeSystemTest {
         when(mockedEnvironment.getCurrentLocalTime()).thenReturn(3);
         ComputeSystem computeSystem = ComputeSystem.create(systemPOD, mockedEnvironment,
                                                            mockedScheduler, mockedResourceAllocation,
-                                                           mockedSLAViolationLogger);
+                                                           mockedSLAViolationLogger, mockedSystemAM);
 
         when(mockedResourceAllocation.allocateSystemLevelServer(computeSystem.getComputeNodeList(),
                                                                 batchJob.getNumOfNode())).thenReturn(null);
@@ -151,9 +158,7 @@ public class ComputeSystemTest {
         assertEquals(0.0, computeSystem.getPower(), 1.0E-8);
         assertEquals(1, computeSystem.getAccumolatedViolation());
 
-        verify(mockedEnvironment).localTimeByEpoch();
         verify(mockedEnvironment, times(2)).getCurrentLocalTime();
-        verify(mockedEnvironment).updateNumberOfMessagesFromDataCenterToSystem();
 
         verify(mockedJobProducer, times(2)).hasNext();
         verify(mockedJobProducer).next();
@@ -164,6 +169,10 @@ public class ComputeSystemTest {
         verify(mockedResourceAllocation).allocateSystemLevelServer(anyListOf(BladeServer.class), anyInt());
 
         verify(mockedScheduler).nextJob(anyListOf(Job.class));
+
+        verify(mockedSystemAM).setManagedSystem(computeSystem);
+        verify(mockedSystemAM).monitor();
+        verify(mockedSystemAM).analysis();
 
         verifyNoMoreInteractions(mockedJobProducer);
     }
@@ -186,10 +195,9 @@ public class ComputeSystemTest {
         when(mockedEnvironment.getCurrentLocalTime()).thenReturn(3, 4);
         ComputeSystem computeSystem = ComputeSystem.create(systemPOD, mockedEnvironment,
                                                            mockedScheduler, mockedResourceAllocation,
-                                                           mockedSLAViolationLogger);
+                                                           mockedSLAViolationLogger, mockedSystemAM);
 
         BladeServer mockedBladeServer = mock(BladeServer.class);
-        when(mockedBladeServer.isRunningNormal()).thenReturn(true);
         when(mockedBladeServer.getID()).thenReturn(DataCenterEntityID.createServerID(1, 1, 1));
 
         computeSystem.appendBladeServerIntoComputeNodeList(mockedBladeServer);
@@ -208,20 +216,14 @@ public class ComputeSystemTest {
         assertEquals(0.0, computeSystem.getPower(), 1.0E-8);
         assertEquals(1, computeSystem.getAccumolatedViolation());
 
-        verify(mockedBladeServer, times(3)).isIdle();
-        verify(mockedBladeServer).isRunningBusy();
         verify(mockedBladeServer).getID();
         verify(mockedBladeServer).feedWork(any(BatchJob.class));
         verify(mockedEnvironment, times(3)).getCurrentLocalTime();
         verify(mockedBladeServer).run();
         verify(mockedBladeServer).getTotalFinishedJob();
-        verify(mockedBladeServer).getCurrentFreqLevel();
 
         verify(mockedJobProducer, times(2)).hasNext();
         verify(mockedJobProducer).next();
-
-        verify(mockedEnvironment).localTimeByEpoch();
-        verify(mockedEnvironment).updateNumberOfMessagesFromDataCenterToSystem();
 
         verify(mockedSLAViolationLogger).logHPCViolation(anyString(), eq(Violation.DEADLINE_PASSED));
 
@@ -229,6 +231,10 @@ public class ComputeSystemTest {
         verify(mockedResourceAllocation).allocateSystemLevelServer(anyListOf(BladeServer.class), anyInt());
 
         verify(mockedScheduler).nextJob(anyListOf(Job.class));
+
+        verify(mockedSystemAM).setManagedSystem(computeSystem);
+        verify(mockedSystemAM).monitor();
+        verify(mockedSystemAM).analysis();
 
         verifyNoMoreInteractions(mockedJobProducer, mockedBladeServer);
     }
@@ -252,10 +258,8 @@ public class ComputeSystemTest {
 
         ComputeSystem computeSystem = ComputeSystem.create(systemPOD, mockedEnvironment,
                                                            mockedScheduler, mockedResourceAllocation,
-                                                           mockedSLAViolationLogger);
+                                                           mockedSLAViolationLogger, mockedSystemAM);
         BladeServer mockedBladeServer = mock(BladeServer.class);
-        when(mockedBladeServer.isRunningNormal()).thenReturn(true);
-        when(mockedBladeServer.isRunning()).thenReturn(true);
         when(mockedBladeServer.getID()).thenReturn(DataCenterEntityID.createServerID(1, 1, 1));
 
         when(mockedBladeServer.getTotalFinishedJob()).thenReturn(1);
@@ -274,23 +278,12 @@ public class ComputeSystemTest {
         assertEquals(0.0, computeSystem.getPower(), 1.0E-8);
         assertEquals(0, computeSystem.getAccumolatedViolation());
 
-        verify(mockedBladeServer).isIdle();
-        verify(mockedBladeServer, times(2)).isRunning();
         verify(mockedBladeServer).getID();
         verify(mockedBladeServer).feedWork(any(BatchJob.class));
         verify(mockedBladeServer).run();
         verify(mockedBladeServer).getTotalFinishedJob();
-        verify(mockedBladeServer).getCurrentFreqLevel();
 
         verify(mockedEnvironment, times(3)).getCurrentLocalTime();
-        verify(mockedEnvironment).localTimeByEpoch();
-        verify(mockedEnvironment).updateNumberOfMessagesFromDataCenterToSystem();
-        verify(mockedEnvironment).updateNumberOfMessagesFromSystemToNodes();
-
-        verify(mockedBladeServer).decreaseFrequency();
-        verify(mockedBladeServer).getActiveBatchList();
-        verify(mockedBladeServer).getBlockedBatchList();
-        verify(mockedBladeServer).setStatusAsIdle();
 
         verify(mockedJobProducer, times(2)).hasNext();
         verify(mockedJobProducer).next();
@@ -298,7 +291,11 @@ public class ComputeSystemTest {
         verify(mockedResourceAllocation).initialResourceAloc(computeSystem);
         verify(mockedResourceAllocation).allocateSystemLevelServer(anyListOf(BladeServer.class), anyInt());
 
-        verify(mockedScheduler).nextJob(anyListOf(Job.class));;
+        verify(mockedScheduler).nextJob(anyListOf(Job.class));
+
+        verify(mockedSystemAM).setManagedSystem(computeSystem);
+        verify(mockedSystemAM).monitor();
+        verify(mockedSystemAM).analysis();
 
         verifyNoMoreInteractions(mockedJobProducer, mockedBladeServer);
     }
@@ -321,9 +318,8 @@ public class ComputeSystemTest {
 
         ComputeSystem computeSystem = ComputeSystem.create(systemPOD, mockedEnvironment,
                                                            mockedScheduler, mockedResourceAllocation,
-                                                           mockedSLAViolationLogger);
+                                                           mockedSLAViolationLogger, mockedSystemAM);
         BladeServer mockedBladeServer = mock(BladeServer.class);
-        when(mockedBladeServer.isRunningNormal()).thenReturn(true);
         when(mockedBladeServer.getTotalFinishedJob()).thenReturn(1);
         when(mockedBladeServer.getID()).thenReturn(DataCenterEntityID.createChassisID(1, 1));
 
@@ -343,17 +339,12 @@ public class ComputeSystemTest {
         assertEquals(0.0, computeSystem.getPower(), 1.0E-8);
         assertEquals(1, computeSystem.getAccumolatedViolation());
 
-        verify(mockedBladeServer, times(3)).isIdle();
-        verify(mockedBladeServer).isRunningBusy();
         verify(mockedBladeServer).getID();
         verify(mockedBladeServer).feedWork(any(BatchJob.class));
         verify(mockedBladeServer).run();
         verify(mockedBladeServer).getTotalFinishedJob();
-        verify(mockedBladeServer).getCurrentFreqLevel();
 
-        verify(mockedEnvironment).localTimeByEpoch();
         verify(mockedEnvironment, times(3)).getCurrentLocalTime();
-        verify(mockedEnvironment).updateNumberOfMessagesFromDataCenterToSystem();
 
         verify(mockedJobProducer, times(2)).hasNext();
         verify(mockedJobProducer).next();
@@ -364,6 +355,10 @@ public class ComputeSystemTest {
         verify(mockedResourceAllocation).allocateSystemLevelServer(anyListOf(BladeServer.class), anyInt());
 
         verify(mockedScheduler).nextJob(anyListOf(Job.class));
+
+        verify(mockedSystemAM).setManagedSystem(computeSystem);
+        verify(mockedSystemAM).monitor();
+        verify(mockedSystemAM).analysis();
 
         verifyNoMoreInteractions(mockedJobProducer, mockedBladeServer);
     }
@@ -388,9 +383,8 @@ public class ComputeSystemTest {
 
         ComputeSystem computeSystem = ComputeSystem.create(systemPOD, mockedEnvironment,
                                                            mockedScheduler, mockedResourceAllocation,
-                                                           mockedSLAViolationLogger);
+                                                           mockedSLAViolationLogger, mockedSystemAM);
         BladeServer mockedBladeServer = mock(BladeServer.class);
-        when(mockedBladeServer.isRunningNormal()).thenReturn(true);
         when(mockedBladeServer.getID()).thenReturn(DataCenterEntityID.createChassisID(1, 15));
 
         computeSystem.appendBladeServerIntoComputeNodeList(mockedBladeServer);
@@ -434,6 +428,8 @@ public class ComputeSystemTest {
 
         verify(mockedScheduler).nextJob(anyListOf(Job.class));
 
+        verify(mockedSystemAM).setManagedSystem(computeSystem);
+
         verifyNoMoreInteractions(mockedJobProducer, mockedBladeServer);
     }
 
@@ -441,8 +437,9 @@ public class ComputeSystemTest {
     public void testNumberOfIdleNodeIsOne() {
 
         when(mockedEnvironment.getCurrentLocalTime()).thenReturn(1);
-        ComputeSystem computeSystem = ComputeSystem.create(systemPOD, mockedEnvironment, mockedScheduler,
-                                                           mockedResourceAllocation, mockedSLAViolationLogger);
+        ComputeSystem computeSystem = ComputeSystem.create(systemPOD, mockedEnvironment,
+                                                           mockedScheduler, mockedResourceAllocation,
+                                                           mockedSLAViolationLogger, mockedSystemAM);
         BladeServer mockedBladeServer = mock(BladeServer.class);
         when(mockedBladeServer.isIdle()).thenReturn(true);
         computeSystem.appendBladeServerIntoComputeNodeList(mockedBladeServer);
@@ -452,6 +449,8 @@ public class ComputeSystemTest {
 
         verify(mockedResourceAllocation).initialResourceAloc(computeSystem);
 
+        verify(mockedSystemAM).setManagedSystem(computeSystem);
+
         verifyNoMoreInteractions(mockedBladeServer);
     }
 
@@ -459,8 +458,9 @@ public class ComputeSystemTest {
     public void testNumberOfIdleNodeIsNone() {
 
         when(mockedEnvironment.getCurrentLocalTime()).thenReturn(1);
-        ComputeSystem computeSystem = ComputeSystem.create(systemPOD, mockedEnvironment, mockedScheduler,
-                                                           mockedResourceAllocation, mockedSLAViolationLogger);
+        ComputeSystem computeSystem = ComputeSystem.create(systemPOD, mockedEnvironment,
+                                                           mockedScheduler, mockedResourceAllocation,
+                                                           mockedSLAViolationLogger, mockedSystemAM);
         BladeServer mockedBladeServer = mock(BladeServer.class);
         when(mockedBladeServer.isIdle()).thenReturn(false);
         computeSystem.appendBladeServerIntoComputeNodeList(mockedBladeServer);
@@ -470,6 +470,8 @@ public class ComputeSystemTest {
 
         verify(mockedResourceAllocation).initialResourceAloc(computeSystem);
 
+        verify(mockedSystemAM).setManagedSystem(computeSystem);
+
         verifyNoMoreInteractions(mockedBladeServer);
     }
 
@@ -478,7 +480,7 @@ public class ComputeSystemTest {
         when(mockedEnvironment.getCurrentLocalTime()).thenReturn(1);
         ComputeSystem computeSystem = ComputeSystem.create(systemPOD, mockedEnvironment,
                                                            mockedScheduler, mockedResourceAllocation,
-                                                           mockedSLAViolationLogger);
+                                                           mockedSLAViolationLogger, mockedSystemAM);
         BladeServer mockedBladeServer = mock(BladeServer.class);
         when(mockedBladeServer.getResponseTime()).thenReturn(15.0);
         computeSystem.appendBladeServerIntoComputeNodeList(mockedBladeServer);
@@ -504,6 +506,8 @@ public class ComputeSystemTest {
         verify(mockedBladeServer).getResponseTime();
 
         verify(mockedResourceAllocation).initialResourceAloc(computeSystem);
+
+        verify(mockedSystemAM).setManagedSystem(computeSystem);
 
         verifyNoMoreInteractions(mockedBladeServer);
     }
