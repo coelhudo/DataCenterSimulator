@@ -1,5 +1,7 @@
 package simulator;
 
+import com.google.inject.Inject;
+
 import simulator.utils.ActivitiesLogger;
 
 public class SLAViolationLogger {
@@ -8,6 +10,7 @@ public class SLAViolationLogger {
     private ActivitiesLogger computeSLALoggerViolation = null;
     private Environment environment;
 
+    @Inject
     public SLAViolationLogger(Environment environment) {
         this.environment = environment;
 

@@ -155,4 +155,6 @@ public abstract class GeneralSystem {
     public Set<DataCenterEntityID> getRackIDs() {
         return rackIDs;
     }
+
+    public abstract void finish();
 }

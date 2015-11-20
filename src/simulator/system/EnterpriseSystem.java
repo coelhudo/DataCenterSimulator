@@ -90,4 +90,9 @@ public class EnterpriseSystem extends GeneralSystem {
         enterpriseSystem.setAM(enterpriseSystemAM);
         return enterpriseSystem;
     }
+    
+    @Override
+    public void finish() {
+       
+    }
 }

@@ -17,5 +17,6 @@ public class MainModule extends AbstractModule {
         bind(SimulatorPOD.class).toInstance(dataCenterBuilder.build());
         BlockingQueue<DataCenterStats> partialResults = new ArrayBlockingQueue<DataCenterStats>(1000);
         bind(new TypeLiteral<BlockingQueue<DataCenterStats>>(){}).toInstance(partialResults);
+        bind(SLAViolationLogger.class);
     }
 }

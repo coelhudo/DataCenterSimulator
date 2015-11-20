@@ -43,11 +43,10 @@ public class Simulator implements Runnable {
     private Environment environment;
     private Systems systems;
     private BlockingQueue<DataCenterStats> partialResults;
-    private SLAViolationLogger slaViolationLogger;
-
+    
     @Inject
     public Simulator(SimulatorPOD simulatorPOD, Environment environment,
-            BlockingQueue<DataCenterStats> partialResults) {
+            BlockingQueue<DataCenterStats> partialResults, SLAViolationLogger slaViolationLogger) {
         this.environment = environment;
         this.partialResults = partialResults;
 
@@ -170,7 +169,6 @@ public class Simulator implements Runnable {
     }
 
     void csFinalize() {
-        slaViolationLogger.finish();
         systems.logTotalResponseTimeComputeSystem();
         dataCenter.shutDownDC();
     }

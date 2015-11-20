@@ -14,7 +14,6 @@ import simulator.SimulatorBuilder;
 import simulator.SimulatorEnvironment;
 import simulator.SimulatorPOD;
 import simulator.physical.DataCenter.DataCenterStats;
-import simulator.system.Systems;
 
 public class ITModule extends AbstractModule {
     class SkeletonBlockingQueue<E> implements BlockingQueue<E> {
@@ -154,7 +153,6 @@ public class ITModule extends AbstractModule {
         BlockingQueue<DataCenterStats> partialResults = new SkeletonBlockingQueue<DataCenterStats>();
         bind(new TypeLiteral<BlockingQueue<DataCenterStats>>() {
         }).toInstance(partialResults);
-        bind(Systems.class);
         bind(SLAViolationLogger.class);
     }
 

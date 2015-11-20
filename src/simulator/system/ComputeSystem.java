@@ -8,12 +8,10 @@ import simulator.Environment;
 import simulator.SLAViolationLogger;
 import simulator.Violation;
 import simulator.am.SystemAM;
-import simulator.am.ComputeSystemAM;
 import simulator.jobs.BatchJob;
 import simulator.jobs.JobProducer;
 import simulator.physical.BladeServer;
 import simulator.physical.BladeServerCollectionOperations;
-import simulator.physical.DataCenter;
 import simulator.ra.ResourceAllocation;
 import simulator.schedulers.Scheduler;
 
@@ -193,5 +191,10 @@ public class ComputeSystem extends GeneralSystem {
 
     public void unblock() {
         this.blocked = false;
+    }
+
+    @Override
+    public void finish() {
+        slaViolationLogger.finish();
     }
 }

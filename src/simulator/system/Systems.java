@@ -147,6 +147,18 @@ public class Systems extends Observable {
         }
     }
 
+    public void finish() {
+        finish(computeSystems);
+        finish(enterpriseSystems);
+        finish(interactiveSystems);
+    }
+    
+    private void finish(List<? extends GeneralSystem> systems) {
+        for (GeneralSystem system : systems) {
+            system.finish();
+        }
+    }
+    
     public void addEnterpriseSystem(EnterpriseSystem eS1) {
         this.enterpriseSystems.add(eS1);
     }

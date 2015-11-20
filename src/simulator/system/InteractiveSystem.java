@@ -203,4 +203,9 @@ public class InteractiveSystem extends GeneralSystem {
         interactiveSystem.setAM(new InteractiveSystemAM(environment));
         return interactiveSystem;
     }
+    
+    @Override
+    public void finish() {
+        slaViolationLogger.finish();
+    }
 }

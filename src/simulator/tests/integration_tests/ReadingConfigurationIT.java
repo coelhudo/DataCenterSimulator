@@ -10,20 +10,16 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.concurrent.ArrayBlockingQueue;
-import java.util.concurrent.BlockingQueue;
 
 import org.junit.Test;
 
-import simulator.Environment;
+import com.google.inject.Guice;
+import com.google.inject.Injector;
+
 import simulator.Simulator;
-import simulator.SimulatorBuilder;
-import simulator.SimulatorEnvironment;
-import simulator.SimulatorPOD;
 import simulator.physical.BladeServer;
 import simulator.physical.Chassis;
 import simulator.physical.DataCenter;
-import simulator.physical.DataCenter.DataCenterStats;
 import simulator.physical.DataCenterEntityID;
 import simulator.physical.Rack;
 import simulator.system.ComputeSystem;
@@ -35,12 +31,8 @@ public class ReadingConfigurationIT {
 
     @Test
     public void testSimulatorBuilder() {
-        SimulatorBuilder dataCenterBuilder = new SimulatorBuilder("configs/DC_Logic.xml");
-        SimulatorPOD simulatorPOD = dataCenterBuilder.build();
-
-        Environment environment = new SimulatorEnvironment();
-        BlockingQueue<DataCenterStats> partialResults = new ArrayBlockingQueue<DataCenterStats>(5);
-        Simulator simulator = new Simulator(simulatorPOD, environment, partialResults);
+        Injector injector = Guice.createInjector(new ITModule());
+        Simulator simulator = injector.getInstance(Simulator.class);
 
         DataCenter dataCenter = simulator.getDatacenter();
         Collection<Rack> racks = dataCenter.getRacks();
