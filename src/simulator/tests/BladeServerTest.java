@@ -14,8 +14,6 @@ import static org.mockito.Matchers.anyInt;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.swing.text.SimpleAttributeSet;
-
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;

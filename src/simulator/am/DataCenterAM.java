@@ -48,11 +48,13 @@ public class DataCenterAM extends GeneralAM {
          * SLA based If (SLA is not violated) Switch to green strategy end
          */
         for (int i = 0; i < computeSystemsSLAViolations.length; i++) {
-            if (computeSystemsSLAViolations[i] > 0 && computeSystems.get(i).getAM().getStrategy() == Simulator.StrategyEnum.Green) {
+            if (computeSystemsSLAViolations[i] > 0
+                    && computeSystems.get(i).getAM().getStrategy() == Simulator.StrategyEnum.Green) {
                 computeSystems.get(i).getAM().setStrategy(Simulator.StrategyEnum.SLA);
                 LOGGER.info("AM in DC Switch HPC system: " + i + " to SLA  @  " + environment().getCurrentLocalTime());
             }
-            if (computeSystemsSLAViolations[i] == 0 && computeSystems.get(i).getAM().getStrategy() == Simulator.StrategyEnum.SLA) {
+            if (computeSystemsSLAViolations[i] == 0
+                    && computeSystems.get(i).getAM().getStrategy() == Simulator.StrategyEnum.SLA) {
                 LOGGER.info(
                         "AM in DC Switch HPC system: " + i + "  to Green @  " + environment().getCurrentLocalTime());
                 computeSystems.get(i).getAM().setStrategy(Simulator.StrategyEnum.Green);
@@ -69,7 +71,7 @@ public class DataCenterAM extends GeneralAM {
             computeSystems.get(0).makeSystemaUnBlocked();
             LOGGER.info("unblocked a system@ time : \t" + environment().getCurrentLocalTime());
         }
-        
+
         if (!isSlowDownFromCooler()) {
             return;
         }

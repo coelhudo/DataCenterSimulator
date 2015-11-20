@@ -62,9 +62,9 @@ public class MHR extends ResourceAllocation {
             if (foundChassis == null) {
                 continue;
             }
-            
+
             BladeServer result = foundChassis.getNextNotAssignedBladeServer();
-            if(result == null) {
+            if (result == null) {
                 continue;
             }
 

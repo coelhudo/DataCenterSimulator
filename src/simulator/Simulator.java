@@ -42,12 +42,50 @@ public class Simulator implements Runnable {
     private DataCenter dataCenter;
     private Environment environment;
     private Systems systems;
-    private SLAViolationLogger slaViolationLogger;
     private BlockingQueue<DataCenterStats> partialResults;
+    private SLAViolationLogger slaViolationLogger;
+
+    @Inject
+    public Simulator(SimulatorPOD simulatorPOD, Environment environment,
+            BlockingQueue<DataCenterStats> partialResults) {
+        this.environment = environment;
+        this.partialResults = partialResults;
+
+        slaViolationLogger = new SLAViolationLogger(environment);
+        systems = new Systems(environment);
+
+        ActivitiesLogger activitiesLogger = new ActivitiesLogger("out_W.txt");
+        final DataCenterAM dataCenterAM = new DataCenterAM(environment, systems);
+        dataCenterAM.setStrategy(StrategyEnum.Green);
+        dataCenter = new DataCenter(simulatorPOD.getDataCenterPOD(), dataCenterAM, activitiesLogger, environment);
+
+        SystemsPOD systemsPOD = simulatorPOD.getSystemsPOD();
+        loadEnterpriseSystemIntoSystems(systems, systemsPOD.getEnterpriseSystemsPOD(), slaViolationLogger);
+        for (ComputeSystemPOD computeSystemPOD : systemsPOD.getComputeSystemsPOD()) {
+            systems.addComputeSystem(
+                    ComputeSystem.create(computeSystemPOD, environment, new LeastRemainFirstScheduler(),
+                            new MHR(environment, dataCenter), slaViolationLogger, new ComputeSystemAM(environment)));
+        }
+
+        for (InteractiveSystemPOD interactivePOD : systemsPOD.getInteractiveSystemsPOD()) {
+            systems.addInteractiveSystem(InteractiveSystem.create(interactivePOD, environment, new FIFOScheduler(),
+                    new MHR(environment, dataCenter), slaViolationLogger));
+        }
+
+        class DataCenterAMXunxo implements Observer {
+            public void update(Observable o, Object arg) {
+                LOGGER.info("Update Called: executing xunxo that I made (and I'm not proud about it)");
+                dataCenterAM.resetBlockTimer();
+            }
+        }
+
+        systems.addObserver(new DataCenterAMXunxo());
+    }
 
     public void run() {
         int count = 0;
         int skipStats = 0;
+        
         while (!areSystemsDone()) {
             // LOGGER.info("--"+Main.localTime);
             allSystemRunACycle();
@@ -77,43 +115,7 @@ public class Simulator implements Runnable {
         csFinalize();
     }
 
-    @Inject
-    public Simulator(SimulatorPOD simulatorPOD, Environment environment,
-                     BlockingQueue<DataCenterStats> partialResults) {
-        this.environment = environment;
-        this.partialResults = partialResults;
-        ActivitiesLogger activitiesLogger = new ActivitiesLogger("out_W.txt");
-        slaViolationLogger = new SLAViolationLogger(environment);
-        systems = new Systems(environment);
-        final DataCenterAM dataCenterAM = new DataCenterAM(environment, systems);
-        dataCenterAM.setStrategy(StrategyEnum.Green);
-        dataCenter = new DataCenter(simulatorPOD.getDataCenterPOD(), dataCenterAM, activitiesLogger, environment);
-        SystemsPOD systemsPOD = simulatorPOD.getSystemsPOD();
-        loadEnterpriseSystemIntoSystems(systems, systemsPOD.getEnterpriseSystemsPOD());
-        for (ComputeSystemPOD computeSystemPOD : systemsPOD.getComputeSystemsPOD()) {
-            systems.addComputeSystem(
-                                     ComputeSystem.create(computeSystemPOD, environment,
-                                                          new LeastRemainFirstScheduler(),
-                                                          new MHR(environment, dataCenter),
-                                                          slaViolationLogger,
-                                                          new ComputeSystemAM(environment)));
-        }
-        for (InteractiveSystemPOD interactivePOD : systemsPOD.getInteractiveSystemsPOD()) {
-            systems.addInteractiveSystem(
-                    InteractiveSystem.create(interactivePOD, environment, dataCenter, slaViolationLogger));
-        }
-
-        class DataCenterAMXunxo implements Observer {
-            public void update(Observable o, Object arg) {
-                LOGGER.info("Update Called: executing xunxo that I made (and I'm not proud about it)");
-                dataCenterAM.resetBlockTimer();
-            }
-        }
-
-        systems.addObserver(new DataCenterAMXunxo());
-    }
-
-    private void loadEnterpriseSystemIntoSystems(Systems systems, List<EnterpriseSystemPOD> enterpriseSystemPODs) {
+    private void loadEnterpriseSystemIntoSystems(Systems systems, List<EnterpriseSystemPOD> enterpriseSystemPODs, SLAViolationLogger slaViolationLogger) {
         for (EnterpriseSystemPOD enterpriseSystemPOD : enterpriseSystemPODs) {
             EnterpriseSystemAM enterpriseSystemAM = new EnterpriseSystemAM(environment, slaViolationLogger);
             Scheduler scheduler = new FIFOScheduler();

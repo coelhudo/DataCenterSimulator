@@ -10,9 +10,7 @@ import simulator.Environment;
 import simulator.SLAViolationLogger;
 import simulator.am.InteractiveSystemAM;
 import simulator.physical.BladeServer;
-import simulator.physical.DataCenter;
-import simulator.ra.MHR;
-import simulator.schedulers.FIFOScheduler;
+import simulator.ra.ResourceAllocation;
 import simulator.schedulers.Scheduler;
 
 public class InteractiveSystem extends GeneralSystem {
@@ -24,9 +22,9 @@ public class InteractiveSystem extends GeneralSystem {
     private Environment environment;
     private SLAViolationLogger slaViolationLogger;
 
-    public InteractiveSystem(SystemPOD systemPOD, Environment environment, DataCenter dataCenter,
+    public InteractiveSystem(SystemPOD systemPOD, Environment environment, Scheduler scheduler, ResourceAllocation resourceAllocation,
             SLAViolationLogger slaViolationLogger) {
-        super(systemPOD, new FIFOScheduler(), new MHR(environment, dataCenter));
+        super(systemPOD, scheduler, resourceAllocation);
         this.environment = environment;
         this.slaViolationLogger = slaViolationLogger;
         setComputeNodeList(new ArrayList<BladeServer>());
@@ -197,9 +195,9 @@ public class InteractiveSystem extends GeneralSystem {
         this.waitingQueueWL = waitingQueueWL;
     }
 
-    public static InteractiveSystem create(SystemPOD systemPOD, Environment environment, DataCenter dataCenter,
-            SLAViolationLogger slaViolationLogger) {
-        InteractiveSystem interactiveSystem = new InteractiveSystem(systemPOD, environment, dataCenter,
+    public static InteractiveSystem create(SystemPOD systemPOD, Environment environment, Scheduler scheduler,
+            ResourceAllocation resourceAllocation, SLAViolationLogger slaViolationLogger) {
+        InteractiveSystem interactiveSystem = new InteractiveSystem(systemPOD, environment, scheduler, resourceAllocation,
                 slaViolationLogger);
         interactiveSystem.getResourceAllocation().initialResourceAlocator(interactiveSystem);
         interactiveSystem.setAM(new InteractiveSystemAM(environment));
