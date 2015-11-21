@@ -6,8 +6,12 @@ import java.util.List;
 import java.util.Observable;
 import java.util.logging.Logger;
 
+import com.google.inject.Inject;
+import com.google.inject.Singleton;
+
 import simulator.Environment;
 
+@Singleton
 public class Systems extends Observable {
 
     private static final Logger LOGGER = Logger.getLogger(Systems.class.getName());
@@ -18,6 +22,7 @@ public class Systems extends Observable {
 
     private Environment environment;
 
+    @Inject
     public Systems(Environment environment) {
         this.environment = environment;
     }

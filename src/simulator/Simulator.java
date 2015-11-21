@@ -1,37 +1,14 @@
 package simulator;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Observable;
-import java.util.Observer;
 import java.util.concurrent.BlockingQueue;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import com.google.inject.Inject;
 
-import simulator.am.ApplicationAM;
-import simulator.am.ComputeSystemAM;
-import simulator.am.DataCenterAM;
-import simulator.am.EnterpriseSystemAM;
-import simulator.am.GeneralAM;
 import simulator.physical.DataCenter;
 import simulator.physical.DataCenter.DataCenterStats;
-import simulator.ra.MHR;
-import simulator.ra.ResourceAllocation;
-import simulator.schedulers.FIFOScheduler;
-import simulator.schedulers.LeastRemainFirstScheduler;
-import simulator.schedulers.Scheduler;
-import simulator.system.ComputeSystem;
-import simulator.system.ComputeSystemPOD;
-import simulator.system.EnterpriseApp;
-import simulator.system.EnterpriseApplicationPOD;
-import simulator.system.EnterpriseSystem;
-import simulator.system.EnterpriseSystemPOD;
-import simulator.system.InteractiveSystem;
-import simulator.system.InteractiveSystemPOD;
 import simulator.system.Systems;
-import simulator.system.SystemsPOD;
 
 public class Simulator implements Runnable {
 
@@ -44,67 +21,12 @@ public class Simulator implements Runnable {
     private BlockingQueue<DataCenterStats> partialResults;
 
     @Inject
-    public Simulator(SimulatorPOD simulatorPOD, Environment environment, BlockingQueue<DataCenterStats> partialResults,
-            SLAViolationLogger slaViolationLogger, DataCenter dataCenter) {
+    public Simulator(Environment environment, BlockingQueue<DataCenterStats> partialResults, DataCenter dataCenter,
+            Systems systems) {
         this.environment = environment;
         this.partialResults = partialResults;
         this.dataCenter = dataCenter;
-
-        systems = new Systems(environment);
-
-        SystemsPOD systemsPOD = simulatorPOD.getSystemsPOD();
-        loadEnterpriseSystemIntoSystems(systems, systemsPOD.getEnterpriseSystemsPOD(), slaViolationLogger);
-        for (ComputeSystemPOD computeSystemPOD : systemsPOD.getComputeSystemsPOD()) {
-            systems.addComputeSystem(
-                    ComputeSystem.create(computeSystemPOD, environment, new LeastRemainFirstScheduler(),
-                            new MHR(environment, dataCenter), slaViolationLogger, new ComputeSystemAM(environment)));
-        }
-
-        for (InteractiveSystemPOD interactivePOD : systemsPOD.getInteractiveSystemsPOD()) {
-            systems.addInteractiveSystem(InteractiveSystem.create(interactivePOD, environment, new FIFOScheduler(),
-                    new MHR(environment, dataCenter), slaViolationLogger));
-        }
-
-        final DataCenterAM dataCenterAM = new DataCenterAM(environment, systems);
-        dataCenterAM.setStrategy(StrategyEnum.Green);
-
-        class DataCenterAMXunxo implements Observer {
-            public void update(Observable o, Object arg) {
-                LOGGER.info("Update Called: executing xunxo that I made (and I'm not proud about it)");
-                dataCenterAM.resetBlockTimer();
-            }
-        }
-
-        dataCenter.setAM(dataCenterAM);
-
-        systems.addObserver(new DataCenterAMXunxo());
-    }
-
-    private void loadEnterpriseSystemIntoSystems(Systems systems, List<EnterpriseSystemPOD> enterpriseSystemPODs,
-            SLAViolationLogger slaViolationLogger) {
-        for (EnterpriseSystemPOD enterpriseSystemPOD : enterpriseSystemPODs) {
-            EnterpriseSystemAM enterpriseSystemAM = new EnterpriseSystemAM(environment, slaViolationLogger);
-            Scheduler scheduler = new FIFOScheduler();
-            ResourceAllocation resourceAllocation = new MHR(environment, dataCenter);
-            List<EnterpriseApp> applications = loadEnterpriseSystemApplications(
-                    enterpriseSystemPOD.getApplicationPODs(), enterpriseSystemAM, resourceAllocation, scheduler);
-            systems.addEnterpriseSystem(EnterpriseSystem.create(enterpriseSystemPOD, scheduler, resourceAllocation,
-                    enterpriseSystemAM, applications));
-        }
-    }
-
-    private List<EnterpriseApp> loadEnterpriseSystemApplications(
-            List<EnterpriseApplicationPOD> enterpriseApplicationPODs, GeneralAM enterpriseSystemAM,
-            ResourceAllocation resourceAllocation, Scheduler scheduler) {
-        List<EnterpriseApp> applications = new ArrayList<EnterpriseApp>();
-        for (EnterpriseApplicationPOD pod : enterpriseApplicationPODs) {
-            ApplicationAM applicationAM = new ApplicationAM(applications, enterpriseSystemAM, environment);
-            EnterpriseApp enterpriseApplication = EnterpriseApp.create(pod, scheduler, resourceAllocation, environment,
-                    applicationAM);
-            applications.add(enterpriseApplication);
-        }
-
-        return applications;
+        this.systems = systems;
     }
 
     public void run() {
