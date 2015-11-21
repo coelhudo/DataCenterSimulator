@@ -15,7 +15,7 @@ public class EnterpriseSystem extends GeneralSystem {
 
     private List<EnterpriseApp> applications;
 
-    private EnterpriseSystem(SystemPOD systemPOD, List<EnterpriseApp> applications, Scheduler scheduler,
+    public EnterpriseSystem(SystemPOD systemPOD, List<EnterpriseApp> applications, Scheduler scheduler,
             ResourceAllocation resourceAllocation) {
         super(systemPOD, scheduler, resourceAllocation);
         setComputeNodeList(new ArrayList<BladeServer>());

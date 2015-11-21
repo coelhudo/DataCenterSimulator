@@ -27,7 +27,7 @@ public class ComputeSystem extends GeneralSystem {
     private SLAViolationLogger slaViolationLogger;
     private JobProducer jobProducer;
 
-    private ComputeSystem(SystemPOD systemPOD,
+    public ComputeSystem(SystemPOD systemPOD,
                           Environment environment,
                           Scheduler scheduler,
                           ResourceAllocation resourceAllocation,
