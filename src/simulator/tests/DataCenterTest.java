@@ -60,8 +60,9 @@ public class DataCenterTest {
         DataCenterBuilder dataCenterBuilder = new DataCenterBuilder("configs/DC.xml");
         DataCenterPOD dataCenterPOD = dataCenterBuilder.getDataCenterPOD();
         ActivitiesLogger mockedActivitiesLogger = mock(ActivitiesLogger.class);
-        DataCenter dataCenter = new DataCenter(dataCenterPOD, mockeddataCenterAM, mockedActivitiesLogger,
+        DataCenter dataCenter = new DataCenter(dataCenterPOD, mockedActivitiesLogger,
                 mockedEnvironment);
+        dataCenter.setAM(mockeddataCenterAM);
         Collection<Rack> racks = dataCenter.getRacks();
         assertFalse(racks.isEmpty());
         assertEquals(10, racks.size());
@@ -88,8 +89,9 @@ public class DataCenterTest {
         Environment mockedEnvironment = mock(Environment.class);
         DataCenterAM mockeddataCenterAM = mock(DataCenterAM.class);
         ActivitiesLogger mockedActivitiesLogger = mock(ActivitiesLogger.class);
-        DataCenter dataCenter = new DataCenter(dataCenterPOD, mockeddataCenterAM, mockedActivitiesLogger,
+        DataCenter dataCenter = new DataCenter(dataCenterPOD, mockedActivitiesLogger,
                 mockedEnvironment);
+        dataCenter.setAM(mockeddataCenterAM);
         dataCenter.getRack(rackPOD.getID()).getChassis(chassisPOD.getID()).getServer(bladeServerPOD.getID())
                 .setStatusAsRunningBusy();
         dataCenter.calculatePower();
@@ -114,8 +116,9 @@ public class DataCenterTest {
         Environment mockedEnvironment = mock(Environment.class);
         DataCenterAM mockeddataCenterAM = mock(DataCenterAM.class);
         ActivitiesLogger mockedActivitiesLogger = mock(ActivitiesLogger.class);
-        DataCenter dataCenter = new DataCenter(dataCenterPOD, mockeddataCenterAM, mockedActivitiesLogger,
+        DataCenter dataCenter = new DataCenter(dataCenterPOD, mockedActivitiesLogger,
                 mockedEnvironment);
+        dataCenter.setAM(mockeddataCenterAM);
         dataCenter.getRack(rackPOD.getID()).getChassis(chassisPOD.getID()).getServer(bladeServerPOD.getID())
                 .setStatusAsIdle();
         dataCenter.calculatePower();

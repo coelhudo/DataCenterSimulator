@@ -1,5 +1,8 @@
 package simulator;
 
+import com.google.inject.Singleton;
+
+@Singleton
 public class SimulatorEnvironment implements Environment {
     private int localTime = 1;
     private int numberOfMessagesFromDataCenterToSystem = 0;

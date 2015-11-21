@@ -11,9 +11,9 @@ import java.util.logging.Logger;
 import com.google.inject.Inject;
 
 import simulator.am.ApplicationAM;
+import simulator.am.ComputeSystemAM;
 import simulator.am.DataCenterAM;
 import simulator.am.EnterpriseSystemAM;
-import simulator.am.ComputeSystemAM;
 import simulator.am.GeneralAM;
 import simulator.physical.DataCenter;
 import simulator.physical.DataCenter.DataCenterStats;
@@ -32,7 +32,6 @@ import simulator.system.InteractiveSystem;
 import simulator.system.InteractiveSystemPOD;
 import simulator.system.Systems;
 import simulator.system.SystemsPOD;
-import simulator.utils.ActivitiesLogger;
 
 public class Simulator implements Runnable {
 
@@ -43,20 +42,15 @@ public class Simulator implements Runnable {
     private Environment environment;
     private Systems systems;
     private BlockingQueue<DataCenterStats> partialResults;
-    
+
     @Inject
-    public Simulator(SimulatorPOD simulatorPOD, Environment environment,
-            BlockingQueue<DataCenterStats> partialResults, SLAViolationLogger slaViolationLogger) {
+    public Simulator(SimulatorPOD simulatorPOD, Environment environment, BlockingQueue<DataCenterStats> partialResults,
+            SLAViolationLogger slaViolationLogger, DataCenter dataCenter) {
         this.environment = environment;
         this.partialResults = partialResults;
+        this.dataCenter = dataCenter;
 
-        slaViolationLogger = new SLAViolationLogger(environment);
         systems = new Systems(environment);
-
-        ActivitiesLogger activitiesLogger = new ActivitiesLogger("out_W.txt");
-        final DataCenterAM dataCenterAM = new DataCenterAM(environment, systems);
-        dataCenterAM.setStrategy(StrategyEnum.Green);
-        dataCenter = new DataCenter(simulatorPOD.getDataCenterPOD(), dataCenterAM, activitiesLogger, environment);
 
         SystemsPOD systemsPOD = simulatorPOD.getSystemsPOD();
         loadEnterpriseSystemIntoSystems(systems, systemsPOD.getEnterpriseSystemsPOD(), slaViolationLogger);
@@ -71,6 +65,9 @@ public class Simulator implements Runnable {
                     new MHR(environment, dataCenter), slaViolationLogger));
         }
 
+        final DataCenterAM dataCenterAM = new DataCenterAM(environment, systems);
+        dataCenterAM.setStrategy(StrategyEnum.Green);
+
         class DataCenterAMXunxo implements Observer {
             public void update(Observable o, Object arg) {
                 LOGGER.info("Update Called: executing xunxo that I made (and I'm not proud about it)");
@@ -78,13 +75,42 @@ public class Simulator implements Runnable {
             }
         }
 
+        dataCenter.setAM(dataCenterAM);
+
         systems.addObserver(new DataCenterAMXunxo());
+    }
+
+    private void loadEnterpriseSystemIntoSystems(Systems systems, List<EnterpriseSystemPOD> enterpriseSystemPODs,
+            SLAViolationLogger slaViolationLogger) {
+        for (EnterpriseSystemPOD enterpriseSystemPOD : enterpriseSystemPODs) {
+            EnterpriseSystemAM enterpriseSystemAM = new EnterpriseSystemAM(environment, slaViolationLogger);
+            Scheduler scheduler = new FIFOScheduler();
+            ResourceAllocation resourceAllocation = new MHR(environment, dataCenter);
+            List<EnterpriseApp> applications = loadEnterpriseSystemApplications(
+                    enterpriseSystemPOD.getApplicationPODs(), enterpriseSystemAM, resourceAllocation, scheduler);
+            systems.addEnterpriseSystem(EnterpriseSystem.create(enterpriseSystemPOD, scheduler, resourceAllocation,
+                    enterpriseSystemAM, applications));
+        }
+    }
+
+    private List<EnterpriseApp> loadEnterpriseSystemApplications(
+            List<EnterpriseApplicationPOD> enterpriseApplicationPODs, GeneralAM enterpriseSystemAM,
+            ResourceAllocation resourceAllocation, Scheduler scheduler) {
+        List<EnterpriseApp> applications = new ArrayList<EnterpriseApp>();
+        for (EnterpriseApplicationPOD pod : enterpriseApplicationPODs) {
+            ApplicationAM applicationAM = new ApplicationAM(applications, enterpriseSystemAM, environment);
+            EnterpriseApp enterpriseApplication = EnterpriseApp.create(pod, scheduler, resourceAllocation, environment,
+                    applicationAM);
+            applications.add(enterpriseApplication);
+        }
+
+        return applications;
     }
 
     public void run() {
         int count = 0;
         int skipStats = 0;
-        
+
         while (!areSystemsDone()) {
             // LOGGER.info("--"+Main.localTime);
             allSystemRunACycle();
@@ -112,32 +138,6 @@ public class Simulator implements Runnable {
         LOGGER.info("Simulation done, messages created " + count);
 
         csFinalize();
-    }
-
-    private void loadEnterpriseSystemIntoSystems(Systems systems, List<EnterpriseSystemPOD> enterpriseSystemPODs, SLAViolationLogger slaViolationLogger) {
-        for (EnterpriseSystemPOD enterpriseSystemPOD : enterpriseSystemPODs) {
-            EnterpriseSystemAM enterpriseSystemAM = new EnterpriseSystemAM(environment, slaViolationLogger);
-            Scheduler scheduler = new FIFOScheduler();
-            ResourceAllocation resourceAllocation = new MHR(environment, dataCenter);
-            List<EnterpriseApp> applications = loadEnterpriseSystemApplications(
-                    enterpriseSystemPOD.getApplicationPODs(), enterpriseSystemAM, resourceAllocation, scheduler);
-            systems.addEnterpriseSystem(EnterpriseSystem.create(enterpriseSystemPOD, scheduler, resourceAllocation,
-                    enterpriseSystemAM, applications));
-        }
-    }
-
-    private List<EnterpriseApp> loadEnterpriseSystemApplications(
-            List<EnterpriseApplicationPOD> enterpriseApplicationPODs, GeneralAM enterpriseSystemAM,
-            ResourceAllocation resourceAllocation, Scheduler scheduler) {
-        List<EnterpriseApp> applications = new ArrayList<EnterpriseApp>();
-        for (EnterpriseApplicationPOD pod : enterpriseApplicationPODs) {
-            ApplicationAM applicationAM = new ApplicationAM(applications, enterpriseSystemAM, environment);
-            EnterpriseApp enterpriseApplication = EnterpriseApp.create(pod, scheduler, resourceAllocation, environment,
-                    applicationAM);
-            applications.add(enterpriseApplication);
-        }
-
-        return applications;
     }
 
     protected double getTotalPowerConsumption() {

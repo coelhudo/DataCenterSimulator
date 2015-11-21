@@ -8,13 +8,18 @@ import java.io.OutputStreamWriter;
 
 import java.util.logging.Logger;
 
+import com.google.inject.Inject;
+import com.google.inject.Singleton;
+import com.google.inject.name.Named;
+
 public class ActivitiesLogger {
     private FileOutputStream fos;
     private OutputStreamWriter oos;
 
     private static final Logger LOGGER = Logger.getLogger(ActivitiesLogger.class.getName());
 
-    public ActivitiesLogger(String logFileName) {       
+    @Inject
+    public ActivitiesLogger(@Named("ActivitiesLoggerParameter") String logFileName) {       
         File destinationFile = new File(logFileName);
         try {
             fos = new FileOutputStream(destinationFile);

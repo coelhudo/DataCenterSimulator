@@ -2,7 +2,12 @@ package simulator.tests.integration_tests;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
-import static org.mockito.Mockito.*;
+import static org.mockito.Matchers.anyString;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
+import static org.mockito.Mockito.when;
 
 import java.util.Arrays;
 import java.util.List;
@@ -67,11 +72,13 @@ public class EnterpriseSystemIT {
 
         ActivitiesLogger mockedActivitiesLogger = mock(ActivitiesLogger.class);
         Environment environment = new SimulatorEnvironment();
-
+       
+        DataCenter dataCenter = new DataCenter(dataCenterPOD, mockedActivitiesLogger, environment);
+        
         Systems systems = new Systems(environment);
-        DataCenterAM mockedDataCenterAM = new DataCenterAM(environment, systems);
-        DataCenter dataCenter = new DataCenter(dataCenterPOD, mockedDataCenterAM, mockedActivitiesLogger, environment);
-
+        DataCenterAM dataCenterAM = new DataCenterAM(environment, systems);
+        dataCenter.setAM(dataCenterAM);
+        
         Scheduler fcfsScheduler = new FIFOScheduler();
         ResourceAllocation resourceAllocation = new MHR(environment, dataCenter);
         SLAViolationLogger mockedSlaViolationLogger = mock(SLAViolationLogger.class);

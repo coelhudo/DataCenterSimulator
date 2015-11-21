@@ -10,11 +10,15 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import com.google.inject.Inject;
+import com.google.inject.Singleton;
+
 import simulator.Environment;
 import simulator.am.DataCenterAM;
 import simulator.physical.Rack.RackStats;
 import simulator.utils.ActivitiesLogger;
 
+@Singleton
 public class DataCenter {
 
     private int overRed = 0;
@@ -22,7 +26,7 @@ public class DataCenter {
     private final Map<DataCenterEntityID, Rack> racks = new HashMap<DataCenterEntityID, Rack>();
     private final int redTemperature;
     private final double[][] D;
-    private final DataCenterAM am;
+    private DataCenterAM am;
     private final ActivitiesLogger activitiesLogger;
     private final List<Chassis> allChassis;
     private final DataCenterStats stats;
@@ -31,10 +35,10 @@ public class DataCenter {
 
     private Environment environment;
 
-    public DataCenter(DataCenterPOD dataCenterPOD, DataCenterAM dataCenterAM, ActivitiesLogger activitiesLogger,
-            Environment environment) {
+    @Inject
+    public DataCenter(DataCenterPOD dataCenterPOD, ActivitiesLogger activitiesLogger, Environment environment) {
         this.activitiesLogger = activitiesLogger;
-        am = dataCenterAM;
+       
         this.environment = environment;
         allChassis = new ArrayList<Chassis>();
         for (RackPOD rackPOD : dataCenterPOD.getRackPODs()) {
@@ -49,6 +53,10 @@ public class DataCenter {
         sortAllChassis();
         temperatures = new double[allChassis.size()];
         powers = new double[allChassis.size()];
+    }
+    
+    public void setAM(DataCenterAM dataCenterAM) {
+        this.am = dataCenterAM;
     }
 
     private void sortAllChassis() {

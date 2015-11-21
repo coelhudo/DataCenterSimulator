@@ -113,8 +113,9 @@ public class ComputeSystemIT {
 
         computerSystemPOD.setNumberofNode(1);
 
-        DataCenter dataCenter = new DataCenter(dataCenterPOD, mockedDataCenterAM, mockedActivitiesLogger,
+        DataCenter dataCenter = new DataCenter(dataCenterPOD, mockedActivitiesLogger,
                 mockedEnvironment);
+        dataCenter.setAM(mockedDataCenterAM);
 
         ResourceAllocation resourceAllocation = new MHR(mockedEnvironment, dataCenter);
         Scheduler scheduler = new LeastRemainFirstScheduler();
@@ -184,8 +185,9 @@ public class ComputeSystemIT {
 
         computerSystemPOD.setNumberofNode(2);
 
-        DataCenter dataCenter = new DataCenter(dataCenterPOD, mockedDataCenterAM, mockedActivitiesLogger,
+        DataCenter dataCenter = new DataCenter(dataCenterPOD, mockedActivitiesLogger,
                 mockedEnvironment);
+        dataCenter.setAM(mockedDataCenterAM);
 
         ResourceAllocation resourceAllocation = new MHR(mockedEnvironment, dataCenter);
         Scheduler scheduler = new LeastRemainFirstScheduler();
@@ -244,8 +246,9 @@ public class ComputeSystemIT {
 
         computerSystemPOD.setNumberofNode(1);
 
-        DataCenter dataCenter = new DataCenter(dataCenterPOD, mockedDataCenterAM, mockedActivitiesLogger,
+        DataCenter dataCenter = new DataCenter(dataCenterPOD, mockedActivitiesLogger,
                 mockedEnvironment);
+        dataCenter.setAM(mockedDataCenterAM);
 
         ResourceAllocation resourceAllocation = new MHR(mockedEnvironment, dataCenter);
         Scheduler scheduler = new LeastRemainFirstScheduler();

@@ -7,13 +7,18 @@ import java.util.concurrent.TimeUnit;
 
 import com.google.inject.AbstractModule;
 import com.google.inject.TypeLiteral;
+import com.google.inject.name.Names;
 
 import simulator.Environment;
 import simulator.SLAViolationLogger;
 import simulator.SimulatorBuilder;
 import simulator.SimulatorEnvironment;
 import simulator.SimulatorPOD;
+import simulator.physical.DataCenter;
+import simulator.physical.DataCenterPOD;
 import simulator.physical.DataCenter.DataCenterStats;
+import simulator.system.SystemsPOD;
+import simulator.utils.ActivitiesLogger;
 
 public class ITModule extends AbstractModule {
     class SkeletonBlockingQueue<E> implements BlockingQueue<E> {
@@ -148,12 +153,20 @@ public class ITModule extends AbstractModule {
     @Override
     protected void configure() {
         bind(Environment.class).to(SimulatorEnvironment.class);
+        
         SimulatorBuilder dataCenterBuilder = new SimulatorBuilder("configs/DC_Logic.xml");
-        bind(SimulatorPOD.class).toInstance(dataCenterBuilder.build());
+        SimulatorPOD simulatorPOD = dataCenterBuilder.build();
+        bind(SimulatorPOD.class).toInstance(simulatorPOD);
+        bind(DataCenterPOD.class).toInstance(simulatorPOD.getDataCenterPOD());
+        bind(SystemsPOD.class).toInstance(simulatorPOD.getSystemsPOD());
+        
         BlockingQueue<DataCenterStats> partialResults = new SkeletonBlockingQueue<DataCenterStats>();
         bind(new TypeLiteral<BlockingQueue<DataCenterStats>>() {
         }).toInstance(partialResults);
         bind(SLAViolationLogger.class);
+        bind(DataCenter.class);
+        bind(ActivitiesLogger.class);
+        bind(String.class).annotatedWith(Names.named("ActivitiesLoggerParameter")).toInstance("out_W.txt");
     }
 
 }
