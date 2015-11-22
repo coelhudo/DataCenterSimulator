@@ -4,6 +4,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Logger;
 
+import com.google.inject.Inject;
+import com.google.inject.assistedinject.Assisted;
+
 import simulator.am.EnterpriseSystemAM;
 import simulator.physical.BladeServer;
 import simulator.ra.ResourceAllocation;
@@ -15,8 +18,11 @@ public class EnterpriseSystem extends GeneralSystem {
 
     private List<EnterpriseApp> applications;
 
-    public EnterpriseSystem(SystemPOD systemPOD, List<EnterpriseApp> applications, Scheduler scheduler,
-            ResourceAllocation resourceAllocation) {
+    @Inject
+    public EnterpriseSystem(@Assisted SystemPOD systemPOD,
+                            @Assisted List<EnterpriseApp> applications,
+                            Scheduler scheduler,
+                            ResourceAllocation resourceAllocation) {
         super(systemPOD, scheduler, resourceAllocation);
         setComputeNodeList(new ArrayList<BladeServer>());
         resetNumberOfSLAViolation();
@@ -90,9 +96,9 @@ public class EnterpriseSystem extends GeneralSystem {
         enterpriseSystem.setAM(enterpriseSystemAM);
         return enterpriseSystem;
     }
-    
+
     @Override
     public void finish() {
-       
+
     }
 }

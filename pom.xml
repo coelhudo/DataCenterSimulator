@@ -52,7 +52,7 @@
 	<url>https://github.com/coelhudo/DataCenterSimulator</url>
 	<artifactId>ADCMSimulator</artifactId>
 	<groupId>ca.uwo.digs</groupId>
-	<version>adcmsim-0.0.1</version>
+	<version>adcmsim-0.0.2</version>
 	<dependencies>
 		<dependency>
 			<groupId>junit</groupId>
@@ -68,6 +68,11 @@
 			<groupId>org.mockito</groupId>
 			<artifactId>mockito-core</artifactId>
 			<version>1.10.19</version>
+		</dependency>
+		<dependency>
+			<groupId>com.google.inject.extensions</groupId>
+			<artifactId>guice-assistedinject</artifactId>
+			<version>4.0</version>
 		</dependency>
 	</dependencies>
 </project>

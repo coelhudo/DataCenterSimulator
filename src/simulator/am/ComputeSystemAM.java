@@ -2,6 +2,8 @@ package simulator.am;
 
 import java.util.logging.Logger;
 
+import com.google.inject.Inject;
+
 import simulator.Environment;
 import simulator.physical.BladeServer;
 import simulator.system.ComputeSystem;
@@ -13,6 +15,7 @@ public class ComputeSystemAM extends SystemAM {
 
     private ComputeSystem computeSystem;
 
+    @Inject
     public ComputeSystemAM(Environment environment) {
         super(environment);      
     }

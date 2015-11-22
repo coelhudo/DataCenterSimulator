@@ -3,6 +3,8 @@ package simulator.ra;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.google.inject.Inject;
+
 import simulator.Environment;
 import simulator.physical.BladeServer;
 import simulator.physical.BladeServerCollectionOperations;
@@ -15,6 +17,7 @@ import simulator.physical.DataCenter;
  */
 public class FirstFit extends ResourceAllocation {
 
+    @Inject
     public FirstFit(Environment environment, DataCenter dataCenter) {
         super(environment, dataCenter);
     }

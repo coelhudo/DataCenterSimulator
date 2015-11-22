@@ -1,9 +1,11 @@
 package simulator;
 
 import com.google.inject.Inject;
+import com.google.inject.Singleton;
 
 import simulator.utils.ActivitiesLogger;
 
+@Singleton
 public class SLAViolationLogger {
     private ActivitiesLogger entepriseSLALoggerViolation = null;
     private ActivitiesLogger interactiveSLALoggerViolation = null;

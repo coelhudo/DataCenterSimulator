@@ -4,6 +4,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Logger;
 
+import com.google.inject.Inject;
+import com.google.inject.assistedinject.Assisted;
+
 import simulator.Environment;
 import simulator.ResponseTime;
 import simulator.am.ApplicationAM;
@@ -38,8 +41,11 @@ public class EnterpriseApp {
     private Environment environment;
     private JobProducer jobProducer;
 
-    public EnterpriseApp(EnterpriseApplicationPOD enterpriseApplicationPOD, Scheduler scheduler,
-            ResourceAllocation resourceAllocation, Environment environment) {
+    @Inject
+    public EnterpriseApp(@Assisted EnterpriseApplicationPOD enterpriseApplicationPOD,
+                         Scheduler scheduler,
+                         ResourceAllocation resourceAllocation,
+                         Environment environment) {
         this.scheduler = scheduler;
         this.resourceAllocation = resourceAllocation;
         this.environment = environment;

@@ -1,5 +1,7 @@
 package simulator.am;
 
+import com.google.inject.Inject;
+
 import simulator.Environment;
 import simulator.Simulator;
 import simulator.system.GeneralSystem;
@@ -15,6 +17,7 @@ public class InteractiveSystemAM extends SystemAM {
     private double[] queueLengthUsr;
     private int lastTime = 0;
 
+    @Inject
     public InteractiveSystemAM(Environment environment) {
         super(environment);
     }

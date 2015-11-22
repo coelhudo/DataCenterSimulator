@@ -4,6 +4,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Logger;
 
+import com.google.inject.Inject;
+import com.google.inject.assistedinject.Assisted;
+import com.google.inject.name.Named;
+
 import simulator.Environment;
 import simulator.SLAViolationLogger;
 import simulator.Violation;
@@ -27,13 +31,14 @@ public class ComputeSystem extends GeneralSystem {
     private SLAViolationLogger slaViolationLogger;
     private JobProducer jobProducer;
 
-    public ComputeSystem(SystemPOD systemPOD,
-                          Environment environment,
-                          Scheduler scheduler,
-                          ResourceAllocation resourceAllocation,
-                          SLAViolationLogger slaViolationLogger) {
+    @Inject
+    public ComputeSystem(@Assisted SystemPOD systemPOD,
+                         Environment environment,
+                         @Named("ComputeSystem") Scheduler scheduler,
+                         @Named("ComputeSystem") ResourceAllocation resourceAllocation,
+                         SLAViolationLogger slaViolationLogger) {
         super(systemPOD, scheduler, resourceAllocation);
-        this.jobProducer = ((ComputeSystemPOD)systemPOD).getJobProducer();
+        this.jobProducer = ((ComputeSystemPOD) systemPOD).getJobProducer();
         this.environment = environment;
         this.slaViolationLogger = slaViolationLogger;
         setComputeNodeList(new ArrayList<BladeServer>());
@@ -106,7 +111,8 @@ public class ComputeSystem extends GeneralSystem {
         }
         BatchJob job = (BatchJob) (getScheduler().nextJob(waitingList));
         while (job.getStartTime() <= environment.getCurrentLocalTime()) {
-            List<BladeServer> allocatedServers = getResourceAllocation().allocateSystemLevelServer(getComputeNodeList(), job.getNumOfNode());
+            List<BladeServer> allocatedServers = getResourceAllocation().allocateSystemLevelServer(getComputeNodeList(),
+                    job.getNumOfNode());
             if (allocatedServers == null) {
                 setSLAviolation(Violation.COMPUTE_NODE_SHORTAGE);
                 return;
@@ -132,11 +138,11 @@ public class ComputeSystem extends GeneralSystem {
         SLAViolationType = Violation.NOTHING;
         if (flag == Violation.COMPUTE_NODE_SHORTAGE) {
             SLAViolationType = Violation.COMPUTE_NODE_SHORTAGE;
-            setSLAviolation(getSLAviolation()+1);
+            setSLAviolation(getSLAviolation() + 1);
         }
         if (flag == Violation.DEADLINE_PASSED) {
             SLAViolationType = Violation.DEADLINE_PASSED;
-            setSLAviolation(getSLAviolation()+1);
+            setSLAviolation(getSLAviolation() + 1);
         }
         if (SLAViolationType != Violation.NOTHING) {
             slaViolationLogger.logHPCViolation(getName(), SLAViolationType);
@@ -168,14 +174,10 @@ public class ComputeSystem extends GeneralSystem {
         return BladeServerCollectionOperations.totalResponseTime(getComputeNodeList());
     }
 
-    public static ComputeSystem create(SystemPOD systemPOD,
-                                       Environment environment,
-                                       Scheduler scheduler,
-                                       ResourceAllocation resourceAllocation,
-                                       SLAViolationLogger slaViolationLogger,
-                                       SystemAM computeSystemAM) {
-        ComputeSystem computeSystem = new ComputeSystem(systemPOD, environment, scheduler,
-                                                      resourceAllocation, slaViolationLogger);
+    public static ComputeSystem create(SystemPOD systemPOD, Environment environment, Scheduler scheduler,
+            ResourceAllocation resourceAllocation, SLAViolationLogger slaViolationLogger, SystemAM computeSystemAM) {
+        ComputeSystem computeSystem = new ComputeSystem(systemPOD, environment, scheduler, resourceAllocation,
+                slaViolationLogger);
         computeSystem.getResourceAllocation().initialResourceAloc(computeSystem);
         computeSystem.setAM(computeSystemAM);
         return computeSystem;

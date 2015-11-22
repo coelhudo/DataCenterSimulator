@@ -3,6 +3,8 @@ package simulator.am;
 import java.util.List;
 import java.util.logging.Logger;
 
+import com.google.inject.Inject;
+
 import simulator.Environment;
 import simulator.SLAViolationLogger;
 import simulator.Simulator;
@@ -25,6 +27,7 @@ public class EnterpriseSystemAM extends SystemAM {
     private double wlkIntens = 0;
     private SLAViolationLogger slaViolationLogger;
 
+    @Inject
     public EnterpriseSystemAM(Environment environment, SLAViolationLogger slaViolationLogger) {
         super(environment);
         this.slaViolationLogger = slaViolationLogger;

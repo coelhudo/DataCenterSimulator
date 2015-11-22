@@ -3,7 +3,7 @@ from os import environ
 import time
 
 import sys
-sys.path.append('./target/ADCMSimulator-adcmsim-0.0.1.jar')
+sys.path.append('./target/ADCMSimulator-adcmsim-0.0.2.jar')
 from simulator import *
 
 from java.util.concurrent import ArrayBlockingQueue, TimeUnit;

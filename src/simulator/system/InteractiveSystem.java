@@ -6,6 +6,10 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import com.google.inject.Inject;
+import com.google.inject.assistedinject.Assisted;
+import com.google.inject.name.Named;
+
 import simulator.Environment;
 import simulator.SLAViolationLogger;
 import simulator.am.InteractiveSystemAM;
@@ -22,8 +26,12 @@ public class InteractiveSystem extends GeneralSystem {
     private Environment environment;
     private SLAViolationLogger slaViolationLogger;
 
-    public InteractiveSystem(SystemPOD systemPOD, Environment environment, Scheduler scheduler, ResourceAllocation resourceAllocation,
-            SLAViolationLogger slaViolationLogger) {
+    @Inject
+    public InteractiveSystem(@Assisted SystemPOD systemPOD,
+                             Environment environment,
+                             @Named("InteractiveSystem") Scheduler scheduler,
+                             @Named("InteractiveSystem") ResourceAllocation resourceAllocation,
+                             SLAViolationLogger slaViolationLogger) {
         super(systemPOD, scheduler, resourceAllocation);
         this.environment = environment;
         this.slaViolationLogger = slaViolationLogger;
@@ -197,13 +205,13 @@ public class InteractiveSystem extends GeneralSystem {
 
     public static InteractiveSystem create(SystemPOD systemPOD, Environment environment, Scheduler scheduler,
             ResourceAllocation resourceAllocation, SLAViolationLogger slaViolationLogger) {
-        InteractiveSystem interactiveSystem = new InteractiveSystem(systemPOD, environment, scheduler, resourceAllocation,
-                slaViolationLogger);
+        InteractiveSystem interactiveSystem = new InteractiveSystem(systemPOD, environment, scheduler,
+                resourceAllocation, slaViolationLogger);
         interactiveSystem.getResourceAllocation().initialResourceAlocator(interactiveSystem);
         interactiveSystem.setAM(new InteractiveSystemAM(environment));
         return interactiveSystem;
     }
-    
+
     @Override
     public void finish() {
         slaViolationLogger.finish();
