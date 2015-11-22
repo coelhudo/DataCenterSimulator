@@ -35,6 +35,7 @@ import simulator.system.ComputeSystemFactory;
 import simulator.system.EnterpriseApp;
 import simulator.system.EnterpriseApplicationPOD;
 import simulator.system.EnterpriseSystem;
+import simulator.system.EnterpriseSystemFactory;
 import simulator.system.EnterpriseSystemPOD;
 import simulator.system.InteractiveSystemFactory;
 import simulator.system.SystemPOD;
@@ -79,7 +80,7 @@ public class EnterpriseSystemIT {
         DataCenter dataCenter = new DataCenter(dataCenterPOD, mockedActivitiesLogger, environment);
 
         Systems systems = new Systems(environment, new SystemsPOD(), mock(ComputeSystemFactory.class),
-                mock(InteractiveSystemFactory.class));
+                mock(InteractiveSystemFactory.class), mock(EnterpriseSystemFactory.class));
         systems.setup();
         DataCenterAM dataCenterAM = new DataCenterAM(environment, systems);
         dataCenter.setAM(dataCenterAM);

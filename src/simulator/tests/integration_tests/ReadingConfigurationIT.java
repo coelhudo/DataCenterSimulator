@@ -5,7 +5,6 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertTrue;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
@@ -20,29 +19,18 @@ import com.google.inject.Guice;
 import com.google.inject.Injector;
 
 import simulator.Environment;
-import simulator.SLAViolationLogger;
 import simulator.Simulator;
 import simulator.Simulator.StrategyEnum;
-import simulator.am.ApplicationAM;
 import simulator.am.DataCenterAM;
-import simulator.am.EnterpriseSystemAM;
 import simulator.physical.BladeServer;
 import simulator.physical.Chassis;
 import simulator.physical.DataCenter;
 import simulator.physical.DataCenterEntityID;
 import simulator.physical.Rack;
-import simulator.ra.MHR;
-import simulator.ra.ResourceAllocation;
-import simulator.schedulers.FIFOScheduler;
-import simulator.schedulers.Scheduler;
 import simulator.system.ComputeSystem;
-import simulator.system.EnterpriseApp;
-import simulator.system.EnterpriseApplicationPOD;
 import simulator.system.EnterpriseSystem;
-import simulator.system.EnterpriseSystemPOD;
 import simulator.system.InteractiveSystem;
 import simulator.system.Systems;
-import simulator.system.SystemsPOD;
 
 public class ReadingConfigurationIT {
 
@@ -51,26 +39,6 @@ public class ReadingConfigurationIT {
         Injector injector = Guice.createInjector(new ITModule());
         
         Systems systems = injector.getInstance(Systems.class);
-
-        SystemsPOD systemsPOD = injector.getInstance(SystemsPOD.class);
-        for (EnterpriseSystemPOD enterpriseSystemPOD : systemsPOD.getEnterpriseSystemsPOD()) {
-            EnterpriseSystemAM enterpriseSystemAM = new EnterpriseSystemAM(injector.getInstance(Environment.class),
-                    injector.getInstance(SLAViolationLogger.class));
-            Scheduler scheduler = new FIFOScheduler();
-            ResourceAllocation resourceAllocation = new MHR(injector.getInstance(Environment.class), injector.getInstance(DataCenter.class));
-            List<EnterpriseApp> applications = new ArrayList<EnterpriseApp>();
-            for (EnterpriseApplicationPOD pod : enterpriseSystemPOD.getApplicationPODs()) {
-                ApplicationAM applicationAM = new ApplicationAM(applications, enterpriseSystemAM, injector.getInstance(Environment.class));
-                EnterpriseApp enterpriseApplication = EnterpriseApp.create(pod, scheduler, resourceAllocation, injector.getInstance(Environment.class),
-                        applicationAM);
-                applications.add(enterpriseApplication);
-            }
-            EnterpriseSystem enterpriseSystem = new EnterpriseSystem(enterpriseSystemPOD, applications, scheduler,
-                    resourceAllocation, enterpriseSystemAM);
-            enterpriseSystem.getResourceAllocation().initialResourceAlocator(enterpriseSystem);
-            enterpriseSystem.setupAM();
-            systems.addEnterpriseSystem(enterpriseSystem);
-        }
 
         final DataCenterAM dataCenterAM = new DataCenterAM(injector.getInstance(Environment.class), systems);
         dataCenterAM.setStrategy(StrategyEnum.Green);

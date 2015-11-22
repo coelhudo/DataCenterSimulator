@@ -6,6 +6,7 @@ import java.util.logging.Logger;
 
 import com.google.inject.Inject;
 import com.google.inject.assistedinject.Assisted;
+import com.google.inject.name.Named;
 
 import simulator.am.SystemAM;
 import simulator.physical.BladeServer;
@@ -21,9 +22,9 @@ public class EnterpriseSystem extends GeneralSystem {
     @Inject
     public EnterpriseSystem(@Assisted SystemPOD systemPOD,
                             @Assisted List<EnterpriseApp> applications,
-                            Scheduler scheduler,
-                            ResourceAllocation resourceAllocation,
-                            SystemAM systemAM) {
+                            @Named("EnterpriseSystem") Scheduler scheduler,
+                            @Named("EnterpriseSystem") ResourceAllocation resourceAllocation,
+                            @Named("EnterpriseSystem") SystemAM systemAM) {
         super(systemPOD, scheduler, resourceAllocation, systemAM);
         setComputeNodeList(new ArrayList<BladeServer>());
         resetNumberOfSLAViolation();

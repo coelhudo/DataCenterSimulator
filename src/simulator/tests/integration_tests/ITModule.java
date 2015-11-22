@@ -16,6 +16,7 @@ import simulator.SimulatorBuilder;
 import simulator.SimulatorEnvironment;
 import simulator.SimulatorPOD;
 import simulator.am.ComputeSystemAM;
+import simulator.am.EnterpriseSystemAM;
 import simulator.am.InteractiveSystemAM;
 import simulator.am.SystemAM;
 import simulator.physical.DataCenter;
@@ -27,6 +28,7 @@ import simulator.schedulers.FIFOScheduler;
 import simulator.schedulers.LeastRemainFirstScheduler;
 import simulator.schedulers.Scheduler;
 import simulator.system.ComputeSystemFactory;
+import simulator.system.EnterpriseSystemFactory;
 import simulator.system.InteractiveSystemFactory;
 import simulator.system.SystemsPOD;
 import simulator.utils.ActivitiesLogger;
@@ -187,13 +189,13 @@ public class ITModule extends AbstractModule {
         bind(ResourceAllocation.class).annotatedWith(Names.named("InteractiveSystem")).to(MHR.class);
         bind(SystemAM.class).annotatedWith(Names.named("InteractiveSystem")).to(InteractiveSystemAM.class);
 
-        // bind(Scheduler.class).annotatedWith(Names.named("EnterpriseSystem")).to(FIFOScheduler.class);
-        // bind(ResourceAllocation.class).annotatedWith(Names.named("EnterpriseSystem")).to(MHR.class);
+        bind(Scheduler.class).annotatedWith(Names.named("EnterpriseSystem")).to(FIFOScheduler.class);
+        bind(ResourceAllocation.class).annotatedWith(Names.named("EnterpriseSystem")).to(MHR.class);
+        bind(SystemAM.class).annotatedWith(Names.named("EnterpriseSystem")).to(EnterpriseSystemAM.class);
 
         install(new FactoryModuleBuilder().build(ComputeSystemFactory.class));
         install(new FactoryModuleBuilder().build(InteractiveSystemFactory.class));
-        // install(new
-        // FactoryModuleBuilder().build(EnterpriseSystemFactory.class));
+        install(new FactoryModuleBuilder().build(EnterpriseSystemFactory.class));
 
         // install(new
         // FactoryModuleBuilder().build(EnterpriseApplicationFactory.class));

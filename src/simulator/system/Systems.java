@@ -10,6 +10,7 @@ import com.google.inject.Inject;
 import com.google.inject.Singleton;
 
 import simulator.Environment;
+import simulator.am.ApplicationAM;
 
 @Singleton
 public class Systems extends Observable {
@@ -23,7 +24,11 @@ public class Systems extends Observable {
     private Environment environment;
 
     @Inject
-    public Systems(Environment environment, SystemsPOD systemsPOD, ComputeSystemFactory computeSystemFactory, InteractiveSystemFactory interactiveSystemFactory) {
+    public Systems(Environment environment,
+                   SystemsPOD systemsPOD,
+                   ComputeSystemFactory computeSystemFactory,
+                   InteractiveSystemFactory interactiveSystemFactory,
+                   EnterpriseSystemFactory enterpriseSystemFactory) {
         this.environment = environment;
 
         for (ComputeSystemPOD computeSystemPOD : systemsPOD.getComputeSystemsPOD()) {
@@ -32,6 +37,20 @@ public class Systems extends Observable {
 
         for (InteractiveSystemPOD interactivePOD : systemsPOD.getInteractiveSystemsPOD()) {
             addInteractiveSystem(interactiveSystemFactory.create(interactivePOD));
+        }
+
+        for (EnterpriseSystemPOD enterpriseSystemPOD : systemsPOD.getEnterpriseSystemsPOD()) {
+            List<EnterpriseApp> applications = new ArrayList<EnterpriseApp>();
+            EnterpriseSystem enterpriseSystem = enterpriseSystemFactory.create(enterpriseSystemPOD, applications);
+
+            for (EnterpriseApplicationPOD pod : enterpriseSystemPOD.getApplicationPODs()) {
+                ApplicationAM applicationAM = new ApplicationAM(applications, enterpriseSystem.getAM(), environment);
+                EnterpriseApp enterpriseApplication = new EnterpriseApp(pod, enterpriseSystem.getScheduler(),
+                        enterpriseSystem.getResourceAllocation(), environment);
+                enterpriseApplication.setAM(applicationAM);
+                applications.add(enterpriseApplication);
+            }
+            addEnterpriseSystem(enterpriseSystem);
         }
     }
 
@@ -44,6 +63,12 @@ public class Systems extends Observable {
         for (InteractiveSystem interactiveSystem : interactiveSystems) {
             interactiveSystem.getResourceAllocation().initialResourceAlocator(interactiveSystem);
             interactiveSystem.setupAM();
+
+        }
+
+        for (EnterpriseSystem enterpriseSystem : enterpriseSystems) {
+            enterpriseSystem.getResourceAllocation().initialResourceAlocator(enterpriseSystem);
+            enterpriseSystem.setupAM();
 
         }
     }

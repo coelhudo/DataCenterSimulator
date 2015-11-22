@@ -36,6 +36,7 @@ import simulator.schedulers.LeastRemainFirstScheduler;
 import simulator.system.ComputeSystem;
 import simulator.system.ComputeSystemFactory;
 import simulator.system.ComputeSystemPOD;
+import simulator.system.EnterpriseSystemFactory;
 import simulator.system.InteractiveSystemFactory;
 import simulator.system.Systems;
 import simulator.system.SystemsPOD;
@@ -62,6 +63,7 @@ public class ComputeSystemIT {
     
     public ComputeSystemFactory computeSystemFactory;
     public InteractiveSystemFactory interactiveSystemFactory;
+    public EnterpriseSystemFactory enterpriseSystemFactory;
 
     @Before
     public void setUp() {
@@ -136,7 +138,7 @@ public class ComputeSystemIT {
         when(computeSystemFactory.create(computeSystemPOD)).thenReturn(new ComputeSystem(computeSystemPOD,
                 mockedEnvironment, scheduler, resourceAllocation, systemAM, slaViolationLogger));
 
-        Systems systems = new Systems(mockedEnvironment, systemsPOD, computeSystemFactory, interactiveSystemFactory);
+        Systems systems = new Systems(mockedEnvironment, systemsPOD, computeSystemFactory, interactiveSystemFactory, enterpriseSystemFactory);
         systems.setup();
         when(mockedEnvironment.getCurrentLocalTime()).thenReturn(1);
         assertFalse(systems.allJobsDone());
@@ -208,7 +210,7 @@ public class ComputeSystemIT {
         when(computeSystemFactory.create(computeSystemPOD)).thenReturn(new ComputeSystem(computeSystemPOD,
                 mockedEnvironment, scheduler, resourceAllocation, systemAM, slaViolationLogger));
 
-        Systems systems = new Systems(mockedEnvironment, systemsPOD, computeSystemFactory, interactiveSystemFactory);
+        Systems systems = new Systems(mockedEnvironment, systemsPOD, computeSystemFactory, interactiveSystemFactory, enterpriseSystemFactory);
         systems.setup();
 
         when(mockedEnvironment.getCurrentLocalTime()).thenReturn(1);
@@ -270,7 +272,7 @@ public class ComputeSystemIT {
         when(computeSystemFactory.create(computeSystemPOD)).thenReturn(new ComputeSystem(computeSystemPOD,
                 mockedEnvironment, scheduler, resourceAllocation, systemAM, slaViolationLogger));
 
-        Systems systems = new Systems(mockedEnvironment, systemsPOD, computeSystemFactory, interactiveSystemFactory);
+        Systems systems = new Systems(mockedEnvironment, systemsPOD, computeSystemFactory, interactiveSystemFactory, enterpriseSystemFactory);
         systems.setup();
 
         when(mockedEnvironment.getCurrentLocalTime()).thenReturn(1);
