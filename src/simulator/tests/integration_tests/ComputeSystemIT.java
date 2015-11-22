@@ -34,8 +34,11 @@ import simulator.ra.MHR;
 import simulator.schedulers.Scheduler;
 import simulator.schedulers.LeastRemainFirstScheduler;
 import simulator.system.ComputeSystem;
+import simulator.system.ComputeSystemFactory;
 import simulator.system.ComputeSystemPOD;
+import simulator.system.InteractiveSystemFactory;
 import simulator.system.Systems;
+import simulator.system.SystemsPOD;
 import simulator.utils.ActivitiesLogger;
 
 public class ComputeSystemIT {
@@ -50,11 +53,15 @@ public class ComputeSystemIT {
     public Environment mockedEnvironment;
     public ActivitiesLogger mockedActivitiesLogger;
 
-    public ComputeSystemPOD computerSystemPOD;
+    public ComputeSystemPOD computeSystemPOD;
+    public SystemsPOD systemsPOD;
     public JobProducer mockedJobProducer;
 
     public DataCenterAM mockedDataCenterAM;
     public SLAViolationLogger slaViolationLogger;
+    
+    public ComputeSystemFactory computeSystemFactory;
+    public InteractiveSystemFactory interactiveSystemFactory;
 
     @Before
     public void setUp() {
@@ -81,14 +88,20 @@ public class ComputeSystemIT {
 
         mockedJobProducer = mock(JobProducer.class);
 
-        computerSystemPOD = new ComputeSystemPOD();
-        computerSystemPOD.setName("DummyHPCSystem");
-        computerSystemPOD.appendRackID(rackPOD.getID());
-        computerSystemPOD.setJobProducer(mockedJobProducer);
+        computeSystemPOD = new ComputeSystemPOD();
+        computeSystemPOD.setName("DummyHPCSystem");
+        computeSystemPOD.appendRackID(rackPOD.getID());
+        computeSystemPOD.setJobProducer(mockedJobProducer);
+        
+        systemsPOD = new SystemsPOD();
+        systemsPOD.appendComputeSystemPOD(computeSystemPOD);
 
         mockedDataCenterAM = mock(DataCenterAM.class);
 
         slaViolationLogger = mock(SLAViolationLogger.class);
+        
+        computeSystemFactory = mock(ComputeSystemFactory.class);
+        interactiveSystemFactory = mock(InteractiveSystemFactory.class);
     }
 
     @After
@@ -111,20 +124,20 @@ public class ComputeSystemIT {
 
         when(mockedJobProducer.next()).thenReturn(batchJob);
 
-        computerSystemPOD.setNumberofNode(1);
+        computeSystemPOD.setNumberofNode(1);
 
-        DataCenter dataCenter = new DataCenter(dataCenterPOD, mockedActivitiesLogger,
-                mockedEnvironment);
+        DataCenter dataCenter = new DataCenter(dataCenterPOD, mockedActivitiesLogger, mockedEnvironment);
         dataCenter.setAM(mockedDataCenterAM);
 
         ResourceAllocation resourceAllocation = new MHR(mockedEnvironment, dataCenter);
         Scheduler scheduler = new LeastRemainFirstScheduler();
         SystemAM systemAM = new ComputeSystemAM(mockedEnvironment);
 
-        Systems systems = new Systems(mockedEnvironment);
-        systems.addComputeSystem(
-                                 ComputeSystem.create(computerSystemPOD, mockedEnvironment, scheduler, resourceAllocation, slaViolationLogger, systemAM));
+        when(computeSystemFactory.create(computeSystemPOD)).thenReturn(new ComputeSystem(computeSystemPOD,
+                mockedEnvironment, scheduler, resourceAllocation, systemAM, slaViolationLogger));
 
+        Systems systems = new Systems(mockedEnvironment, systemsPOD, computeSystemFactory, interactiveSystemFactory);
+        systems.setup();
         when(mockedEnvironment.getCurrentLocalTime()).thenReturn(1);
         assertFalse(systems.allJobsDone());
         systems.runACycle();
@@ -183,19 +196,20 @@ public class ComputeSystemIT {
 
         when(mockedJobProducer.next()).thenReturn(batchJob);
 
-        computerSystemPOD.setNumberofNode(2);
+        computeSystemPOD.setNumberofNode(2);
 
-        DataCenter dataCenter = new DataCenter(dataCenterPOD, mockedActivitiesLogger,
-                mockedEnvironment);
+        DataCenter dataCenter = new DataCenter(dataCenterPOD, mockedActivitiesLogger, mockedEnvironment);
         dataCenter.setAM(mockedDataCenterAM);
 
         ResourceAllocation resourceAllocation = new MHR(mockedEnvironment, dataCenter);
         Scheduler scheduler = new LeastRemainFirstScheduler();
         SystemAM systemAM = new ComputeSystemAM(mockedEnvironment);
 
-        Systems systems = new Systems(mockedEnvironment);
-        systems.addComputeSystem(
-                                 ComputeSystem.create(computerSystemPOD, mockedEnvironment, scheduler, resourceAllocation, slaViolationLogger, systemAM));
+        when(computeSystemFactory.create(computeSystemPOD)).thenReturn(new ComputeSystem(computeSystemPOD,
+                mockedEnvironment, scheduler, resourceAllocation, systemAM, slaViolationLogger));
+
+        Systems systems = new Systems(mockedEnvironment, systemsPOD, computeSystemFactory, interactiveSystemFactory);
+        systems.setup();
 
         when(mockedEnvironment.getCurrentLocalTime()).thenReturn(1);
         assertFalse(systems.allJobsDone());
@@ -244,19 +258,20 @@ public class ComputeSystemIT {
 
         when(mockedJobProducer.next()).thenReturn(batchJob);
 
-        computerSystemPOD.setNumberofNode(1);
+        computeSystemPOD.setNumberofNode(1);
 
-        DataCenter dataCenter = new DataCenter(dataCenterPOD, mockedActivitiesLogger,
-                mockedEnvironment);
+        DataCenter dataCenter = new DataCenter(dataCenterPOD, mockedActivitiesLogger, mockedEnvironment);
         dataCenter.setAM(mockedDataCenterAM);
 
         ResourceAllocation resourceAllocation = new MHR(mockedEnvironment, dataCenter);
         Scheduler scheduler = new LeastRemainFirstScheduler();
         SystemAM systemAM = new ComputeSystemAM(mockedEnvironment);
 
-        Systems systems = new Systems(mockedEnvironment);
-        systems.addComputeSystem(
-                                 ComputeSystem.create(computerSystemPOD, mockedEnvironment, scheduler, resourceAllocation, slaViolationLogger, systemAM));
+        when(computeSystemFactory.create(computeSystemPOD)).thenReturn(new ComputeSystem(computeSystemPOD,
+                mockedEnvironment, scheduler, resourceAllocation, systemAM, slaViolationLogger));
+
+        Systems systems = new Systems(mockedEnvironment, systemsPOD, computeSystemFactory, interactiveSystemFactory);
+        systems.setup();
 
         when(mockedEnvironment.getCurrentLocalTime()).thenReturn(1);
         assertFalse(systems.allJobsDone());

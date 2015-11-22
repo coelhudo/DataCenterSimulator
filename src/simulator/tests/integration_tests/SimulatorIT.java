@@ -18,24 +18,17 @@ import simulator.SimulationResults;
 import simulator.Simulator;
 import simulator.Simulator.StrategyEnum;
 import simulator.am.ApplicationAM;
-import simulator.am.ComputeSystemAM;
 import simulator.am.DataCenterAM;
 import simulator.am.EnterpriseSystemAM;
-import simulator.am.InteractiveSystemAM;
 import simulator.physical.DataCenter;
 import simulator.ra.MHR;
 import simulator.ra.ResourceAllocation;
 import simulator.schedulers.FIFOScheduler;
-import simulator.schedulers.LeastRemainFirstScheduler;
 import simulator.schedulers.Scheduler;
-import simulator.system.ComputeSystem;
-import simulator.system.ComputeSystemPOD;
 import simulator.system.EnterpriseApp;
 import simulator.system.EnterpriseApplicationPOD;
 import simulator.system.EnterpriseSystem;
 import simulator.system.EnterpriseSystemPOD;
-import simulator.system.InteractiveSystem;
-import simulator.system.InteractiveSystemPOD;
 import simulator.system.Systems;
 import simulator.system.SystemsPOD;
 
@@ -65,33 +58,10 @@ public class SimulatorIT {
                 applications.add(enterpriseApplication);
             }
             EnterpriseSystem enterpriseSystem = new EnterpriseSystem(enterpriseSystemPOD, applications, scheduler,
-                    resourceAllocation);
+                    resourceAllocation, enterpriseSystemAM);
             enterpriseSystem.getResourceAllocation().initialResourceAlocator(enterpriseSystem);
-            enterpriseSystem.setAM(enterpriseSystemAM);
+            enterpriseSystem.setupAM();
             systems.addEnterpriseSystem(enterpriseSystem);
-        }
-        for (ComputeSystemPOD computeSystemPOD : systemsPOD.getComputeSystemsPOD()) {
-            Scheduler scheduler = new LeastRemainFirstScheduler();
-            ResourceAllocation resourceAllocation = new MHR(injector.getInstance(Environment.class),
-                    injector.getInstance(DataCenter.class));
-            ComputeSystem computeSystem = new ComputeSystem(computeSystemPOD, injector.getInstance(Environment.class),
-                    scheduler, resourceAllocation, injector.getInstance(SLAViolationLogger.class));
-            computeSystem.getResourceAllocation().initialResourceAloc(computeSystem);
-            computeSystem.setAM(new ComputeSystemAM(injector.getInstance(Environment.class)));
-            systems.addComputeSystem(computeSystem);
-        }
-
-        for (InteractiveSystemPOD interactivePOD : systemsPOD.getInteractiveSystemsPOD()) {
-            Scheduler scheduler = new FIFOScheduler();
-            ResourceAllocation resourceAllocation = new MHR(injector.getInstance(Environment.class),
-                    injector.getInstance(DataCenter.class));
-
-            InteractiveSystem interactiveSystem = new InteractiveSystem(interactivePOD,
-                    injector.getInstance(Environment.class), scheduler, resourceAllocation,
-                    injector.getInstance(SLAViolationLogger.class));
-            interactiveSystem.getResourceAllocation().initialResourceAlocator(interactiveSystem);
-            interactiveSystem.setAM(new InteractiveSystemAM(injector.getInstance(Environment.class)));
-            systems.addInteractiveSystem(interactiveSystem);
         }
 
         final DataCenterAM dataCenterAM = new DataCenterAM(injector.getInstance(Environment.class), systems);
@@ -106,6 +76,7 @@ public class SimulatorIT {
         injector.getInstance(DataCenter.class).setAM(dataCenterAM);
 
         systems.addObserver(new DataCenterAMXunxo());
+        systems.setup();
 
         injector.injectMembers(systems);
 

@@ -13,25 +13,17 @@ import com.google.inject.Injector;
 
 import simulator.Simulator.StrategyEnum;
 import simulator.am.ApplicationAM;
-import simulator.am.ComputeSystemAM;
 import simulator.am.DataCenterAM;
 import simulator.am.EnterpriseSystemAM;
-import simulator.am.InteractiveSystemAM;
 import simulator.physical.DataCenter;
 import simulator.ra.MHR;
 import simulator.ra.ResourceAllocation;
 import simulator.schedulers.FIFOScheduler;
 import simulator.schedulers.Scheduler;
-import simulator.system.ComputeSystem;
-import simulator.system.ComputeSystemFactory;
-import simulator.system.ComputeSystemPOD;
 import simulator.system.EnterpriseApp;
 import simulator.system.EnterpriseApplicationPOD;
 import simulator.system.EnterpriseSystem;
 import simulator.system.EnterpriseSystemPOD;
-import simulator.system.InteractiveSystem;
-import simulator.system.InteractiveSystemFactory;
-import simulator.system.InteractiveSystemPOD;
 import simulator.system.Systems;
 import simulator.system.SystemsPOD;
 
@@ -61,26 +53,10 @@ public class Main {
                 enterpriseApplication.setAM(applicationAM);
                 applications.add(enterpriseApplication);
             }
-            EnterpriseSystem enterpriseSystem = new EnterpriseSystem(enterpriseSystemPOD, applications, scheduler, resourceAllocation);
+            EnterpriseSystem enterpriseSystem = new EnterpriseSystem(enterpriseSystemPOD, applications, scheduler, resourceAllocation, enterpriseSystemAM);
             enterpriseSystem.getResourceAllocation().initialResourceAlocator(enterpriseSystem);
-            enterpriseSystem.setAM(enterpriseSystemAM);
+            enterpriseSystem.setupAM();
             systems.addEnterpriseSystem(enterpriseSystem);
-        }
-        
-        ComputeSystemFactory computeSystemFactory = injector.getInstance(ComputeSystemFactory.class);
-        for (ComputeSystemPOD computeSystemPOD : systemsPOD.getComputeSystemsPOD()) {
-            ComputeSystem computeSystem = computeSystemFactory.create(computeSystemPOD);
-            computeSystem.getResourceAllocation().initialResourceAloc(computeSystem);
-            computeSystem.setAM(injector.getInstance(ComputeSystemAM.class));
-            systems.addComputeSystem(computeSystem);
-        }
-
-        for (InteractiveSystemPOD interactivePOD : systemsPOD.getInteractiveSystemsPOD()) {
-            InteractiveSystemFactory interactiveSystemFactory = injector.getInstance(InteractiveSystemFactory.class);
-            InteractiveSystem interactiveSystem =interactiveSystemFactory.create(interactivePOD);
-            interactiveSystem.getResourceAllocation().initialResourceAlocator(interactiveSystem);
-            interactiveSystem.setAM(injector.getInstance(InteractiveSystemAM.class));
-            systems.addInteractiveSystem(interactiveSystem);
         }
 
         final DataCenterAM dataCenterAM = new DataCenterAM(injector.getInstance(Environment.class), systems);
@@ -96,6 +72,7 @@ public class Main {
         injector.getInstance(DataCenter.class).setAM(dataCenterAM);
 
         systems.addObserver(new DataCenterAMXunxo());
+        systems.setup();
 
         injector.injectMembers(systems);
 

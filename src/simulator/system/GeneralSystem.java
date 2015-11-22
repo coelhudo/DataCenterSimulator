@@ -31,11 +31,12 @@ public abstract class GeneralSystem {
     private int accumolatedViolation = 0;
     private int numberOfActiveServ = 0;
 
-    public GeneralSystem(SystemPOD systemPOD, Scheduler scheduler, ResourceAllocation resourceAllocation) {
+    public GeneralSystem(SystemPOD systemPOD, Scheduler scheduler, ResourceAllocation resourceAllocation, SystemAM systemAM) {
         rackIDs = systemPOD.getRackUIDs();
         name = systemPOD.getName();
         this.scheduler = scheduler;
         this.resourceAllocation = resourceAllocation;
+        this.am = systemAM;
     }
 
     public void addComputeNodeToSys(BladeServer bladeServer) {
@@ -131,8 +132,7 @@ public abstract class GeneralSystem {
         return am;
     }
 
-    public void setAM(SystemAM am) {
-        this.am = am;
+    public void setupAM() {
         this.am.setManagedSystem(this);
     }
 
@@ -155,6 +155,6 @@ public abstract class GeneralSystem {
     public Set<DataCenterEntityID> getRackIDs() {
         return rackIDs;
     }
-
+    
     public abstract void finish();
 }

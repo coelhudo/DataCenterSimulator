@@ -23,8 +23,29 @@ public class Systems extends Observable {
     private Environment environment;
 
     @Inject
-    public Systems(Environment environment) {
+    public Systems(Environment environment, SystemsPOD systemsPOD, ComputeSystemFactory computeSystemFactory, InteractiveSystemFactory interactiveSystemFactory) {
         this.environment = environment;
+
+        for (ComputeSystemPOD computeSystemPOD : systemsPOD.getComputeSystemsPOD()) {
+            addComputeSystem(computeSystemFactory.create(computeSystemPOD));
+        }
+
+        for (InteractiveSystemPOD interactivePOD : systemsPOD.getInteractiveSystemsPOD()) {
+            addInteractiveSystem(interactiveSystemFactory.create(interactivePOD));
+        }
+    }
+
+    public void setup() {
+        for (ComputeSystem computeSystem : computeSystems) {
+            computeSystem.getResourceAllocation().initialResourceAloc(computeSystem);
+            computeSystem.setupAM();
+        }
+
+        for (InteractiveSystem interactiveSystem : interactiveSystems) {
+            interactiveSystem.getResourceAllocation().initialResourceAlocator(interactiveSystem);
+            interactiveSystem.setupAM();
+
+        }
     }
 
     public List<InteractiveSystem> getInteractiveSystems() {
@@ -157,13 +178,13 @@ public class Systems extends Observable {
         finish(enterpriseSystems);
         finish(interactiveSystems);
     }
-    
+
     private void finish(List<? extends GeneralSystem> systems) {
         for (GeneralSystem system : systems) {
             system.finish();
         }
     }
-    
+
     public void addEnterpriseSystem(EnterpriseSystem eS1) {
         this.enterpriseSystems.add(eS1);
     }

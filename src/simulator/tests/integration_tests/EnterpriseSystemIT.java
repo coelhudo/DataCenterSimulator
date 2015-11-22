@@ -31,12 +31,15 @@ import simulator.ra.MHR;
 import simulator.ra.ResourceAllocation;
 import simulator.schedulers.FIFOScheduler;
 import simulator.schedulers.Scheduler;
+import simulator.system.ComputeSystemFactory;
 import simulator.system.EnterpriseApp;
 import simulator.system.EnterpriseApplicationPOD;
 import simulator.system.EnterpriseSystem;
 import simulator.system.EnterpriseSystemPOD;
+import simulator.system.InteractiveSystemFactory;
 import simulator.system.SystemPOD;
 import simulator.system.Systems;
+import simulator.system.SystemsPOD;
 import simulator.utils.ActivitiesLogger;
 
 public class EnterpriseSystemIT {
@@ -60,7 +63,7 @@ public class EnterpriseSystemIT {
         chassisPOD.setBladeType("DummyType");
         chassisPOD.setChassisType("DummyChassisType");
         chassisPOD.setID(DataCenterEntityID.createChassisID(1, 1));
-        
+
         RackPOD rackPOD = new RackPOD();
         rackPOD.appendChassis(chassisPOD);
         rackPOD.setID(DataCenterEntityID.createRackID(1));
@@ -72,13 +75,15 @@ public class EnterpriseSystemIT {
 
         ActivitiesLogger mockedActivitiesLogger = mock(ActivitiesLogger.class);
         Environment environment = new SimulatorEnvironment();
-       
+
         DataCenter dataCenter = new DataCenter(dataCenterPOD, mockedActivitiesLogger, environment);
-        
-        Systems systems = new Systems(environment);
+
+        Systems systems = new Systems(environment, new SystemsPOD(), mock(ComputeSystemFactory.class),
+                mock(InteractiveSystemFactory.class));
+        systems.setup();
         DataCenterAM dataCenterAM = new DataCenterAM(environment, systems);
         dataCenter.setAM(dataCenterAM);
-        
+
         Scheduler fcfsScheduler = new FIFOScheduler();
         ResourceAllocation resourceAllocation = new MHR(environment, dataCenter);
         SLAViolationLogger mockedSlaViolationLogger = mock(SLAViolationLogger.class);
@@ -108,25 +113,25 @@ public class EnterpriseSystemIT {
 
         List<EnterpriseApp> applications = Arrays
                 .asList(new EnterpriseApp(enterpriseApplicationPOD, fcfsScheduler, resourceAllocation, environment));
-        EnterpriseSystem enterpriseSystem = EnterpriseSystem.create(systemPOD, fcfsScheduler, resourceAllocation,
-                enterpriseSystemAM, applications);
+        EnterpriseSystem enterpriseSystem = new EnterpriseSystem(systemPOD, applications, fcfsScheduler,
+                resourceAllocation, enterpriseSystemAM);
+        enterpriseSystem.getResourceAllocation().initialResourceAlocator(enterpriseSystem);
+        enterpriseSystem.setupAM();
         systems.addEnterpriseSystem(enterpriseSystem);
 
         dataCenter.calculatePower();
         assertEquals(100.00014706045461, dataCenter.getTotalPowerConsumption(), 1.0E-8);
 
         assertFalse(enterpriseSystem.runAcycle());
-        
+
         dataCenter.calculatePower();
         assertEquals(202.0002912373414, dataCenter.getTotalPowerConsumption(), 1.0E-8);
 
-
         verify(mockedEnterpriseJobProducer).hasNext();
         verify(mockedEnterpriseJobProducer).next();
-        
+
         verify(mockedActivitiesLogger, times(4)).write(anyString());
 
-        
         assertEquals(0.0, enterpriseSystem.getPower(), 1.0E-8);
 
         verifyNoMoreInteractions(mockedSlaViolationLogger, mockedEnterpriseJobProducer, mockedActivitiesLogger);

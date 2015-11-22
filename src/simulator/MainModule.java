@@ -8,6 +8,9 @@ import com.google.inject.TypeLiteral;
 import com.google.inject.assistedinject.FactoryModuleBuilder;
 import com.google.inject.name.Names;
 
+import simulator.am.ComputeSystemAM;
+import simulator.am.InteractiveSystemAM;
+import simulator.am.SystemAM;
 import simulator.physical.DataCenter;
 import simulator.physical.DataCenter.DataCenterStats;
 import simulator.physical.DataCenterPOD;
@@ -32,7 +35,7 @@ public class MainModule extends AbstractModule {
         bind(SimulatorPOD.class).toInstance(simulatorPOD);
         bind(DataCenterPOD.class).toInstance(simulatorPOD.getDataCenterPOD());
         bind(SystemsPOD.class).toInstance(simulatorPOD.getSystemsPOD());
-
+        
         BlockingQueue<DataCenterStats> partialResults = new ArrayBlockingQueue<DataCenterStats>(1000);
         bind(new TypeLiteral<BlockingQueue<DataCenterStats>>() {
         }).toInstance(partialResults);
@@ -43,9 +46,11 @@ public class MainModule extends AbstractModule {
 
         bind(Scheduler.class).annotatedWith(Names.named("ComputeSystem")).to(LeastRemainFirstScheduler.class);
         bind(ResourceAllocation.class).annotatedWith(Names.named("ComputeSystem")).to(MHR.class);
+        bind(SystemAM.class).annotatedWith(Names.named("ComputeSystem")).to(ComputeSystemAM.class);
         
         bind(Scheduler.class).annotatedWith(Names.named("InteractiveSystem")).to(FIFOScheduler.class);
         bind(ResourceAllocation.class).annotatedWith(Names.named("InteractiveSystem")).to(MHR.class);
+        bind(SystemAM.class).annotatedWith(Names.named("InteractiveSystem")).to(InteractiveSystemAM.class);
         
         //bind(Scheduler.class).annotatedWith(Names.named("EnterpriseSystem")).to(FIFOScheduler.class);
         //bind(ResourceAllocation.class).annotatedWith(Names.named("EnterpriseSystem")).to(MHR.class);

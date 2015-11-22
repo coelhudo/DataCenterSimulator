@@ -41,8 +41,10 @@ public class EnterpriseSystemTest {
         mockedResourceAllocation = mock(ResourceAllocation.class);
         mockedEnterpriseSystemAM = mock(EnterpriseSystemAM.class);
         applications = new ArrayList<EnterpriseApp>();
-        enterpriseSystem = EnterpriseSystem.create(enterpriseSystemPOD, mockedScheduler, mockedResourceAllocation,
-                mockedEnterpriseSystemAM, applications);
+        enterpriseSystem = new EnterpriseSystem(enterpriseSystemPOD, applications, mockedScheduler,
+                mockedResourceAllocation, mockedEnterpriseSystemAM);
+        enterpriseSystem.getResourceAllocation().initialResourceAlocator(enterpriseSystem);
+        enterpriseSystem.setupAM();
     }
 
     @After

@@ -36,8 +36,9 @@ public class ComputeSystem extends GeneralSystem {
                          Environment environment,
                          @Named("ComputeSystem") Scheduler scheduler,
                          @Named("ComputeSystem") ResourceAllocation resourceAllocation,
+                         @Named("ComputeSystem") SystemAM systemAM,
                          SLAViolationLogger slaViolationLogger) {
-        super(systemPOD, scheduler, resourceAllocation);
+        super(systemPOD, scheduler, resourceAllocation, systemAM);
         this.jobProducer = ((ComputeSystemPOD) systemPOD).getJobProducer();
         this.environment = environment;
         this.slaViolationLogger = slaViolationLogger;
@@ -172,15 +173,6 @@ public class ComputeSystem extends GeneralSystem {
 
     double finalized() {
         return BladeServerCollectionOperations.totalResponseTime(getComputeNodeList());
-    }
-
-    public static ComputeSystem create(SystemPOD systemPOD, Environment environment, Scheduler scheduler,
-            ResourceAllocation resourceAllocation, SLAViolationLogger slaViolationLogger, SystemAM computeSystemAM) {
-        ComputeSystem computeSystem = new ComputeSystem(systemPOD, environment, scheduler, resourceAllocation,
-                slaViolationLogger);
-        computeSystem.getResourceAllocation().initialResourceAloc(computeSystem);
-        computeSystem.setAM(computeSystemAM);
-        return computeSystem;
     }
 
     public boolean isBlocked() {
