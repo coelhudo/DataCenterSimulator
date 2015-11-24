@@ -107,4 +107,8 @@ public class Simulator implements Runnable {
     public Systems getSystems() {
         return systems;
     }
+    
+    public BlockingQueue<DataCenterStats> getPartialResults() {
+        return partialResults;
+    }
 }

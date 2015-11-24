@@ -1,15 +1,23 @@
 from __future__ import print_function
 from os import environ
+from os import listdir
 import time
 
 import sys
 sys.path.append('./target/ADCMSimulator-adcmsim-0.0.2.jar')
+for jar in listdir('./target/dependency'):
+    sys.path.append('./target/dependency/{}'.format(jar))
 from simulator import *
 
-from java.util.concurrent import ArrayBlockingQueue, TimeUnit;
+from java.util.concurrent import TimeUnit
+from java.util import Observable
+from java.util import Observer
+
 import json
 from dataCenterTopologyToJSON import *
 from partialResultsToJSON import *
+
+from com.google.inject import *
 
 from threading import Thread
 
@@ -45,11 +53,34 @@ class Sim(ApplicationSession):
         return dataCenterSpecificationPayload
 
     def configure(self):
-        self.dataCenterBuilder = SimulatorBuilder("configs/DC_Logic.xml")
-        self.simulatorPOD = self.dataCenterBuilder.build()
-        self.environment = SimulatorEnvironment()
-        self.partialResults = ArrayBlockingQueue(5)
-        self.simulator = Simulator(self.simulatorPOD, self.environment, self.partialResults)
+        # self.dataCenterBuilder = SimulatorBuilder("configs/DC_Logic.xml")
+        # self.simulatorPOD = self.dataCenterBuilder.build()
+        # self.environment = SimulatorEnvironment()
+        # self.partialResults = ArrayBlockingQueue(5)
+        # self.simulator = Simulator(self.simulatorPOD, self.environment, self.partialResults)
+
+        injector = Guice.createInjector(MainModule())
+
+        systems = injector.getInstance(system.Systems)
+
+        dataCenterAM = am.DataCenterAM(injector.getInstance(Environment), systems)
+        dataCenterAM.setStrategy(Simulator.StrategyEnum.Green)
+
+        class DataCenterAMXunxo(Observer):
+            def update(self, observable, object):
+                dataCenterAM.resetBlockTimer()
+
+        injector.getInstance(physical.DataCenter).setAM(dataCenterAM)
+
+        systems.addObserver(DataCenterAMXunxo())
+        systems.setup();
+
+        injector.injectMembers(systems)
+
+        self.simulator = injector.getInstance(Simulator)
+        self.partialResults = self.simulator.getPartialResults()
+
+        self.partialDataCenterStatsConsumer = injector.getInstance(PartialDataCenterStatsConsumer);
         #all racks contain the same number of chassis and all chassis have the same amount of servers.
         #it is a limitation, unless this becomes a requirement it will remain as it is.
         self.racks = self.simulator.getDatacenter().getRacks()
@@ -115,8 +146,8 @@ if __name__ == '__main__':
     runner = ApplicationRunner(
         environ.get("AUTOBAHN_DEMO_ROUTER", u"ws://127.0.0.1:8888/ws"),
         u"crossbardemo",
-        debug_wamp=False,  # optional; log many WAMP details
-        debug=False,  # optional; log even more details
+        debug_wamp=True,  # optional; log many WAMP details
+        debug=True,  # optional; log even more details
     )
     start = time.clock()
     try:
