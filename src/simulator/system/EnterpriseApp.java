@@ -43,8 +43,8 @@ public class EnterpriseApp {
 
     @Inject
     public EnterpriseApp(@Assisted EnterpriseApplicationPOD enterpriseApplicationPOD,
-                         Scheduler scheduler,
-                         ResourceAllocation resourceAllocation,
+                         @Assisted Scheduler scheduler,
+                         @Assisted ResourceAllocation resourceAllocation,
                          Environment environment) {
         this.scheduler = scheduler;
         this.resourceAllocation = resourceAllocation;

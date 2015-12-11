@@ -44,9 +44,9 @@ public class Systems extends Observable {
             EnterpriseSystem enterpriseSystem = enterpriseSystemFactory.create(enterpriseSystemPOD, applications);
 
             for (EnterpriseApplicationPOD pod : enterpriseSystemPOD.getApplicationPODs()) {
-                ApplicationAM applicationAM = new ApplicationAM(applications, enterpriseSystem.getAM(), environment);
-                EnterpriseApp enterpriseApplication = new EnterpriseApp(pod, enterpriseSystem.getScheduler(),
-                        enterpriseSystem.getResourceAllocation(), environment);
+                ApplicationAM applicationAM = enterpriseSystemFactory.create(applications, enterpriseSystem.getAM());
+                EnterpriseApp enterpriseApplication = enterpriseSystemFactory.create(pod,
+                        enterpriseSystem.getScheduler(), enterpriseSystem.getResourceAllocation());
                 enterpriseApplication.setAM(applicationAM);
                 applications.add(enterpriseApplication);
             }

@@ -3,6 +3,9 @@ package simulator.am;
 import java.util.List;
 import java.util.logging.Logger;
 
+import com.google.inject.Inject;
+import com.google.inject.assistedinject.Assisted;
+
 import simulator.Environment;
 import simulator.Simulator;
 import simulator.jobs.EnterpriseJob;
@@ -22,7 +25,8 @@ public class ApplicationAM extends GeneralAM {
     private GeneralAM am;
     private List<EnterpriseApp> applications;
 
-    public ApplicationAM(List<EnterpriseApp> applications, GeneralAM am, Environment environment) {
+    @Inject
+    public ApplicationAM(@Assisted List<EnterpriseApp> applications, @Assisted GeneralAM am, Environment environment) {
         super(environment);
         this.am = am;
         this.applications = applications;
