@@ -3,11 +3,11 @@ package simulator.am;
 import com.google.inject.Inject;
 
 import simulator.Environment;
+import simulator.ManagedResource;
 import simulator.Simulator;
-import simulator.system.GeneralSystem;
 import simulator.system.InteractiveSystem;
 
-public class InteractiveSystemAM extends SystemAM {
+public class InteractiveSystemAM extends GeneralAM {
 
     private InteractiveSystem interatctiveSystem;
     private double[] percentCompPwr;
@@ -23,8 +23,8 @@ public class InteractiveSystemAM extends SystemAM {
     }
 
     @Override
-    public void setManagedSystem(GeneralSystem generalSystem) {
-        this.interatctiveSystem = (InteractiveSystem) generalSystem;
+    public void setManagedResource(ManagedResource managedResource) {
+        this.interatctiveSystem = (InteractiveSystem) managedResource;
         setRecForCoop(new int[interatctiveSystem.getUserList().size()]);
     }
 

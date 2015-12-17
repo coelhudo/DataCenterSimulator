@@ -7,6 +7,7 @@ import com.google.inject.Inject;
 import com.google.inject.assistedinject.Assisted;
 
 import simulator.Environment;
+import simulator.ManagedResource;
 import simulator.Simulator;
 import simulator.jobs.EnterpriseJob;
 import simulator.physical.BladeServer;
@@ -26,15 +27,17 @@ public class ApplicationAM extends GeneralAM {
     private List<EnterpriseApp> applications;
 
     @Inject
-    public ApplicationAM(@Assisted List<EnterpriseApp> applications, @Assisted GeneralAM am, Environment environment) {
+    public ApplicationAM(@Assisted List<EnterpriseApp> applications, @Assisted AutonomicManager am, Environment environment) {
         super(environment);
         this.am = am;
         this.applications = applications;
     }
 
-    public void setApplication(EnterpriseApp app) {
-        this.app = app;
-    }
+	@Override
+	public void setManagedResource(ManagedResource mananagedResource) {
+		 this.app = (EnterpriseApp) mananagedResource;
+		
+	}
 
     @Override
     public void monitor() {

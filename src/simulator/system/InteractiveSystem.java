@@ -12,7 +12,7 @@ import com.google.inject.name.Named;
 
 import simulator.Environment;
 import simulator.SLAViolationLogger;
-import simulator.am.SystemAM;
+import simulator.am.GeneralAM;
 import simulator.physical.BladeServer;
 import simulator.ra.ResourceAllocation;
 import simulator.schedulers.Scheduler;
@@ -32,8 +32,8 @@ public class InteractiveSystem extends GeneralSystem {
                              @Named("InteractiveSystem") Scheduler scheduler,
                              @Named("InteractiveSystem") ResourceAllocation resourceAllocation,
                              SLAViolationLogger slaViolationLogger,
-                             @Named("InteractiveSystem") SystemAM systemAM) {
-        super(systemPOD, scheduler, resourceAllocation, systemAM);
+                             @Named("InteractiveSystem") GeneralAM generalAM) {
+        super(systemPOD, scheduler, resourceAllocation, generalAM);
         this.environment = environment;
         this.slaViolationLogger = slaViolationLogger;
         setComputeNodeList(new ArrayList<BladeServer>());

@@ -73,7 +73,7 @@ public class EnterpriseSystemTest {
         assertEquals(0, enterpriseSystem.getSLAviolation());
 
         verify(mockedResourceAllocation).initialResourceAlocator(enterpriseSystem);
-        verify(mockedEnterpriseSystemAM).setManagedSystem(enterpriseSystem);
+        verify(mockedEnterpriseSystemAM).setManagedResource(enterpriseSystem);
     }
 
     @Test
@@ -82,7 +82,7 @@ public class EnterpriseSystemTest {
         assertTrue(enterpriseSystem.isDone());
 
         verify(mockedResourceAllocation).initialResourceAlocator(enterpriseSystem);
-        verify(mockedEnterpriseSystemAM).setManagedSystem(enterpriseSystem);
+        verify(mockedEnterpriseSystemAM).setManagedResource(enterpriseSystem);
     }
 
     @Test
@@ -96,7 +96,7 @@ public class EnterpriseSystemTest {
         assertFalse(applications.isEmpty());
 
         verify(mockedResourceAllocation).initialResourceAlocator(enterpriseSystem);
-        verify(mockedEnterpriseSystemAM).setManagedSystem(enterpriseSystem);
+        verify(mockedEnterpriseSystemAM).setManagedResource(enterpriseSystem);
         verify(mockedEnterpriseApp).runAcycle();
         verifyNoMoreInteractions(mockedEnterpriseApp);
     }
@@ -111,7 +111,7 @@ public class EnterpriseSystemTest {
         assertTrue(enterpriseSystem.isDone());
         assertTrue(applications.isEmpty());
 
-        verify(mockedEnterpriseSystemAM).setManagedSystem(enterpriseSystem);
+        verify(mockedEnterpriseSystemAM).setManagedResource(enterpriseSystem);
         verify(mockedResourceAllocation).initialResourceAlocator(enterpriseSystem);
         verify(mockedEnterpriseApp).runAcycle();
         verify(mockedEnterpriseApp).getComputeNodeList();

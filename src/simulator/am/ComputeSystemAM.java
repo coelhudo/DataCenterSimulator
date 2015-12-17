@@ -5,11 +5,11 @@ import java.util.logging.Logger;
 import com.google.inject.Inject;
 
 import simulator.Environment;
+import simulator.ManagedResource;
 import simulator.physical.BladeServer;
 import simulator.system.ComputeSystem;
-import simulator.system.GeneralSystem;
 
-public class ComputeSystemAM extends SystemAM {
+public class ComputeSystemAM extends GeneralAM {
 
     private static final Logger LOGGER = Logger.getLogger(ComputeSystemAM.class.getName());
 
@@ -20,8 +20,8 @@ public class ComputeSystemAM extends SystemAM {
         super(environment);      
     }
    
-    public void setManagedSystem(GeneralSystem managedSystem) {
-        this.computeSystem = (ComputeSystem) managedSystem;
+    public void setManagedResource(ManagedResource managedResource) {
+        this.computeSystem = (ComputeSystem) managedResource;
     }
 
     @Override

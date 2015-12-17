@@ -17,8 +17,8 @@ import simulator.SimulatorEnvironment;
 import simulator.SimulatorPOD;
 import simulator.am.ComputeSystemAM;
 import simulator.am.EnterpriseSystemAM;
+import simulator.am.GeneralAM;
 import simulator.am.InteractiveSystemAM;
-import simulator.am.SystemAM;
 import simulator.physical.DataCenter;
 import simulator.physical.DataCenter.DataCenterStats;
 import simulator.physical.DataCenterPOD;
@@ -183,21 +183,18 @@ public class ITModule extends AbstractModule {
 
         bind(Scheduler.class).annotatedWith(Names.named("ComputeSystem")).to(LeastRemainFirstScheduler.class);
         bind(ResourceAllocation.class).annotatedWith(Names.named("ComputeSystem")).to(MHR.class);
-        bind(SystemAM.class).annotatedWith(Names.named("ComputeSystem")).to(ComputeSystemAM.class);
+        bind(GeneralAM.class).annotatedWith(Names.named("ComputeSystem")).to(ComputeSystemAM.class);
 
         bind(Scheduler.class).annotatedWith(Names.named("InteractiveSystem")).to(FIFOScheduler.class);
         bind(ResourceAllocation.class).annotatedWith(Names.named("InteractiveSystem")).to(MHR.class);
-        bind(SystemAM.class).annotatedWith(Names.named("InteractiveSystem")).to(InteractiveSystemAM.class);
+        bind(GeneralAM.class).annotatedWith(Names.named("InteractiveSystem")).to(InteractiveSystemAM.class);
 
         bind(Scheduler.class).annotatedWith(Names.named("EnterpriseSystem")).to(FIFOScheduler.class);
         bind(ResourceAllocation.class).annotatedWith(Names.named("EnterpriseSystem")).to(MHR.class);
-        bind(SystemAM.class).annotatedWith(Names.named("EnterpriseSystem")).to(EnterpriseSystemAM.class);
+        bind(GeneralAM.class).annotatedWith(Names.named("EnterpriseSystem")).to(EnterpriseSystemAM.class);
 
         install(new FactoryModuleBuilder().build(ComputeSystemFactory.class));
         install(new FactoryModuleBuilder().build(InteractiveSystemFactory.class));
         install(new FactoryModuleBuilder().build(EnterpriseSystemFactory.class));
-
-        // install(new
-        // FactoryModuleBuilder().build(EnterpriseApplicationFactory.class));
     }
 }

@@ -19,7 +19,7 @@ import org.mockito.ArgumentCaptor;
 import simulator.Environment;
 import simulator.SLAViolationLogger;
 import simulator.am.DataCenterAM;
-import simulator.am.SystemAM;
+import simulator.am.GeneralAM;
 import simulator.am.ComputeSystemAM;
 import simulator.jobs.BatchJob;
 import simulator.jobs.JobProducer;
@@ -133,10 +133,10 @@ public class ComputeSystemIT {
 
         ResourceAllocation resourceAllocation = new MHR(mockedEnvironment, dataCenter);
         Scheduler scheduler = new LeastRemainFirstScheduler();
-        SystemAM systemAM = new ComputeSystemAM(mockedEnvironment);
+        GeneralAM generalAM = new ComputeSystemAM(mockedEnvironment);
 
         when(computeSystemFactory.create(computeSystemPOD)).thenReturn(new ComputeSystem(computeSystemPOD,
-                mockedEnvironment, scheduler, resourceAllocation, systemAM, slaViolationLogger));
+                mockedEnvironment, scheduler, resourceAllocation, generalAM, slaViolationLogger));
 
         Systems systems = new Systems(mockedEnvironment, systemsPOD, computeSystemFactory, interactiveSystemFactory, enterpriseSystemFactory);
         systems.setup();
@@ -205,10 +205,10 @@ public class ComputeSystemIT {
 
         ResourceAllocation resourceAllocation = new MHR(mockedEnvironment, dataCenter);
         Scheduler scheduler = new LeastRemainFirstScheduler();
-        SystemAM systemAM = new ComputeSystemAM(mockedEnvironment);
+        GeneralAM generalAM = new ComputeSystemAM(mockedEnvironment);
 
         when(computeSystemFactory.create(computeSystemPOD)).thenReturn(new ComputeSystem(computeSystemPOD,
-                mockedEnvironment, scheduler, resourceAllocation, systemAM, slaViolationLogger));
+                mockedEnvironment, scheduler, resourceAllocation, generalAM, slaViolationLogger));
 
         Systems systems = new Systems(mockedEnvironment, systemsPOD, computeSystemFactory, interactiveSystemFactory, enterpriseSystemFactory);
         systems.setup();
@@ -267,10 +267,10 @@ public class ComputeSystemIT {
 
         ResourceAllocation resourceAllocation = new MHR(mockedEnvironment, dataCenter);
         Scheduler scheduler = new LeastRemainFirstScheduler();
-        SystemAM systemAM = new ComputeSystemAM(mockedEnvironment);
+        GeneralAM generalAM = new ComputeSystemAM(mockedEnvironment);
 
         when(computeSystemFactory.create(computeSystemPOD)).thenReturn(new ComputeSystem(computeSystemPOD,
-                mockedEnvironment, scheduler, resourceAllocation, systemAM, slaViolationLogger));
+                mockedEnvironment, scheduler, resourceAllocation, generalAM, slaViolationLogger));
 
         Systems systems = new Systems(mockedEnvironment, systemsPOD, computeSystemFactory, interactiveSystemFactory, enterpriseSystemFactory);
         systems.setup();

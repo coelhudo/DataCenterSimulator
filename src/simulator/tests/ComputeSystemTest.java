@@ -28,7 +28,7 @@ import org.junit.Test;
 import simulator.Environment;
 import simulator.SLAViolationLogger;
 import simulator.Violation;
-import simulator.am.SystemAM;
+import simulator.am.GeneralAM;
 import simulator.jobs.Job;
 import simulator.jobs.BatchJob;
 import simulator.jobs.JobProducer;
@@ -48,7 +48,7 @@ public class ComputeSystemTest {
     public ResourceAllocation mockedResourceAllocation;
     public ComputeSystemPOD systemPOD;
     public SLAViolationLogger mockedSLAViolationLogger;
-    public SystemAM mockedSystemAM;
+    public GeneralAM mockedAM;
 
     @Before
     public void setUp() {
@@ -57,19 +57,19 @@ public class ComputeSystemTest {
         mockedResourceAllocation = mock(ResourceAllocation.class);
         mockedSLAViolationLogger = mock(SLAViolationLogger.class);
         mockedScheduler = mock(Scheduler.class);
-        mockedSystemAM = mock(SystemAM.class);
+        mockedAM = mock(GeneralAM.class);
     }
 
     @After
     public void tearDown() {
         verifyNoMoreInteractions(mockedEnvironment, mockedScheduler, mockedResourceAllocation, mockedSLAViolationLogger,
-                mockedSystemAM);
+                mockedAM);
     }
 
     @Test
     public void testComputeSytemCreation() {
         ComputeSystem computeSystem = new ComputeSystem(systemPOD, mockedEnvironment, mockedScheduler,
-                mockedResourceAllocation, mockedSystemAM, mockedSLAViolationLogger);
+                mockedResourceAllocation, mockedAM, mockedSLAViolationLogger);
         computeSystem.getResourceAllocation().initialResourceAloc(computeSystem);
         computeSystem.setupAM();
 
@@ -88,7 +88,7 @@ public class ComputeSystemTest {
         assertFalse(computeSystem.isBlocked());
         assertFalse(computeSystem.isDone());
 
-        verify(mockedSystemAM).setManagedSystem(computeSystem);
+        verify(mockedAM).setManagedResource(computeSystem);
 
         verify(mockedResourceAllocation).initialResourceAloc(computeSystem);
     }
@@ -102,7 +102,7 @@ public class ComputeSystemTest {
         systemPOD.setJobProducer(mockedJobProducer);
 
         ComputeSystem computeSystem = new ComputeSystem(systemPOD, mockedEnvironment, mockedScheduler,
-                mockedResourceAllocation, mockedSystemAM, mockedSLAViolationLogger);
+                mockedResourceAllocation, mockedAM, mockedSLAViolationLogger);
         computeSystem.getResourceAllocation().initialResourceAloc(computeSystem);
         computeSystem.setupAM();
         assertTrue(computeSystem.runAcycle());
@@ -119,9 +119,9 @@ public class ComputeSystemTest {
 
         verify(mockedResourceAllocation).initialResourceAloc(computeSystem);
 
-        verify(mockedSystemAM).setManagedSystem(computeSystem);
-        verify(mockedSystemAM).monitor();
-        verify(mockedSystemAM).analysis();
+        verify(mockedAM).setManagedResource(computeSystem);
+        verify(mockedAM).monitor();
+        verify(mockedAM).analysis();
 
         verifyNoMoreInteractions(mockedJobProducer);
     }
@@ -143,7 +143,7 @@ public class ComputeSystemTest {
 
         when(mockedEnvironment.getCurrentLocalTime()).thenReturn(3);
         ComputeSystem computeSystem = new ComputeSystem(systemPOD, mockedEnvironment, mockedScheduler,
-                mockedResourceAllocation, mockedSystemAM, mockedSLAViolationLogger);
+                mockedResourceAllocation, mockedAM, mockedSLAViolationLogger);
         computeSystem.getResourceAllocation().initialResourceAloc(computeSystem);
         computeSystem.setupAM();
 
@@ -172,9 +172,9 @@ public class ComputeSystemTest {
 
         verify(mockedScheduler).nextJob(anyListOf(Job.class));
 
-        verify(mockedSystemAM).setManagedSystem(computeSystem);
-        verify(mockedSystemAM).monitor();
-        verify(mockedSystemAM).analysis();
+        verify(mockedAM).setManagedResource(computeSystem);
+        verify(mockedAM).monitor();
+        verify(mockedAM).analysis();
 
         verifyNoMoreInteractions(mockedJobProducer);
     }
@@ -196,7 +196,7 @@ public class ComputeSystemTest {
 
         when(mockedEnvironment.getCurrentLocalTime()).thenReturn(3, 4);
         ComputeSystem computeSystem = new ComputeSystem(systemPOD, mockedEnvironment, mockedScheduler,
-                mockedResourceAllocation, mockedSystemAM, mockedSLAViolationLogger);
+                mockedResourceAllocation, mockedAM, mockedSLAViolationLogger);
         computeSystem.getResourceAllocation().initialResourceAloc(computeSystem);
         computeSystem.setupAM();
 
@@ -235,9 +235,9 @@ public class ComputeSystemTest {
 
         verify(mockedScheduler).nextJob(anyListOf(Job.class));
 
-        verify(mockedSystemAM).setManagedSystem(computeSystem);
-        verify(mockedSystemAM).monitor();
-        verify(mockedSystemAM).analysis();
+        verify(mockedAM).setManagedResource(computeSystem);
+        verify(mockedAM).monitor();
+        verify(mockedAM).analysis();
 
         verifyNoMoreInteractions(mockedJobProducer, mockedBladeServer);
     }
@@ -260,7 +260,7 @@ public class ComputeSystemTest {
         when(mockedEnvironment.getCurrentLocalTime()).thenReturn(3);
 
         ComputeSystem computeSystem = new ComputeSystem(systemPOD, mockedEnvironment, mockedScheduler,
-                mockedResourceAllocation, mockedSystemAM, mockedSLAViolationLogger);
+                mockedResourceAllocation, mockedAM, mockedSLAViolationLogger);
         computeSystem.getResourceAllocation().initialResourceAloc(computeSystem);
         computeSystem.setupAM();
         
@@ -298,9 +298,9 @@ public class ComputeSystemTest {
 
         verify(mockedScheduler).nextJob(anyListOf(Job.class));
 
-        verify(mockedSystemAM).setManagedSystem(computeSystem);
-        verify(mockedSystemAM).monitor();
-        verify(mockedSystemAM).analysis();
+        verify(mockedAM).setManagedResource(computeSystem);
+        verify(mockedAM).monitor();
+        verify(mockedAM).analysis();
 
         verifyNoMoreInteractions(mockedJobProducer, mockedBladeServer);
     }
@@ -322,7 +322,7 @@ public class ComputeSystemTest {
         when(mockedEnvironment.getCurrentLocalTime()).thenReturn(3, 4);
 
         ComputeSystem computeSystem = new ComputeSystem(systemPOD, mockedEnvironment, mockedScheduler,
-                mockedResourceAllocation, mockedSystemAM, mockedSLAViolationLogger);
+                mockedResourceAllocation, mockedAM, mockedSLAViolationLogger);
         computeSystem.getResourceAllocation().initialResourceAloc(computeSystem);
         computeSystem.setupAM();
         
@@ -363,9 +363,9 @@ public class ComputeSystemTest {
 
         verify(mockedScheduler).nextJob(anyListOf(Job.class));
 
-        verify(mockedSystemAM).setManagedSystem(computeSystem);
-        verify(mockedSystemAM).monitor();
-        verify(mockedSystemAM).analysis();
+        verify(mockedAM).setManagedResource(computeSystem);
+        verify(mockedAM).monitor();
+        verify(mockedAM).analysis();
 
         verifyNoMoreInteractions(mockedJobProducer, mockedBladeServer);
     }
@@ -389,7 +389,7 @@ public class ComputeSystemTest {
         when(mockedEnvironment.getCurrentLocalTime()).thenReturn(1);
 
         ComputeSystem computeSystem = new ComputeSystem(systemPOD, mockedEnvironment, mockedScheduler,
-                mockedResourceAllocation, mockedSystemAM, mockedSLAViolationLogger);
+                mockedResourceAllocation, mockedAM, mockedSLAViolationLogger);
         computeSystem.getResourceAllocation().initialResourceAloc(computeSystem);
         computeSystem.setupAM();
         
@@ -437,7 +437,7 @@ public class ComputeSystemTest {
 
         verify(mockedScheduler).nextJob(anyListOf(Job.class));
 
-        verify(mockedSystemAM).setManagedSystem(computeSystem);
+        verify(mockedAM).setManagedResource(computeSystem);
 
         verifyNoMoreInteractions(mockedJobProducer, mockedBladeServer);
     }
@@ -447,7 +447,7 @@ public class ComputeSystemTest {
 
         when(mockedEnvironment.getCurrentLocalTime()).thenReturn(1);
         ComputeSystem computeSystem = new ComputeSystem(systemPOD, mockedEnvironment, mockedScheduler,
-                mockedResourceAllocation, mockedSystemAM, mockedSLAViolationLogger);
+                mockedResourceAllocation, mockedAM, mockedSLAViolationLogger);
         computeSystem.getResourceAllocation().initialResourceAloc(computeSystem);
         computeSystem.setupAM();
         
@@ -460,7 +460,7 @@ public class ComputeSystemTest {
 
         verify(mockedResourceAllocation).initialResourceAloc(computeSystem);
 
-        verify(mockedSystemAM).setManagedSystem(computeSystem);
+        verify(mockedAM).setManagedResource(computeSystem);
 
         verifyNoMoreInteractions(mockedBladeServer);
     }
@@ -470,7 +470,7 @@ public class ComputeSystemTest {
 
         when(mockedEnvironment.getCurrentLocalTime()).thenReturn(1);
         ComputeSystem computeSystem = new ComputeSystem(systemPOD, mockedEnvironment, mockedScheduler,
-                mockedResourceAllocation, mockedSystemAM, mockedSLAViolationLogger);
+                mockedResourceAllocation, mockedAM, mockedSLAViolationLogger);
         computeSystem.getResourceAllocation().initialResourceAloc(computeSystem);
         computeSystem.setupAM();
         
@@ -483,7 +483,7 @@ public class ComputeSystemTest {
 
         verify(mockedResourceAllocation).initialResourceAloc(computeSystem);
 
-        verify(mockedSystemAM).setManagedSystem(computeSystem);
+        verify(mockedAM).setManagedResource(computeSystem);
 
         verifyNoMoreInteractions(mockedBladeServer);
     }
@@ -492,7 +492,7 @@ public class ComputeSystemTest {
     public void testFinalized() {
         when(mockedEnvironment.getCurrentLocalTime()).thenReturn(1);
         ComputeSystem computeSystem = new ComputeSystem(systemPOD, mockedEnvironment, mockedScheduler,
-                mockedResourceAllocation, mockedSystemAM, mockedSLAViolationLogger);
+                mockedResourceAllocation, mockedAM, mockedSLAViolationLogger);
         computeSystem.getResourceAllocation().initialResourceAloc(computeSystem);
         computeSystem.setupAM();
         
@@ -522,7 +522,7 @@ public class ComputeSystemTest {
 
         verify(mockedResourceAllocation).initialResourceAloc(computeSystem);
 
-        verify(mockedSystemAM).setManagedSystem(computeSystem);
+        verify(mockedAM).setManagedResource(computeSystem);
 
         verifyNoMoreInteractions(mockedBladeServer);
     }

@@ -3,6 +3,7 @@ package simulator.am;
 import java.util.logging.Logger;
 
 import simulator.Environment;
+import simulator.ManagedResource;
 import simulator.Simulator;
 import simulator.jobs.EnterpriseJob;
 import simulator.physical.BladeServer;
@@ -35,7 +36,7 @@ public class InteractiveUserAM extends GeneralAM {
         /// Check if its neighborhood are not happy to see if it can help or
         /// not!
         for (int i = 0; i < sys.getUserList().size(); i++) {
-            if (sys.getAM().getRecForCoopAt(i) == 1) {
+            if (((GeneralAM)sys.getAM()).getRecForCoopAt(i) == 1) {
                 // TODO
             }
         }
@@ -63,8 +64,8 @@ public class InteractiveUserAM extends GeneralAM {
             }
         }
         percnt = percnt + levels[0] + 2 * levels[1] + 3 * levels[2];
-        sys.getAM().setCompPowerAppsAt(user.getID(),
-                sys.getAM().getCompPowerAppsAt(user.getID()) + levels[0] + 2 * levels[1] + 3 * levels[2]);
+        ((GeneralAM)sys.getAM()).setCompPowerAppsAt(user.getID(),
+        		((GeneralAM)sys.getAM()).getCompPowerAppsAt(user.getID()) + levels[0] + 2 * levels[1] + 3 * levels[2]);
         return percnt;
     }
 
@@ -225,4 +226,10 @@ public class InteractiveUserAM extends GeneralAM {
         currentStrategy = Simulator.StrategyEnum.SLA;
         return true;
     }
+
+	@Override
+	public void setManagedResource(ManagedResource mananagedResource) {
+		// TODO Auto-generated method stub
+		
+	}
 }
