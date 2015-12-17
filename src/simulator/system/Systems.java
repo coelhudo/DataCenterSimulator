@@ -10,7 +10,7 @@ import com.google.inject.Inject;
 import com.google.inject.Singleton;
 
 import simulator.Environment;
-import simulator.am.ApplicationAM;
+import simulator.am.AutonomicManager;
 
 @Singleton
 public class Systems extends Observable {
@@ -44,7 +44,7 @@ public class Systems extends Observable {
             EnterpriseSystem enterpriseSystem = enterpriseSystemFactory.create(enterpriseSystemPOD, applications);
 
             for (EnterpriseApplicationPOD pod : enterpriseSystemPOD.getApplicationPODs()) {
-                ApplicationAM applicationAM = enterpriseSystemFactory.create(applications, enterpriseSystem.getAM());
+                AutonomicManager applicationAM = enterpriseSystemFactory.create(applications, enterpriseSystem.getAM());
                 EnterpriseApp enterpriseApplication = enterpriseSystemFactory.create(pod,
                         enterpriseSystem.getScheduler(), enterpriseSystem.getResourceAllocation());
                 enterpriseApplication.setAM(applicationAM);

@@ -19,10 +19,6 @@ public class ApplicationAM extends GeneralAM {
 
     private EnterpriseApp app;
     static int violationInEpoch = 0;
-    private double util = 0;
-    private double percnt = 0;
-    private int accumulativeSLA = 0;
-    private Simulator.StrategyEnum strategySwitch = Simulator.StrategyEnum.Green;
     private GeneralAM am;
     private List<EnterpriseApp> applications;
 
@@ -125,7 +121,7 @@ public class ApplicationAM extends GeneralAM {
 
     @Override
     public void analysis() {
-        if (getStrategySwitch() == Simulator.StrategyEnum.Green) {
+        if (getStrategy() == Simulator.StrategyEnum.Green) {
             analysis_GR();
         } else {
             analysis_SLA();
@@ -276,40 +272,8 @@ public class ApplicationAM extends GeneralAM {
         LOGGER.info("app:\t" + app.getID() + " ----------> :\t\t " + targetApp + "\t\t@:"
                 + environment().getCurrentLocalTime() + "\tRunning target node= "
                 + applications.get(targetApp).numberofRunningNode() + "\tRunning this node= "
-                + app.numberofRunningNode() + "\tstrtgy= " + getStrategySwitch());
-        setStrategySwitch(Simulator.StrategyEnum.SLA);
+                + app.numberofRunningNode() + "\tstrtgy= " + getStrategy());
+        setStrategy(Simulator.StrategyEnum.SLA);
         return true;
-    }
-
-    double getUtil() {
-        return util;
-    }
-
-    private void setUtil(double util) {
-        this.util = util;
-    }
-
-    double getPercnt() {
-        return percnt;
-    }
-
-    void setPercnt(double percnt) {
-        this.percnt = percnt;
-    }
-
-    protected int getAccumulativeSLA() {
-        return accumulativeSLA;
-    }
-
-    protected void setAccumulativeSLA(int accumulativeSLA) {
-        this.accumulativeSLA = accumulativeSLA;
-    }
-
-    private Simulator.StrategyEnum getStrategySwitch() {
-        return strategySwitch;
-    }
-
-    void setStrategySwitch(Simulator.StrategyEnum strategySwitch) {
-        this.strategySwitch = strategySwitch;
     }
 }

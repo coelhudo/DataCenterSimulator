@@ -90,13 +90,13 @@ public class EnterpriseSystemAM extends GeneralAM {
             enterpriseSystem
                     .setSLAviolation(enterpriseSystem.getSLAviolation() + applications.get(i).getSLAviolation());
             // assume epoch system 2 time epoch application
-            percentCompPwr[i] = applications.get(i).getAM().getPercnt()
-                    / ((environment().getCurrentLocalTime() - lastTime) * 3
+            GeneralAM applicationAM = applications.get(i).getAM();
+            percentCompPwr[i] = applicationAM.getPercnt() / ((environment().getCurrentLocalTime() - lastTime) * 3
                             * applications.get(i).getComputeNodeList().size());// (Main.epochSys*/*3*ES.getApplications().get(i).ComputeNodeList.size());
-            applications.get(i).getAM().setPercnt(0);
-            accuSLA[i] = applications.get(i).getAM().getAccumulativeSLA()
+            applicationAM.setPercnt(0);
+            accuSLA[i] = applicationAM.getAccumulativeSLA()
                     / (environment().getCurrentLocalTime() - lastTime);// Main.epochSys;
-            applications.get(i).getAM().setAccumulativeSLA(0);
+            applicationAM.setAccumulativeSLA(0);
             // for fair allocate/release node needs to know how many jobs are
             // already in each application queue
             queueLengthApps[i] = applications.get(i).numberOfWaitingJobs();
@@ -132,7 +132,7 @@ public class EnterpriseSystemAM extends GeneralAM {
     @SuppressWarnings("unused")
     private void iterativeAlg() {
         for (int i = 0; i < applications.size(); i++) {
-            applications.get(i).getAM().setStrategySwitch(Simulator.StrategyEnum.Green);
+            applications.get(i).getAM().setStrategy(Simulator.StrategyEnum.Green);
             double wkIntensApp;
             wkIntensApp = (double) applications.get(i).getNumberofBasicNode()
                     / applications.get(i).getMaxNumberOfRequest();
@@ -151,7 +151,7 @@ public class EnterpriseSystemAM extends GeneralAM {
                 allocationVector[i] = 1 + bishtar;// +(int)Math.abs((Math.floor((wlkIntens-wkIntensApp)/wlkIntens)));
                 // LOGGER.info("Switching Strategy in Application =" +i
                 // +" to SLA ");
-                applications.get(i).getAM().setStrategySwitch(Simulator.StrategyEnum.SLA);
+                applications.get(i).getAM().setStrategy(Simulator.StrategyEnum.SLA);
             }
             // if cpmPwr < 50% & violation is less then release a server
             if (percentCompPwr[i] <= 0.5 && accuSLA[i] == 0) {
@@ -164,7 +164,7 @@ public class EnterpriseSystemAM extends GeneralAM {
                 allocationVector[i] = 1;
                 // LOGGER.info("Switching Strategy in Application =" +i
                 // +" to SLA ");
-                applications.get(i).getAM().setStrategySwitch(Simulator.StrategyEnum.SLA);
+                applications.get(i).getAM().setStrategy(Simulator.StrategyEnum.SLA);
             }
         }
         int requestedNd = 0;
@@ -212,11 +212,11 @@ public class EnterpriseSystemAM extends GeneralAM {
             allocationVector[i] = sugestForAlo[i] - applications.get(i).getComputeNodeList().size();
         }
         for (int i = 0; i < applications.size(); i++) {
-            applications.get(i).getAM().setStrategySwitch(Simulator.StrategyEnum.Green);
+            applications.get(i).getAM().setStrategy(Simulator.StrategyEnum.Green);
             if (accuSLA[i] > 0) {
                 // LOGGER.info("Switching Strategy in Application =" +i
                 // +" to SLA ");
-                applications.get(i).getAM().setStrategySwitch(Simulator.StrategyEnum.SLA);
+                applications.get(i).getAM().setStrategy(Simulator.StrategyEnum.SLA);
             }
         }
     }
@@ -244,15 +244,15 @@ public class EnterpriseSystemAM extends GeneralAM {
 
     private void utilityBasedPlanning() {
         for (int i = 0; i < applications.size(); i++) {
-            applications.get(i).getAM().setStrategySwitch(Simulator.StrategyEnum.Green);
+            applications.get(i).getAM().setStrategy(Simulator.StrategyEnum.Green);
             allocationVector[i] = 0;
             if (sigmoid(queueLengthApps[i]) > 0.5 && accuSLA[i] > 0) {
-                applications.get(i).getAM().setStrategySwitch(Simulator.StrategyEnum.SLA);
+                applications.get(i).getAM().setStrategy(Simulator.StrategyEnum.SLA);
                 allocationVector[i] = 1;
                 // LOGGER.info("allocate system!!!!! ");
             }
             if (sigmoid(queueLengthApps[i]) < 0.5 && accuSLA[i] > 0) {
-                applications.get(i).getAM().setStrategySwitch(Simulator.StrategyEnum.SLA);
+                applications.get(i).getAM().setStrategy(Simulator.StrategyEnum.SLA);
             }
             if (sigmoid(queueLengthApps[i]) <= 0.5 && accuSLA[i] == 0) {
                 allocationVector[i] = -1;

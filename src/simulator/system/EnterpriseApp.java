@@ -10,7 +10,8 @@ import com.google.inject.assistedinject.Assisted;
 import simulator.Environment;
 import simulator.ManagedResource;
 import simulator.ResponseTime;
-import simulator.am.ApplicationAM;
+import simulator.am.AutonomicManager;
+import simulator.am.GeneralAM;
 import simulator.jobs.EnterpriseJob;
 import simulator.jobs.JobProducer;
 import simulator.physical.BladeServer;
@@ -32,7 +33,7 @@ public class EnterpriseApp implements ManagedResource {
     private int slaPercentage;
     private int slaViolation = 0;
     private int numOfViolation = 0;
-    private ApplicationAM am;
+    private GeneralAM am;
     private int maxNumberOfRequest = 0; // # of Request can be handled by number
     // of basic node which for 100% CPU
     // utilization
@@ -397,12 +398,12 @@ public class EnterpriseApp implements ManagedResource {
         slaViolation = sLAviolation;
     }
 
-    public ApplicationAM getAM() {
+    public GeneralAM getAM() {
         return am;
     }
 
-    public void setAM(ApplicationAM am) {
-        this.am = am;
+    public void setAM(AutonomicManager am) {
+        this.am = (GeneralAM) am;
         this.am.setManagedResource(this);
     }
 
@@ -416,13 +417,5 @@ public class EnterpriseApp implements ManagedResource {
 
     public int getNumberofBasicNode() {
         return numberofBasicNode;
-    }
-
-    public static EnterpriseApp create(EnterpriseApplicationPOD enterpriseApplicationPOD, Scheduler scheduler,
-            ResourceAllocation resourceAllocation, Environment environment, ApplicationAM applicationAM) {
-        EnterpriseApp enterpriseApplication = new EnterpriseApp(enterpriseApplicationPOD, scheduler, resourceAllocation,
-                environment);
-        enterpriseApplication.setAM(applicationAM);
-        return enterpriseApplication;
     }
 }

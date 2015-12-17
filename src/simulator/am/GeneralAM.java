@@ -11,6 +11,9 @@ public abstract class GeneralAM implements AutonomicManager {
     private int SLAViolationGen;
     private Simulator.StrategyEnum strategy;
     private Environment environment;
+    private double util = 0;
+    private double percnt = 0;
+    private int accumulativeSLA = 0;
     
     public GeneralAM(Environment environment) {
         this.environment = environment;
@@ -54,5 +57,29 @@ public abstract class GeneralAM implements AutonomicManager {
 
     public void setStrategy(Simulator.StrategyEnum strategy) {
         this.strategy = strategy;
+    }
+    
+    double getUtil() {
+        return util;
+    }
+
+    void setUtil(double util) {
+        this.util = util;
+    }
+
+    double getPercnt() {
+        return percnt;
+    }
+
+    void setPercnt(double percnt) {
+        this.percnt = percnt;
+    }
+
+    protected int getAccumulativeSLA() {
+        return accumulativeSLA;
+    }
+
+    protected void setAccumulativeSLA(int accumulativeSLA) {
+        this.accumulativeSLA = accumulativeSLA;
     }
 }
