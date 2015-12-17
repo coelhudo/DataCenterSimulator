@@ -11,7 +11,7 @@ import com.google.inject.name.Named;
 import simulator.Environment;
 import simulator.SLAViolationLogger;
 import simulator.Violation;
-import simulator.am.SystemAM;
+import simulator.am.GeneralAM;
 import simulator.jobs.BatchJob;
 import simulator.jobs.JobProducer;
 import simulator.physical.BladeServer;
@@ -36,9 +36,9 @@ public class ComputeSystem extends GeneralSystem {
                          Environment environment,
                          @Named("ComputeSystem") Scheduler scheduler,
                          @Named("ComputeSystem") ResourceAllocation resourceAllocation,
-                         @Named("ComputeSystem") SystemAM systemAM,
+                         @Named("ComputeSystem") GeneralAM generalAM,
                          SLAViolationLogger slaViolationLogger) {
-        super(systemPOD, scheduler, resourceAllocation, systemAM);
+        super(systemPOD, scheduler, resourceAllocation, generalAM);
         this.jobProducer = ((ComputeSystemPOD) systemPOD).getJobProducer();
         this.environment = environment;
         this.slaViolationLogger = slaViolationLogger;

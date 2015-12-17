@@ -8,7 +8,7 @@ import com.google.inject.Inject;
 import com.google.inject.assistedinject.Assisted;
 import com.google.inject.name.Named;
 
-import simulator.am.SystemAM;
+import simulator.am.GeneralAM;
 import simulator.physical.BladeServer;
 import simulator.ra.ResourceAllocation;
 import simulator.schedulers.Scheduler;
@@ -24,7 +24,7 @@ public class EnterpriseSystem extends GeneralSystem {
                             @Assisted List<EnterpriseApp> applications,
                             @Named("EnterpriseSystem") Scheduler scheduler,
                             @Named("EnterpriseSystem") ResourceAllocation resourceAllocation,
-                            @Named("EnterpriseSystem") SystemAM systemAM) {
+                            @Named("EnterpriseSystem") GeneralAM systemAM) {
         super(systemPOD, scheduler, resourceAllocation, systemAM);
         setComputeNodeList(new ArrayList<BladeServer>());
         resetNumberOfSLAViolation();

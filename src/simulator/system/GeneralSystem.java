@@ -4,7 +4,8 @@ import java.io.BufferedReader;
 import java.util.List;
 import java.util.Set;
 
-import simulator.am.SystemAM;
+import simulator.ManagedResource;
+import simulator.am.AutonomicManager;
 import simulator.physical.BladeServer;
 import simulator.physical.DataCenterEntityID;
 import simulator.ra.ResourceAllocation;
@@ -14,7 +15,7 @@ import simulator.schedulers.Scheduler;
  *
  * @author fnorouz
  */
-public abstract class GeneralSystem {
+public abstract class GeneralSystem implements ManagedResource {
 
     private String name;
     private ResourceAllocation resourceAllocation;
@@ -27,11 +28,11 @@ public abstract class GeneralSystem {
     private int slaViolation;
     private boolean sysIsDone = false;
     private double power = 0;
-    private SystemAM am;
+    private AutonomicManager am;
     private int accumolatedViolation = 0;
     private int numberOfActiveServ = 0;
 
-    public GeneralSystem(SystemPOD systemPOD, Scheduler scheduler, ResourceAllocation resourceAllocation, SystemAM systemAM) {
+    public GeneralSystem(SystemPOD systemPOD, Scheduler scheduler, ResourceAllocation resourceAllocation, AutonomicManager systemAM) {
         rackIDs = systemPOD.getRackUIDs();
         name = systemPOD.getName();
         this.scheduler = scheduler;
@@ -128,12 +129,12 @@ public abstract class GeneralSystem {
         this.power = power;
     }
 
-    public SystemAM getAM() {
+    public AutonomicManager getAM() {
         return am;
     }
 
     public void setupAM() {
-        this.am.setManagedSystem(this);
+        this.am.setManagedResource(this);
     }
 
     public int getAccumolatedViolation() {

@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.logging.Logger;
 
 import simulator.Environment;
+import simulator.am.GeneralAM;
 import simulator.physical.BladeServer;
 import simulator.physical.Chassis;
 import simulator.physical.DataCenter;
@@ -97,7 +98,7 @@ public abstract class ResourceAllocation {
                 if (indexInComputeList == -2) {
                     // LOGGER.info("nashod alocate konim! for this
                     // application ->"+i +"\tsize quueue 0->"+
-                    enterpriseSystem.getAM().setRecForCoopAt(i, 1);
+                    ((GeneralAM)enterpriseSystem.getAM()).setRecForCoopAt(i, 1);
                 } else {
                     EnterpriseApp enterpriseApp = enterpriseSystem.getApplications().get(i);
                     final BladeServer server = enterpriseSystem.getComputeNodeList().get(indexInComputeList);
@@ -314,7 +315,7 @@ public abstract class ResourceAllocation {
                                 + interactiveSystem.getUserList().get(0).getQueueWL().size() + "\t1->"
                                 + interactiveSystem.getUserList().get(1).getQueueWL().size() + "\t2->"
                                 + interactiveSystem.getUserList().get(2).getQueueWL().size());
-                        interactiveSystem.getAM().setRecForCoopAt(i, 1);
+                        ((GeneralAM)interactiveSystem.getAM()).setRecForCoopAt(i, 1);
                     } else {
                         final BladeServer server = interactiveSystem.getComputeNodeList().get(indexInComputeList);
                         interactiveSystem.getUserList().get(i).addCompNodetoBundle(server);

@@ -8,6 +8,7 @@ import com.google.inject.Inject;
 import com.google.inject.assistedinject.Assisted;
 
 import simulator.Environment;
+import simulator.ManagedResource;
 import simulator.ResponseTime;
 import simulator.am.ApplicationAM;
 import simulator.jobs.EnterpriseJob;
@@ -16,7 +17,7 @@ import simulator.physical.BladeServer;
 import simulator.ra.ResourceAllocation;
 import simulator.schedulers.Scheduler;
 
-public class EnterpriseApp {
+public class EnterpriseApp implements ManagedResource {
 
     private static final Logger LOGGER = Logger.getLogger(EnterpriseApp.class.getName());
 
@@ -402,7 +403,7 @@ public class EnterpriseApp {
 
     public void setAM(ApplicationAM am) {
         this.am = am;
-        this.am.setApplication(this);
+        this.am.setManagedResource(this);
     }
 
     public int getMaxNumberOfRequest() {

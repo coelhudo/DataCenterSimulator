@@ -38,7 +38,7 @@ public class ComputeSystemAMTest {
     @Test
     public void testAnalysis_LocalTimeByEpochTrue() {
         ComputeSystemAM computeSystemAM = new ComputeSystemAM(mockedEnvironment);
-        computeSystemAM.setManagedSystem(mockedComputeSystem);
+        computeSystemAM.setManagedResource(mockedComputeSystem);
         
         when(mockedEnvironment.localTimeByEpoch()).thenReturn(true);
         
@@ -50,7 +50,7 @@ public class ComputeSystemAMTest {
     @Test
     public void testAnalysis_LocalTimeByEpochFalse_SLAViolationGreaterThanZero_NoIdleServers() {
         ComputeSystemAM computeSystemAM = new ComputeSystemAM(mockedEnvironment);
-        computeSystemAM.setManagedSystem(mockedComputeSystem);
+        computeSystemAM.setManagedResource(mockedComputeSystem);
         
         when(mockedEnvironment.localTimeByEpoch()).thenReturn(false);
         when(mockedComputeSystem.getSLAviolation()).thenReturn(100);
@@ -78,7 +78,7 @@ public class ComputeSystemAMTest {
     @Test
     public void testAnalysis_LocalTimeByEpochFalse_SLAViolationGreaterThanZero_NoRunningServers() {
         ComputeSystemAM computeSystemAM = new ComputeSystemAM(mockedEnvironment);
-        computeSystemAM.setManagedSystem(mockedComputeSystem);
+        computeSystemAM.setManagedResource(mockedComputeSystem);
         
         when(mockedEnvironment.localTimeByEpoch()).thenReturn(false);
         when(mockedComputeSystem.getSLAviolation()).thenReturn(100);
@@ -111,7 +111,7 @@ public class ComputeSystemAMTest {
     @Test
     public void testAnalysis_LocalTimeByEpochFalse_SLAViolationGreaterEqualsZero_NoIdleServers() {
         ComputeSystemAM computeSystemAM = new ComputeSystemAM(mockedEnvironment);
-        computeSystemAM.setManagedSystem(mockedComputeSystem);
+        computeSystemAM.setManagedResource(mockedComputeSystem);
         
         when(mockedEnvironment.localTimeByEpoch()).thenReturn(false);
         when(mockedComputeSystem.getSLAviolation()).thenReturn(0);

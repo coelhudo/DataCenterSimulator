@@ -3,7 +3,7 @@ package simulator.am;
 import simulator.Environment;
 import simulator.Simulator;
 
-public abstract class GeneralAM {
+public abstract class GeneralAM implements AutonomicManager {
 
     private double[] compPwrApps = new double[256];
     protected double[] SlaApps = new double[256];
@@ -19,14 +19,6 @@ public abstract class GeneralAM {
     protected Environment environment() {
         return environment;
     }
-
-    public abstract void monitor();
-
-    public abstract void analysis();
-
-    public abstract void planning();
-
-    public abstract void execution();
 
     public int getRecForCoopAt(int index) {
         return recForCoop[index];

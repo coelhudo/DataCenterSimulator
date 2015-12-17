@@ -6,13 +6,13 @@ import java.util.logging.Logger;
 import com.google.inject.Inject;
 
 import simulator.Environment;
+import simulator.ManagedResource;
 import simulator.SLAViolationLogger;
 import simulator.Simulator;
 import simulator.system.EnterpriseApp;
 import simulator.system.EnterpriseSystem;
-import simulator.system.GeneralSystem;
 
-public class EnterpriseSystemAM extends SystemAM {
+public class EnterpriseSystemAM extends GeneralAM {
 
     private static final Logger LOGGER = Logger.getLogger(EnterpriseSystemAM.class.getName());
 
@@ -34,8 +34,8 @@ public class EnterpriseSystemAM extends SystemAM {
     }
 
     @Override
-    public void setManagedSystem(GeneralSystem managedSystem) {
-        this.enterpriseSystem = (EnterpriseSystem) managedSystem;
+    public void setManagedResource(ManagedResource managedResource) {
+        this.enterpriseSystem = (EnterpriseSystem) managedResource;
         this.applications = enterpriseSystem.getApplications();
         setRecForCoop(new int[applications.size()]);
     }
