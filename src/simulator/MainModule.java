@@ -11,6 +11,7 @@ import com.google.inject.name.Names;
 import simulator.am.ApplicationAM;
 import simulator.am.AutonomicManager;
 import simulator.am.ComputeSystemAM;
+import simulator.am.DummyAM;
 import simulator.am.EnterpriseSystemAM;
 import simulator.am.GeneralAM;
 import simulator.am.InteractiveSystemAM;
@@ -50,19 +51,30 @@ public class MainModule extends AbstractModule {
 
 		bind(Scheduler.class).annotatedWith(Names.named("ComputeSystem")).to(LeastRemainFirstScheduler.class);
 		bind(ResourceAllocation.class).annotatedWith(Names.named("ComputeSystem")).to(MHR.class);
-		bind(GeneralAM.class).annotatedWith(Names.named("ComputeSystem")).to(ComputeSystemAM.class);
 
 		bind(Scheduler.class).annotatedWith(Names.named("InteractiveSystem")).to(FIFOScheduler.class);
 		bind(ResourceAllocation.class).annotatedWith(Names.named("InteractiveSystem")).to(MHR.class);
-		bind(GeneralAM.class).annotatedWith(Names.named("InteractiveSystem")).to(InteractiveSystemAM.class);
 
 		bind(Scheduler.class).annotatedWith(Names.named("EnterpriseSystem")).to(FIFOScheduler.class);
 		bind(ResourceAllocation.class).annotatedWith(Names.named("EnterpriseSystem")).to(MHR.class);
-		bind(GeneralAM.class).annotatedWith(Names.named("EnterpriseSystem")).to(EnterpriseSystemAM.class);
+
+		Class<? extends AutonomicManager> applicationAM = null;
+		boolean useAutonomicManager = true;
+		if (useAutonomicManager) {
+			bind(GeneralAM.class).annotatedWith(Names.named("ComputeSystem")).to(ComputeSystemAM.class);
+			bind(GeneralAM.class).annotatedWith(Names.named("InteractiveSystem")).to(InteractiveSystemAM.class);
+			bind(GeneralAM.class).annotatedWith(Names.named("EnterpriseSystem")).to(EnterpriseSystemAM.class);
+			applicationAM = ApplicationAM.class;
+		} else {
+			bind(GeneralAM.class).annotatedWith(Names.named("ComputeSystem")).to(DummyAM.class);
+			bind(GeneralAM.class).annotatedWith(Names.named("InteractiveSystem")).to(DummyAM.class);
+			bind(GeneralAM.class).annotatedWith(Names.named("EnterpriseSystem")).to(DummyAM.class);
+			applicationAM = DummyAM.class;
+		}
 
 		install(new FactoryModuleBuilder().build(ComputeSystemFactory.class));
 		install(new FactoryModuleBuilder().build(InteractiveSystemFactory.class));
-		install(new FactoryModuleBuilder().implement(AutonomicManager.class, ApplicationAM.class)
+		install(new FactoryModuleBuilder().implement(AutonomicManager.class, applicationAM)
 				.build(EnterpriseSystemFactory.class));
 	}
 }
