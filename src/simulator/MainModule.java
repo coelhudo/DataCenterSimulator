@@ -30,6 +30,12 @@ import simulator.system.SystemsPOD;
 import simulator.utils.ActivitiesLogger;
 
 public class MainModule extends AbstractModule {
+	
+	private SimulatorOptions simulatorOptions;
+
+	public MainModule(SimulatorOptions simulatorOptions) {
+		this.simulatorOptions = simulatorOptions;
+	}
 
 	@Override
 	public void configure() {
@@ -59,8 +65,7 @@ public class MainModule extends AbstractModule {
 		bind(ResourceAllocation.class).annotatedWith(Names.named("EnterpriseSystem")).to(MHR.class);
 
 		Class<? extends AutonomicManager> applicationAM = null;
-		boolean useAutonomicManager = true;
-		if (useAutonomicManager) {
+		if (simulatorOptions.isAutonomicManagerEnabled()) {
 			bind(GeneralAM.class).annotatedWith(Names.named("ComputeSystem")).to(ComputeSystemAM.class);
 			bind(GeneralAM.class).annotatedWith(Names.named("InteractiveSystem")).to(InteractiveSystemAM.class);
 			bind(GeneralAM.class).annotatedWith(Names.named("EnterpriseSystem")).to(EnterpriseSystemAM.class);
