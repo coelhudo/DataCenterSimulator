@@ -460,7 +460,6 @@ public class BladeServerTest {
         assertTrue(bladeServer.getActiveBatchList().isEmpty());
         assertEquals(0, bladeServer.getTotalFinishedJob());
 
-        verify(mockedBatchJob).setExitTime(1.0);
         verify(mockedBatchJob).getUtilization();
 
         verifyNoMoreInteractions(mockedBatchJob);

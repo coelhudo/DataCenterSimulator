@@ -23,9 +23,7 @@ public class BatchJobTest {
     public void testBatchJobInstantiation() {
         BatchJob batchJob = new BatchJob();
         assertEquals(0.0, batchJob.getStartTime(), 1.0E-8);
-        assertEquals(0.0, batchJob.getExitTime(), 1.0E-8);
         assertEquals(0.0, batchJob.getReqTime(), 1.0E-8);
-        assertEquals(0.0, batchJob.getExitTime(), 1.0E-8);
         assertEquals(0, batchJob.getNumOfNode());
         assertEquals(0.0, batchJob.getDeadline(), 1.0E-8);
     }

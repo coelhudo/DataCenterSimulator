@@ -13,7 +13,6 @@ public class BatchJob extends Job {
     private static final Logger LOGGER = Logger.getLogger(BatchJob.class.getName());
 
     private double startTime;
-    private double exitTime;
     private double deadline;
     private boolean modified = false;
     private double remainingTime;
@@ -44,9 +43,7 @@ public class BatchJob extends Job {
 
     public BatchJob() {
         setStartTime(0);
-        setExitTime(0);
         setReqTime(0);
-        setExitTime(0);
         setNumOfNode(0);
         setDeadline(0);
     }
@@ -61,7 +58,6 @@ public class BatchJob extends Job {
     }
 
     public double Finish(double timeStamp) {
-        setExitTime(timeStamp);
         double waitTime = (timeStamp + 1) - getStartTime();
         if (waitTime < 0) {
             LOGGER.info("Alert: Error in BatchJob\t" + waitTime);
@@ -80,14 +76,6 @@ public class BatchJob extends Job {
 
     public void setStartTime(double startTime) {
         this.startTime = startTime;
-    }
-
-    public double getExitTime() {
-        return exitTime;
-    }
-
-    public void setExitTime(double exitTime) {
-        this.exitTime = exitTime;
     }
 
     public double getDeadline() {

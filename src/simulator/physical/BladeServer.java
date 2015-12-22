@@ -300,7 +300,6 @@ public class BladeServer extends DataCenterEntity {
         // return 1 means: a job has been finished
         if (share == 0) {
             LOGGER.info("In DONE share== zero,revise the code  need some work!");
-            job.setExitTime(environment.getCurrentLocalTime());
             getActiveBatchList().remove(job);
             return true;
         }
