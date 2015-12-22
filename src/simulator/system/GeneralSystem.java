@@ -25,7 +25,7 @@ public abstract class GeneralSystem implements ManagedResource {
     private Set<DataCenterEntityID> rackIDs;
     private List<BladeServer> computeNodeList;
     private BufferedReader bis = null;
-    private int slaViolation;
+    private int amountOfSLAViolation;
     private boolean sysIsDone = false;
     private double power = 0;
     private AutonomicManager am;
@@ -101,16 +101,16 @@ public abstract class GeneralSystem implements ManagedResource {
         this.bis = bis;
     }
 
-    public int getSLAviolation() {
-        return slaViolation;
+    public int getNumberOFSLAViolation() {
+        return amountOfSLAViolation;
     }
 
     public void resetNumberOfSLAViolation() {
-        this.slaViolation = 0;
+        this.amountOfSLAViolation = 0;
     }
 
-    public void setSLAviolation(int slaViolation) {
-        this.slaViolation = slaViolation;
+    public void setNumberOfSLAViolation(int slaViolation) {
+        this.amountOfSLAViolation = slaViolation;
     }
 
     public boolean isDone() {
@@ -141,8 +141,8 @@ public abstract class GeneralSystem implements ManagedResource {
         return accumolatedViolation;
     }
 
-    public void setAccumolatedViolation(int accumolatedViolation) {
-        this.accumolatedViolation = accumolatedViolation;
+    public void increaseAccumulatedViolation() {
+        this.accumolatedViolation += 1;
     }
 
     public int getNumberOfActiveServ() {

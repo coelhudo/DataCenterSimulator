@@ -53,7 +53,7 @@ public class ComputeSystemAMTest {
         computeSystemAM.setManagedResource(mockedComputeSystem);
         
         when(mockedEnvironment.localTimeByEpoch()).thenReturn(false);
-        when(mockedComputeSystem.getSLAviolation()).thenReturn(100);
+        when(mockedComputeSystem.getNumberOFSLAViolation()).thenReturn(100);
         
         BladeServer mockedBladeServer = mock(BladeServer.class);
         when(mockedBladeServer.isRunningBusy()).thenReturn(true);
@@ -66,7 +66,7 @@ public class ComputeSystemAMTest {
         
         verify(mockedComputeSystem, times(2)).getComputeNodeList();
         verify(mockedComputeSystem).numberOfIdleNode();
-        verify(mockedComputeSystem).getSLAviolation();
+        verify(mockedComputeSystem).getNumberOFSLAViolation();
         
         verify(mockedBladeServer).isRunningBusy();
         verify(mockedBladeServer).isIdle();
@@ -81,7 +81,7 @@ public class ComputeSystemAMTest {
         computeSystemAM.setManagedResource(mockedComputeSystem);
         
         when(mockedEnvironment.localTimeByEpoch()).thenReturn(false);
-        when(mockedComputeSystem.getSLAviolation()).thenReturn(100);
+        when(mockedComputeSystem.getNumberOFSLAViolation()).thenReturn(100);
         
         BladeServer mockedBladeServer = mock(BladeServer.class);
         when(mockedBladeServer.isIdle()).thenReturn(true);
@@ -97,7 +97,7 @@ public class ComputeSystemAMTest {
         
         verify(mockedComputeSystem, times(2)).getComputeNodeList();
         verify(mockedComputeSystem).numberOfIdleNode();
-        verify(mockedComputeSystem).getSLAviolation();
+        verify(mockedComputeSystem).getNumberOFSLAViolation();
         verify(mockedComputeSystem).numberOfRunningNode();
         
         verify(mockedBladeServer).isRunningBusy();
@@ -114,7 +114,7 @@ public class ComputeSystemAMTest {
         computeSystemAM.setManagedResource(mockedComputeSystem);
         
         when(mockedEnvironment.localTimeByEpoch()).thenReturn(false);
-        when(mockedComputeSystem.getSLAviolation()).thenReturn(0);
+        when(mockedComputeSystem.getNumberOFSLAViolation()).thenReturn(0);
         
         BladeServer mockedBladeServer = mock(BladeServer.class);
         when(mockedBladeServer.isRunning()).thenReturn(true);
@@ -129,7 +129,7 @@ public class ComputeSystemAMTest {
         verify(mockedEnvironment).updateNumberOfMessagesFromSystemToNodes();
         
         verify(mockedComputeSystem, times(2)).getComputeNodeList();
-        verify(mockedComputeSystem).getSLAviolation();
+        verify(mockedComputeSystem).getNumberOFSLAViolation();
         
         verify(mockedBladeServer, times(2)).isRunning();
         verify(mockedBladeServer).setStatusAsIdle();

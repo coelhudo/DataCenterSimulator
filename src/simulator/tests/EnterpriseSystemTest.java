@@ -70,7 +70,7 @@ public class EnterpriseSystemTest {
         assertTrue(enterpriseSystem.getRackIDs().isEmpty());
         assertNotNull(enterpriseSystem.getResourceAllocation());
         assertNotNull(enterpriseSystem.getScheduler());
-        assertEquals(0, enterpriseSystem.getSLAviolation());
+        assertEquals(0, enterpriseSystem.getNumberOFSLAViolation());
 
         verify(mockedResourceAllocation).initialResourceAlocator(enterpriseSystem);
         verify(mockedEnterpriseSystemAM).setManagedResource(enterpriseSystem);

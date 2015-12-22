@@ -132,7 +132,7 @@ public class ReadingConfigurationIT {
         assertEquals(0, computeSystem.getNumberOfActiveServ());
         assertEquals(35, computeSystem.getNumberOfNode());
         assertEquals(0.0, computeSystem.getPower(), 1.0E-8);
-        assertEquals(0, computeSystem.getSLAviolation());
+        assertEquals(0, computeSystem.getNumberOFSLAViolation());
         assertFalse(computeSystem.isBlocked());
         assertNotEquals(null, computeSystem.getResourceAllocation());
         assertNotEquals(null, computeSystem.getScheduler());
@@ -161,7 +161,7 @@ public class ReadingConfigurationIT {
         assertEquals(0, enterpriseSystem.getNumberOfActiveServ());
         assertEquals(8, enterpriseSystem.getNumberOfNode());
         assertEquals(0.0, enterpriseSystem.getPower(), 1.0E-8);
-        assertEquals(0, enterpriseSystem.getSLAviolation());
+        assertEquals(0, enterpriseSystem.getNumberOFSLAViolation());
         assertNotEquals(null, enterpriseSystem.getResourceAllocation());
         assertNotEquals(null, enterpriseSystem.getScheduler());
 

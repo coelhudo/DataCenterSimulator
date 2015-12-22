@@ -131,7 +131,7 @@ public abstract class ResourceAllocation {
             return;
         }
 
-        if (currentInvolved > predicdetNumber && enterpriseSystem.getSLAviolation() == 0) {
+        if (currentInvolved > predicdetNumber && enterpriseSystem.getNumberOFSLAViolation() == 0) {
             resourceRelease(enterpriseSystem, predicdetNumber);
             return;
             // we already have more server involved and dont change the state

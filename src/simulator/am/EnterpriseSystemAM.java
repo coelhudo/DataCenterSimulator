@@ -88,7 +88,7 @@ public class EnterpriseSystemAM extends GeneralAM {
         workloadIntensity();
         for (int i = 0; i < applications.size(); i++) {
             enterpriseSystem
-                    .setSLAviolation(enterpriseSystem.getSLAviolation() + applications.get(i).getSLAviolation());
+                    .setNumberOfSLAViolation(enterpriseSystem.getNumberOFSLAViolation() + applications.get(i).getSLAviolation());
             // assume epoch system 2 time epoch application
             GeneralAM applicationAM = applications.get(i).getAM();
             percentCompPwr[i] = applicationAM.getPercnt() / ((environment().getCurrentLocalTime() - lastTime) * 3
@@ -101,10 +101,10 @@ public class EnterpriseSystemAM extends GeneralAM {
             // already in each application queue
             queueLengthApps[i] = applications.get(i).numberOfWaitingJobs();
         }
-        setSLAViolationGen(enterpriseSystem.getSLAviolation());
-        if (enterpriseSystem.getSLAviolation() > 0) {
-            slaViolationLogger.logEnterpriseViolation(enterpriseSystem.getName(), enterpriseSystem.getSLAviolation());
-            enterpriseSystem.setAccumolatedViolation(enterpriseSystem.getAccumolatedViolation() + 1);
+        setSLAViolationGen(enterpriseSystem.getNumberOFSLAViolation());
+        if (enterpriseSystem.getNumberOFSLAViolation() > 0) {
+            slaViolationLogger.logEnterpriseViolation(enterpriseSystem.getName(), enterpriseSystem.getNumberOFSLAViolation());
+            enterpriseSystem.increaseAccumulatedViolation();
         }
         calcSysUtility();
         lastTime = environment().getCurrentLocalTime();

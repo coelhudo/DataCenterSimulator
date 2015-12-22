@@ -89,7 +89,7 @@ public class InteractiveSystemAM extends GeneralAM {
         }
         calcSysUtility();
         lastTime = environment().getCurrentLocalTime();
-        setSLAViolationGen(interatctiveSystem.getSLAviolation());
+        setSLAViolationGen(interatctiveSystem.getNumberOFSLAViolation());
     }
 
     private void calcSysUtility() {

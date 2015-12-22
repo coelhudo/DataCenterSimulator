@@ -154,7 +154,7 @@ public class ComputeSystemAM extends GeneralAM {
         // the
         // compute
         // system.
-        setSLAViolationGen(computeSystem.getSLAviolation());/// Main.epochApp;
+        setSLAViolationGen(computeSystem.getNumberOFSLAViolation());/// Main.epochApp;
         // if(strtg==Main.strategyEnum.Green)
         analysisGreen();
         // if(strtg==Main.strategyEnum.SLA)
