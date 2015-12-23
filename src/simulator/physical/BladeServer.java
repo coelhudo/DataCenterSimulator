@@ -184,7 +184,7 @@ public class BladeServer extends DataCenterEntity {
         // LOGGER.info("MIIIPPSSS "+Mips);
         if (getCurrentFreqLevel() == 2) {
             return 0; // FIXME: This should be 2 i think. That's my conclusion
-                      // based on the behaviour of decreaseFrequency
+                      // based on the behavior of decreaseFrequency
         }
 
         // getCurrentFrequency already increased the freq level

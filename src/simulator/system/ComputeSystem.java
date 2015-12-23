@@ -56,7 +56,7 @@ public class ComputeSystem extends GeneralSystem {
 			BladeServerCollectionOperations.runAll(getComputeNodeList());
 			numberOfFinishedJob += BladeServerCollectionOperations.totalFinishedJob(getComputeNodeList());
 		}
-		// if is blocked and was not belocked before make it blocked
+		
 		if (isBlocked() && !BladeServerCollectionOperations.allIdle(getComputeNodeList())) {
 			makeSystemaBlocked();
 		}
