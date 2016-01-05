@@ -48,13 +48,17 @@ public class ComputeSystem extends GeneralSystem {
 
 	@Override
 	public boolean runAcycle() {
+		LOGGER.fine("Compute System running a cycle");
 		resetNumberOfSLAViolation();
 		int numberOfFinishedJob = 0;
 		loadJobsIntoWaitingQueue();
 		if (!isBlocked()) {
 			moveWaitingJobsToBladeServer();
+			LOGGER.info(String.format("Running %d servers", getComputeNodeList().size()));
 			BladeServerCollectionOperations.runAll(getComputeNodeList());
-			numberOfFinishedJob += BladeServerCollectionOperations.totalFinishedJob(getComputeNodeList());
+			final int currentFinishedJobs = BladeServerCollectionOperations.totalFinishedJob(getComputeNodeList());
+			LOGGER.info(String.format("Jobs finished: %d ", currentFinishedJobs));
+			numberOfFinishedJob += currentFinishedJobs;
 		}
 		
 		if (isBlocked() && !BladeServerCollectionOperations.allIdle(getComputeNodeList())) {
@@ -80,6 +84,7 @@ public class ComputeSystem extends GeneralSystem {
 		}
 
 		do {
+			LOGGER.finer("Loading jobs into queue");
 			BatchJob batchJob = (BatchJob) jobProducer.next();
 			waitingList.add(batchJob);
 			totalJob++;
@@ -87,6 +92,7 @@ public class ComputeSystem extends GeneralSystem {
 				break;
 			}
 		} while (jobProducer.hasNext());
+		LOGGER.fine(String.format("Queue length %d", waitingList.size()));
 	}
 
 	void makeSystemaBlocked() {
@@ -137,6 +143,8 @@ public class ComputeSystem extends GeneralSystem {
 			violationType = Violation.NOTHING;
 			return;
 		}
+		
+		LOGGER.info(String.format("Setting violation: %s", flag.toString()));
 		
 		violationType = flag;
 		slaViolationLogger.logHPCViolation(getName(), violationType);

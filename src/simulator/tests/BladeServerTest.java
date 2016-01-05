@@ -58,7 +58,7 @@ public class BladeServerTest {
 
     @Test
     public void testBladeServerCreation() {
-        List<BatchJob> activeBatchJobs = bladeServer.getActiveBatchList();
+        List<BatchJob> activeBatchJobs = bladeServer.activeBatchJobs();
         assertTrue(activeBatchJobs.isEmpty());
         List<BatchJob> blockedJobs = bladeServer.getBlockedBatchList();
         assertTrue(blockedJobs.isEmpty());
@@ -138,7 +138,7 @@ public class BladeServerTest {
 
         assertNotEquals(0.0, bladeServer.getResponseTime(), 1.0E-8);
         assertNotEquals(0.0, bladeServer.getCurrentCPU(), 1.0E-8);
-        assertFalse(bladeServer.getActiveBatchList().isEmpty());
+        assertFalse(bladeServer.activeBatchJobs().isEmpty());
         assertFalse(bladeServer.getBlockedBatchList().isEmpty());
         assertFalse(bladeServer.getEnterpriseList().isEmpty());
         assertFalse(bladeServer.getInteractiveList().isEmpty());
@@ -154,7 +154,7 @@ public class BladeServerTest {
 
         assertEquals(0.0, bladeServer.getResponseTime(), 1.0E-8);
         assertEquals(0.0, bladeServer.getCurrentCPU(), 1.0E-8);
-        assertTrue(bladeServer.getActiveBatchList().isEmpty());
+        assertTrue(bladeServer.activeBatchJobs().isEmpty());
         assertTrue(bladeServer.getBlockedBatchList().isEmpty());
         assertTrue(bladeServer.getEnterpriseList().isEmpty());
         assertTrue(bladeServer.getInteractiveList().isEmpty());
@@ -169,7 +169,7 @@ public class BladeServerTest {
 
     @Test
     public void testFeedBatchJobWork() {
-        assertTrue(bladeServer.getActiveBatchList().isEmpty());
+        assertTrue(bladeServer.activeBatchJobs().isEmpty());
         assertTrue(bladeServer.getBlockedBatchList().isEmpty());
         assertTrue(bladeServer.getEnterpriseList().isEmpty());
         assertTrue(bladeServer.getInteractiveList().isEmpty());
@@ -179,7 +179,7 @@ public class BladeServerTest {
         BatchJob mockBatchJob = mock(BatchJob.class);
         bladeServer.feedWork(mockBatchJob);
 
-        assertFalse(bladeServer.getActiveBatchList().isEmpty());
+        assertFalse(bladeServer.activeBatchJobs().isEmpty());
         assertTrue(bladeServer.getBlockedBatchList().isEmpty());
         assertTrue(bladeServer.getEnterpriseList().isEmpty());
         assertTrue(bladeServer.getInteractiveList().isEmpty());
@@ -189,7 +189,7 @@ public class BladeServerTest {
 
     @Test
     public void testFeedInteractiveJobWork() {
-        assertTrue(bladeServer.getActiveBatchList().isEmpty());
+        assertTrue(bladeServer.activeBatchJobs().isEmpty());
         assertTrue(bladeServer.getBlockedBatchList().isEmpty());
         assertTrue(bladeServer.getEnterpriseList().isEmpty());
         assertTrue(bladeServer.getInteractiveList().isEmpty());
@@ -207,7 +207,7 @@ public class BladeServerTest {
         bladeServer.feedWork(interactiveJob);
 
         List<InteractiveJob> interactiveJobs = bladeServer.getInteractiveList();
-        assertTrue(bladeServer.getActiveBatchList().isEmpty());
+        assertTrue(bladeServer.activeBatchJobs().isEmpty());
         assertTrue(bladeServer.getBlockedBatchList().isEmpty());
         assertTrue(bladeServer.getEnterpriseList().isEmpty());
         assertFalse(interactiveJobs.isEmpty());
@@ -221,7 +221,7 @@ public class BladeServerTest {
 
     @Test
     public void testFeedEnterpriseJobWork() {
-        assertTrue(bladeServer.getActiveBatchList().isEmpty());
+        assertTrue(bladeServer.activeBatchJobs().isEmpty());
         assertTrue(bladeServer.getBlockedBatchList().isEmpty());
 
         List<EnterpriseJob> enterpriseJobs = bladeServer.getEnterpriseList();
@@ -241,7 +241,7 @@ public class BladeServerTest {
 
         bladeServer.feedWork(enterpriseJob);
 
-        assertTrue(bladeServer.getActiveBatchList().isEmpty());
+        assertTrue(bladeServer.activeBatchJobs().isEmpty());
         assertTrue(bladeServer.getBlockedBatchList().isEmpty());
         assertFalse(bladeServer.getEnterpriseList().isEmpty());
         assertTrue(bladeServer.getInteractiveList().isEmpty());
@@ -350,7 +350,7 @@ public class BladeServerTest {
         bladeServer.setCurrentCPU(1.0);
         assertEquals(1.0, bladeServer.getCurrentCPU(), 1.0E-8);
 
-        assertEquals(0, bladeServer.run());
+        assertFalse(bladeServer.run());
 
         assertTrue(bladeServer.isRunningNormal());
         assertEquals(0.0, bladeServer.getCurrentCPU(), 1.0E-8);
@@ -370,7 +370,7 @@ public class BladeServerTest {
         when(mockedBatchJob.getUtilization()).thenReturn(1.0);
         when(mockedBatchJob.isModified()).thenReturn(false, true);
 
-        assertEquals(1, bladeServer.run());
+        assertTrue(bladeServer.run());
 
         assertTrue(bladeServer.isRunningBusy());
         assertEquals(71.42857, bladeServer.getCurrentCPU(), 1.0E-5);
@@ -400,7 +400,7 @@ public class BladeServerTest {
         when(mockedBatchJob.isModified()).thenReturn(true, true, false);
 
         expectedException.expect(ArithmeticException.class);
-        assertEquals(1, bladeServer.run());
+        assertTrue(bladeServer.run());
 
         verify(mockedBatchJob, times(5)).getUtilization();
         verify(mockedBatchJob, times(3)).isModified();
@@ -426,7 +426,7 @@ public class BladeServerTest {
         when(mockedBatchJob.getUtilization()).thenReturn(0.1);
         when(mockedBatchJob.isModified()).thenReturn(true, true, false);
 
-        assertEquals(1, bladeServer.run());
+        assertTrue(bladeServer.run());
 
         assertTrue(bladeServer.isRunningNormal());
         assertEquals(100, bladeServer.getCurrentCPU(), 1.0E-5);
@@ -449,7 +449,7 @@ public class BladeServerTest {
         BatchJob mockedBatchJob = mock(BatchJob.class);
         bladeServer.feedWork(mockedBatchJob);
 
-        assertFalse(bladeServer.getActiveBatchList().isEmpty());
+        assertFalse(bladeServer.activeBatchJobs().isEmpty());
         assertTrue(bladeServer.getBlockedBatchList().isEmpty());
         assertEquals(0, bladeServer.getTotalFinishedJob());
 
@@ -457,7 +457,7 @@ public class BladeServerTest {
         assertTrue(bladeServer.done(mockedBatchJob, share));
 
         assertTrue(bladeServer.getBlockedBatchList().isEmpty());
-        assertTrue(bladeServer.getActiveBatchList().isEmpty());
+        assertTrue(bladeServer.activeBatchJobs().isEmpty());
         assertEquals(0, bladeServer.getTotalFinishedJob());
 
         verify(mockedBatchJob).getUtilization();
@@ -470,7 +470,7 @@ public class BladeServerTest {
         BatchJob mockedBatchJob = mock(BatchJob.class);
         bladeServer.feedWork(mockedBatchJob);
 
-        assertFalse(bladeServer.getActiveBatchList().isEmpty());
+        assertFalse(bladeServer.activeBatchJobs().isEmpty());
         assertTrue(bladeServer.getBlockedBatchList().isEmpty());
 
         when(mockedBatchJob.getNumOfNode()).thenReturn(1);
@@ -491,7 +491,7 @@ public class BladeServerTest {
         BatchJob mockedBatchJob = mock(BatchJob.class);
         bladeServer.feedWork(mockedBatchJob);
 
-        assertFalse(bladeServer.getActiveBatchList().isEmpty());
+        assertFalse(bladeServer.activeBatchJobs().isEmpty());
         assertTrue(bladeServer.getBlockedBatchList().isEmpty());
 
         when(mockedBatchJob.getNumOfNode()).thenReturn(1);
@@ -515,7 +515,7 @@ public class BladeServerTest {
         BatchJob mockedBatchJob = mock(BatchJob.class);
         bladeServer.feedWork(mockedBatchJob);
 
-        assertFalse(bladeServer.getActiveBatchList().isEmpty());
+        assertFalse(bladeServer.activeBatchJobs().isEmpty());
         assertTrue(bladeServer.getBlockedBatchList().isEmpty());
 
         assertEquals(0, bladeServer.getTotalFinishedJob());
@@ -542,7 +542,7 @@ public class BladeServerTest {
     @Test
     public void testSetReadyAsRunningNormalWhenThereAreNoActiveJobs() {
         bladeServer.setReady();
-        assertTrue(bladeServer.getActiveBatchList().isEmpty());
+        assertTrue(bladeServer.activeBatchJobs().isEmpty());
         assertTrue(bladeServer.isRunningNormal());
     }
 
@@ -555,7 +555,7 @@ public class BladeServerTest {
 
         bladeServer.setReady();
 
-        assertFalse(bladeServer.getActiveBatchList().isEmpty());
+        assertFalse(bladeServer.activeBatchJobs().isEmpty());
         assertTrue(bladeServer.isRunningNormal());
 
         verify(mockedBatchJob, times(2)).getUtilization();
@@ -572,7 +572,7 @@ public class BladeServerTest {
 
         bladeServer.setReady();
 
-        assertFalse(bladeServer.getActiveBatchList().isEmpty());
+        assertFalse(bladeServer.activeBatchJobs().isEmpty());
         assertTrue(bladeServer.isRunningBusy());
 
         verify(mockedBatchJob, times(2)).getUtilization();

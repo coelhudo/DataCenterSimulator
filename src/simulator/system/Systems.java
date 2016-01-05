@@ -55,21 +55,23 @@ public class Systems extends Observable {
     }
 
     public void setup() {
+    	LOGGER.info("Compute System Setup");
         for (ComputeSystem computeSystem : computeSystems) {
             computeSystem.getResourceAllocation().initialResourceAloc(computeSystem);
             computeSystem.setupAM();
         }
 
+        LOGGER.info("Interactive System Setup");
         for (InteractiveSystem interactiveSystem : interactiveSystems) {
             interactiveSystem.getResourceAllocation().initialResourceAlocator(interactiveSystem);
             interactiveSystem.setupAM();
 
         }
 
+        LOGGER.info("Enterprise System Setup");
         for (EnterpriseSystem enterpriseSystem : enterpriseSystems) {
             enterpriseSystem.getResourceAllocation().initialResourceAlocator(enterpriseSystem);
             enterpriseSystem.setupAM();
-
         }
     }
 

@@ -118,7 +118,7 @@ public class ComputeSystemAMTest {
         
         BladeServer mockedBladeServer = mock(BladeServer.class);
         when(mockedBladeServer.isRunning()).thenReturn(true);
-        when(mockedBladeServer.getActiveBatchList()).thenReturn(new ArrayList<BatchJob>());
+        when(mockedBladeServer.activeBatchJobs()).thenReturn(new ArrayList<BatchJob>());
         when(mockedBladeServer.getBlockedBatchList()).thenReturn(new ArrayList<BatchJob>());
         when(mockedComputeSystem.getComputeNodeList()).thenReturn(Arrays.asList(mockedBladeServer));
         
@@ -134,7 +134,7 @@ public class ComputeSystemAMTest {
         verify(mockedBladeServer, times(2)).isRunning();
         verify(mockedBladeServer).setStatusAsIdle();
         verify(mockedBladeServer).decreaseFrequency();
-        verify(mockedBladeServer).getActiveBatchList();
+        verify(mockedBladeServer).activeBatchJobs();
         verify(mockedBladeServer).getBlockedBatchList();
         
         verifyNoMoreInteractions(mockedBladeServer);

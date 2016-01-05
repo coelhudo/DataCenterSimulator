@@ -2,6 +2,7 @@ package simulator.ra;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Logger;
 
 import com.google.inject.Inject;
 
@@ -17,91 +18,97 @@ import simulator.physical.DataCenter;
  */
 public class MHR extends ResourceAllocation {
 
-    @Inject
-    public MHR(Environment environment, DataCenter dataCenter) {
-        super(environment, dataCenter);
-    }
+	private static final Logger LOGGER = Logger.getLogger(MHR.class.getName());
 
-    int[] powIndex = { 15, 31, 16, 11, 36, 10, 30, 6, 20, 21, 35, 32, 17, 26, 25, 7, 27, 12, 42, 37, 41, 5, 2, 1, 0, 22,
-            40, 47, 46, 13, 45, 29, 23, 8, 28, 43, 48, 9, 38, 33, 18, 3, 34, 44, 24, 14, 49, 19, 39, 4 };
+	@Inject
+	public MHR(Environment environment, DataCenter dataCenter) {
+		super(environment, dataCenter);
+	}
 
-    public int nextServer(List<BladeServer> bs) {
-        int i = 0, j = 0;
-        for (i = 0; i < powIndex.length; i++) {
-            for (j = 0; j < bs.size(); j++) {
-                if (bs.get(j).isRunningNormal() && powIndex[i] == bs.get(j).getID().getChassisID()) {
-                    return j;
-                }
-            }
+	int[] powIndex = { 15, 31, 16, 11, 36, 10, 30, 6, 20, 21, 35, 32, 17, 26, 25, 7, 27, 12, 42, 37, 41, 5, 2, 1, 0, 22,
+			40, 47, 46, 13, 45, 29, 23, 8, 28, 43, 48, 9, 38, 33, 18, 3, 34, 44, 24, 14, 49, 19, 39, 4 };
 
-        }
-        return -2;
-    }
+	public int nextServer(List<BladeServer> bs) {
+		int i = 0, j = 0;
+		for (i = 0; i < powIndex.length; i++) {
+			for (j = 0; j < bs.size(); j++) {
+				if (bs.get(j).isRunningNormal() && powIndex[i] == bs.get(j).getID().getChassisID()) {
+					return j;
+				}
+			}
 
-    @Override
-    public int nextServerInSys(List<BladeServer> bs) {
-        int i = 0, j = 0;
-        for (i = 0; i < powIndex.length; i++) {
-            for (j = 0; j < bs.size(); j++) {
-                if (bs.get(j).isNotApplicationAssigned() && powIndex[i] == bs.get(j).getID().getChassisID()) {
-                    return j;
-                }
-            }
+		}
+		return -2;
+	}
 
-        }
-        return -2;
-    }
+	@Override
+	public int nextServerInSys(List<BladeServer> bs) {
+		int i = 0, j = 0;
+		for (i = 0; i < powIndex.length; i++) {
+			for (j = 0; j < bs.size(); j++) {
+				if (bs.get(j).isNotApplicationAssigned() && powIndex[i] == bs.get(j).getID().getChassisID()) {
+					return j;
+				}
+			}
 
-    public BladeServer nextServerSys(List<Chassis> chassis) {
-        for (int j = powIndex.length - 1; j >= 0; j--) {
-            Chassis foundChassis = null;
-            for (Chassis currentChassis : chassis) {
-                if (powIndex[j] == currentChassis.getID().getChassisID()) {
-                    foundChassis = currentChassis;
-                    break;
-                }
-            }
+		}
+		return -2;
+	}
 
-            if (foundChassis == null) {
-                continue;
-            }
+	public BladeServer nextServerSys(List<Chassis> chassis) {
+		for (int j = powIndex.length - 1; j >= 0; j--) {
+			Chassis foundChassis = null;
+			for (Chassis currentChassis : chassis) {
+				if (powIndex[j] == currentChassis.getID().getChassisID()) {
+					foundChassis = currentChassis;
+					break;
+				}
+			}
 
-            BladeServer result = foundChassis.getNextNotAssignedBladeServer();
-            if (result == null) {
-                continue;
-            }
+			if (foundChassis == null) {
+				continue;
+			}
 
-            return result;
-        }
-        return null;
-    }
-    // this funtion is used in ComputeSystem for allocating resources
-    // List is array of compute nodes
+			BladeServer result = foundChassis.getNextNotAssignedBladeServer();
+			if (result == null) {
+				continue;
+			}
 
-    public List<BladeServer> allocateSystemLevelServer(List<BladeServer> availableBladeServers,
-            int numberOfRequestedServers) {
-        List<BladeServer> requestedBladeServers = null;
+			return result;
+		}
+		return null;
+	}
+	// this funtion is used in ComputeSystem for allocating resources
+	// List is array of compute nodes
 
-        if (BladeServerCollectionOperations.countRunningNormal(availableBladeServers) < numberOfRequestedServers) {
-            return null;
-        }
+	public List<BladeServer> allocateSystemLevelServer(List<BladeServer> availableBladeServers,
+			int numberOfRequestedServers) {
+		List<BladeServer> requestedBladeServers = null;
 
-        requestedBladeServers = new ArrayList<BladeServer>();
+		final int numberOfAvailableServers = BladeServerCollectionOperations.countRunningNormal(availableBladeServers);
+		if (numberOfAvailableServers < numberOfRequestedServers) {
+			LOGGER.info(String.format("Not enough server available (Available: %d, Requested: %d)",
+					numberOfAvailableServers, numberOfRequestedServers));
+			return null;
+		}
 
-        int j = 0;
-        for (int k = powIndex.length - 1; k >= 0 && j < numberOfRequestedServers; k--) {
-            for (int i = 0; i < availableBladeServers.size(); i++) {
-                BladeServer current = availableBladeServers.get(i);
-                if (current.isRunningNormal() && powIndex[k] == current.getID().getChassisID()) {
-                    requestedBladeServers.add(current);
-                    j++;
-                    if (j == numberOfRequestedServers) {
-                        break;
-                    }
-                }
-            }
-        }
+		LOGGER.info("Allocating requested servers");
+		requestedBladeServers = new ArrayList<BladeServer>();
 
-        return requestedBladeServers;
-    }
+		int j = 0;
+		for (int k = powIndex.length - 1; k >= 0 && j < numberOfRequestedServers; k--) {
+			for (int i = 0; i < availableBladeServers.size(); i++) {
+				BladeServer current = availableBladeServers.get(i);
+				if (current.isRunningNormal() && powIndex[k] == current.getID().getChassisID()) {
+					requestedBladeServers.add(current);
+					j++;
+					if (j == numberOfRequestedServers) {
+						break;
+					}
+				}
+			}
+		}
+
+		return requestedBladeServers;
+	}
 }

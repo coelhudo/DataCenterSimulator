@@ -95,7 +95,7 @@ public class ComputeSystemAM extends GeneralAM {
             }
             // If node is ready and is not used make it sleep
             for (BladeServer bladeServer : computeSystem.getComputeNodeList()) {
-                if (bladeServer.getActiveBatchList().isEmpty() && bladeServer.getBlockedBatchList().isEmpty()
+                if (bladeServer.activeBatchJobs().isEmpty() && bladeServer.getBlockedBatchList().isEmpty()
                         && bladeServer.isRunning()) {
                     environment().updateNumberOfMessagesFromSystemToNodes();
                     bladeServer.setStatusAsIdle();

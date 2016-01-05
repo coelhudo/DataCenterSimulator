@@ -4,6 +4,7 @@ import static org.junit.Assert.assertEquals;
 
 import java.util.Observable;
 import java.util.Observer;
+import java.util.logging.LogManager;
 
 import org.junit.Test;
 
@@ -22,7 +23,8 @@ public class SimulatorIT {
 
     @Test
     public void testIDidntBreakAnythingFromTheOriginalCode() {
-
+    	LogManager.getLogManager().reset();
+    	
         Injector injector = Guice.createInjector(new ITModule());
 
         Systems systems = injector.getInstance(Systems.class);

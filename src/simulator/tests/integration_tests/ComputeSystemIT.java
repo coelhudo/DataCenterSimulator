@@ -18,9 +18,9 @@ import org.mockito.ArgumentCaptor;
 
 import simulator.Environment;
 import simulator.SLAViolationLogger;
+import simulator.am.ComputeSystemAM;
 import simulator.am.DataCenterAM;
 import simulator.am.GeneralAM;
-import simulator.am.ComputeSystemAM;
 import simulator.jobs.BatchJob;
 import simulator.jobs.JobProducer;
 import simulator.physical.BladeServerPOD;
@@ -29,10 +29,10 @@ import simulator.physical.DataCenter;
 import simulator.physical.DataCenterEntityID;
 import simulator.physical.DataCenterPOD;
 import simulator.physical.RackPOD;
-import simulator.ra.ResourceAllocation;
 import simulator.ra.MHR;
-import simulator.schedulers.Scheduler;
+import simulator.ra.ResourceAllocation;
 import simulator.schedulers.LeastRemainFirstScheduler;
+import simulator.schedulers.Scheduler;
 import simulator.system.ComputeSystem;
 import simulator.system.ComputeSystemFactory;
 import simulator.system.ComputeSystemPOD;
@@ -64,7 +64,8 @@ public class ComputeSystemIT {
     public ComputeSystemFactory computeSystemFactory;
     public InteractiveSystemFactory interactiveSystemFactory;
     public EnterpriseSystemFactory enterpriseSystemFactory;
-
+    
+    
     @Before
     public void setUp() {
         bladeServerPOD = new BladeServerPOD();
