@@ -37,6 +37,9 @@ The thermal model is based on the one from Arizona State University
 currently used in ADCMSim is one described by Hewlett-Packard (HP)
 laboratories \[3\].
 
+The specs are from [power_ssj2008](http://www.spec.org/power_ssj2008/results/power_ssj2008.html)
+and \[4\]
+
 # Configuration
 
 This project is using [Apache Maven](https://maven.apache.org/) for management.
@@ -97,3 +100,7 @@ December, 2009.
 scheduling "cool,": Temperature-aware workload placement in data
 centers. In USENIX Annual Technical Conference, pages 61-75,
 April 2005.
+
+4. Ahmad, Faraz, and T. N. Vijaykumar. "Joint optimization of idle and
+ cooling power in data centers while maintaining response time." ACM
+ Sigplan Notices. Vol. 45. No. 3. ACM, 2010.
