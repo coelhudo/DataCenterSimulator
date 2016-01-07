@@ -68,7 +68,7 @@ public class BladeServerTest {
         List<EnterpriseJob> enterpriseJobs = bladeServer.getEnterpriseList();
         assertTrue(enterpriseJobs.isEmpty());
         assertEquals(1, bladeServer.getNumberOfFrequencyLevel());
-        assertEquals(0.0, bladeServer.getIdleConsumption(), 1.0E-8);
+        assertEquals(0.0, bladeServer.getStandByConsumption(), 1.0E-8);
         assertEquals(0, bladeServer.getMaxExpectedRes());
         assertEquals(1.4, bladeServer.getMips(), 1.0E-8);
         assertEquals(1, bladeServer.getNumberOfPowerBusy());

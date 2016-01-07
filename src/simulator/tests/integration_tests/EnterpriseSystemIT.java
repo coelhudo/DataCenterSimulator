@@ -56,7 +56,7 @@ public class EnterpriseSystemIT {
         bladeServerPOD.setFrequencyLevel(FREQUENCY_LEVEL);
         bladeServerPOD.setPowerBusy(POWER_BUSY);
         bladeServerPOD.setPowerIdle(POWER_IDLE);
-        bladeServerPOD.setIdleConsumption(5);
+        bladeServerPOD.setStandByConsumption(5);
         bladeServerPOD.setID(DataCenterEntityID.createServerID(1, 1, 1));
 
         ChassisPOD chassisPOD = new ChassisPOD();

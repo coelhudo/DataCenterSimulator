@@ -269,7 +269,7 @@ public class DataCenterBuilder {
                     }
                 }
                 if ("Standby".equalsIgnoreCase(childNodes.item(i).getNodeName())) {
-                    bladeServerPOD.setIdleConsumption(
+                    bladeServerPOD.setStandByConsumption(
                             Double.parseDouble(childNodes.item(i).getChildNodes().item(0).getNodeValue().trim()));
 
                 }

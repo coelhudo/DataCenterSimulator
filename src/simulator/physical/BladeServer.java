@@ -35,7 +35,7 @@ public class BladeServer extends DataCenterEntity {
 	private double[] powerBusy;
 	private double[] powerIdle;
 	private double mips;
-	private double idleConsumption;
+	private double standByConsumption;
 	private String bladeType;
 	private double respTime = 0;
 	private double resTimeEpoch = 0;
@@ -69,7 +69,7 @@ public class BladeServer extends DataCenterEntity {
 		powerBusy = bladeServerPOD.getPowerBusy();
 		powerIdle = bladeServerPOD.getPowerIdle();
 		frequencyLevel = bladeServerPOD.getFrequencyLevel();
-		idleConsumption = bladeServerPOD.getIdleConsumption();
+		standByConsumption = bladeServerPOD.getStandByConsumption();
 		setCurrentCPU(0);
 		setActiveBatchList(new ArrayList<BatchJob>());
 		setBlockedBatchList(new ArrayList<BatchJob>());
@@ -101,15 +101,15 @@ public class BladeServer extends DataCenterEntity {
 		int i = getCurrentFreqLevel();
 		ret[0] = powerBusy[i];
 		ret[1] = powerIdle[i];
-		ret[2] = idleConsumption;
+		ret[2] = standByConsumption;
 		return ret;
 	}
 
 	public double getPower() {
-		LOGGER.info(String.format("Server %s (Status %s , Current CPU %.1f, MIPS %s)", getID(), status, getCurrentCPU(),
+		LOGGER.fine(String.format("Server %s (Status %s , Current CPU %.1f, MIPS %s)", getID(), status, getCurrentCPU(),
 				getMips()));
 		if (getMips() == 0 || !isRunning()) {
-			return idleConsumption;
+			return standByConsumption;
 		}
 
 		int j;
@@ -122,7 +122,7 @@ public class BladeServer extends DataCenterEntity {
 		final double idleConsumption = powerIdle[j];
 		final double powerConsumed = powerBusy[j] - idleConsumption;
 
-		LOGGER.info(String.format("Power consumed %.1f (Busy %.1f minus Idle %.1f)", powerConsumed, powerBusy[j],
+		LOGGER.fine(String.format("Power consumed %.1f (Busy %.1f minus Idle %.1f)", powerConsumed, powerBusy[j],
 				powerIdle[j]));
 
 		return (powerConsumed * getCurrentCPU() / 100) + idleConsumption;
@@ -218,11 +218,11 @@ public class BladeServer extends DataCenterEntity {
 	}
 
 	public boolean run() {
-		LOGGER.info(String.format("Running server %s", getID().toString()));
+		LOGGER.fine(String.format("Running server %s", getID().toString()));
 		final int num = activeBatchJobs().size();
 		int index = 0;
 		if (activeBatchJobs().isEmpty()) {
-			LOGGER.info("No batch jobs to be processed this time");
+			LOGGER.fine("No batch jobs to be processed this time");
 			setStatusAsRunningNormal();
 			setCurrentCPU(0);
 			return false;
@@ -567,8 +567,8 @@ public class BladeServer extends DataCenterEntity {
 		return powerIdle.length;
 	}
 
-	public double getIdleConsumption() {
-		return idleConsumption;
+	public double getStandByConsumption() {
+		return standByConsumption;
 	}
 
 	public class BladeServerStats extends DataCenterEntityStats {

@@ -87,12 +87,12 @@ public class MHR extends ResourceAllocation {
 
 		final int numberOfAvailableServers = BladeServerCollectionOperations.countRunningNormal(availableBladeServers);
 		if (numberOfAvailableServers < numberOfRequestedServers) {
-			LOGGER.info(String.format("Not enough server available (Available: %d, Requested: %d)",
+			LOGGER.fine(String.format("Not enough server available (Available: %d, Requested: %d)",
 					numberOfAvailableServers, numberOfRequestedServers));
 			return null;
 		}
 
-		LOGGER.info("Allocating requested servers");
+		LOGGER.fine("Allocating requested servers");
 		requestedBladeServers = new ArrayList<BladeServer>();
 
 		int j = 0;

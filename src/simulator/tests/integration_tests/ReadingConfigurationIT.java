@@ -80,7 +80,7 @@ public class ReadingConfigurationIT {
                     assertEquals(100.0, bladeServer.getPowerIdleAt(0), 1.0E-8);
                     assertEquals(100.0, bladeServer.getPowerIdleAt(1), 1.0E-8);
                     assertEquals(128.0, bladeServer.getPowerIdleAt(2), 1.0E-8);
-                    assertEquals(5.0, bladeServer.getIdleConsumption(), 1.0E-8);
+                    assertEquals(5.0, bladeServer.getStandByConsumption(), 1.0E-8);
                 }
             }
         }

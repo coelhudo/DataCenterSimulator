@@ -92,7 +92,7 @@ public class DataCenter {
             powers[allChassisIndex] = chassisComputingPower;
             allChassisIndex++;
             final String message = String.format("%s %.1f", curretChassis.getID(), chassisComputingPower);
-            LOGGER.info(message);
+            LOGGER.fine(message);
             activitiesLogger.write(message + "\n");
             computingPower = computingPower + chassisComputingPower;
         }

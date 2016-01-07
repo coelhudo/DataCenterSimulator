@@ -54,10 +54,10 @@ public class ComputeSystem extends GeneralSystem {
 		loadJobsIntoWaitingQueue();
 		if (!isBlocked()) {
 			moveWaitingJobsToBladeServer();
-			LOGGER.info(String.format("Running %d servers", getComputeNodeList().size()));
+			LOGGER.fine(String.format("Running %d servers", getComputeNodeList().size()));
 			BladeServerCollectionOperations.runAll(getComputeNodeList());
 			final int currentFinishedJobs = BladeServerCollectionOperations.totalFinishedJob(getComputeNodeList());
-			LOGGER.info(String.format("Jobs finished: %d ", currentFinishedJobs));
+			LOGGER.fine(String.format("Batch Jobs finished: %d ", currentFinishedJobs));
 			numberOfFinishedJob += currentFinishedJobs;
 		}
 		
@@ -144,7 +144,7 @@ public class ComputeSystem extends GeneralSystem {
 			return;
 		}
 		
-		LOGGER.info(String.format("Setting violation: %s", flag.toString()));
+		LOGGER.fine(String.format("Setting violation: %s", flag.toString()));
 		
 		violationType = flag;
 		slaViolationLogger.logHPCViolation(getName(), violationType);

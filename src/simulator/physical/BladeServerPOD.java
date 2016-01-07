@@ -6,7 +6,7 @@ public class BladeServerPOD {
     private double[] frequencyLevel;
     private double[] powerBusy;
     private double[] powerIdle;
-    private double idleConsumption;
+    private double standByConsumption;
     private DataCenterEntityID id;
 
     public BladeServerPOD() {
@@ -21,7 +21,7 @@ public class BladeServerPOD {
         System.arraycopy(bladeServerPOD.powerBusy, 0, powerBusy, 0, bladeServerPOD.powerBusy.length);
         powerIdle = new double[bladeServerPOD.powerIdle.length];
         System.arraycopy(bladeServerPOD.powerIdle, 0, powerIdle, 0, bladeServerPOD.powerIdle.length);
-        idleConsumption = bladeServerPOD.idleConsumption;
+        standByConsumption = bladeServerPOD.standByConsumption;
         id = bladeServerPOD.id;
     }
     
@@ -72,12 +72,12 @@ public class BladeServerPOD {
         this.powerIdle = powerIdle;
     }
 
-    public double getIdleConsumption() {
-        return idleConsumption;
+    public double getStandByConsumption() {
+        return standByConsumption;
     }
 
-    public void setIdleConsumption(double idleConsumption) {
-        this.idleConsumption = idleConsumption;
+    public void setStandByConsumption(double standByConsumption) {
+        this.standByConsumption = standByConsumption;
     }
     
     public void setID(DataCenterEntityID id) {

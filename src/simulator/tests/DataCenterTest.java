@@ -44,7 +44,7 @@ public class DataCenterTest {
         bladeServerPOD.setFrequencyLevel(FREQUENCY_LEVEL);
         bladeServerPOD.setPowerIdle(POWER_IDLE);
         bladeServerPOD.setPowerBusy(POWER_BUSY);
-        bladeServerPOD.setIdleConsumption(5.0);
+        bladeServerPOD.setStandByConsumption(5.0);
         chassisPOD = new ChassisPOD();
         chassisPOD.setID(DataCenterEntityID.createChassisID(1, 1));
         chassisPOD.appendServerPOD(bladeServerPOD);

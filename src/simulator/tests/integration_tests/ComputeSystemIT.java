@@ -10,6 +10,10 @@ import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 
 import java.util.List;
+import java.util.logging.Logger;
+import java.util.logging.LogManager;
+import java.util.logging.Handler;
+import java.util.logging.Level;
 
 import org.junit.After;
 import org.junit.Before;
@@ -68,12 +72,17 @@ public class ComputeSystemIT {
     
     @Before
     public void setUp() {
+        Logger log = LogManager.getLogManager().getLogger("");
+        for (Handler h : log.getHandlers()) {
+            h.setLevel(Level.FINE);
+        }
+
         bladeServerPOD = new BladeServerPOD();
         bladeServerPOD.setBladeType("DummyType");
         bladeServerPOD.setFrequencyLevel(FREQUENCY_LEVEL);
         bladeServerPOD.setPowerBusy(POWER_BUSY);
         bladeServerPOD.setPowerIdle(POWER_IDLE);
-        bladeServerPOD.setIdleConsumption(5);
+        bladeServerPOD.setStandByConsumption(5);
         bladeServerPOD.setID(DataCenterEntityID.createServerID(1, 1, 1));
 
         chassisPOD = new ChassisPOD();

@@ -26,7 +26,7 @@ public class ChassisTest {
         bladeServerPOD.setFrequencyLevel(FREQUENCY_LEVEL);
         bladeServerPOD.setPowerIdle(POWER_IDLE);
         bladeServerPOD.setPowerBusy(POWER_BUSY);
-        bladeServerPOD.setIdleConsumption(5.0);
+        bladeServerPOD.setStandByConsumption(5.0);
         bladeServerPOD.setID(DataCenterEntityID.createServerID(1, 1, 1));
     }
 
