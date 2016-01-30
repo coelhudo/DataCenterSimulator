@@ -228,6 +228,7 @@ public class BladeServer extends DataCenterEntity {
 			return false;
 		}
 		double share = getMips() / num;
+    LOGGER.info(String.format("Current server %s | MIPS %.2f | Batch jobs %d | share %.2f", getID(), getMips(), num, share));
 		final double originalShare = share;
 		double tempCpu = 0;
 		boolean anyJobModified = true;
